@@ -9,9 +9,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700;800&display=swap">
 <style>
 /* Themes: each sets the same colour tokens. "custom" is set from the swatches. */
-:root,[data-theme="night"]{--navy:#0A1A4F;--navy2:#11246B;--yellow:#FFE500;--orange:#FF8A00;--black:#0B0B0B;--white:#FFFFFF;--ph:#C9D3F5}
-[data-theme="forest"]{--navy:#0B2E1F;--navy2:#145A3C;--yellow:#E9FFD1;--orange:#7CFFB2;--black:#06140D;--white:#FFFFFF;--ph:#B7E4C7}
-[data-theme="plum"]{--navy:#2A0B3A;--navy2:#44156A;--yellow:#FFE0FA;--orange:#FF4FD8;--black:#1A0018;--white:#FFFFFF;--ph:#E9C6F0}
+:root,[data-theme="night"]{--navy:#0A1A4F;--navy2:#11246B;--yellow:#E8D878;--orange:#E0A463;--black:#0B0B0B;--white:#DCE1EE;--ph:#C9D3F5}
+[data-theme="forest"]{--navy:#0B2E1F;--navy2:#145A3C;--yellow:#D7E8CC;--orange:#8FCFA8;--black:#06140D;--white:#DCE1EE;--ph:#B7E4C7}
+[data-theme="plum"]{--navy:#2A0B3A;--navy2:#44156A;--yellow:#E8D2E3;--orange:#D27BC0;--black:#1A0018;--white:#DCE1EE;--ph:#E9C6F0}
 
 *{box-sizing:border-box;min-width:0}
 [hidden]{display:none!important}
@@ -24,32 +24,32 @@ button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:4px solid var(--white);outline-offset:3px}
 ::placeholder{color:var(--ph);opacity:1}
-.wrap{width:100%;max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.1rem}
+.wrap{width:100%;max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:.6rem}
 
 /* header: app name and small credit box, then the deck name */
 .top{display:flex;flex-direction:column;gap:.6rem;padding-top:.8rem}
 .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem}
 .brand{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:2.52rem;font-weight:900;text-transform:uppercase;white-space:nowrap;color:var(--yellow);line-height:1.05}
 .credit-row{display:flex;justify-content:flex-end}
-.credit{flex:none;border:2px solid transparent;border-radius:0;border-image:linear-gradient(90deg,#FFD400,#FF8A00,#FFFFFF,#D92C2C,#2FA8FF) 1;padding:.03rem .12rem;font-weight:800;line-height:1.15;text-align:center;background:var(--navy);color:var(--yellow)}
+.credit{flex:none;border:2px solid var(--white);border-radius:0;padding:.03rem .12rem;font-weight:800;line-height:1.15;text-align:center;background:var(--navy);color:var(--yellow)}
 .credit .cr1{display:block;font-size:.285rem}
 .credit hr{margin:.05rem 0}
-.credit .cr2{display:block;font-size:.345rem;text-transform:uppercase}
-.credit hr{border:0;height:2px;margin:.08rem 0;background:linear-gradient(90deg,#FFD400,#FF8A00,#FFFFFF,#D92C2C,#2FA8FF)}
-.deckbar{display:flex;align-items:center;gap:.6rem;min-width:0}
+.credit .cr2{display:block;font-size:.21875rem;text-transform:uppercase}
+.credit hr{border:0;height:2px;margin:.08rem 0;background:var(--white)}
+.deckbar{display:flex;align-items:center;justify-content:center;gap:.6rem;min-width:0}
 .deckbar .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* deck name inside a deck: display only, very small, no border */
-.deckname{flex:1;min-width:0;font-size:1.55rem;font-weight:900;text-align:left;color:var(--yellow);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;padding:.6rem .75rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:3px solid var(--white)}
-.tab{min-height:3.4rem;border:3px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.95rem;overflow-wrap:anywhere;padding:.2rem}
+.deckname{flex:1;min-width:0;font-size:1.1rem;font-weight:900;text-align:center;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em;color:var(--yellow);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:3px solid var(--white)}
+.tab{min-height:2.125rem;border:2px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.62rem;overflow-wrap:normal;padding:.2rem .1rem}
 .tab[aria-selected="true"]{background:var(--orange);color:var(--black)}
 @media (min-width:760px){
   body{padding-bottom:2.5rem}
-  .tabs{position:static;max-width:46rem;width:100%;margin:.4rem auto 0;border:3px solid var(--white);border-radius:16px;padding:.4rem}
+  .tabs{position:static;max-width:46rem;width:100%;margin:.4rem auto 0;border:2px solid var(--white);border-radius:16px;padding:.4rem}
 }
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:3.25rem;padding:.7rem 1.1rem;border:3px solid var(--white);border-radius:14px;background:var(--orange);color:var(--black);font-weight:800;font-size:1.05rem;box-shadow:0 4px 0 var(--white);text-align:center;overflow-wrap:anywhere}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:3.25rem;padding:.7rem 1.1rem;border:2px solid var(--white);border-radius:14px;background:var(--orange);color:var(--black);font-weight:800;font-size:1.05rem;box-shadow:0 4px 0 var(--white);text-align:center;overflow-wrap:anywhere}
 .btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--white)}
 .btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:0 4px 0 var(--white)}
 .btn.sm{min-height:2.5rem;padding:.35rem .8rem;font-size:.95rem}
@@ -57,18 +57,18 @@ button{cursor:pointer}
 .btn.block{width:100%}
 .btn.back{flex-direction:column;gap:0;min-width:4rem;min-height:0;padding:.375rem .5rem;font-size:1.375rem;line-height:1;box-shadow:0 3px 0 var(--white);flex:none;border-radius:15px}
 .btn.back .bl{font-size:.875rem;font-weight:900;line-height:1.1}
-.btn.danger{background:#E31B1B;color:#FFFFFF;font-size:1.35rem;font-weight:900;min-height:4rem}
+.btn.danger{background:#C84B4B;color:#DCE1EE;font-size:1.35rem;font-weight:900;min-height:4rem}
 .theme-panel .label{font-size:.8rem}
 .theme-panel .seg.four button{min-height:2.2rem;font-size:.8rem;padding:.1rem .2rem}
 .decks .deck{min-height:2.6rem;padding:.35rem .8rem;font-size:1rem;border-radius:12px}
 /* deck rows on the landing page: name button (black, white border) with small Rename and Delete on the same line */
 .deckrow{display:flex;align-items:center;gap:.4rem;min-width:0}
-.deckopen{flex:1;min-width:0;min-height:2.4rem;padding:.3rem .5rem;background:#000000;color:#FFFFFF;border:3px solid var(--white);border-radius:12px;text-align:center;font-size:.8rem;font-weight:900;overflow-wrap:anywhere;cursor:pointer;box-shadow:0 2px 0 var(--white)}
-.deckrow .renbtn,.deckrow .delbtn{flex:none;width:3.8rem;min-height:2rem;padding:.2rem .2rem;border:2px solid var(--white);border-radius:8px;font-size:.7rem;font-weight:900;line-height:1.1}
-.renbtn{background:#FFD400;color:#000000}
-.deckrow .delbtn{background:#D92C2C;color:#FFFFFF}
-.btn.again{background:#D92C2C;color:#FFFFFF}
-.btn.got{background:#1E9E4A;color:#FFFFFF}
+.deckopen{flex:1;min-width:0;height:1.2rem;min-height:1.2rem;padding:0 .5rem;background:#000000;color:#DCE1EE;border:2px solid var(--white);border-radius:12px;text-align:center;font-size:.8rem;font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-shadow:0 2px 0 var(--white)}
+.deckrow .renbtn,.deckrow .delbtn{flex:none;width:3.42rem;min-height:1rem;padding:0 .2rem;border:2px solid var(--white);border-radius:8px;font-size:.7rem;font-weight:900;line-height:1.1}
+.renbtn{background:#E3C56A;color:#000000}
+.deckrow .delbtn{background:#C2494A;color:#DCE1EE}
+.btn.again{background:#C2494A;color:#DCE1EE}
+.btn.got{background:#3D9A62;color:#DCE1EE}
 
 /* panels and text */
 .page{margin:.4rem 0 0;font-size:2rem;font-weight:800;color:var(--yellow)}
@@ -79,46 +79,46 @@ button{cursor:pointer}
 .ready{margin:0;font-weight:800;color:var(--white);min-height:1.4em}
 .busy{margin:0;min-height:1.3em;color:var(--white);font-weight:700}
 .hint{margin:0;text-align:center;color:var(--white);font-weight:700;font-size:.95rem}
-.text,textarea{width:100%;background:var(--navy);color:var(--yellow);border:3px solid var(--white);border-radius:12px;padding:.7rem .85rem;font-size:1.05rem}
+.text,textarea{width:100%;background:var(--navy);color:var(--yellow);border:2px solid var(--white);border-radius:12px;padding:.7rem .85rem;font-size:1.05rem}
 textarea{min-height:7rem;resize:vertical}
 
 /* lists of decks and sets */
 .decks,.setlist{display:flex;flex-direction:column;gap:.85rem}
 .setrow{display:flex;gap:.6rem;align-items:stretch}
-.deck{flex:1;min-width:0;display:flex;justify-content:space-between;align-items:center;gap:.75rem;min-height:4.1rem;padding:.85rem 1.1rem;border:3px solid var(--white);border-radius:16px;background:var(--orange);color:var(--black);font-weight:800;font-size:1.15rem;box-shadow:0 4px 0 var(--white);text-align:left;overflow-wrap:anywhere}
+.deck{flex:1;min-width:0;display:flex;justify-content:space-between;align-items:center;gap:.75rem;min-height:4.1rem;padding:.85rem 1.1rem;border:2px solid var(--white);border-radius:16px;background:var(--orange);color:var(--black);font-weight:800;font-size:1.15rem;box-shadow:0 4px 0 var(--white);text-align:left;overflow-wrap:anywhere}
 .deck .dc{font-size:.95rem;font-weight:700;flex:none}
-.delbtn{flex:none;align-self:center;min-height:2.6rem;padding:.3rem .7rem;border:3px solid var(--white);border-radius:12px;background:#D92C2C;color:#FFFFFF;font-weight:800;font-size:.9rem}
+.delbtn{flex:none;align-self:center;min-height:2.6rem;padding:.3rem .7rem;border:2px solid var(--white);border-radius:12px;background:#C2494A;color:#DCE1EE;font-weight:800;font-size:.9rem}
 
 /* file box: black background, white text and a clear border */
-.drop{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.5rem 1rem;border:3px solid var(--white);border-radius:18px;background:#000000;color:#FFFFFF;text-align:center;cursor:pointer;box-shadow:inset 0 0 0 2px #000000,inset 0 0 0 4px var(--white)}
+.drop{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.5rem 1rem;border:2px solid var(--white);border-radius:18px;background:#000000;color:#DCE1EE;text-align:center;cursor:pointer;box-shadow:inset 0 0 0 2px #000000,inset 0 0 0 4px var(--white)}
 .drop:hover,.drop.over{border-color:var(--yellow);box-shadow:inset 0 0 0 2px #000000,inset 0 0 0 4px var(--yellow)}
 .drop:focus-within{outline:4px solid var(--yellow);outline-offset:4px}
 .drop input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-.drop-title{font-size:1.25rem;font-weight:800;color:#FFFFFF}
-.drop-sub{font-weight:700;font-size:.95rem;color:#FFFFFF}
+.drop-title{font-size:1.25rem;font-weight:800;color:#DCE1EE}
+.drop-sub{font-weight:700;font-size:.95rem;color:#DCE1EE}
 .types{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;margin-top:.25rem}
-.types span{font-weight:800;font-size:.8rem;background:#000000;color:#FFFFFF;border:2px solid var(--white);border-radius:8px;padding:.05rem .55rem}
+.types span{font-weight:800;font-size:.8rem;background:#000000;color:#DCE1EE;border:2px solid var(--white);border-radius:8px;padding:.05rem .55rem}
 details.paste{display:flex;flex-direction:column;gap:.6rem}
 details.paste summary{font-weight:800;color:var(--yellow);cursor:pointer;padding:.25rem 0}
 details.paste .btn{align-self:flex-start}
 .files{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
 .file{display:flex;justify-content:space-between;align-items:center;gap:.6rem;border:2px solid var(--white);border-radius:12px;padding:.45rem .5rem .45rem .85rem;background:var(--navy)}
 .fname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;font-weight:700;color:var(--yellow)}
-.xbtn{flex:none;width:2.5rem;height:2.5rem;border-radius:50%;border:3px solid var(--white);background:var(--orange);color:var(--black);font-weight:900}
+.xbtn{flex:none;width:2.5rem;height:2.5rem;border-radius:50%;border:2px solid var(--white);background:var(--orange);color:var(--black);font-weight:900}
 
 /* theme and difficulty pickers */
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
 .seg.four{grid-template-columns:repeat(2,1fr)}
-.seg button{min-height:3.4rem;border:3px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:1.05rem;overflow-wrap:anywhere;padding:.2rem}
+.seg button{min-height:3.4rem;border:2px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:1.05rem;overflow-wrap:anywhere;padding:.2rem}
 .seg button[aria-pressed="true"]{background:var(--orange);color:var(--black)}
 .custom{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 .swatch{display:flex;flex-direction:column;gap:.35rem;font-weight:800;color:var(--yellow)}
-.swatch input{width:100%;height:3rem;border:3px solid var(--white);border-radius:12px;background:none;padding:2px;cursor:pointer}
+.swatch input{width:100%;height:3rem;border:2px solid var(--white);border-radius:12px;background:none;padding:2px;cursor:pointer}
 
 /* card-count slider with notches */
 .slider-head{display:flex;justify-content:space-between;align-items:center}
-.bubble{min-width:3.6rem;text-align:center;padding:.2rem .7rem;border:3px solid var(--white);border-radius:999px;background:var(--orange);color:var(--black);font-weight:900;font-size:1.2rem;font-variant-numeric:tabular-nums}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1rem;margin:1rem 0 .3rem;border-radius:999px;border:3px solid var(--white);background:linear-gradient(var(--yellow),var(--yellow)) 0 / var(--p,0%) 100% no-repeat,var(--navy);box-shadow:0 0 0 4px var(--navy2),0 0 0 6px var(--white)}
+.bubble{min-width:3.6rem;text-align:center;padding:.2rem .7rem;border:2px solid var(--white);border-radius:999px;background:var(--orange);color:var(--black);font-weight:900;font-size:1.2rem;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1rem;margin:1rem 0 .3rem;border-radius:999px;border:2px solid var(--white);background:linear-gradient(var(--yellow),var(--yellow)) 0 / var(--p,0%) 100% no-repeat,var(--navy);box-shadow:0 0 0 4px var(--navy2),0 0 0 6px var(--white)}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:2.4rem;height:2.4rem;border-radius:50%;background:var(--orange);border:4px solid var(--white);box-shadow:0 4px 0 var(--black),0 0 0 4px var(--navy2)}
 input[type=range]::-moz-range-thumb{width:2.2rem;height:2.2rem;border-radius:50%;background:var(--orange);border:4px solid var(--white)}
 input[type=range]::-moz-range-track{background:transparent}
@@ -139,52 +139,73 @@ input[type=range]:focus-visible{outline:4px solid var(--white);outline-offset:6p
 .nav{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 .grade{display:flex;justify-content:center;gap:1.2rem}
 .grade .btn{width:5.5rem;min-height:2.75rem;padding:.2rem;font-size:1.5rem;line-height:1;border-radius:12px}
-/* small speaker icon, top-left of the card or quiz: hears the current face again */
-.speak{position:absolute;top:.6rem;left:.6rem;z-index:3;width:2.9rem;height:2.9rem;min-height:0;padding:0;display:grid;place-items:center;border:3px solid var(--white);border-radius:50%;background:#000000;color:#FFFFFF;box-shadow:0 2px 0 var(--white);cursor:pointer}
-.speak svg{width:1.4rem;height:1.4rem}
+/* speech bar, top-left of each section: speaker (mute / unmute) and Replay */
+.spkbar{display:flex;gap:.5rem;align-items:center;justify-content:flex-start}
+.spkbtn{display:inline-flex;align-items:center;justify-content:center;min-height:2.6rem;min-width:2.8rem;padding:.2rem .7rem;border:2px solid var(--white);border-radius:12px;background:#000000;color:#DCE1EE;font-weight:900;font-size:.9rem;box-shadow:0 2px 0 var(--white);cursor:pointer}
+.spkbtn svg{width:1.5rem;height:1.5rem}
+.spkmute[aria-pressed="true"]{background:#C2494A}
 .q{position:relative}
-.q .label{padding-left:3.2rem}
+/* slider value, shown just below the Max notch */
+.sval{display:block;text-align:right;font-weight:900;font-size:.95rem;color:var(--yellow);font-variant-numeric:tabular-nums}
 
 /* quiz */
 .q{display:flex;flex-direction:column;gap:1rem;background:var(--navy2);border:2px solid var(--white);border-radius:18px;padding:1.2rem}
 .prompt{font-size:1.3rem;font-weight:700;color:var(--yellow);line-height:1.4;overflow-wrap:anywhere;white-space:pre-line}
 .opts{display:flex;flex-direction:column;gap:.75rem}
-.opt{display:flex;align-items:center;gap:.75rem;text-align:left;min-height:3.6rem;padding:.7rem .85rem;border:3px solid var(--white);border-radius:14px;background:var(--orange);color:var(--black);font-weight:800;font-size:1.05rem;overflow-wrap:anywhere}
-.opt .k{flex:none;width:2rem;height:2rem;border-radius:8px;border:3px solid currentColor;display:grid;place-items:center;font-weight:900}
-.opt.right{background:#1E9E4A;color:#FFFFFF}
-.opt.wrong{background:#D92C2C;color:#FFFFFF}
+.opt{display:flex;align-items:center;gap:.6rem;text-align:left;min-height:1.8rem;padding:.1rem .6rem;line-height:1.2;border:2px solid var(--white);border-radius:14px;background:var(--orange);color:var(--black);font-weight:800;font-size:1.05rem;overflow-wrap:anywhere}
+.opt .k{flex:none;width:1.4rem;height:1.4rem;border-radius:8px;border:3px solid currentColor;display:grid;place-items:center;font-weight:900}
+.opt.right{background:#3D9A62;color:#DCE1EE}
+.opt.wrong{background:#C2494A;color:#DCE1EE}
 .opt:disabled{cursor:default}
-.feedback{border:3px solid var(--white);border-radius:14px;padding:.9rem;background:var(--orange);color:var(--black);font-weight:700;overflow-wrap:anywhere}
-.feedback.ok{background:#1E9E4A;color:#FFFFFF}
-.feedback.no{background:#D92C2C;color:#FFFFFF}
+.feedback{border:2px solid var(--white);border-radius:14px;padding:.9rem;background:var(--orange);color:var(--black);font-weight:700;overflow-wrap:anywhere}
+.feedback.ok{background:#3D9A62;color:#DCE1EE}
+.feedback.no{background:#C2494A;color:#DCE1EE}
 .feedback b{display:block;font-size:1.1rem}
 .score{font-size:3.6rem;font-weight:900;color:var(--yellow);line-height:1}
 .missed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem;text-align:left;width:100%}
 .missed li{border:2px solid var(--white);border-radius:12px;padding:.6rem .75rem;background:var(--navy);color:var(--yellow);overflow-wrap:anywhere}
 
 /* coloured buttons: darker, larger text that fills the button; outline halved to a mild line */
-.btn,.deck,.opt,.xbtn,.tab,.seg button{border-width:1.5px}
+.btn,.deck,.opt,.xbtn,.tab,.seg button{border-width:2px}
 .btn,.deck,.opt,.xbtn{box-shadow:0 2px 0 var(--white)}
 .btn,.deck,.opt,.xbtn,.tab[aria-selected="true"],.seg button[aria-pressed="true"]{color:#000;font-weight:900}
 .btn{font-size:1.2rem}
 .btn.lg{font-size:1.35rem}
 .deck{font-size:1.25rem}
-.opt{font-size:1.15rem}
-.seg button{font-size:1.15rem}
-.tab{font-size:1rem}
-.btn.again,.btn.got,.opt.right,.opt.wrong{color:#FFFFFF}
+.opt{font-size:1rem}
+.seg button{font-size:.95rem;white-space:nowrap}
+.tab{font-size:.62rem}
+.btn.again,.btn.got,.opt.right,.opt.wrong{color:#DCE1EE}
 /* home: theme first, a line across the screen, then New deck (30% smaller) and the deck list */
-.homesep{height:0;border-top:2px solid var(--white);margin:.9rem calc(50% - 50vw) .8rem}
-#newdeck{min-height:0;padding:.55rem 1rem;font-size:.945rem}
+.homesep{height:0;border-top:2px solid var(--white);margin:.3rem calc(50% - 50vw) .3rem}
+#newdeck{min-height:0;padding:.4rem .8rem;font-size:.85rem;line-height:1.1}
+/* overview view and speech controls */
+.ov{position:relative}
+.ovp{margin:0;font-size:1.05rem;line-height:1.5;font-weight:700;color:var(--yellow);overflow-wrap:anywhere}
+/* API key panel on the home page: compact */
+.apipanel{padding:.5rem .6rem;gap:.4rem}
+.apipanel .label{font-size:.7rem}
+.apipanel .text{padding:.35rem .5rem;font-size:.85rem}
+.apipanel .btn.sm{min-height:1.9rem;padding:.2rem .5rem;font-size:.75rem;border-radius:10px;box-shadow:0 2px 0 var(--white)}
+.apirow{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+.apidots{flex:1;min-width:0;font-weight:800;font-size:.9rem;overflow-wrap:anywhere;color:var(--white)}
+.apisteps{margin:0;padding-left:1.1rem;font-size:.7rem;font-weight:700;color:var(--white)}
+.apinote{margin:0;font-size:.68rem;font-weight:700;color:var(--white)}
 /* answer side: a smaller card, grade buttons below it */
 .flip.is-flipped{min-height:max(7rem,calc(100vh - 560px))}
 /* letterhead band: white, black, white; full width of the screen */
-.letterhead{height:2px;background:#000000;border-top:3px solid #FFFFFF;border-bottom:3px solid #FFFFFF;margin:.5rem calc(50% - 50vw) .3rem}
+.letterhead{height:0;border-top:2px solid var(--white);margin:.5rem calc(50% - 50vw) .3rem}
 /* theme section: compact, about half its former height */
 .theme-panel{padding:.4rem .5rem;gap:.3rem}
 .theme-panel .label{font-size:.7rem}
 .theme-panel .seg.four{grid-template-columns:repeat(4,1fr);gap:.3rem}
-.theme-panel .seg.four button{min-height:1.8rem;font-size:.7rem;padding:0 .1rem;border-radius:8px;border-width:1.5px}
+.theme-panel .seg.four button{min-height:1.44rem;font-size:.7rem;padding:0 .1rem;border-radius:8px;border-width:2px}
+.deckcol{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}
+.bylabel{font-size:.7rem;font-weight:700;color:var(--white);text-align:center}
+.busybox{align-self:flex-start;border:2px solid var(--white);border-radius:12px;background:var(--navy2);padding:.5rem .8rem;font-weight:800;font-size:.95rem;color:var(--yellow)}
+.apidetect{display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;font-weight:800;color:var(--yellow)}
+.apititle{flex:1;min-width:0;font-size:.85rem;font-weight:800;color:var(--yellow)}
+.shufbtn{margin-left:auto;min-height:2.2rem;font-size:.8rem}
 </style>
 </head>
 <body>
@@ -195,13 +216,12 @@ input[type=range]:focus-visible{outline:4px solid var(--white);outline-offset:6p
       <div class="credit" aria-label="Developed by PK. Accessibility first."><span class="cr1">Developed by PK</span><hr><span class="cr2">Accessibility first</span></div>
     </div>
     <div class="letterhead" aria-hidden="true"></div>
-    <div class="deckbar" id="deckbar" hidden>
-      <span id="dname" class="deckname"></span>
-    </div>
+    <div class="deckbar" id="deckbar" hidden><div class="deckcol"><span id="dname" class="deckname"></span><span id="bylabel" class="bylabel"></span></div></div>
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="Sections" hidden>
     <button class="tab" role="tab" data-tab="create">Create</button>
+    <button class="tab" role="tab" data-tab="overview">Overview</button>
     <button class="tab" role="tab" data-tab="study">Flashcards</button>
     <button class="tab" role="tab" data-tab="quiz">Quiz</button>
   </nav>
@@ -209,6 +229,7 @@ input[type=range]:focus-visible{outline:4px solid var(--white);outline-offset:6p
   <section id="view-home" class="wrap"></section>
   <section id="view-create" class="wrap" hidden></section>
   <section id="view-study" class="wrap" hidden></section>
+  <section id="view-overview" class="wrap" hidden></section>
   <section id="view-quiz" class="wrap" hidden></section>
 </div>
 
@@ -232,6 +253,7 @@ let nextId=1;
 let study=null, quiz=null, busy=false, gesture=null, ignoreClick=false;
 let lastMsg='';
 const factCache=new Map();
+let ovSpeakPending=false;
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify({decks:db.decks}))}catch(e){}}
 function load(){
@@ -247,6 +269,7 @@ function load(){
     d.sources=d.sources||[];
     d.difficulty=d.difficulty||'medium';
     d.countIdx=(typeof d.countIdx==='number')?d.countIdx:0;
+    d.gen=(d.gen&&typeof d.gen==='object')?d.gen:{};
     /* saved sets from earlier versions are no longer used */
     delete d.cursor;delete d.flashSets;delete d.quizSets;delete d.nextFlash;delete d.nextQuiz;
   });
@@ -286,7 +309,7 @@ function deleteDeck(id){
   const d=db.decks.find(x=>x.id===id);if(!d)return;
   if(!confirm(`Delete "${d.name}"? This cannot be undone.`))return;
   db.decks=db.decks.filter(x=>x.id!==id);
-  factCache.delete(id);builtCache.delete(id);
+  factCache.delete(id);
   save();
   if(db.active===id)goHome();
   else render();
@@ -566,24 +589,18 @@ function makeQuestion(f,i,ctx,diff){
   q.options=shuffle([f.term,...cands]);
   return q;
 }
-/* The flashcards and quiz are built straight from the material and the Create settings (count and difficulty).
-   Nothing is saved as a set. The flashcards use the first N facts; the quiz uses the next N facts (wrapping
-   round when the material is short), so both have the same number of items. Cached until the inputs change. */
-const builtCache=new Map();
-function built(d){
-  const ctx=factsOf(d),total=ctx.facts.length;
-  const key=[ctx.sig,d.countIdx,d.difficulty,total].join('|');
-  const hit=builtCache.get(d.id);
-  if(hit&&hit.key===key)return hit;
-  const want=d.countIdx>=MAX_IDX?total:STOPS[d.countIdx];
-  const N=Math.min(want,total);
-  const at=k=>ctx.facts[k%total];
-  const cards=Array.from({length:N},(_,k)=>({term:at(k).term,def:at(k).def,kind:at(k).kind}));
-  const quizFacts=Array.from({length:N},(_,k)=>at(N+k));
-  const questions=quizFacts.map((f,i)=>makeQuestion(f,i,ctx,d.difficulty));
-  const val={key,cards,questions};
-  builtCache.set(d.id,val);
-  return val;
+/* App logic (no AI): the flashcards use N facts and the quiz uses the next N facts (wrapping round when the material
+   is short). With rand=true (Shuffle) the facts are taken in a new random order. N follows the Create settings. */
+function appCount(d,total){return Math.min(d.countIdx>=MAX_IDX?total:STOPS[d.countIdx],total)}
+function appCards(d,rand){
+  const ctx=factsOf(d),total=ctx.facts.length,N=appCount(d,total);
+  const f=rand?shuffle(ctx.facts):ctx.facts;
+  return Array.from({length:N},(_,k)=>({term:f[k%total].term,def:f[k%total].def,kind:f[k%total].kind}));
+}
+function appQuiz(d,rand){
+  const ctx=factsOf(d),total=ctx.facts.length,N=appCount(d,total);
+  const f=rand?shuffle(ctx.facts):ctx.facts;
+  return Array.from({length:N},(_,k)=>makeQuestion(f[(N+k)%total],k,ctx,d.difficulty));
 }
 
 /* ---------- file reading (unreadable files are skipped silently) ---------- */
@@ -691,11 +708,322 @@ async function addFiles(files){
 
 /* ---------- speech (reads cards and questions aloud) ---------- */
 const canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+const spk={text:'',muted:false,cur:null};
+const SPEAKOFF_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9h4l5-4.5v15L7 15H3z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+/* Reading starts at once unless muted. */
 function speak(text){
-  if(!canSpeak||!text)return;
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=0.95;speechSynthesis.speak(u)}catch(e){}
+  spk.text=text||'';
+  if(!canSpeak||!text||spk.muted)return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.rate=0.95;
+    spk.cur=u;speechSynthesis.speak(u);
+  }catch(e){}
 }
-function speechStop(){if(canSpeak){try{speechSynthesis.cancel()}catch(e){}}}
+function speechStop(){
+  spk.cur=null;
+  if(canSpeak){try{speechSynthesis.cancel()}catch(e){}}
+}
+/* The text of the section on screen, so Unmute reads what the user is looking at. */
+function sectionText(){
+  const d=D();if(!d)return '';
+  if(db.tab==='overview')return getPart(d,'ov').data.text||'';
+  if(db.tab==='study'){
+    const cards=getPart(d,'cards').data;
+    if(!study||!cards[study.pos])return '';
+    const ft=faceText(d.difficulty,cards[study.pos]);
+    return study.flipped?ft.back:ft.front;
+  }
+  if(db.tab==='quiz'){
+    const qs=getPart(d,'quiz').data;
+    if(!quiz||!qs[quiz.order[quiz.i]])return '';
+    return fullQuestionText(qs[quiz.order[quiz.i]]);
+  }
+  return '';
+}
+/* One speaker button: tap to mute (all reading stops) or unmute (the section is read again from the start). */
+function setMute(m){
+  spk.muted=m;
+  if(m)speechStop();else speak(sectionText());
+  syncSpk();
+}
+function spkBar(shuf){
+  const m=spk.muted;
+  return `<div class="spkbar"><button class="spkbtn spkmute" id="spkMute" aria-pressed="${m}" aria-label="${m?'Unmute and read aloud':'Mute reading'}" title="${m?'Unmute':'Mute'}">${m?SPEAKOFF_SVG:SPEAK_SVG}</button>${shuf?'<button class="spkbtn shufbtn" id="shuffle" title="New set">Shuffle</button>':''}</div>`;
+}
+function syncSpk(){
+  document.querySelectorAll('.spkmute').forEach(b=>{
+    b.setAttribute('aria-pressed',String(spk.muted));
+    b.setAttribute('aria-label',spk.muted?'Unmute and read aloud':'Mute reading');
+    b.title=spk.muted?'Unmute':'Mute';
+    b.innerHTML=spk.muted?SPEAKOFF_SVG:SPEAK_SVG;
+  });
+}
+
+/* ---------- AI writing. The key is kept on this phone with its provider, worked out from the start of the key. ---------- */
+const AI_STORE='cramdeck.ai', OLD_GKEY='cramdeck.gkey';
+const PROV_NAME={google:'Google',claude:'Claude',grok:'Grok',openai:'OpenAI',deepseek:'DeepSeek'};
+const AI_MODELS={google:'gemini-3.1-flash-lite',claude:'claude-haiku-5-5',grok:'grok-4.7',openai:'gpt-4.1-mini',deepseek:'deepseek-flash'};
+const AI_BASE={grok:'https://api.x.ai/v1',openai:'https://api.openai.com/v1',deepseek:'https://api.deepseek.com'};
+let apiUI={editing:false,msg:'',pick:''};
+function getAI(){
+  try{
+    const raw=localStorage.getItem(AI_STORE);
+    if(raw){const o=JSON.parse(raw);if(o&&o.key&&o.provider)return o}
+    const g=localStorage.getItem(OLD_GKEY);
+    if(g)return {provider:'google',key:g};
+  }catch(e){}
+  return null;
+}
+const aiUsable=ai=>!!ai&&!!AI_MODELS[ai.provider];
+/* Google keys start AIza, Claude keys sk-ant-, Grok keys xai-, OpenAI project keys sk-proj-.
+   A plain sk- key fits OpenAI or DeepSeek, so the user is asked which one it is. */
+function detectKey(k){
+  if(/^AIza/.test(k))return 'google';
+  if(/^sk-ant-/.test(k))return 'claude';
+  if(/^xai-/.test(k))return 'grok';
+  if(/^sk-proj-/.test(k))return 'openai';
+  if(/^sk-/.test(k))return 'ambiguous';
+  return 'unknown';
+}
+function typedKey(){return (((document.querySelector('#apiIn')||{}).value)||'').trim()}
+function detectBlock(k){
+  if(!k)return '';
+  const p=apiUI.pick||detectKey(k);
+  if(p==='ambiguous')return '<span>Please confirm which one this is:</span><div class="apirow"><button class="btn sm" id="apiPickOpenai">OpenAI</button><button class="btn sm" id="apiPickDeepseek">DeepSeek</button></div>';
+  return `<span>${esc(p==='unknown'?'Unknown API key':PROV_NAME[p]+' API key')}</span>`;
+}
+function updateDetect(k){const el=$('#apiDetect');if(el)el.innerHTML=detectBlock(k)}
+function saveKey(){
+  const k=typedKey();
+  if(!k){apiUI.msg='Paste your key in the box first.';renderHome();return}
+  const p=apiUI.pick||detectKey(k);
+  if(p==='ambiguous'){apiUI.msg='Please confirm which one this is.';renderHome();return}
+  try{localStorage.setItem(AI_STORE,JSON.stringify({provider:p,key:k}));localStorage.removeItem(OLD_GKEY)}
+  catch(e){apiUI.msg='This phone would not store the key.';renderHome();return}
+  apiUI={editing:false,msg:'',pick:''};
+  tried.clear();study=quiz=null;
+  renderHome();
+}
+/* The key panel. Saved: a small box with "<Provider> API key saved" and Update (the key is never shown).
+   Otherwise: the Google steps and a box to paste a key. */
+function apiPanel(){
+  const ai=getAI(),editing=!ai||apiUI.editing;
+  const msg=apiUI.msg?`<p class="hint">${esc(apiUI.msg)}</p>`:'';
+  if(!editing){
+    const label=`${PROV_NAME[ai.provider]||'Unknown'} API key saved`;
+    return `<div class="panel apipanel"><div class="apirow"><span class="apititle">${esc(label)}</span><button class="btn sm" id="apiUpdate">Update</button></div>${msg}</div>`;
+  }
+  return `<div class="panel apipanel"><span class="label">API key</span>
+    <a class="btn sm block" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Click here to log into Google AI Studio</a>
+    <ol class="apisteps"><li>Create API key</li><li>Copy the key</li><li>Paste it in the box and press Save</li></ol>
+    <p class="apinote">If you don't see the Create API key button, AI writing isn't available yet. Your flashcards, quiz and overview will still be made by the app's built-in method.</p>
+    <label class="label" for="apiIn">Your key</label>
+    <input class="text" id="apiIn" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="API key">
+    <div class="apidetect" id="apiDetect"></div>
+    <div class="apirow"><button class="btn sm" id="apiSave">Save</button>${ai?'<button class="btn sm" id="apiCancel">Cancel</button>':''}</div>${msg}</div>`;
+}
+function materialText(d){
+  return d.sources.map(s=>{
+    const body=s.text?cleanSource(s.text):(s.rows||[]).map(r=>(r||[]).map(c=>c==null?'':String(c)).join(' | ')).join('\n');
+    return `--- ${s.name} ---\n${body}`;
+  }).join('\n\n').slice(0,150000);
+}
+function cleanCards(a){
+  return (Array.isArray(a)?a:[]).filter(c=>c&&typeof c.question==='string'&&typeof c.answer==='string'&&c.question.trim()&&c.answer.trim())
+    .map(c=>({term:c.question.trim(),def:c.answer.trim(),kind:'qa'}));
+}
+function cleanQuiz(a,k){
+  return (Array.isArray(a)?a:[]).map(q=>{
+    if(!q||typeof q.question!=='string'||!q.question.trim()||!Array.isArray(q.options))return null;
+    const opts=[...new Set(q.options.map(o=>String(o).trim()).filter(Boolean))].slice(0,k);
+    const ans=String(q.answer||'').trim();
+    if(opts.length<2||!opts.includes(ans))return null;
+    return {label:'Question',prompt:q.question.trim(),answer:ans,explain:String(q.explain||'').trim(),options:shuffle(opts)};
+  }).filter(Boolean);
+}
+const mkErr=c=>{const e=new Error(c);e.err=c;return e};
+function parseJSON(t){
+  t=t.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+  const a=t.indexOf('{'),b=t.lastIndexOf('}');
+  try{return JSON.parse(a>=0&&b>a?t.slice(a,b+1):t)}catch(e){throw mkErr('unreadable reply')}
+}
+function timeoutSignal(){return (typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(90000):undefined}
+/* If Google says the model name is not found (404), ask Google which Flash models this key can use and take the newest. */
+let googleModel=AI_MODELS.google,googleListed=false;
+async function pickGoogleModel(k){
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200',{headers:{'x-goog-api-key':k},signal:timeoutSignal()});
+  if(!r.ok)return null;
+  const j=await r.json();
+  const c=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/^models\/gemini-\d+(\.\d+)?-flash(-lite)?$/.test(m.name||''))
+    .map(m=>{const x=/gemini-(\d+(?:\.\d+)?)-flash(-lite)?$/.exec(m.name);return {id:m.name.replace('models/',''),v:parseFloat(x[1]),lite:x[2]?1:0}});
+  c.sort((a,b)=>b.v-a.v||b.lite-a.lite);
+  return c.length?c[0].id:null;
+}
+/* One call to the saved provider. Google, Claude and the OpenAI-style providers (Grok, OpenAI, DeepSeek) each have their own request shape.
+   A failure carries the HTTP status code (or a short reason) in .err so it can be shown. */
+async function callAI(ai,prompt,json){
+  const p=ai.provider,k=ai.key;
+  const build=()=>{
+    if(p==='google')return {url:`https://generativelanguage.googleapis.com/v1beta/models/${googleModel}:generateContent`,
+      headers:{'Content-Type':'application/json','x-goog-api-key':k},
+      body:{contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,...(json?{responseMimeType:'application/json'}:{})}}};
+    if(p==='claude')return {url:'https://api.anthropic.com/v1/messages',
+      headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:{model:AI_MODELS.claude,max_tokens:8192,messages:[{role:'user',content:prompt}]}};
+    return {url:AI_BASE[p]+'/chat/completions',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
+      body:{model:AI_MODELS[p],messages:[{role:'user',content:prompt}],...(json?{response_format:{type:'json_object'}}:{})}};
+  };
+  const send=async()=>{const q=build();try{return await fetch(q.url,{method:'POST',headers:q.headers,body:JSON.stringify(q.body),signal:timeoutSignal()})}catch(e){throw mkErr('no response')}};
+  let r=await send();
+  if(!r.ok&&p==='google'&&r.status===404&&!googleListed){
+    googleListed=true;
+    let m2=null;try{m2=await pickGoogleModel(k)}catch(e){}
+    if(m2&&m2!==googleModel){googleModel=m2;r=await send()}
+  }
+  if(!r.ok)throw mkErr(String(r.status));
+  let j;try{j=await r.json()}catch(e){throw mkErr('unreadable reply')}
+  let text;
+  if(p==='google')text=((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(x=>x.text||'').join('');
+  else if(p==='claude')text=(j.content||[]).map(x=>x.text||'').join('');
+  else text=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
+  text=String(text).trim();
+  if(!text)throw mkErr('empty reply');
+  return json?parseJSON(text):text;
+}
+
+/* ---------- saved content: overview ('ov'), flashcards ('cards') and quiz ('quiz') are kept with the deck ----------
+   d.gen[part] = {sig, by:'ai'|'app'|'failed', err, data}. The content is recreated only when its settings change
+   (files, difficulty, card count; files and word limit for the overview), when Shuffle is pressed, or when it was not
+   written by AI and a key is available (AI is tried again each time the section is opened). AI first, app logic if AI fails. */
+const genBusy=new Map(),tried=new Set();
+const EMPTY={ov:{text:'',paras:[],words:0},cards:[],quiz:[]};
+function partSig(d,part){
+  const f=factsOf(d).sig;
+  return part==='ov'?`${f}|w${wIdx(d)}`:`${f}|c${d.countIdx}|${d.difficulty}`;
+}
+function untry(id,part){const pre=id+'|'+part+'|';[...tried].forEach(k=>{if(k.startsWith(pre))tried.delete(k)})}
+function storePart(d,part,rec){d.gen=d.gen||{};d.gen[part]=rec;save()}
+function appData(d,part,rand){
+  if(part==='ov'){const o=ovText(d);return {text:o.text,paras:o.paras,words:o.words}}
+  return part==='cards'?appCards(d,rand):appQuiz(d,rand);
+}
+function startPart(d,part,sig,mode,prev){
+  const key=d.id+'|'+part,ai=getAI();
+  genBusy.set(key,sig);tried.add(key+'|'+sig);
+  const text=materialText(d);
+  const idx=d.countIdx,N=idx>=MAX_IDX?60:STOPS[idx];
+  const size=idx>=MAX_IDX?'as many as the material supports, up to 60':`up to ${N}`;
+  const k=d.difficulty==='easy'?3:4;
+  const level={easy:'Keep each question short and about one fact.',medium:'Questions may need a little thought.',hard:'Questions must need careful reading. Answers are specific terms or short phrases.'}[d.difficulty]||'';
+  const avoid=prev?` Choose different questions from these earlier ones and do not repeat them: ${prev}.`:'';
+  const M=`\n\nSTUDY MATERIAL (use only this):\n${text}`;
+  let job;
+  if(part==='ov'){
+    const wi=wIdx(d),lim=wi>=WORD_MAX_IDX?'up to 2500 words':`at most ${WORD_STOPS[wi]} words`;
+    const P=`Write an overview of all the study material below, covering each document in turn and its main points. Use ${lim}. Plain paragraphs only: no headings, no bullet points, no questions.${M}`;
+    job=callAI(ai,P,false).then(o=>{
+      const t=String(o||'').trim();if(!t)throw mkErr('empty reply');
+      return {text:t,paras:t.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean),words:wordsIn(t)};
+    });
+  }else if(part==='cards'){
+    const P=`Write flashcards from the study material below: ${size}. ${level}${avoid} Each card has "question" and "answer". Do not ask about the document itself. Reply with a JSON object only, in the form {"items": [{"question": "...", "answer": "..."}]}.${M}`;
+    job=callAI(ai,P,true).then(j=>{const c=cleanCards(j&&j.items);if(!c.length)throw mkErr('no usable items');return c});
+  }else{
+    const P=`Write multiple-choice questions from the study material below: ${size}. ${level}${avoid} Each question has "question", "options" (exactly ${k} short strings, only one correct), "answer" (the correct option, copied exactly) and "explain" (one short sentence). Wrong options must be plausible. Reply with a JSON object only, in the form {"items": [{"question": "...", "options": ["..."], "answer": "...", "explain": "..."}]}.${M}`;
+    job=callAI(ai,P,true).then(j=>{const q=cleanQuiz(j&&j.items,k);if(!q.length)throw mkErr('no usable items');return q});
+  }
+  job.then(data=>{if(genBusy.get(key)===sig)storePart(d,part,{sig,by:'ai',err:'',data})})
+    .catch(e=>{
+      if(genBusy.get(key)!==sig)return;
+      const err=(e&&e.err)||'error',old=d.gen&&d.gen[part];
+      if(mode==='retry'&&old&&old.sig===sig)storePart(d,part,{...old,by:'failed',err});
+      else storePart(d,part,{sig,by:'failed',err,data:appData(d,part,mode==='shuffle')});
+    })
+    .finally(()=>{if(genBusy.get(key)===sig){genBusy.delete(key);if(db.active===d.id)renderAll()}});
+}
+/* What a section shows: {state:'loading'|'ready', by:'ai'|'app'|'failed', err, data}. */
+function getPart(d,part){
+  const key=d.id+'|'+part,sig=partSig(d,part);
+  const wait={state:'loading',by:'ai',err:'',data:EMPTY[part]};
+  if(!d.sources.length)return {state:'ready',by:'app',err:'',data:EMPTY[part]};
+  if(genBusy.get(key)===sig)return wait;
+  const ai=getAI(),usable=aiUsable(ai),saved=d.gen&&d.gen[part];
+  if(saved&&saved.sig===sig){
+    if(saved.by!=='ai'&&usable&&!tried.has(key+'|'+sig)){startPart(d,part,sig,'retry','');return wait}
+    return {state:'ready',by:saved.by,err:saved.err||'',data:saved.data};
+  }
+  if(usable){startPart(d,part,sig,'new','');return wait}
+  storePart(d,part,{sig,by:ai?'failed':'app',err:ai?'unknown key':'',data:appData(d,part,false)});
+  const s=d.gen[part];
+  return {state:'ready',by:s.by,err:s.err,data:s.data};
+}
+/* Shuffle: a new set with the chosen count. AI first; app logic only if AI fails or there is no key. */
+function reshuffle(d,part){
+  const key=d.id+'|'+part;if(genBusy.has(key))return;
+  const ai=getAI(),sig=partSig(d,part),old=d.gen&&d.gen[part];
+  const prev=(old&&Array.isArray(old.data))?old.data.map(x=>x.term||x.prompt||'').join(' | ').slice(0,4000):'';
+  speechStop();
+  if(part==='cards')study=null;else quiz=null;
+  if(aiUsable(ai))startPart(d,part,sig,'shuffle',prev);
+  else storePart(d,part,{sig,by:ai?'failed':'app',err:ai?'unknown key':'',data:appData(d,part,true)});
+  renderAll();
+}
+const cardsOf=d=>d?getPart(d,'cards').data:[];
+const questionsOf=d=>d?getPart(d,'quiz').data:[];
+function loadingView(){return '<div class="busybox" role="status">Creating content with AI</div>'}
+function byText(by,err){
+  if(by==='ai')return 'Built with AI';
+  if(by==='failed')return 'Built with app logic (AI failed'+(err?(/^\d+$/.test(err)?' '+err:': '+err):'')+')';
+  return 'Built with app logic';
+}
+/* The line under the deck name on Overview, Flashcards and Quiz. */
+function setBy(){
+  const bl=$('#bylabel');if(!bl)return;
+  const d=D(),part={overview:'ov',study:'cards',quiz:'quiz'}[db.tab];
+  let t='';
+  if(d&&part){const c=getPart(d,part);if(c.state!=='loading')t=byText(c.by,c.err)}
+  bl.textContent=t;
+}
+
+/* ---------- word and card limits: the maximum possible is shown in brackets ---------- */
+const WORD_STOPS=[500,1000,1500,2000,2500], WORD_MAX_IDX=5;
+const wIdx=d=>d.wordIdx||0;
+function countText(idx,d){const total=factsOf(d).facts.length;return idx>=MAX_IDX?`Max (${total})`:`${STOPS[idx]} (max ${total})`}
+
+/* ---------- overview: built from the facts (the term and its definition), in ranked order ---------- */
+function ovSentences(d){
+  return factsOf(d).facts.map(f=>{
+    const body=f.def.replace(/[\s.;:,]+$/,'');
+    return (f.kind==='def'?`${f.term}: ${body}.`:`${body}.`).replace(/\s+/g,' ');
+  });
+}
+const wordsIn=s=>s.split(' ').length;
+function ovMax(d){return ovSentences(d).reduce((a,s)=>a+wordsIn(s),0)}
+function wordText(idx,d){const max=ovMax(d);return idx>=WORD_MAX_IDX?`Max (${max})`:`${WORD_STOPS[idx]} (max ${max})`}
+function ovText(d){
+  const all=ovSentences(d),idx=wIdx(d);
+  const limit=idx>=WORD_MAX_IDX?Infinity:WORD_STOPS[idx];
+  const used=[];let n=0;
+  for(const s of all){const w=wordsIn(s);if(n+w>limit)break;used.push(s);n+=w}
+  const paras=[];
+  for(let i=0;i<used.length;i+=5)paras.push(used.slice(i,i+5).join(' '));
+  return {text:used.join(' '),paras,words:n,max:ovMax(d)};
+}
+function renderOverview(){
+  const d=D(),el=$('#view-overview');
+  const c=getPart(d,'ov'),ov=c.data;
+  if(c.state==='loading'){el.innerHTML=loadingView();return}
+  if(!ov.text){ovSpeakPending=false;el.innerHTML=emptyView('No overview yet');return}
+  el.innerHTML=`<div class="statline"><span>Overview</span><span>${ov.words} words</span></div>
+    ${spkBar()}
+    <div class="panel ov">${ov.paras.map(p=>`<p class="ovp">${esc(p)}</p>`).join('')}</div>`;
+  /* Reading starts as soon as the Overview is selected (and is not repeated by other redraws). */
+  if(ovSpeakPending){ovSpeakPending=false;speak(ov.text)}
+}
+
+/* ---------- create view ---------- */
 
 /* ---------- create view ---------- */
 function renderCreate(){
@@ -729,13 +1057,17 @@ function createShell(d){
     </div>
   </div>
   <div class="panel">
-    <div class="slider-head">
-      <span class="label">Cards per set</span>
-      <output id="countOut" class="bubble"></output>
-    </div>
-    <input type="range" id="count" min="0" max="${MAX_IDX}" step="1" value="${d.countIdx}" aria-label="Cards per set">
+    <span class="label"># cards / quiz</span>
+    <input type="range" id="count" min="0" max="${MAX_IDX}" step="1" value="${d.countIdx}" aria-label="# cards / quiz">
     <div class="notches" aria-hidden="true"><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>Max</span></div>
+    <output id="countOut" class="sval"></output>
     <p class="ready" id="ready"></p>
+  </div>
+  <div class="panel">
+    <span class="label">Words per overview</span>
+    <input type="range" id="owords" min="0" max="${WORD_MAX_IDX}" step="1" value="${wIdx(d)}" aria-label="Words per overview">
+    <div class="notches" aria-hidden="true"><span>500</span><span>1000</span><span>1500</span><span>2000</span><span>2500</span><span>Max</span></div>
+    <output id="wordOut" class="sval"></output>
   </div>`;
 }
 function renderFiles(d){
@@ -746,10 +1078,12 @@ function renderSettings(d){
   const r=$('#count');
   if(+r.value!==d.countIdx)r.value=d.countIdx;
   setRangeFill(r);
-  const total=factsOf(d).facts.length;
-  $('#countOut').textContent=d.countIdx>=MAX_IDX?`Max (${total})`:STOPS[d.countIdx];
-  const base=total?`${total} facts ready from your files.`:'';
-  $('#ready').textContent=lastMsg||base;
+  $('#countOut').textContent=countText(d.countIdx,d);
+  const wr=$('#owords');
+  if(+wr.value!==wIdx(d))wr.value=wIdx(d);
+  setRangeFill(wr);
+  $('#wordOut').textContent=wordText(wIdx(d),d);
+  $('#ready').textContent=lastMsg;
 }
 function setRangeFill(el){
   const pct=(el.value-el.min)/(el.max-el.min)*100;
@@ -762,7 +1096,9 @@ function emptyView(text){return `<div class="panel center"><p class="big">${esc(
 function knownCount(){return study?Object.values(study.marks).filter(Boolean).length:0}
 function renderStudy(){
   const d=D(),el=$('#view-study');
-  const cards=built(d).cards;
+  const c=getPart(d,'cards');
+  if(c.state==='loading'){el.innerHTML=loadingView();return}
+  const cards=c.data;
   if(!cards.length){study=null;el.innerHTML=emptyView('No cards yet');return}
   if(!study)study={pos:0,flipped:false,angle:0,marks:{},speak:true};
   const n=cards.length;
@@ -770,14 +1106,14 @@ function renderStudy(){
     el.innerHTML=`<div class="panel center"><p class="big">${knownCount()} of ${n} known</p><button class="btn lg" id="restart">Start over</button></div>`;
     return;
   }
-  const c=cards[study.pos],f=faceText(d.difficulty,c);
+  const card=cards[study.pos],f=faceText(d.difficulty,card);
   el.innerHTML=`<div class="statline"><span>Card ${study.pos+1} of ${n}</span><span>Known ${knownCount()}</span></div>
+    ${spkBar(true)}
     <div class="stage" id="stage">
       <div class="flip${study.flipped?' is-flipped':''}" id="flip" role="button" tabindex="0" aria-label="Flip card" style="transform:rotateY(${study.angle}deg)">
         <div class="face front"><span class="label">${esc(f.fLabel)}</span><div class="main${f.fLong?' long':''}">${esc(f.front)}</div></div>
         <div class="face back"><span class="label">${esc(f.bLabel)}</span><div class="main${f.bLong?' long':''}">${esc(f.back)}</div></div>
       </div>
-      <button class="speak" id="listen" aria-label="Hear this card again" title="Hear again">${SPEAK_SVG}</button>
     </div>
     <div class="grade" id="grade" ${study.flipped?'':'hidden'}>
       <button class="btn got" id="got" aria-label="Guessed right" title="Guessed right"><span aria-hidden="true">✓</span></button><button class="btn again" id="again" aria-label="Guessed wrong" title="Guessed wrong"><span aria-hidden="true">✗</span></button>
@@ -786,7 +1122,7 @@ function renderStudy(){
   if(study.speak){study.speak=false;speak(f.front)}
 }
 function flipCard(dir){
-  const d=D(),cards=d?built(d).cards:[];if(!cards.length||!study||busy||study.pos>=cards.length)return;
+  const d=D(),cards=cardsOf(d);if(!cards.length||!study||busy||study.pos>=cards.length)return;
   study.flipped=!study.flipped;
   study.angle=study.flipped?(dir<0?-180:180):0;
   const f=$('#flip');if(f){f.style.transform=`rotateY(${study.angle}deg)`;f.classList.toggle('is-flipped',study.flipped)}
@@ -817,13 +1153,13 @@ function runChange(dir,apply){
   };
 }
 function move(delta){
-  const d=D(),cards=d?built(d).cards:[];if(!cards.length||!study||busy)return;
+  const d=D(),cards=cardsOf(d);if(!cards.length||!study||busy)return;
   const next=Math.max(0,Math.min(cards.length,study.pos+delta));
   if(next===study.pos)return;
   runChange(delta,()=>{study.pos=next;study.flipped=false;study.angle=0;study.speak=true;renderStudy()});
 }
 function grade(ok){
-  const d=D(),cards=d?built(d).cards:[];if(!cards.length||!study||!study.flipped||busy||study.pos>=cards.length)return;
+  const d=D(),cards=cardsOf(d);if(!cards.length||!study||!study.flipped||busy||study.pos>=cards.length)return;
   study.marks[cards[study.pos].term]=ok;
   move(1);
 }
@@ -848,9 +1184,10 @@ function fullQuestionText(q){
 }
 function renderQuiz(){
   const d=D(),el=$('#view-quiz');
-  const qs=built(d).questions,total=qs.length;
+  const c=getPart(d,'quiz'),qs=c.data,total=qs.length;
+  if(c.state==='loading'){el.innerHTML=loadingView();return}
   if(!total){quiz=null;el.innerHTML=emptyView('No questions yet');return}
-  if(!quiz)quiz={order:shuffle(qs.map((_,i)=>i)),i:0,score:0,picked:null,missed:[],speak:true};
+  if(!quiz||quiz.order.length!==total)quiz={order:shuffle(qs.map((_,i)=>i)),i:0,score:0,picked:null,missed:[],speak:true};
   if(quiz.i>=total){
     const missed=quiz.missed.length?`<h3 style="margin:0;color:var(--yellow)">Review these</h3><ul class="missed">${quiz.missed.map(m=>`<li><b>${esc(m.answer)}</b><br>${esc(m.explain||'')}</li>`).join('')}</ul>`:'';
     el.innerHTML=`<div class="panel center"><div class="score">${quiz.score}/${total}</div>${missed}<button class="btn lg" id="retake">New quiz</button></div>`;
@@ -865,11 +1202,12 @@ function renderQuiz(){
   const fb=done?`<div class="feedback ${correct?'ok':'no'}"><b>${correct?'Correct':'Not quite. Answer: '+esc(q.answer)}</b>${esc(q.explain||'')}</div>`:'';
   const nxt=done?`<button class="btn block" id="qnext">${quiz.i+1<total?'Next question':'See results'}</button>`:'';
   el.innerHTML=`<div class="statline"><span>Question ${quiz.i+1} of ${total}</span><span>Score ${quiz.score}</span></div>
-    <div class="q"><button class="speak" id="qlisten" aria-label="Hear this question again" title="Hear again">${SPEAK_SVG}</button><span class="label">${esc(q.label)}</span><div class="prompt">${esc(q.prompt)}</div><div class="opts">${opts}</div>${fb}${nxt}</div>`;
+    ${spkBar(true)}
+    <div class="q"><span class="label">${esc(q.label)}</span><div class="prompt">${esc(q.prompt)}</div><div class="opts">${opts}</div>${fb}${nxt}</div>`;
   if(quiz.speak){quiz.speak=false;speak(fullQuestionText(q))}
 }
 function answer(j){
-  const qs=built(D()).questions;if(!quiz||quiz.picked!==null||!qs.length)return;
+  const qs=questionsOf(D());if(!quiz||quiz.picked!==null||!qs.length)return;
   const q=qs[quiz.order[quiz.i]];
   const ok=q.options[j]===q.answer;
   quiz.picked={j,ok};
@@ -893,7 +1231,7 @@ function renderHome(){
         <label class="swatch">Text<input type="color" data-c="text"></label>
         <label class="swatch">Buttons<input type="color" data-c="accent"></label>
       </div>
-    </div>    <div class="homesep" aria-hidden="true"></div>
+    </div>    ${apiPanel()}<div class="homesep" aria-hidden="true"></div>
     <button class="btn lg block" id="newdeck">+ New deck</button>
     <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
 `;
@@ -902,8 +1240,10 @@ function renderHome(){
 function renderAll(){
   const d=D();if(!d)return;
   if(db.tab==='create')renderCreate();
+  else if(db.tab==='overview')renderOverview();
   else if(db.tab==='study')renderStudy();
   else renderQuiz();
+  setBy();
 }
 function render(){
   const d=D();
@@ -911,10 +1251,11 @@ function render(){
   $('#tabs').hidden=!d;
   $('#view-home').hidden=!!d;
   if(d)$('#dname').textContent=d.name;
-  ['create','study','quiz'].forEach(t=>{$('#view-'+t).hidden=!d||db.tab!==t});
+  ['create','overview','study','quiz'].forEach(t=>{$('#view-'+t).hidden=!d||db.tab!==t});
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===db.tab)));
   if(!d){renderHome();return}
   renderAll();
+  syncSpk();
 }
 
 /* ---------- events (delegated) ---------- */
@@ -931,7 +1272,7 @@ document.addEventListener('click',e=>{
     if(nv&&nv.trim()){rd.name=nv.trim().slice(0,60);save()}
     render();return;
   }
-  if(ds.tab!==undefined){db.tab=ds.tab;study=quiz=null;speechStop();render();window.scrollTo(0,0);return}
+  if(ds.tab!==undefined){db.tab=ds.tab;study=quiz=null;speechStop();{const tp={overview:'ov',study:'cards',quiz:'quiz'}[ds.tab];if(tp)untry(db.active,tp)}if(ds.tab==='overview')ovSpeakPending=true;render();window.scrollTo(0,0);return}
   if(ds.opt!==undefined){answer(+ds.opt);return}
   if(ds.d!==undefined){const d=D();d.difficulty=ds.d;study=quiz=null;save();renderAll();return}
   if(ds.themePick!==undefined){setTheme(ds.themePick);return}
@@ -953,14 +1294,15 @@ document.addEventListener('click',e=>{
     case 'again':grade(false);break;
     case 'got':grade(true);break;
     case 'restart':study.pos=0;study.flipped=false;study.angle=0;study.marks={};study.speak=true;renderStudy();break;
-    case 'listen':{
-      const d=D(),cards=built(d).cards;if(!study||!cards[study.pos])break;
-      const ft=faceText(d.difficulty,cards[study.pos]);
-      speak(study.flipped?ft.back:ft.front);break;
-    }
     case 'qnext':if(quiz){quiz.i++;quiz.picked=null;quiz.speak=true;renderQuiz()}break;
-    case 'qlisten':{const qs=built(D()).questions;if(quiz&&qs[quiz.order[quiz.i]])speak(fullQuestionText(qs[quiz.order[quiz.i]]));break}
     case 'retake':quiz=null;renderQuiz();break;
+    case 'spkMute':setMute(!spk.muted);break;
+    case 'apiUpdate':apiUI={editing:true,msg:'',pick:''};renderHome();break;
+    case 'apiCancel':apiUI={editing:false,msg:'',pick:''};renderHome();break;
+    case 'apiSave':saveKey();break;
+    case 'shuffle':{const d=D();if(d)reshuffle(d,db.tab==='study'?'cards':'quiz');break}
+    case 'apiPickOpenai':apiUI.pick='openai';apiUI.msg='';updateDetect(typedKey());break;
+    case 'apiPickDeepseek':apiUI.pick='deepseek';apiUI.msg='';updateDetect(typedKey());break;
   }
 });
 ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{
@@ -975,14 +1317,22 @@ document.addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='file'){addFiles([...t.files]);t.value='';return}
   if(t.id==='count'){const d=D();d.countIdx=+t.value;study=quiz=null;save();renderAll();return}
+  if(t.id==='owords'){const d=D();d.wordIdx=+t.value;save();renderAll();return}
 });
 document.addEventListener('input',e=>{
+  if(e.target.id==='apiIn'){apiUI.pick='';updateDetect(e.target.value.trim());return}
   if(e.target.dataset&&e.target.dataset.c!==undefined){saveCustom();return}
+  if(e.target.id==='owords'){
+    const d=D(),idx=+e.target.value;
+    setRangeFill(e.target);d.wordIdx=idx;
+    $('#wordOut').textContent=wordText(idx,d);
+    return;
+  }
   if(e.target.id==='count'){
     setRangeFill(e.target);
     const d=D();
     const idx=+e.target.value;
-    $('#countOut').textContent=idx>=MAX_IDX?`Max (${factsOf(d).facts.length})`:STOPS[idx];
+    $('#countOut').textContent=countText(idx,d);
     d.countIdx=idx;
   }
 });
@@ -992,7 +1342,7 @@ document.addEventListener('submit',e=>{e.preventDefault()});
 const THEMES=['night','forest','plum','custom'];
 const THEME_KEY='cramdeck.theme', CUSTOM_KEY='cramdeck.custom';
 const THEME_VARS=['--navy','--navy2','--yellow','--orange','--black','--white','--ph'];
-const DEFAULT_CUSTOM={bg:'#1B1B1B',panel:'#2E2E2E',text:'#FFFFFF',accent:'#FFB000'};
+const DEFAULT_CUSTOM={bg:'#1B1B1B',panel:'#2E2E2E',text:'#DCE1EE',accent:'#E0A463'};
 function getCustom(){
   try{return {...DEFAULT_CUSTOM,...JSON.parse(localStorage.getItem(CUSTOM_KEY)||'{}')}}catch(e){return {...DEFAULT_CUSTOM}}
 }
@@ -1008,7 +1358,7 @@ function setTheme(name){
     root.style.setProperty('--yellow',c.text);
     root.style.setProperty('--orange',c.accent);
     root.style.setProperty('--black','#000000');
-    root.style.setProperty('--white','#FFFFFF');
+    root.style.setProperty('--white','#DCE1EE');
     root.style.setProperty('--ph',c.text);
   }
   try{localStorage.setItem(THEME_KEY,name)}catch(e){}
