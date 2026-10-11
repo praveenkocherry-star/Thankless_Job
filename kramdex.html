@@ -1124,11 +1124,49 @@ function keyPanel(){
     <div class="apirow"><span class="apititle">${summary}</span>${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div>
     ${body}${msg}</div>`;
 }
+const MATERIAL_CHARS=120000;
+/* Every file is included. A long file is sampled at evenly spaced places, so the whole file is covered. */
+function sampleText(t,budget){
+  if(t.length<=budget)return t;
+  const W=1500,n=Math.max(1,Math.floor(budget/W)),parts=[];
+  for(let k=0;k<n;k++){
+    const start=n===1?0:Math.floor(k*(t.length-W)/(n-1));
+    let piece=t.slice(start,start+W);
+    if(start>0){const sp=piece.indexOf(' ');if(sp>0)piece=piece.slice(sp+1)}
+    parts.push(piece.trim());
+  }
+  return parts.join('\n[...]\n');
+}
 function materialText(d){
-  return d.sources.filter(s=>s.kind!=='media').map(s=>{
-    const body=s.kind==='link'?('Link to read ('+s.linkType+'): '+s.url):s.text?cleanSource(s.text):(s.rows||[]).map(r=>(r||[]).map(c=>c==null?'':String(c)).join(' | ')).join('\n');
-    return `--- ${s.name} ---\n${body}`;
-  }).join('\n\n').slice(0,150000);
+  const src=d.sources.filter(s=>s.kind!=='media').map(s=>({name:s.name,body:s.kind==='link'?('Link to read ('+s.linkType+'): '+s.url):s.text?cleanSource(s.text):(s.rows||[]).map(r=>(r||[]).map(c=>c==null?'':String(c)).join(' | ')).join('\n')}));
+  if(!src.length)return '';
+  const budget=Math.floor(MATERIAL_CHARS/src.length);
+  return src.map(x=>`--- ${x.name} ---\n${sampleText(x.body,budget)}`).join('\n\n');
+}
+/* The facts used for the sets: taken in turn from every file (so each file counts), no fact twice,
+   at most 498 (166 per level). Fact i belongs to one level only: Easy when i%3=0, Medium 1, Hard 2. */
+const balCache=new Map();
+function balancedFacts(d){
+  const sig=factsOf(d).sig,hit=balCache.get(d.id);
+  if(hit&&hit.sig===sig)return hit.list;
+  const lists=d.sources.map((src,i)=>{
+    const tmp={id:'#bal'+d.id+'#'+i,sources:[src]};
+    const f=factsOf(tmp).facts.slice();factCache.delete(tmp.id);return f;
+  });
+  const LIMIT=FACT_CAP*3,ptr=lists.map(()=>0),seen=new Set(),out=[];
+  let progressed=true;
+  while(out.length<LIMIT&&progressed){
+    progressed=false;
+    lists.forEach((l,li)=>{
+      while(ptr[li]<l.length&&out.length<LIMIT){
+        const f=l[ptr[li]++],k=(f.term+'|'+f.def).toLowerCase();
+        if(seen.has(k))continue;
+        seen.add(k);out.push(f);progressed=true;break;
+      }
+    });
+  }
+  balCache.set(d.id,{sig,list:out});
+  return out;
 }
 function cleanCards(a){
   return (Array.isArray(a)?a:[]).filter(c=>c&&typeof c.question==='string'&&typeof c.answer==='string'&&c.question.trim()&&c.answer.trim())
@@ -1221,10 +1259,10 @@ function appOv(d){
   text=cutChars(text,OV_CHARS);
   return {text,paras:[text],words:wordsIn(text)};
 }
-function appLevel(d,diff,idxs){
+function appLevel(d,diff,facts){
   const ctx=factsOf(d);
-  const pick=idxs||ctx.facts.slice(0,FACT_CAP).map((_,i)=>i);
-  return {cards:pick.map(i=>({term:ctx.facts[i].term,def:ctx.facts[i].def,kind:ctx.facts[i].kind})),quiz:pick.map(i=>makeQuestion(ctx.facts[i],i,ctx,diff))};
+  const list=facts||balancedFacts(d).filter((_,i)=>i%3===LEVELS.indexOf(diff));
+  return {cards:list.map(f=>({term:f.term,def:f.def,kind:f.kind})),quiz:list.map((f,i)=>makeQuestion(f,i,ctx,diff))};
 }
 /* Sends the request to the saved keys in fallback order, skipping keys that cannot read the media. */
 async function callChain(prompt,json,media){
@@ -1246,11 +1284,12 @@ const LEVELS=['easy','medium','hard'];
 const LEVEL_TEXT={easy:'Easy: plain words, one fact each.',medium:'Medium: apply or compare the facts.',hard:'Hard: precise terms, short scenarios and exact answers.'};
 const ITEM_SHAPE='{"easy":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"medium":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"hard":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]}}';
 const factLine=f=>f.kind==='def'?`${f.term}: ${f.def}`:`${f.term} -> ${f.def}`;
-function factsPrompt(facts,idxs){
-  return `Use ONLY the numbered facts below. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write exactly 1 flashcard and 1 quiz question at every level. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nFACTS:\n${idxs.map((i,n)=>`${n+1}. ${factLine(facts[i])}`).join('\n')}`;
+function factsPrompt(sel,idxs){
+  const groups=LEVELS.map((l,li)=>({l,fs:idxs.filter(i=>i%3===li)})).filter(g=>g.fs.length);
+  return `Use ONLY the facts below. Each level has its own facts; use a fact only under its own level, never at two levels. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write exactly 1 flashcard and 1 quiz question, in the style of its level. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Leave a level as {"cards":[],"quiz":[]} when it has no facts. Do not ask about the document itself.\n\n`+groups.map(g=>`${g.l.toUpperCase()} facts:\n`+g.fs.map((i,n)=>`${n+1}. ${factLine(sel[i])}`).join('\n')).join('\n\n');
 }
 function materialPrompt(d){
-  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 166 flashcards and up to 166 quiz questions at each level, fewer if the material is short. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 166 flashcards and up to 166 quiz questions at each level. Each level must use different parts of the material, so no item repeats across levels. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 }
 const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 2000 characters (about 300 words). Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 const levelUsable=(j,l)=>{const x=(j&&j[l])||{};return cleanCards(x.cards).length>0||cleanQuiz(x.quiz,4).length>0};
@@ -1270,26 +1309,29 @@ async function runAll(d,media){
   const allKeys=loadKeys();
   const mediaOK=!(media&&media.length)?allKeys:allKeys.filter(k=>(MEDIA_OK[k.provider]||[]).length>0);
   const stText={keys:allKeys,ki:0,lastErr:''},stMedia={keys:mediaOK,ki:0,lastErr:''};
-  const facts=factsOf(d).facts.slice(0,FACT_CAP),res={};
+  const sel=balancedFacts(d),res={};
   const o=await aiFrom(stMedia,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
   if(o){const t=cutChars(o.out,OV_CHARS);res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
   else res.ov={by:'failed',err:stMedia.lastErr||'no usable key',...appOv(d)};
-  const idxAll=facts.map((_,i)=>i),batches=[];
+  const idxAll=sel.map((_,i)=>i),batches=[];
   if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
+  const check=j=>LEVELS.some(l=>levelUsable(j,l));
   const lv={easy:{cards:[],quiz:[]},medium:{cards:[],quiz:[]},hard:{cards:[],quiz:[]}};
   const lvAI={easy:0,medium:0,hard:0},lvApp={easy:0,medium:0,hard:0};
   let via='';
   for(const idxs of batches){
     const r=idxs
-      ? await aiFrom(stText,factsPrompt(facts,idxs),true,null,j=>LEVELS.some(l=>levelUsable(j,l)))
-      : await aiFrom(stMedia,materialPrompt(d),true,media,j=>LEVELS.some(l=>levelUsable(j,l)));
+      ? await aiFrom(stText,factsPrompt(sel,idxs),true,null,check)
+      : await aiFrom(stMedia,materialPrompt(d),true,media,check);
     if(r)via=r.by;
-    for(const l of LEVELS){
+    LEVELS.forEach((l,li)=>{
+      const lf=idxs?idxs.filter(i=>i%3===li).map(i=>sel[i]):null;
+      if(lf&&!lf.length)return;
       const x=r?((r.out&&r.out[l])||{}):{};
       const cards=r?cleanCards(x.cards):[],quiz=r?cleanQuiz(x.quiz,4):[];
       if(cards.length||quiz.length){lv[l].cards.push(...cards);lv[l].quiz.push(...quiz);lvAI[l]++}
-      else{const f=appLevel(d,l,idxs||undefined);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++}
-    }
+      else{const f=appLevel(d,l,lf||undefined);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++}
+    });
   }
   const err=stText.lastErr||stMedia.lastErr||'no usable key';
   for(const l of LEVELS){
@@ -1389,7 +1431,7 @@ const wIdx=wlvlOf;
 
 /* ---------- overview: built from the facts (the term and its definition), in ranked order ---------- */
 function ovSentences(d){
-  return factsOf(d).facts.map(f=>{
+  return balancedFacts(d).map(f=>{
     const body=f.def.replace(/[\s.;:,]+$/,'');
     return (f.kind==='def'?`${f.term}: ${body}.`:`${body}.`).replace(/\s+/g,' ');
   });
