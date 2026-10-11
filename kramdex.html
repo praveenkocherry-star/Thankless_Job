@@ -1199,18 +1199,31 @@ async function callAI(ai,prompt,json,media){
 const genBusy=new Map(),tried=new Set();
 const EMPTY={ov:{text:'',paras:[],words:0},cards:[],quiz:[]};
 /* Minimum, Standard and Maximum: share of the created content that is shown. Default Standard. */
-const LVL_PCT=[0.27,0.6,1], LVL_NAME=['MIN','STD','MAX'];
+const LVL_PCT=[0.3,0.6,1], LVL_NAME=['MIN','STD','MAX'];
+/* Caps: overview at most 2000 characters; at most 500 flashcards and 500 quiz questions in total (166 per level). */
+const OV_CHARS=2000, FACT_CAP=166;
 const lvlOf=d=>(typeof d.lvl==='number')?d.lvl:1;
 const wlvlOf=d=>(typeof d.wlvl==='number')?d.wlvl:1;
 function storeRec(d,key,rec){d.gen=d.gen||{};d.gen[key]=rec;save()}
+/* Cut text to at most n characters, at a sentence end if one is near the limit, otherwise at a word. */
+function cutChars(t,n){
+  t=String(t||'').trim();
+  if(t.length<=n)return t;
+  const c=t.slice(0,n);
+  const m=c.match(/^[\s\S]*[.!?](?=\s|$)/);
+  if(m&&m[0].length>n*0.6)return m[0].trim();
+  const sp=c.lastIndexOf(' ');
+  return (sp>n*0.6?c.slice(0,sp):c).trim();
+}
 function appOv(d){
-  const s=ovSentences(d),paras=[];
-  for(let i=0;i<s.length;i+=5)paras.push(s.slice(i,i+5).join(' '));
-  return {text:s.join(' '),paras,words:ovMax(d)};
+  const all=ovSentences(d);let text='';
+  for(const x of all){const next=text?text+' '+x:x;if(next.length>OV_CHARS)break;text=next}
+  text=cutChars(text,OV_CHARS);
+  return {text,paras:[text],words:wordsIn(text)};
 }
 function appLevel(d,diff,idxs){
   const ctx=factsOf(d);
-  const pick=idxs||ctx.facts.map((_,i)=>i);
+  const pick=idxs||ctx.facts.slice(0,FACT_CAP).map((_,i)=>i);
   return {cards:pick.map(i=>({term:ctx.facts[i].term,def:ctx.facts[i].def,kind:ctx.facts[i].kind})),quiz:pick.map(i=>makeQuestion(ctx.facts[i],i,ctx,diff))};
 }
 /* Sends the request to the saved keys in fallback order, skipping keys that cannot read the media. */
@@ -1228,18 +1241,18 @@ async function callChain(prompt,json,media){
    Started by the first tap on Overview, Flashcards or Quiz (openDeckTab). Saved sets are reused until the files change. */
 const KEYS4=['ov','easy','medium','hard'];
 function fallbackFor(d,key,sig,by,err){return {sig,by,err,...(key==='ov'?appOv(d):appLevel(d,key))}}
-const FACT_BATCH=25;
+const FACT_BATCH=30;
 const LEVELS=['easy','medium','hard'];
 const LEVEL_TEXT={easy:'Easy: plain words, one fact each.',medium:'Medium: apply or compare the facts.',hard:'Hard: precise terms, short scenarios and exact answers.'};
 const ITEM_SHAPE='{"easy":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"medium":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"hard":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]}}';
 const factLine=f=>f.kind==='def'?`${f.term}: ${f.def}`:`${f.term} -> ${f.def}`;
 function factsPrompt(facts,idxs){
-  return `Use ONLY the numbered facts below. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write 2 flashcards and 2 quiz questions at every level, each from a different angle. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nFACTS:\n${idxs.map((i,n)=>`${n+1}. ${factLine(facts[i])}`).join('\n')}`;
+  return `Use ONLY the numbered facts below. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write exactly 1 flashcard and 1 quiz question at every level. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nFACTS:\n${idxs.map((i,n)=>`${n+1}. ${factLine(facts[i])}`).join('\n')}`;
 }
 function materialPrompt(d){
-  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate as many items as the material supports at every level: hundreds when the material is large. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 166 flashcards and up to 166 quiz questions at each level, fewer if the material is short. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 }
-const OV_PROMPT=(d)=>`Write a complete overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Write as much as the material needs: at least 1000 words when the material is that large, and more for bigger material. There is no upper limit. Cover every document and do not stop early.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 2000 characters (about 300 words). Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 const levelUsable=(j,l)=>{const x=(j&&j[l])||{};return cleanCards(x.cards).length>0||cleanQuiz(x.quiz,4).length>0};
 /* One request, sent to the keys in order. A key that fails hands the work to the next key, and stays handed over for the rest of the run. */
 async function aiFrom(st,prompt,json,media,check){
@@ -1257,9 +1270,9 @@ async function runAll(d,media){
   const allKeys=loadKeys();
   const mediaOK=!(media&&media.length)?allKeys:allKeys.filter(k=>(MEDIA_OK[k.provider]||[]).length>0);
   const stText={keys:allKeys,ki:0,lastErr:''},stMedia={keys:mediaOK,ki:0,lastErr:''};
-  const facts=factsOf(d).facts,res={};
+  const facts=factsOf(d).facts.slice(0,FACT_CAP),res={};
   const o=await aiFrom(stMedia,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
-  if(o){const t=String(o.out).trim();res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
+  if(o){const t=cutChars(o.out,OV_CHARS);res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
   else res.ov={by:'failed',err:stMedia.lastErr||'no usable key',...appOv(d)};
   const idxAll=facts.map((_,i)=>i),batches=[];
   if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
@@ -1281,7 +1294,7 @@ async function runAll(d,media){
   const err=stText.lastErr||stMedia.lastErr||'no usable key';
   for(const l of LEVELS){
     const by=lvApp[l]===0?'ai':(lvAI[l]>0?'mixed':'failed');
-    res[l]={by,via,err:by==='ai'?'':err,cards:lv[l].cards,quiz:lv[l].quiz};
+    res[l]={by,via,err:by==='ai'?'':err,cards:lv[l].cards.slice(0,FACT_CAP),quiz:lv[l].quiz.slice(0,FACT_CAP)};
   }
   return res;
 }
@@ -1326,16 +1339,11 @@ function getPart(d,part){
   if(!rec)return {state:'ready',by:'app',err:'',via:'',data:EMPTY[part]};
   const meta={state:'ready',by:rec.by,err:rec.err||'',via:rec.via||''};
   if(part==='ov'){
-    const limit=Math.min([300,600,Infinity][wlvlOf(d)],rec.words);
-    const paras=[];let w=0;
-    for(const p of rec.paras){
-      const pw=wordsIn(p);
-      if(w+pw<=limit){paras.push(p);w+=pw;continue}
-      const cut=p.split(' ').slice(0,Math.max(0,limit-w)).join(' ');
-      if(cut)paras.push(cut);
-      w=limit;break;
-    }
-    return {...meta,data:{text:paras.join(' '),paras,words:w}};
+    const full=String(rec.text||'');
+    const limit=Math.round(Math.min(OV_CHARS,full.length)*LVL_PCT[wlvlOf(d)]);
+    const shown=cutChars(full,limit);
+    const paras=shown.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+    return {...meta,data:{text:shown,paras,words:wordsIn(shown)}};
   }
   const arr=rec[part]||[];
   let n=Math.max(1,Math.round(arr.length*LVL_PCT[lvlOf(d)]));
