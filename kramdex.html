@@ -27,7 +27,7 @@
 /* Scale the whole app to the device: root size follows the screen width */
 html{font-size:clamp(16px,4vw,26px);-webkit-text-size-adjust:100%;overflow-x:hidden;background:var(--navy)}
 html,body{margin:0;max-width:100%}
-body{overflow-x:hidden;background:var(--navy);color:var(--yellow);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:1rem;line-height:1.5;padding:0 1rem 6.5rem;-webkit-font-smoothing:antialiased}
+body{overflow:hidden;height:100vh;height:100svh;background:var(--navy);color:var(--yellow);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:1rem;line-height:1.5;padding:0 1rem;-webkit-font-smoothing:antialiased}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:4px solid var(--white);outline-offset:3px}
@@ -48,12 +48,11 @@ button{cursor:pointer}
 .deckbar .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* deck name inside a deck: display only, very small, no border */
 .deckname{flex:1;min-width:0;font-size:1.1rem;font-weight:900;text-align:center;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em;color:var(--yellow);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:1px solid var(--white)}
+.tabs{position:relative;flex:none;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:1px solid var(--white)}
 .tab{min-height:2.125rem;border:1px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.62rem;overflow-wrap:normal;padding:.2rem .1rem}
 .tab[aria-selected="true"]{background:var(--orange);color:var(--black)}
 @media (min-width:760px){
-  body{padding-bottom:2.5rem}
-  .tabs{position:static;max-width:46rem;width:100%;margin:.4rem auto 0;border:1px solid var(--white);border-radius:16px;padding:.4rem}
+  .tabs{border-radius:16px;margin-bottom:.4rem}
 }
 
 /* buttons */
@@ -310,10 +309,23 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .twin{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
 .slc{gap:.2rem}
 .slc .label{font-size:.7rem}
+
+/* ---- build 3: fixed-height shell, key panel, file rows ---- */
+.app{display:flex;flex-direction:column;height:100vh;height:100svh;max-width:46rem;width:100%;margin:0 auto;overflow:hidden}
+.scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:0 0 .6rem}
+.apipanel .apirow{border-top:1px solid var(--white);padding-top:.4rem}
+.apipanel .apirow .btn.sm,.apipanel .krow .btn.sm{min-height:.95rem;height:.95rem;padding:0 .4rem;font-size:.66rem;line-height:1;border-radius:8px}
+.delkey{background:#b00020 !important;color:#fff !important;border-color:#fff !important}
+.kcount{display:block;font-size:.7rem;font-weight:700;color:var(--white)}
+.files .file{display:flex;flex-direction:column;align-items:stretch;gap:.2rem}
+.files .frow{display:flex;align-items:center;min-width:0}
+.files .fname{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:clip}
+.files .xbtn{flex:none;width:.8rem;height:.8rem;min-width:.8rem;margin-left:3ch;padding:0;font-size:.4rem;line-height:1;box-shadow:none;border-width:1px}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+<div class="scroll" id="scroll">
   <header class="top">
     <span class="brand" aria-label="Kramdex"><span aria-hidden="true">K</span><span aria-hidden="true">R</span><span aria-hidden="true">A</span><span aria-hidden="true">M</span><span aria-hidden="true">D</span><span aria-hidden="true">E</span><span aria-hidden="true">X</span></span>
     <div class="credit-row">
@@ -323,18 +335,19 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     <div class="deckbar" id="deckbar" hidden><div class="deckcol"><span id="dname" class="deckname"></span><span id="bylabel" class="bylabel"></span></div></div>
   </header>
 
-  <nav class="tabs" id="tabs" role="tablist" aria-label="Sections" hidden>
-    <button class="tab" role="tab" data-tab="create">Create</button>
-    <button class="tab" role="tab" data-tab="overview">Overview</button>
-    <button class="tab" role="tab" data-tab="study">Flashcards</button>
-    <button class="tab" role="tab" data-tab="quiz">Quiz</button>
-  </nav>
 
   <section id="view-home" class="wrap"></section>
   <section id="view-create" class="wrap" hidden></section>
   <section id="view-study" class="wrap" hidden></section>
   <section id="view-overview" class="wrap" hidden></section>
   <section id="view-quiz" class="wrap" hidden></section>
+</div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Sections" hidden>
+    <button class="tab" role="tab" data-tab="create">Create</button>
+    <button class="tab" role="tab" data-tab="overview">Overview</button>
+    <button class="tab" role="tab" data-tab="study">Flashcards</button>
+    <button class="tab" role="tab" data-tab="quiz">Quiz</button>
+  </nav>
 </div>
 
 <div id="sheet" class="sheet" hidden></div>
@@ -390,11 +403,12 @@ function nextDeckName(){
 function openDeck(id){
   db.active=id;db.tab='create';study=quiz=null;lastMsg='';
   try{history.pushState({deck:id},'')}catch(e){}
-  render();window.scrollTo(0,0);
+  render();resetScroll();
 }
+function resetScroll(){const sc=$('#scroll');if(sc)sc.scrollTop=0}
 function showHome(){
   db.active=null;study=quiz=null;lastMsg='';speechStop();
-  render();window.scrollTo(0,0);
+  render();resetScroll();
 }
 function goHome(){
   const inDeck=history.state&&history.state.deck!==undefined;
@@ -1023,7 +1037,7 @@ function getAI(){return loadKeys()[0]||null}
 const aiUsable=ai=>!!ai&&!!PROV_NAME[ai.provider];
 function removeKey(idx){
   const list=loadKeys();const k=list[idx];if(!k)return;
-  if(!confirm(`Remove this ${PROV_NAME[k.provider]} key? This cannot be undone.`))return;
+  if(!confirm(`Delete this ${PROV_NAME[k.provider]} key? This cannot be undone.`))return;
   writeKeys(list.filter((_,j)=>j!==idx));
   tried.clear();keyUI.msg='';renderHome();
 }
@@ -1043,8 +1057,9 @@ function keyPanel(){
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=PROV_ORDER.map(p=>`<a class="kbtn" href="${PROV_KEYPAGE[p]}" target="_blank" rel="noopener">${PROV_NAME[p]}</a>`).join('');
   const steps=`<ol class="ksteps"><li>Tap Google or OpenAI and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
-  const summary=keys.length?keys.map(k=>PROV_NAME[k.provider]).join(', ')+' saved':'No keys saved yet';
-  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><button class="btn sm" data-kremove="${i}">Remove</button></li>`).join('');
+  const counts=PROV_ORDER.map(p=>[p,keys.filter(k=>k.provider===p).length]).filter(x=>x[1]).map(x=>`${PROV_NAME[x[0]]} ${x[1]}`).join(', ');
+  const summary=keys.length?`API keys saved<span class="kcount">${esc(counts)}</span>`:'No API keys saved yet';
+  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><button class="btn sm delkey" data-kremove="${i}">Delete key <span aria-hidden="true">✕</span></button></li>`).join('');
   let addArea='';
   if(keyUI.adding){
     addArea=`<div class="panel kadd"><span class="label">Paste your ${PROV_NAME[keyUI.adding]} key</span>
@@ -1065,7 +1080,7 @@ function keyPanel(){
     <span class="label">Create your free API key</span>
     <div class="kbtns">${provBtns}</div>
     ${steps}
-    <div class="apirow"><span class="apititle">${esc(summary)}</span>${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div>
+    <div class="apirow"><span class="apititle">${summary}</span>${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div>
     ${body}${msg}</div>`;
 }
 function materialText(d){
@@ -1167,49 +1182,61 @@ async function callChain(prompt,json,media){
   }
   throw last||mkErr('error');
 }
-function startPart(d,key,sig){
-  const bk=d.id+'|'+key;
+/* One AI request for the whole deck: the overview, and cards and quiz for Easy, Medium and Hard.
+   Started by the first tap on Overview, Flashcards or Quiz (openDeckTab). Saved sets are reused until the files change. */
+const KEYS4=['ov','easy','medium','hard'],LEVELS=['easy','medium','hard'];
+function fallbackFor(d,key,sig,by,err){return {sig,by,err,...(key==='ov'?appOv(d):appLevel(d,key))}}
+function startAll(d,sig){
+  const bk=d.id;
   genBusy.set(bk,sig);tried.add(bk+'|'+sig);
-  const text=materialText(d);
-  const M=`\n\nSTUDY MATERIAL (use only this, including any attached photos, audio or video):\n${text}`;
-  let job;
-  if(key==='ov'){
-    const P=`Write a complete overview of ALL the study material below. Cover every document and its main points in plain paragraphs. Be thorough: use as many words as the material needs, up to 2500. No headings, bullet points or questions.${M}`;
-    job=loadMedia(d).then(media=>callChain(P,false,media)).then(r=>{
-      const t=String(r.out||'').trim();if(!t)throw mkErr('empty reply');
-      return {via:r.by,text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)};
-    });
-  }else{
-    const lvl={easy:'Questions are simple: one fact each, in plain words.',medium:'Questions need some thought: apply or compare the facts.',hard:'Questions need careful reading: precise terms, short scenarios and exact answers.'}[key];
-    const P=`Use only the study material below. Create as many items as the material supports. For a large document give at least 40 flashcards and at least 40 quiz questions; for a short one, one per 60 words of material. ${lvl} Do not ask about the document itself. Reply with one JSON object only: {"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"...","explain":"..."}]}. Card answers come from the material. Each quiz question has exactly 4 short options, one correct, the answer copied exactly from the options, and plausible wrong options.${M}`;
-    job=loadMedia(d).then(media=>callChain(P,true,media)).then(r=>{
-      const j=r.out;
-      const cards=cleanCards(j&&j.cards),quiz=cleanQuiz(j&&j.quiz,4);
-      if(!cards.length&&!quiz.length)throw mkErr('no usable items');
-      const f=appLevel(d,key);
-      return {via:r.by,cards:cards.length?cards:f.cards,quiz:quiz.length?quiz:f.quiz};
-    });
-  }
-  job.then(res=>{if(genBusy.get(bk)===sig)storeRec(d,key,{sig,by:'ai',err:'',...res})})
-  .catch(e=>{
+  const M=`\n\nSTUDY MATERIAL (use only this, including any attached photos, audio or video):\n${materialText(d)}`;
+  const P=`Use only the study material below. Reply with ONE JSON object only, in this shape:
+{"overview":"plain paragraphs covering ALL the material, as many words as the material needs, up to 2500; no headings or bullet points",
+ "easy":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","..."],"answer":"one of the options exactly","explain":"..."}]},
+ "medium":{"cards":[...],"quiz":[... 4 options each ...]},
+ "hard":{"cards":[...],"quiz":[... 4 options each ...]}}
+Easy questions are simple, one fact each, in plain words. Medium questions need some thought: apply or compare the facts. Hard questions need careful reading: precise terms, short scenarios and exact answers. Create as many items as the material supports at every level. For a large document give at least 40 cards and at least 40 quiz questions per level; for a short one, one item per 60 words of material. Do not ask about the document itself.${M}`;
+  loadMedia(d).then(media=>callChain(P,true,media)).then(r=>{
+    const j=(r.out&&typeof r.out==='object')?r.out:{};
+    const got={};
+    const t=String(j.overview||'').trim();
+    if(t)got.ov={via:r.by,text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)};
+    for(const lv of LEVELS){
+      const x=j[lv]||{};
+      const cards=cleanCards(x.cards),quiz=cleanQuiz(x.quiz,4);
+      if(cards.length||quiz.length)got[lv]={via:r.by,cards,quiz};
+    }
+    if(!Object.keys(got).length)throw mkErr('no usable items');
+    return got;
+  }).then(got=>{
+    if(genBusy.get(bk)!==sig)return;
+    for(const k of KEYS4){
+      if(got[k])storeRec(d,k,{sig,by:'ai',err:'',...got[k]});
+      else storeRec(d,k,fallbackFor(d,k,sig,'failed','no usable items'));
+    }
+  },e=>{
     if(genBusy.get(bk)!==sig)return;
     const err=(e&&e.err)||'no response';
-    storeRec(d,key,{sig,by:'failed',err,...(key==='ov'?appOv(d):appLevel(d,key))});
-  })
-  .finally(()=>{if(genBusy.get(bk)===sig){genBusy.delete(bk);if(db.active===d.id)renderAll()}});
+    for(const k of KEYS4)storeRec(d,k,fallbackFor(d,k,sig,'failed',err));
+  }).finally(()=>{if(genBusy.get(bk)===sig){genBusy.delete(bk);if(db.active===d.id)renderAll()}});
 }
-/* The saved set for one part. Returns the record, or 'loading' while AI works on it.
-   AI runs when the files change, or when the saved set was not written by AI and a key is saved (tried once per open). */
+/* Called when Overview, Flashcards or Quiz is tapped. Starts the one request unless saved AI content already matches the files. */
+function openDeckTab(d){
+  if(!d.sources.length||!loadKeys().length)return;
+  const sig=factsOf(d).sig;
+  if(genBusy.get(d.id)===sig)return;
+  if(KEYS4.every(k=>{const r=d.gen&&d.gen[k];return !!r&&r.sig===sig&&r.by==='ai'}))return;
+  startAll(d,sig);
+}
+/* The saved set for one part. Returns the record, or 'loading' while the request runs.
+   Never starts a request by itself; openDeckTab does that on a tap. */
 function ensure(d,key){
   if(!d.sources.length)return null;
-  const sig=factsOf(d).sig,bk=d.id+'|'+key,rec=d.gen&&d.gen[key];
-  if(genBusy.get(bk)===sig)return 'loading';
-  const same=!!rec&&rec.sig===sig;
-  if(same&&rec.by==='ai')return rec;
-  const haveKey=loadKeys().length>0;
-  if(haveKey&&!tried.has(bk+'|'+sig)){startPart(d,key,sig);return 'loading'}
-  if(same)return rec;
-  const fresh={sig,by:haveKey?'failed':'app',err:haveKey?'no response':'',...(key==='ov'?appOv(d):appLevel(d,key))};
+  const sig=factsOf(d).sig,rec=d.gen&&d.gen[key];
+  if(genBusy.get(d.id)===sig)return 'loading';
+  if(rec&&rec.sig===sig)return rec;
+  if(loadKeys().length)return 'loading';
+  const fresh=fallbackFor(d,key,sig,'app','');
   storeRec(d,key,fresh);
   return fresh;
 }
@@ -1350,7 +1377,7 @@ function renderFiles(d){
   $('#files').innerHTML=d.sources.map((s,i)=>{
     const isLink=s.kind==='link';
     const note=isLink&&!g?'<small class="lnote">Cannot be read with the saved key. Switch to a Google key to read it.</small>':'';
-    return `<li class="file"><span class="fname">${esc(isLink?s.url:s.name)}</span>${note}<button class="xbtn" data-rm="${i}" aria-label="Remove ${esc(isLink?s.url:s.name)}">✕</button></li>`;
+    return `<li class="file"><div class="frow"><span class="fname">${esc(isLink?s.url:s.name)}</span><button class="xbtn" data-rm="${i}" aria-label="Remove ${esc(isLink?s.url:s.name)}">✕</button></div>${note}</li>`;
   }).join('');
 }
 function renderSettings(d){
@@ -1541,7 +1568,7 @@ document.addEventListener('click',e=>{
     if(nv&&nv.trim()){rd.name=nv.trim().slice(0,60);save()}
     render();return;
   }
-  if(ds.tab!==undefined){db.tab=ds.tab;study=quiz=null;speechStop();{const tp={overview:'ov',study:'cards',quiz:'quiz'}[ds.tab];if(tp){const dd=D();if(dd)getPart(dd,tp)}}if(ds.tab==='overview')ovSpeakPending=true;render();window.scrollTo(0,0);return}
+  if(ds.tab!==undefined){db.tab=ds.tab;study=quiz=null;speechStop();{const tp={overview:'ov',study:'cards',quiz:'quiz'}[ds.tab];if(tp){const dd=D();if(dd)openDeckTab(dd)}}if(ds.tab==='overview')ovSpeakPending=true;render();resetScroll();return}
   if(ds.opt!==undefined){answer(+ds.opt);return}
   if(ds.d!==undefined){const d=D();d.difficulty=ds.d;study=quiz=null;save();renderAll();return}
   if(ds.themePick!==undefined){setTheme(ds.themePick);renderHome();return}
