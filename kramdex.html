@@ -954,17 +954,58 @@ function blobB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.on
 const canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
 const spk={text:'',muted:false,cur:null};
 const SPEAKOFF_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9h4l5-4.5v15L7 15H3z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-/* Reading starts at once unless muted. */
+/* Reading starts at once unless muted. Long text is cut into short pieces and read one after another.
+   A piece that does not start, or stops part way, is restarted, so reading does not stall. */
+let spkRun=0;
+function chunkSpeech(t){
+  const sents=(t.match(/[^.!?;:]+[.!?;:]+["')\]]*|[^.!?;:]+$/g)||[t]).map(x=>x.trim()).filter(Boolean);
+  const pieces=[];
+  for(const s0 of sents){
+    let rest=s0;
+    while(rest.length>200){
+      let cut=rest.lastIndexOf(' ',200);if(cut<60)cut=200;
+      pieces.push(rest.slice(0,cut).trim());rest=rest.slice(cut).trim();
+    }
+    if(rest)pieces.push(rest);
+  }
+  const groups=[];let cur='';
+  for(const p of pieces){
+    if(cur&&(cur+' '+p).length>200){groups.push(cur);cur=p}else cur=cur?cur+' '+p:p;
+  }
+  if(cur)groups.push(cur);
+  return groups;
+}
 function speak(text){
   spk.text=text||'';
   if(!canSpeak||!text||spk.muted)return;
-  try{
-    speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text);u.rate=0.95;
-    spk.cur=u;speechSynthesis.speak(u);
-  }catch(e){}
+  const run=++spkRun;
+  const parts=chunkSpeech(text);
+  const say=(idx,tries)=>{
+    if(run!==spkRun)return;
+    if(idx>=parts.length){spk.cur=null;return}
+    const u=new SpeechSynthesisUtterance(parts[idx]);
+    u.rate=0.95;spk.cur=u;
+    let started=false,done=false,t1=null,t2=null;
+    const finish=()=>{done=true;clearTimeout(t1);clearTimeout(t2)};
+    const next=()=>{if(done)return;finish();say(idx+1,0)};
+    const retry=()=>{
+      if(done||run!==spkRun)return;
+      finish();
+      try{speechSynthesis.cancel();speechSynthesis.resume()}catch(e){}
+      if(tries<2)setTimeout(()=>say(idx,tries+1),200);else say(idx+1,0);
+    };
+    u.onstart=()=>{started=true};
+    u.onend=next;
+    u.onerror=e=>{if(e&&(e.error==='interrupted'||e.error==='canceled'))return;next()};
+    t1=setTimeout(()=>{if(!started)retry()},2500);
+    t2=setTimeout(retry,parts[idx].length*90+8000);
+    try{speechSynthesis.speak(u)}catch(e){retry()}
+  };
+  try{speechSynthesis.cancel();speechSynthesis.resume()}catch(e){}
+  setTimeout(()=>say(0,0),150);
 }
 function speechStop(){
+  spkRun++;
   spk.cur=null;
   if(canSpeak){try{speechSynthesis.cancel()}catch(e){}}
 }
@@ -1108,7 +1149,7 @@ function parseJSON(t){
   const a=t.indexOf('{'),b=t.lastIndexOf('}');
   try{return JSON.parse(a>=0&&b>a?t.slice(a,b+1):t)}catch(e){throw mkErr('unreadable reply')}
 }
-function timeoutSignal(){return (typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(90000):undefined}
+function timeoutSignal(){return (typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(240000):undefined}
 /* If Google says the model name is not found (404), ask Google which Flash models this key can use and take the newest. */
 let googleModel=AI_MODELS.google,googleListed=false;
 async function pickGoogleModel(k){
@@ -1167,9 +1208,10 @@ function appOv(d){
   for(let i=0;i<s.length;i+=5)paras.push(s.slice(i,i+5).join(' '));
   return {text:s.join(' '),paras,words:ovMax(d)};
 }
-function appLevel(d,diff){
+function appLevel(d,diff,idxs){
   const ctx=factsOf(d);
-  return {cards:ctx.facts.map(f=>({term:f.term,def:f.def,kind:f.kind})),quiz:ctx.facts.map((f,i)=>makeQuestion(f,i,ctx,diff))};
+  const pick=idxs||ctx.facts.map((_,i)=>i);
+  return {cards:pick.map(i=>({term:ctx.facts[i].term,def:ctx.facts[i].def,kind:ctx.facts[i].kind})),quiz:pick.map(i=>makeQuestion(ctx.facts[i],i,ctx,diff))};
 }
 /* Sends the request to the saved keys in fallback order, skipping keys that cannot read the media. */
 async function callChain(prompt,json,media){
@@ -1184,41 +1226,77 @@ async function callChain(prompt,json,media){
 }
 /* One AI request for the whole deck: the overview, and cards and quiz for Easy, Medium and Hard.
    Started by the first tap on Overview, Flashcards or Quiz (openDeckTab). Saved sets are reused until the files change. */
-const KEYS4=['ov','easy','medium','hard'],LEVELS=['easy','medium','hard'];
+const KEYS4=['ov','easy','medium','hard'];
 function fallbackFor(d,key,sig,by,err){return {sig,by,err,...(key==='ov'?appOv(d):appLevel(d,key))}}
+const FACT_BATCH=25;
+const LEVELS=['easy','medium','hard'];
+const LEVEL_TEXT={easy:'Easy: plain words, one fact each.',medium:'Medium: apply or compare the facts.',hard:'Hard: precise terms, short scenarios and exact answers.'};
+const ITEM_SHAPE='{"easy":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"medium":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"hard":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]}}';
+const factLine=f=>f.kind==='def'?`${f.term}: ${f.def}`:`${f.term} -> ${f.def}`;
+function factsPrompt(facts,idxs){
+  return `Use ONLY the numbered facts below. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write 2 flashcards and 2 quiz questions at every level, each from a different angle. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nFACTS:\n${idxs.map((i,n)=>`${n+1}. ${factLine(facts[i])}`).join('\n')}`;
+}
+function materialPrompt(d){
+  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate as many items as the material supports at every level: hundreds when the material is large. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+}
+const OV_PROMPT=(d)=>`Write a complete overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Write as much as the material needs: at least 1000 words when the material is that large, and more for bigger material. There is no upper limit. Cover every document and do not stop early.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+const levelUsable=(j,l)=>{const x=(j&&j[l])||{};return cleanCards(x.cards).length>0||cleanQuiz(x.quiz,4).length>0};
+/* One request, sent to the keys in order. A key that fails hands the work to the next key, and stays handed over for the rest of the run. */
+async function aiFrom(st,prompt,json,media,check){
+  while(st.ki<st.keys.length){
+    const k=st.keys[st.ki];
+    try{
+      const out=await callAI(k,prompt,json,media);
+      if(check&&!check(out))throw mkErr('no usable items');
+      return {out,by:k.provider};
+    }catch(e){st.lastErr=(e&&e.err)||'no response';st.ki++}
+  }
+  return null;
+}
+async function runAll(d,media){
+  const allKeys=loadKeys();
+  const mediaOK=!(media&&media.length)?allKeys:allKeys.filter(k=>(MEDIA_OK[k.provider]||[]).length>0);
+  const stText={keys:allKeys,ki:0,lastErr:''},stMedia={keys:mediaOK,ki:0,lastErr:''};
+  const facts=factsOf(d).facts,res={};
+  const o=await aiFrom(stMedia,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
+  if(o){const t=String(o.out).trim();res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
+  else res.ov={by:'failed',err:stMedia.lastErr||'no usable key',...appOv(d)};
+  const idxAll=facts.map((_,i)=>i),batches=[];
+  if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
+  const lv={easy:{cards:[],quiz:[]},medium:{cards:[],quiz:[]},hard:{cards:[],quiz:[]}};
+  const lvAI={easy:0,medium:0,hard:0},lvApp={easy:0,medium:0,hard:0};
+  let via='';
+  for(const idxs of batches){
+    const r=idxs
+      ? await aiFrom(stText,factsPrompt(facts,idxs),true,null,j=>LEVELS.some(l=>levelUsable(j,l)))
+      : await aiFrom(stMedia,materialPrompt(d),true,media,j=>LEVELS.some(l=>levelUsable(j,l)));
+    if(r)via=r.by;
+    for(const l of LEVELS){
+      const x=r?((r.out&&r.out[l])||{}):{};
+      const cards=r?cleanCards(x.cards):[],quiz=r?cleanQuiz(x.quiz,4):[];
+      if(cards.length||quiz.length){lv[l].cards.push(...cards);lv[l].quiz.push(...quiz);lvAI[l]++}
+      else{const f=appLevel(d,l,idxs||undefined);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++}
+    }
+  }
+  const err=stText.lastErr||stMedia.lastErr||'no usable key';
+  for(const l of LEVELS){
+    const by=lvApp[l]===0?'ai':(lvAI[l]>0?'mixed':'failed');
+    res[l]={by,via,err:by==='ai'?'':err,cards:lv[l].cards,quiz:lv[l].quiz};
+  }
+  return res;
+}
 function startAll(d,sig){
   const bk=d.id;
   genBusy.set(bk,sig);tried.add(bk+'|'+sig);
-  const M=`\n\nSTUDY MATERIAL (use only this, including any attached photos, audio or video):\n${materialText(d)}`;
-  const P=`Use only the study material below. Reply with ONE JSON object only, in this shape:
-{"overview":"plain paragraphs covering ALL the material, as many words as the material needs, up to 2500; no headings or bullet points",
- "easy":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","..."],"answer":"one of the options exactly","explain":"..."}]},
- "medium":{"cards":[...],"quiz":[... 4 options each ...]},
- "hard":{"cards":[...],"quiz":[... 4 options each ...]}}
-Easy questions are simple, one fact each, in plain words. Medium questions need some thought: apply or compare the facts. Hard questions need careful reading: precise terms, short scenarios and exact answers. Create as many items as the material supports at every level. For a large document give at least 40 cards and at least 40 quiz questions per level; for a short one, one item per 60 words of material. Do not ask about the document itself.${M}`;
-  loadMedia(d).then(media=>callChain(P,true,media)).then(r=>{
-    const j=(r.out&&typeof r.out==='object')?r.out:{};
-    const got={};
-    const t=String(j.overview||'').trim();
-    if(t)got.ov={via:r.by,text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)};
-    for(const lv of LEVELS){
-      const x=j[lv]||{};
-      const cards=cleanCards(x.cards),quiz=cleanQuiz(x.quiz,4);
-      if(cards.length||quiz.length)got[lv]={via:r.by,cards,quiz};
-    }
-    if(!Object.keys(got).length)throw mkErr('no usable items');
-    return got;
-  }).then(got=>{
-    if(genBusy.get(bk)!==sig)return;
-    for(const k of KEYS4){
-      if(got[k])storeRec(d,k,{sig,by:'ai',err:'',...got[k]});
-      else storeRec(d,k,fallbackFor(d,k,sig,'failed','no usable items'));
-    }
-  },e=>{
-    if(genBusy.get(bk)!==sig)return;
-    const err=(e&&e.err)||'no response';
-    for(const k of KEYS4)storeRec(d,k,fallbackFor(d,k,sig,'failed',err));
-  }).finally(()=>{if(genBusy.get(bk)===sig){genBusy.delete(bk);if(db.active===d.id)renderAll()}});
+  const finish=res=>{if(genBusy.get(bk)!==sig)return;for(const k of KEYS4)storeRec(d,k,{sig,...res[k]})};
+  loadMedia(d)
+    .then(media=>runAll(d,media))
+    .then(finish,e=>{
+      const err=(e&&e.err)||'no response',res={};
+      for(const k of KEYS4)res[k]={by:'failed',err,...(k==='ov'?appOv(d):appLevel(d,k))};
+      finish(res);
+    })
+    .finally(()=>{if(genBusy.get(bk)===sig){genBusy.delete(bk);if(db.active===d.id)renderAll()}});
 }
 /* Called when Overview, Flashcards or Quiz is tapped. Starts the one request unless saved AI content already matches the files. */
 function openDeckTab(d){
@@ -1248,7 +1326,7 @@ function getPart(d,part){
   if(!rec)return {state:'ready',by:'app',err:'',via:'',data:EMPTY[part]};
   const meta={state:'ready',by:rec.by,err:rec.err||'',via:rec.via||''};
   if(part==='ov'){
-    const limit=Math.round(rec.words*LVL_PCT[wlvlOf(d)]);
+    const limit=Math.min([300,600,Infinity][wlvlOf(d)],rec.words);
     const paras=[];let w=0;
     for(const p of rec.paras){
       const pw=wordsIn(p);
@@ -1284,6 +1362,7 @@ const questionsOf=d=>d?getPart(d,'quiz').data:[];
 function loadingView(){return '<div class="busybox" role="status">Creating content with AI</div>'}
 function byText(by,err,via){
   if(by==='ai')return 'Built with AI ('+(PROV_NAME[via]||'AI')+')';
+  if(by==='mixed')return 'Built with AI ('+(PROV_NAME[via]||'AI')+') and app logic';
   if(by==='failed')return 'Built with app logic (AI failed'+(err?(/^\d+$/.test(err)?' '+err:': '+err):'')+')';
   return 'Built with app logic';
 }
