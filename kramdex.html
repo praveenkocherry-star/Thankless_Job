@@ -886,7 +886,7 @@ function renderSheet(){
     el.innerHTML=`<div class="sbody">${head('Image media')}
       <div class="panel"><span class="label">1. From this phone</span>
         <label class="btn lg block upl" for="media"><input type="file" id="media" multiple accept="image/*,audio/*,video/*">Choose photos, audio or video</label>
-        <p class="hint">Choose several at once. Photos, audio and video are read by Google, Claude, Grok or OpenAI as the key allows.</p></div>
+        <p class="hint">Choose several at once. Google reads photos, audio and video. OpenAI reads photos.</p></div>
       <div class="panel"><span class="label">2. Camera</span>${cam}</div>
       ${msg}</div>`;
     const v=$('#camv');if(v&&camStream)v.srcObject=camStream;
@@ -906,7 +906,7 @@ function renderSheet(){
 }
 
 /* ---------- media: photos, audio and video. Only with a saved key that accepts them. Kept in IndexedDB (too large for localStorage). ---------- */
-const MEDIA_OK={google:['image','audio','video'],claude:['image'],openai:['image'],grok:['image'],deepseek:[]};
+const MEDIA_OK={google:['image','audio','video'],openai:['image']};
 const MEDIA_MAX=18*1024*1024;
 const mediaAllowed=()=>{const ai=getAI();return aiUsable(ai)&&(MEDIA_OK[ai.provider]||[]).length>0};
 let idbP=null;
@@ -991,16 +991,15 @@ function syncSpk(){
 }
 
 /* ---------- AI keys. Several keys can be saved (one per provider; Google may have several, each from a different project).
-   Stored only on this phone. Keys are tried in fallback order: Google, Claude, OpenAI, Grok, DeepSeek. ---------- */
+   Stored only on this phone. Keys are tried in fallback order: Google, then OpenAI. ---------- */
 const KEYS_STORE='cramdeck.keys', AI_STORE='cramdeck.ai', OLD_GKEY='cramdeck.gkey';
-const PROV_NAME={google:'Google',claude:'Claude',grok:'Grok',openai:'OpenAI',deepseek:'DeepSeek'};
-const PROV_RANK={google:0,claude:1,openai:2,grok:3,deepseek:4};
-const PROV_PREFIX={google:/^(AIza|AQ\.)/,claude:/^sk-ant-/,grok:/^xai-/,openai:/^sk-/,deepseek:/^sk-/};
-const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',claude:'https://console.anthropic.com/settings/keys',grok:'https://console.x.ai',openai:'https://platform.openai.com/api-keys',deepseek:'https://platform.deepseek.com/api_keys'};
-const PROV_DOES={google:'text, photos, audio, video and YouTube links',claude:'text and photos',grok:'text and photos',openai:'text and photos',deepseek:'text only'};
-const PROV_ORDER=['google','claude','openai','grok','deepseek'];
-const AI_MODELS={google:'gemini-3.1-flash-lite',claude:'claude-haiku-5-5',grok:'grok-4.7',openai:'gpt-4.1-mini',deepseek:'deepseek-flash'};
-const AI_BASE={grok:'https://api.x.ai/v1',openai:'https://api.openai.com/v1',deepseek:'https://api.deepseek.com'};
+const PROV_NAME={google:'Google',openai:'OpenAI'};
+const PROV_RANK={google:0,openai:1};
+const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/};
+const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys'};
+const PROV_ORDER=['google','openai'];
+const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini'};
+const AI_BASE={openai:'https://api.openai.com/v1'};
 let keyUI={open:false,adding:null,msg:''};
 function loadKeys(){
   let list=[];
@@ -1032,7 +1031,7 @@ function saveNewKey(){
   const p=keyUI.adding;if(!p)return;
   const v=(($('#newkey')||{}).value||'').trim();
   if(!v){keyUI.msg='Paste the key first.';renderHome();return}
-  if(!PROV_PREFIX[p].test(v)){keyUI.msg=`This does not look like a ${PROV_NAME[p]} key. Check it and try again.`;renderHome();return}
+  if(!PROV_PREFIX[p].test(v)){keyUI.msg=`This does not look like ${/^[AEIOU]/.test(PROV_NAME[p])?'an':'a'} ${PROV_NAME[p]} key. Check it and try again.`;renderHome();return}
   const list=loadKeys();list.push({provider:p,key:v});
   if(!writeKeys(list)){renderHome();return}
   keyUI={open:true,adding:null,msg:''};tried.clear();study=quiz=null;
@@ -1040,24 +1039,25 @@ function saveNewKey(){
 }
 /* Key panel. Heading and provider buttons, short steps, the saved keys (Remove only), add a key, and why several keys help. */
 function keyPanel(){
-  const keys=loadKeys(),have=new Set(keys.map(k=>k.provider));
+  const keys=loadKeys();
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=PROV_ORDER.map(p=>`<a class="kbtn" href="${PROV_KEYPAGE[p]}" target="_blank" rel="noopener">${PROV_NAME[p]}</a>`).join('');
-  const steps=`<ol class="ksteps"><li>Tap a provider button and create a key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
+  const steps=`<ol class="ksteps"><li>Tap Google or OpenAI and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
   const summary=keys.length?keys.map(k=>PROV_NAME[k.provider]).join(', ')+' saved':'No keys saved yet';
   const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><button class="btn sm" data-kremove="${i}">Remove</button></li>`).join('');
-  const missing=PROV_ORDER.filter(p=>!have.has(p));
-  const addChoices=PROV_ORDER.filter(p=>missing.includes(p)||p==='google');
   let addArea='';
   if(keyUI.adding){
     addArea=`<div class="panel kadd"><span class="label">Paste your ${PROV_NAME[keyUI.adding]} key</span>
       <input class="text" id="newkey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${PROV_NAME[keyUI.adding]} key">
       <div class="apirow"><button class="btn sm" data-ksave="1">Save</button><button class="btn sm" data-kclose="1">Close</button></div></div>`;
   }else{
-    addArea=`<div class="kbtns">${addChoices.map(p=>`<button class="btn sm" data-kadd="${p}">+ ${PROV_NAME[p]}</button>`).join('')}</div>`;
+    addArea=`<div class="kbtns">${PROV_ORDER.map(p=>`<button class="btn sm" data-kadd="${p}">+ ${PROV_NAME[p]}</button>`).join('')}</div>`;
   }
-  const whatDo=missing.length?`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">${missing.map(p=>`<li><b>${PROV_NAME[p]}:</b> ${PROV_DOES[p]}</li>`).join('')}</ul></div>`:'';
-  const multi=`<p class="knote"><b>Why several keys?</b> If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
+  const whatDo=`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">
+    <li><b>Google:</b> reads text, photos, audio and video. Free limit about 15 requests a minute and 1,500 a day for each project.</li>
+    <li><b>OpenAI:</b> reads text and photos. Free use is capped at about $100 a month; paying $5 raises the limits.</li></ul>
+    <p class="hint">Figures are from published summaries and may change. Check each provider's page.</p></div>`;
+  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google and OpenAI keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
   const body=keyUI.open||!keys.length
     ?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`
     :'';
@@ -1105,7 +1105,7 @@ async function pickGoogleModel(k){
   c.sort((a,b)=>b.v-a.v||b.lite-a.lite);
   return c.length?c[0].id:null;
 }
-/* One call to the saved provider. Google, Claude and the OpenAI-style providers (Grok, OpenAI, DeepSeek) each have their own request shape.
+/* One call to the saved provider. Google and OpenAI each have their own request shape.
    A failure carries the HTTP status code (or a short reason) in .err so it can be shown. */
 async function callAI(ai,prompt,json,media){
   const p=ai.provider,k=ai.key;
@@ -1116,9 +1116,6 @@ async function callAI(ai,prompt,json,media){
     if(p==='google')return {url:`https://generativelanguage.googleapis.com/v1beta/models/${googleModel}:generateContent`,
       headers:{'Content-Type':'application/json','x-goog-api-key':k},
       body:{contents:[{parts:[{text:prompt},...mb.map(m=>({inline_data:{mime_type:m.mime||'application/octet-stream',data:m.b64}}))]}],generationConfig:{temperature:0.3,...(json?{responseMimeType:'application/json'}:{})}}};
-    if(p==='claude')return {url:'https://api.anthropic.com/v1/messages',
-      headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:{model:AI_MODELS.claude,max_tokens:8192,messages:[{role:'user',content:imgs.length?[...imgs.map(m=>({type:'image',source:{type:'base64',media_type:m.mime,data:m.b64}})),{type:'text',text:prompt}]:prompt}]}};
     return {url:AI_BASE[p]+'/chat/completions',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
       body:{model:AI_MODELS[p],messages:[{role:'user',content:imgs.length?[{type:'text',text:prompt},...imgs.map(m=>({type:'image_url',image_url:{url:'data:'+m.mime+';base64,'+m.b64}}))]:prompt}],...(json?{response_format:{type:'json_object'}}:{})}};
@@ -1134,7 +1131,6 @@ async function callAI(ai,prompt,json,media){
   let j;try{j=await r.json()}catch(e){throw mkErr('unreadable reply')}
   let text;
   if(p==='google')text=((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(x=>x.text||'').join('');
-  else if(p==='claude')text=(j.content||[]).map(x=>x.text||'').join('');
   else text=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
   text=String(text).trim();
   if(!text)throw mkErr('empty reply');
