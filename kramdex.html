@@ -1209,7 +1209,7 @@ function materialText(d){
   return src.map(x=>`--- ${x.name} ---\n${sampleText(x.body,budget)}`).join('\n\n');
 }
 /* The facts used for the sets: taken in turn from every file (so each file counts), no fact twice,
-   at most 399 (133 per level). Fact i belongs to one level only: Easy when i%3=0, Medium 1, Hard 2. */
+   at most 249 (83 per level). Fact i belongs to one level only: Easy when i%3=0, Medium 1, Hard 2. */
 const balCache=new Map();
 function balancedFacts(d){
   const sig=factsOf(d).sig,hit=balCache.get(d.id);
@@ -1322,8 +1322,8 @@ const genBusy=new Map(),tried=new Set();
 const EMPTY={ov:{text:'',paras:[],words:0},cards:[],quiz:[]};
 /* Minimum, Standard and Maximum: share of the created content that is shown. Default Standard. */
 const LVL_PCT=[0.3,0.6,1], LVL_NAME=['MIN','STD','MAX'];
-/* Caps: overview at most 2500 words; at most 400 flashcards and 400 quiz questions in total (133 per level). */
-const OV_WORDS=2500, FACT_CAP=133;
+/* Caps: overview at most 2000 words; at most 250 flashcards and 250 quiz questions in total (83 per level). */
+const OV_WORDS=2000, FACT_CAP=83;
 const lvlOf=d=>(typeof d.lvl==='number')?d.lvl:1;
 const wlvlOf=d=>(typeof d.wlvl==='number')?d.wlvl:1;
 function storeRec(d,key,rec){d.gen=d.gen||{};d.gen[key]=rec;save()}
@@ -1382,9 +1382,9 @@ function factsPrompt(sel,idxs){
   return `Use ONLY the facts below. Each level has its own facts; use a fact only under its own level, never at two levels. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write exactly 1 flashcard and 1 quiz question, in the style of its level. ${QUIZ_MIX}${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Leave a level as {"cards":[],"quiz":[]} when it has no facts. Do not ask about the document itself.\n\n`+groups.map(g=>`${g.l.toUpperCase()} facts:\n`+g.fs.map((i,n)=>`${n+1}. ${factLine(sel[i])}`).join('\n')).join('\n\n');
 }
 function materialPrompt(d){
-  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 133 flashcards and up to 133 quiz questions at each level. Each level must use different parts of the material, so no item repeats across levels. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 83 flashcards and up to 83 quiz questions at each level. Each level must use different parts of the material, so no item repeats across levels. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 }
-const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 2500 words. Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 2000 words. Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 const levelUsable=(j,l)=>{const x=(j&&j[l])||{};return cleanCards(x.cards).length>0||cleanQuiz(x.quiz,4).length>0};
 /* One request, sent to the keys in order. A key that fails hands the work to the next key, and stays handed over for the rest of the run. */
 async function aiFrom(st,prompt,json,media,check){
@@ -1398,14 +1398,22 @@ async function aiFrom(st,prompt,json,media,check){
   }
   return null;
 }
+/* Key order. With photos, audio or video: Google keys first (OpenAI reads photos only).
+   With text or documents only: OpenAI keys first, then Google. Saved order is kept within each provider. */
+const keyOrder=(ks,withMedia)=>ks.slice().sort((a,b)=>{
+  const rank=k=>withMedia?(k.provider==='google'?0:1):(k.provider==='openai'?0:1);
+  return rank(a)-rank(b);
+});
 async function runAll(d,media){
   const allKeys=loadKeys();
-  const mediaOK=!(media&&media.length)?allKeys:allKeys.filter(k=>(MEDIA_OK[k.provider]||[]).length>0);
-  const stText={keys:allKeys,ki:0,lastErr:''},stMedia={keys:mediaOK,ki:0,lastErr:''};
+  const hasMedia=!!(media&&media.length);
+  const mediaOK=!hasMedia?allKeys:allKeys.filter(k=>(MEDIA_OK[k.provider]||[]).length>0);
+  const stText={keys:keyOrder(allKeys,false),ki:0,lastErr:''},stMedia={keys:keyOrder(mediaOK,true),ki:0,lastErr:''};
+  const stOv=hasMedia?stMedia:stText;
   const sel=balancedFacts(d),res={};
-  const o=await aiFrom(stMedia,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
+  const o=await aiFrom(stOv,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
   if(o){const t=capWords(o.out,OV_WORDS);res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
-  else res.ov={by:'failed',err:stMedia.lastErr||'no usable key',...appOv(d)};
+  else res.ov={by:'failed',err:stOv.lastErr||'no usable key',...appOv(d)};
   const idxAll=sel.map((_,i)=>i),batches=[];
   if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
   const check=j=>LEVELS.some(l=>levelUsable(j,l));
