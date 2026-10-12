@@ -447,7 +447,7 @@ function openDeck(id){
 }
 function resetScroll(){const sc=$('#scroll');if(sc)sc.scrollTop=0}
 function showHome(){
-  if(aRec)recStop();
+  recFlush();
   db.active=null;study=quiz=null;lastMsg='';speechStop();
   render();resetScroll();
 }
@@ -885,7 +885,7 @@ function stopCam(){
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}
 }
 function closeSheet(){
-  if(aRec)recStop();
+  recFlush();
   stopCam();
   camShots.forEach(s=>{if(s.url)URL.revokeObjectURL(s.url)});
   camShots=[];sheetKind=null;lastMsg='';
@@ -986,29 +986,85 @@ function renderSheet(){
 }
 
 /* ---------- live audio recording (media panel, section 3). Needs a saved Google key.
-   Long sessions (hours) are kept in memory in 10-second pieces and saved as one recording when stopped. ---------- */
-let aRec=null,recBusy=false,recMsg='';
+   Silence is trimmed while recording: after 2 seconds of quiet the recorder pauses by itself and resumes
+   when speech returns. What counts as quiet is learned from the room in the first seconds and then follows
+   the background sound slowly. The timer shows real time; the file keeps only the net sound. ---------- */
+let aRec=null,aReview=null,recBusy=false,recMsg='';
+const REC_SILENCE_MS=2000, REC_TICK=50, REC_LEARN_MS=2500;
 const fmtHMS=s=>[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(x=>String(x).padStart(2,'0')).join(':');
-function recElapsed(){if(!aRec)return 0;return aRec.acc+(aRec.paused?0:Date.now()-aRec.t0)}
-function tickRec(){const t=$('#recTimer');if(t&&aRec)t.textContent=fmtHMS(Math.floor(recElapsed()/1000))}
+const recSize=b=>b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
 function audioSec(){
   const aOK=loadKeys().some(k=>k.provider==='google');
-  const on=!!aRec,paused=on&&aRec.paused;
   let body;
-  if(!aOK)body='<p class="hint">Audio recording needs a saved Google key. Add one in Settings.</p>';
-  else body=`<p class="rec-timer" id="recTimer" role="timer" aria-label="Recording time">${on?fmtHMS(Math.floor(recElapsed()/1000)):'00:00:00'}</p>
-    <div class="apirow">${on
-      ?`<button class="btn" id="recPause">${paused?'Resume':'Pause'}</button><button class="btn got" id="recStop">Stop and save</button>`
-      :'<button class="btn lg block" id="recStart">Start audio recording</button>'}</div>
-    <p class="hint">${on?(paused?'Paused. Nothing is recorded while paused.':'Recording. For long sessions keep the screen on and the phone charged.'):'Records a session of any length as one recording, added to this deck\'s files.'}</p>`;
+  if(!aOK){
+    body='<p class="hint">Audio recording needs a saved Google key. Add one in Settings.</p>';
+  }else if(aReview){
+    const r=aReview;
+    body=`<p class="hint">Recording finished.</p>
+      <p class="hint">Recorded time ${fmtHMS(r.realSec)}. Silence removed ${fmtHMS(r.silenceSec)}. Net length ${fmtHMS(r.netSec)}. File size ${recSize(r.size)}.</p>
+      <label class="label" for="recName">File name</label>
+      <input class="text" id="recName" type="text" value="${esc(r.base)}" maxlength="80" autocomplete="off">
+      <p class="hint">The net length is added to the end of the name when you save.</p>
+      <div class="apirow"><button class="btn got" id="recSave">Save recording</button><button class="btn" id="recDelete">Delete recording</button></div>`;
+  }else{
+    const on=!!aRec,paused=on&&aRec.rec.state==='paused';
+    body=`<p class="rec-timer" id="recTimer" role="timer" aria-label="Recording time">${on?fmtHMS(Math.floor(aRec.realMs/1000)):'00:00:00'}</p>
+      <div class="apirow">${on
+        ?`<button class="btn" id="recPause">${paused?'Resume':'Pause'}</button><button class="btn got" id="recStop">Stop</button>`
+        :'<button class="btn lg block" id="recStart">Start audio recording</button>'}</div>
+      ${on?'<p class="hint" id="recStatus"></p>':''}
+      <p class="hint">Silences are trimmed automatically while recording. After 2 seconds of quiet, recording pauses by itself and resumes when speech returns, so each silence keeps up to 2 seconds and longer silence is cut. The timer shows real time.</p>`;
+  }
   return `<div class="panel"><span class="label">3. Audio recording</span>${body}${recMsg?`<p class="hint" aria-live="polite">${esc(recMsg)}</p>`:''}</div>`;
 }
 function audioMime(){
   const c=['audio/webm;codecs=opus','audio/webm','audio/mp4'];
   return c.find(m=>typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';
 }
+/* Loudness of the last ~46 ms of the microphone (RMS). */
+function recLevel(a){
+  if(!a.an)return 1;
+  a.an.getFloatTimeDomainData(a.buf);
+  let s=0;for(let i=0;i<a.buf.length;i++)s+=a.buf[i]*a.buf[i];
+  return Math.sqrt(s/a.buf.length);
+}
+/* Runs every 50 ms while recording. Learns the room, then pauses after 2 s of quiet and resumes on speech. */
+function recTick(a){
+  if(aRec!==a)return;
+  const now=Date.now(),dt=now-a.last;a.last=now;
+  if(!a.manual)a.realMs+=dt;
+  if(a.rec.state==='recording')a.keptMs+=dt;
+  if(a.an&&!a.manual){
+    const lv=recLevel(a);
+    if(!a.learned){
+      a.learn.push(lv);
+      if(a.realMs>=REC_LEARN_MS){
+        a.learn.sort((x,y)=>x-y);a.floor=a.learn[a.learn.length>>1];a.learned=true;
+      }
+    }else{
+      const thr=Math.max(a.floor*2.5,0.006);
+      if(lv>=thr){
+        a.silentMs=0;
+        if(a.trimming){a.trimming=false;if(a.rec.state==='paused')a.rec.resume()}
+      }else{
+        a.floor=a.floor*0.995+lv*0.005;
+        a.silentMs+=dt;
+        if(a.silentMs>=REC_SILENCE_MS&&a.rec.state==='recording'){a.rec.pause();a.trimming=true}
+      }
+    }
+  }
+  const t=$('#recTimer'),ts=fmtHMS(Math.floor(a.realMs/1000));
+  if(t&&t.textContent!==ts)t.textContent=ts;
+  const st=$('#recStatus');
+  if(st){
+    const txt=a.rec.state==='paused'
+      ?(a.manual?'Paused. Nothing is recorded while paused.':'Silence: trimmed. Recording resumes when speech returns.')
+      :(a.learned?'Recording':"Learning the room's background sound. Please stay quiet for a few seconds.");
+    if(st.textContent!==txt)st.textContent=txt;
+  }
+}
 async function recStart(){
-  if(aRec||recBusy)return;
+  if(aRec||aReview||recBusy)return;
   recMsg='';recBusy=true;
   if(typeof MediaRecorder==='undefined'||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){recBusy=false;recMsg='Audio recording is not supported in this browser.';renderSheet();return}
   let stream;
@@ -1018,41 +1074,66 @@ async function recStart(){
   let rec;
   try{rec=new MediaRecorder(stream,{...(type?{mimeType:type}:{}),audioBitsPerSecond:32000})}
   catch(e){stream.getTracks().forEach(t=>t.stop());recBusy=false;recMsg='This browser cannot record audio.';renderSheet();return}
-  const a={rec,stream,chunks:[],t0:Date.now(),acc:0,paused:false,deckId:db.active,wake:null,mime:rec.mimeType||type||'audio/webm'};
+  let ctx=null,an=null;
+  try{
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    an=ctx.createAnalyser();an.fftSize=2048;
+    ctx.createMediaStreamSource(stream).connect(an);
+  }catch(e){ctx=null;an=null}
+  const a={rec,stream,ctx,an,buf:an?new Float32Array(an.fftSize):null,chunks:[],deckId:db.active,wake:null,
+    mime:rec.mimeType||type||'audio/webm',manual:false,trimming:false,realMs:0,keptMs:0,last:Date.now(),
+    silentMs:0,learn:[],floor:0,learned:false,timer:null};
   rec.ondataavailable=e=>{if(e.data&&e.data.size)a.chunks.push(e.data)};
   rec.start(10000);
   aRec=a;recBusy=false;
   try{if(navigator.wakeLock)a.wake=await navigator.wakeLock.request('screen')}catch(e){}
-  a.timer=setInterval(tickRec,1000);
-  recMsg='Recording started.';renderSheet();
+  a.timer=setInterval(()=>recTick(a),REC_TICK);
+  recMsg=ctx?'Recording started. Silences are trimmed automatically.':'Recording started. Silence trimming is not available in this browser, so all sound is kept.';
+  renderSheet();
 }
 function recPause(){
   const a=aRec;if(!a)return;
-  if(a.rec.state==='recording'){a.rec.pause();a.acc+=Date.now()-a.t0;a.paused=true;recMsg='Paused.'}
-  else if(a.rec.state==='paused'){a.rec.resume();a.t0=Date.now();a.paused=false;recMsg='Recording again.'}
+  if(a.rec.state==='recording'){a.manual=true;a.rec.pause();recMsg='Paused.'}
+  else if(a.rec.state==='paused'){a.manual=false;a.trimming=false;a.silentMs=0;a.rec.resume();recMsg='Recording again.'}
   renderSheet();
 }
+/* Stopping does not save. The result is shown first, with a suggested name, so it can be renamed or deleted. */
 async function recStop(){
   const a=aRec;if(!a)return;
-  const secs=Math.floor(recElapsed()/1000);
   aRec=null;clearInterval(a.timer);
   if(a.wake){try{a.wake.release()}catch(e){}}
   await new Promise(res=>{a.rec.onstop=()=>res();if(a.rec.state!=='inactive')a.rec.stop();else res()});
   a.stream.getTracks().forEach(t=>t.stop());
+  if(a.ctx){try{a.ctx.close()}catch(e){}}
   const blob=new Blob(a.chunks,{type:(a.mime||'audio/webm').split(';')[0]});
-  await saveRecording(a.deckId,blob,secs);
+  if(!blob.size){recMsg='Nothing was recorded.';renderSheet();return}
+  const d=db.decks.find(x=>x.id===a.deckId);
+  const n=d?d.sources.filter(s=>s.kind==='media'&&s.mediaKind==='audio'&&s.rec).length+1:1;
+  const day=new Date(),dt=`${day.getFullYear()}-${String(day.getMonth()+1).padStart(2,'0')}-${String(day.getDate()).padStart(2,'0')}`;
+  aReview={blob,deckId:a.deckId,base:`audio_${n}_${dt}`,mime:blob.type||a.mime,size:blob.size,
+    realSec:Math.floor(a.realMs/1000),netSec:Math.floor(a.keptMs/1000),silenceSec:Math.max(0,Math.floor((a.realMs-a.keptMs)/1000))};
+  recMsg='Recording finished. Check the details, then save or delete.';
+  renderSheet();
 }
-async function saveRecording(deckId,blob,secs){
-  const d=db.decks.find(x=>x.id===deckId);
-  if(!d||!blob.size){recMsg='Nothing was recorded.';renderAll();renderSheet();return}
+/* Saves the reviewed recording to its deck. name is null when saving by default (Done or Home). */
+async function saveReview(name){
+  const r=aReview;if(!r)return;
+  const base=String(name==null?r.base:name).replace(/\s+/g,' ').trim().slice(0,80)||r.base;
+  const d=db.decks.find(x=>x.id===r.deckId);
+  if(!d){aReview=null;recMsg='The deck is no longer here, so the recording was not saved.';renderAll();renderSheet();return}
   try{
-    const id='m'+uid();await idbPut(id,blob);
-    const n=d.sources.filter(s=>s.kind==='media'&&s.mediaKind==='audio'&&s.rec).length+1;
-    d.sources.push({name:`Audio recording ${n} (${fmtHMS(secs)})`,kind:'media',mediaKind:'audio',mime:blob.type||'audio/webm',size:blob.size,blobId:id,rec:true});
-    save();study=quiz=null;
-    recMsg=`Saved: audio recording ${n}, ${fmtHMS(secs)}, added to this deck's files.`;
+    const id='m'+uid();await idbPut(id,r.blob);
+    d.sources.push({name:`${base} (${fmtHMS(r.netSec)})`,kind:'media',mediaKind:'audio',mime:r.mime,size:r.size,blobId:id,rec:true});
+    aReview=null;save();study=quiz=null;
+    recMsg=`Saved: ${base}, net length ${fmtHMS(r.netSec)}. It is in this deck's files.`;
   }catch(e){recMsg='The recording could not be saved on this phone. Free some space and try again.'}
   renderAll();renderSheet();
+}
+function discardReview(){aReview=null;recMsg='Recording deleted.';renderSheet()}
+/* Leaving the panel or the deck: a running recording is stopped, and a reviewed one is saved with its suggested name. */
+async function recFlush(){
+  if(aRec)await recStop();
+  if(aReview)await saveReview(null);
 }
 
 /* ---------- media: photos, audio and video. Only with a saved key that accepts them. Kept in IndexedDB (too large for localStorage). ---------- */
@@ -2137,6 +2218,8 @@ document.addEventListener('click',e=>{
     case 'recStart':recStart();break;
     case 'recPause':recPause();break;
     case 'recStop':recStop();break;
+    case 'recSave':saveReview(($('#recName')||{}).value||'');break;
+    case 'recDelete':discardReview();break;
     case 'shuffle':{const d=D();if(d)reshuffle(d,db.tab==='study'?'cards':'quiz');break}
   }
 });
