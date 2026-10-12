@@ -325,6 +325,9 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 /* ---- build 8: Home and Settings bar on the landing page, sized like replyo ---- */
 .homebar{grid-template-columns:1fr 1fr;gap:.5rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px))}
 .homebar .tab{min-height:2.2rem;font-size:.85rem;padding:.2rem .3rem;overflow-wrap:normal;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
+/* API banner: one full-width line under the landing Home/Settings bar */
+.apibanner{flex:none;margin:0;width:100%;box-sizing:border-box;padding:.4rem .45rem;background:var(--white);color:var(--black);font-size:.8rem;font-weight:700;line-height:1.3;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.apibanner[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -356,6 +359,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     <button class="tab" data-hometab="home" aria-selected="true">Home</button>
     <button class="tab" data-hometab="settings" aria-selected="false">Settings</button>
   </nav>
+  <p class="apibanner" id="apibanner" hidden>Add a free API in Settings for best results</p>
 </div>
 
 <div id="sheet" class="sheet" hidden></div>
@@ -1079,9 +1083,11 @@ function loadKeys(){
   return list.map((x,i)=>({...x,i})).sort((a,b)=>(PROV_RANK[a.provider]-PROV_RANK[b.provider])||(a.i-b.i));
 }
 function writeKeys(list){
-  try{localStorage.setItem(KEYS_STORE,JSON.stringify(list.map(x=>({provider:x.provider,key:x.key}))));return true}
+  try{localStorage.setItem(KEYS_STORE,JSON.stringify(list.map(x=>({provider:x.provider,key:x.key}))));syncBanner();return true}
   catch(e){keyUI.msg='This phone would not store the key.';return false}
 }
+/* Shows the API hint only on the landing page while no key is saved. */
+function syncBanner(){const b=$('#apibanner');if(b)b.hidden=!!D()||loadKeys().length>0}
 /* The first key in fallback order (kept for the places that only need to know a key exists). */
 function getAI(){return loadKeys()[0]||null}
 const aiUsable=ai=>!!ai&&!!PROV_NAME[ai.provider];
@@ -1689,6 +1695,7 @@ function render(){
   $('#tabs').hidden=!d;
   $('#view-home').hidden=!!d;
   $('#homebar').hidden=!!d;
+  syncBanner();
   if(d)$('#dname').textContent=d.name;
   ['create','overview','study','quiz'].forEach(t=>{$('#view-'+t).hidden=!d||db.tab!==t});
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===db.tab)));

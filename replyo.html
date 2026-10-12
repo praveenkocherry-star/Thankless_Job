@@ -80,6 +80,9 @@ input[type=range]::-moz-range-track{background:transparent}
 .tabs{position:relative;flex:none;z-index:10;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:1px solid var(--white)}
 .tab{min-height:2.2rem;border:1px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.85rem;padding:.2rem .3rem;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
 .tab[aria-selected="true"]{background:var(--orange);color:var(--black)}
+/* banner under the bar (same format as Kramdex): solid light bar, dark text, centred, one line */
+.apibanner{flex:none;margin:0;width:100%;box-sizing:border-box;padding:.4rem .45rem;background:var(--white);color:var(--black);font-size:min(.8rem,3.3vw);font-weight:700;line-height:1.3;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.apibanner[hidden]{display:none!important}
 
 /* output choice: three radio buttons */
 .radios{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
@@ -202,6 +205,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
   <button class="tab" role="tab" id="tabHome" data-tab="home" aria-selected="true" aria-controls="viewHome">Home</button>
   <button class="tab" role="tab" id="tabSettings" data-tab="settings" aria-selected="false" aria-controls="viewSettings" tabindex="-1">Settings</button>
 </nav>
+<p class="apibanner" id="apibanner" role="status">Add a free API key in Settings to start using this app</p>
 </div>
 
 <div id="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="ovTitle">
@@ -321,6 +325,7 @@ function renderOut(){
 
 /* ---------- API keys (same panel as Kramdex; keys are never shown, only the provider and a count) ---------- */
 function renderKeys(){
+  $('#apibanner').hidden=keys.length>0;
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=Object.keys(PROV).map(p=>`<a class="kbtn" href="${PROV[p].page}" target="_blank" rel="noopener">${PROV[p].name}</a>`).join('');
   const steps='<ol class="ksteps"><li>Tap Google or OpenAI and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>';
