@@ -331,8 +331,6 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 /* build: slogan, progress line, four-tab dock, Got it / Missed it, quiz types, backup and about */
 .slogan{margin:.1rem 0 .3rem;text-align:center;font-size:.8rem;font-weight:800;color:var(--white)}
 .homebar .tab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.deckcard{display:flex;flex-direction:column;gap:.2rem}
-.progline{margin:0;font-size:.8rem;font-weight:800;color:var(--white)}
 .grade .btn{width:auto;min-width:7.5rem;font-size:1rem;padding:.4rem .9rem;line-height:1.1;display:flex;align-items:center;justify-content:center;gap:.4rem}
 .fillrow{display:flex;flex-direction:column;gap:.5rem}
 .fillin,.matchrow select{width:100%;min-height:2.4rem;font:inherit;font-size:1.05rem;padding:.3rem .5rem;border:1px solid var(--white);border-radius:10px;background:var(--navy);color:var(--white)}
@@ -351,6 +349,8 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .abp,.abl{color:var(--white);font-size:1rem;line-height:1.45;margin:.2rem 0}
 .abl{padding-left:1.3rem}
 .abcredit{margin-top:.8rem;font-weight:800}
+.about p,.about li{text-align:justify;text-align-last:justify;text-justify:inter-word}
+.about h2,.about h3{text-align:left}
 </style>
 </head>
 <body>
@@ -1209,7 +1209,7 @@ function materialText(d){
   return src.map(x=>`--- ${x.name} ---\n${sampleText(x.body,budget)}`).join('\n\n');
 }
 /* The facts used for the sets: taken in turn from every file (so each file counts), no fact twice,
-   at most 498 (166 per level). Fact i belongs to one level only: Easy when i%3=0, Medium 1, Hard 2. */
+   at most 399 (133 per level). Fact i belongs to one level only: Easy when i%3=0, Medium 1, Hard 2. */
 const balCache=new Map();
 function balancedFacts(d){
   const sig=factsOf(d).sig,hit=balCache.get(d.id);
@@ -1322,12 +1322,19 @@ const genBusy=new Map(),tried=new Set();
 const EMPTY={ov:{text:'',paras:[],words:0},cards:[],quiz:[]};
 /* Minimum, Standard and Maximum: share of the created content that is shown. Default Standard. */
 const LVL_PCT=[0.3,0.6,1], LVL_NAME=['MIN','STD','MAX'];
-/* Caps: overview at most 2000 characters; at most 500 flashcards and 500 quiz questions in total (166 per level). */
-const OV_CHARS=18000, FACT_CAP=166;
+/* Caps: overview at most 2500 words; at most 400 flashcards and 400 quiz questions in total (133 per level). */
+const OV_WORDS=2500, FACT_CAP=133;
 const lvlOf=d=>(typeof d.lvl==='number')?d.lvl:1;
 const wlvlOf=d=>(typeof d.wlvl==='number')?d.wlvl:1;
 function storeRec(d,key,rec){d.gen=d.gen||{};d.gen[key]=rec;save()}
 /* Cut text to at most n characters, at a sentence end if one is near the limit, otherwise at a word. */
+/* Keeps the first n words of t, with its line breaks. */
+function capWords(t,n){
+  const re=/\S+/g;let c=0,m;t=String(t||'');
+  while((m=re.exec(t))){if(++c===n)return t.slice(0,m.index+m[0].length)}
+  return t;
+}
+const countWords=t=>(String(t||'').match(/\S+/g)||[]).length;
 function cutChars(t,n){
   t=String(t||'').trim();
   if(t.length<=n)return t;
@@ -1339,8 +1346,8 @@ function cutChars(t,n){
 }
 function appOv(d){
   const all=ovSentences(d);let text='';
-  for(const x of all){const next=text?text+' '+x:x;if(next.length>OV_CHARS)break;text=next}
-  text=cutChars(text,OV_CHARS);
+  for(const x of all){const next=text?text+' '+x:x;if(countWords(next)>OV_WORDS)break;text=next}
+  text=capWords(text,OV_WORDS);
   return {text,paras:[text],words:wordsIn(text)};
 }
 function appLevel(d,diff,facts){
@@ -1375,9 +1382,9 @@ function factsPrompt(sel,idxs){
   return `Use ONLY the facts below. Each level has its own facts; use a fact only under its own level, never at two levels. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write exactly 1 flashcard and 1 quiz question, in the style of its level. ${QUIZ_MIX}${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Leave a level as {"cards":[],"quiz":[]} when it has no facts. Do not ask about the document itself.\n\n`+groups.map(g=>`${g.l.toUpperCase()} facts:\n`+g.fs.map((i,n)=>`${n+1}. ${factLine(sel[i])}`).join('\n')).join('\n\n');
 }
 function materialPrompt(d){
-  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 166 flashcards and up to 166 quiz questions at each level. Each level must use different parts of the material, so no item repeats across levels. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 133 flashcards and up to 133 quiz questions at each level. Each level must use different parts of the material, so no item repeats across levels. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 }
-const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 18000 characters (about 3000 words). Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 2500 words. Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 const levelUsable=(j,l)=>{const x=(j&&j[l])||{};return cleanCards(x.cards).length>0||cleanQuiz(x.quiz,4).length>0};
 /* One request, sent to the keys in order. A key that fails hands the work to the next key, and stays handed over for the rest of the run. */
 async function aiFrom(st,prompt,json,media,check){
@@ -1397,7 +1404,7 @@ async function runAll(d,media){
   const stText={keys:allKeys,ki:0,lastErr:''},stMedia={keys:mediaOK,ki:0,lastErr:''};
   const sel=balancedFacts(d),res={};
   const o=await aiFrom(stMedia,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
-  if(o){const t=cutChars(o.out,OV_CHARS);res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
+  if(o){const t=capWords(o.out,OV_WORDS);res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
   else res.ov={by:'failed',err:stMedia.lastErr||'no usable key',...appOv(d)};
   const idxAll=sel.map((_,i)=>i),batches=[];
   if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
@@ -1468,8 +1475,8 @@ function getPart(d,part){
   const meta={state:'ready',by:rec.by,err:rec.err||'',via:rec.via||''};
   if(part==='ov'){
     const full=String(rec.text||'');
-    const limit=Math.round(Math.min(OV_CHARS,full.length)*LVL_PCT[wlvlOf(d)]);
-    const shown=cutChars(full,limit);
+    const limit=Math.round(Math.min(OV_WORDS,countWords(full))*LVL_PCT[wlvlOf(d)]);
+    const shown=capWords(full,limit);
     const paras=shown.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
     return {...meta,data:{text:shown,paras,words:wordsIn(shown)}};
   }
@@ -1861,15 +1868,6 @@ async function restoreStored(id){
   if(!rec){backupUI.msg='That backup could not be found.';renderHome();return}
   await restoreFrom(rec.blob,rec.name);
 }
-/* Progress line on the Home list: known and missed cards for the deck's current level. */
-function progressLine(d){
-  const rec=d.gen&&d.gen[d.difficulty];
-  if(!rec||!Array.isArray(rec.cards)||!rec.cards.length)return '';
-  const total=Math.max(1,Math.round(rec.cards.length*LVL_PCT[lvlOf(d)]));
-  const vals=Object.values(d.marks||{});
-  const known=Math.min(total,vals.filter(v=>v===true).length),missed=vals.filter(v=>v===false).length;
-  return `${known} of ${total} known, ${missed} missed`;
-}
 function backupView(){
   const rows=(backupUI.list||[]).map(b=>`<li class="file bkrow"><div class="frow"><span class="fname">${esc(b.name)}</span></div><p class="hint bkmeta">${esc(b.when)}, ${esc(fmtSize(b.size))}</p><div class="bkact"><button class="btn sm" data-bshare="${esc(b.id)}">Share</button><button class="btn sm" data-bsave="${esc(b.id)}">Save to device</button><button class="btn sm" data-brestore="${esc(b.id)}">Restore</button></div></li>`).join('');
   return `<div class="panel bk">
@@ -1921,7 +1919,7 @@ function renderHome(){
     ${keyPanel()}`;
   const home=`
     <button class="btn lg block" id="newdeck">+ New deck</button>
-    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckcard"><div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div>${progressLine(d)?`<p class="progline">${esc(progressLine(d))}</p>`:''}</div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
+    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div></div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
 `;
   $('#view-home').innerHTML=homeTab==='settings'?settings:homeTab==='backup'?backupView():homeTab==='about'?aboutView():home;
   document.querySelectorAll('[data-hometab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.hometab===homeTab)));
