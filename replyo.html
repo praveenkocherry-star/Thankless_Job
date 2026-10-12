@@ -45,7 +45,7 @@ a{color:inherit}
 .brand{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:1.89rem;font-weight:900;white-space:nowrap;color:var(--yellow);line-height:1.05}
 .credit-row{display:flex;justify-content:flex-end}
 .credit{flex:none;border:1px solid var(--white);border-radius:0;padding:.03rem .12rem;font-weight:800;line-height:1.15;text-align:center;background:var(--navy);color:var(--yellow);outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
-.credit .cr1{display:block;font-size:.285rem}
+.credit .cr1{display:block;font-size:.285rem;white-space:nowrap}
 .credit .cr2{display:block;font-size:.21875rem;text-transform:uppercase}
 .credit hr{border:0;height:1px;margin:.08rem 0;background:var(--white)}
 .letterhead{height:0;border-top:1px solid var(--white);margin:.5rem calc(50% - 50vw) .3rem}
@@ -89,7 +89,7 @@ input[type=range]::-moz-range-track{background:transparent}
 .rad{position:relative;display:block}
 .rad input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
 .rad span{display:flex;align-items:center;justify-content:center;gap:.4rem;min-height:2.1rem;border:1px solid var(--white);border-radius:12px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.8rem;padding:.1rem .3rem}
-.rad span::before{content:"";width:.7rem;height:.7rem;border-radius:50%;border:2px solid var(--white);flex:none}
+.rad span::before{content:"";width:.7rem;height:.7rem;border-radius:3px;border:2px solid var(--white);flex:none}
 .rad input:checked+span{background:var(--orange);color:var(--black)}
 .rad input:checked+span::before{background:var(--black);border-color:var(--black);box-shadow:inset 0 0 0 2px var(--orange)}
 .rad input:focus-visible+span{outline:3px solid var(--white);outline-offset:2px}
@@ -137,15 +137,28 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 /* questions and responses */
 .qrhead{margin:0;font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--yellow)}
 .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.35rem}
-.item{display:flex;align-items:center;gap:.5rem;border:1px solid var(--white);border-radius:10px;padding:.35rem .5rem;flex-wrap:wrap;background:var(--navy)}
-.item .txt{flex:1 1 8rem;min-width:0}
-.item .q{font-weight:700;font-size:.8rem;overflow-wrap:anywhere;color:var(--yellow)}
-.item .when{font-size:.62rem;font-weight:700;color:var(--white)}
-.acts{display:flex;align-items:center;gap:.35rem}
-.pdfbtn{flex:none;width:1.9rem;height:1.9rem;border:1px solid var(--white);border-radius:8px;background:var(--navy2);color:var(--yellow);display:grid;place-items:center;padding:0}
-.pdfbtn svg{width:1.3rem;height:1.3rem}
-.item .btn.sm{box-shadow:none;outline:0}
-.item .btn.sm.del{background:#b00020;color:#fff}
+.entry{background:var(--navy);border:1px solid var(--white);border-radius:12px;padding:.4rem .5rem;display:flex;flex-direction:column;gap:.3rem}
+.meta{margin:0;font-size:.6rem;font-weight:700;color:var(--white);display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.q{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;width:100%;margin:0;padding:0;border:0;border-radius:0;background:none;color:var(--yellow);font:inherit;font-size:.78rem;font-weight:800;line-height:1.4;text-align:justify;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;cursor:pointer}
+.q.open{display:block;-webkit-line-clamp:unset;line-clamp:unset;overflow:visible}
+.outs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem}
+.out{background:var(--navy2);border:1px solid var(--white);border-radius:10px;padding:.25rem .4rem;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem .4rem}
+.ico{flex:none;width:1.7rem;height:1.7rem;border:1px solid var(--white);border-radius:7px;background:var(--navy);color:var(--yellow);display:grid;place-items:center}
+.ico svg{width:1.1rem;height:1.1rem}
+.outname{flex:1 1 4rem;font-size:.72rem;font-weight:800;line-height:1.2;color:var(--yellow)}
+.outname small{display:block;font-size:.6rem;font-weight:700;color:var(--white)}
+.wave{display:flex;align-items:center;gap:3px;height:1.1rem}
+.wave i{display:block;width:3px;border-radius:2px;background:var(--orange);height:35%}
+.playing .wave i{animation:bar .8s ease-in-out infinite}
+.playing .wave i:nth-child(2n){animation-delay:.2s}
+.playing .wave i:nth-child(3n){animation-delay:.4s}
+@keyframes bar{0%,100%{height:25%}50%{height:100%}}
+@media (prefers-reduced-motion:reduce){.playing .wave i{animation:none;height:70%}}
+.btns{display:flex;gap:.3rem;margin-left:auto}
+.entry .btn.sm{min-height:1.8rem;padding:.1rem .55rem;font-size:.66rem;border-radius:9px;box-shadow:none;outline:0;flex:none}
+.entry .btn.sm.del{background:#b00020;color:#fff}
+.foot{display:flex;justify-content:flex-end}
+.toast{flex:none;margin:.3rem 0 0;padding:.4rem .6rem;border:1px solid var(--white);border-radius:12px;background:var(--navy2);color:var(--yellow);font-weight:800;font-size:.8rem;overflow-wrap:anywhere;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
 
 /* listening screen */
 #overlay{position:fixed;inset:0;background:var(--navy);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1.5rem;text-align:center}
@@ -160,7 +173,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
   <header class="top">
     <span class="brand" aria-label="replyO"><span aria-hidden="true">r</span><span aria-hidden="true">e</span><span aria-hidden="true">p</span><span aria-hidden="true">l</span><span aria-hidden="true">y</span><span aria-hidden="true">O</span></span>
     <div class="credit-row">
-      <div class="credit" aria-label="Developed by PK. Accessibility first."><span class="cr1">Developed by PK</span><hr><span class="cr2">Accessibility first</span></div>
+      <div class="credit" aria-label="Developed by PK Solution Labs"><span class="cr1">Developed by PK Solution Labs</span></div>
     </div>
     <div class="letterhead" aria-hidden="true"></div>
   </header>
@@ -174,15 +187,13 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
         <div class="notches" aria-hidden="true"><span>MIN</span><span>STD</span><span>MAX</span></div>
       </div>
     </div>
-    <div class="panel" role="radiogroup" aria-labelledby="outLbl">
-      <span class="label" id="outLbl">Output</span>
+    <div class="panel" role="group" aria-label="Output, choose one or more">
       <div class="radios">
-        <label class="rad"><input type="radio" name="out" value="pdf"><span>PDF</span></label>
-        <label class="rad"><input type="radio" name="out" value="picture"><span>Picture</span></label>
-        <label class="rad"><input type="radio" name="out" value="voice"><span>Voice</span></label>
+        <label class="rad"><input type="checkbox" name="out" value="pdf"><span>PDF</span></label>
+        <label class="rad"><input type="checkbox" name="out" value="picture"><span>Picture</span></label>
+        <label class="rad"><input type="checkbox" name="out" value="voice"><span>Voice</span></label>
       </div>
     </div>
-    <p class="msg" id="msg" role="status" aria-live="polite"></p>
 
     <div class="homesep" aria-hidden="true"></div>
 
@@ -201,6 +212,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     <div class="panel apipanel" id="keyHost"></div>
   </section>
 </div>
+<p class="toast" id="msg" role="status" aria-live="polite" hidden></p>
 <nav class="tabs" role="tablist" aria-label="Pages">
   <button class="tab" role="tab" id="tabHome" data-tab="home" aria-selected="true" aria-controls="viewHome">Home</button>
   <button class="tab" role="tab" id="tabSettings" data-tab="settings" aria-selected="false" aria-controls="viewSettings" tabindex="-1">Settings</button>
@@ -253,9 +265,16 @@ const LEN=[
 /* ---------- storage ---------- */
 function readJSON(k,fb){try{const v=JSON.parse(localStorage.getItem(k));return v==null?fb:v}catch(e){return fb}}
 let keys=readJSON(KEYS_STORE,[]).filter(x=>x&&PROV[x.p]&&x.k);
-let items=readJSON(ITEMS_STORE,[]);
+const OUT_ORDER=['pdf','picture','voice'],OUT_NAME={pdf:'PDF',picture:'Picture',voice:'Voice'};
+function migrate(it){
+  if(!it||typeof it!=='object')return null;
+  if(it.outs&&it.eid)return it;
+  const t=it.type==='picture'||it.type==='voice'?it.type:'pdf';
+  return {eid:it.id,q:it.q,original:it.original,title:it.title,date:it.date,level:it.level,outs:{[t]:t==='voice'?{text:it.text||'',key:null}:{key:it.id}}};
+}
+let items=readJSON(ITEMS_STORE,[]).map(migrate).filter(Boolean);
 let lenIdx=Math.max(0,Math.min(2,+readJSON(LEN_STORE,1)||0));
-let outMode=(()=>{try{const v=localStorage.getItem(OUT_KEY);return v==='picture'||v==='voice'?v:'pdf'}catch(e){return 'pdf'}})();
+let outSel=(()=>{try{const v=localStorage.getItem(OUT_KEY);if(!v)return ['pdf'];if(OUT_ORDER.includes(v))return [v];const a=JSON.parse(v);const f=OUT_ORDER.filter(x=>Array.isArray(a)&&a.includes(x));return f.length?f:['pdf']}catch(e){return ['pdf']}})();
 let playingId=null, speakGen=0;
 let busy=false, rec=null, cancelled=false, keyUI={open:false,adding:null,msg:''};
 const saveKeys=()=>localStorage.setItem(KEYS_STORE,JSON.stringify(keys));
@@ -271,7 +290,12 @@ async function idbPut(id,blob){const d=await idb();return new Promise((ok,no)=>{
 async function idbGet(id){const d=await idb();return new Promise((ok,no)=>{const q=d.transaction('pdfs').objectStore('pdfs').get(id);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})}
 async function idbDel(id){const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('pdfs','readwrite');t.objectStore('pdfs').delete(id);t.oncomplete=ok;t.onerror=()=>no(t.error)})}
 
-function msg(t){$('#msg').textContent=t||''}
+let msgT=null;
+function msg(t){
+  const m=$('#msg');clearTimeout(msgT);
+  m.textContent=t||'';m.hidden=!t;
+  if(t&&!busy)msgT=setTimeout(()=>{m.hidden=true;m.textContent=''},9000);
+}
 
 /* ---------- themes (same fifteen as Kramdex): page always pitch black, panels take the faded colour ---------- */
 const THEME_LIST=[
@@ -320,7 +344,7 @@ function renderLen(){
   $('#lenVal').textContent=c.name;
 }
 function renderOut(){
-  document.querySelectorAll('input[name="out"]').forEach(r=>{r.checked=(r.value===outMode)});
+  document.querySelectorAll('input[name="out"]').forEach(r=>{r.checked=outSel.includes(r.value)});
 }
 
 /* ---------- API keys (same panel as Kramdex; keys are never shown, only the provider and a count) ---------- */
@@ -441,15 +465,18 @@ function linksOf(a){
   return (Array.isArray(a)?a:[]).filter(x=>x&&/^https?:\/\/\S+$/.test(String(x.url||'')))
     .map(x=>({title:String(x.title||x.url).trim(),url:String(x.url).trim(),why:String(x.why||'').trim()})).slice(0,8);
 }
-async function buildDoc(raw,level,setMsg){
+const GUESS='A person asked a question by voice. The transcription may contain mistakes, fumbled words, missing words or poor grammar. Work out what they mean.';
+const QSHAPE='"question":"the question rewritten in correct, clear, grammatical English with the same meaning",';
+const lead=base=>base?`The question is: """${base.question}"""`:GUESS;
+async function buildDoc(raw,level,setMsg,base){
   const cfg=LEN[level];
-  setMsg('Writing a clear version of your question…');
-  const o=await ai(`A person asked a question by voice. The transcription may contain mistakes, fumbled words, missing words or poor grammar. Work out what they mean.
-Reply with ONLY a JSON object in this shape: {"question":"the question rewritten in correct, clear, grammatical English with the same meaning","title":"a short professional title of at most 8 words","sections":["heading","heading"]}
-Give ${cfg.sections} section headings, in logical order, that together answer the question, like the chapters of a professional report.
-Transcription: """${raw}"""`,true);
-  const question=String(o.question||raw).trim();
-  const title=String(o.title||question).trim().slice(0,90)||'Answer';
+  if(!base)setMsg('Writing a clear version of your question…');
+  const o=await ai(`${lead(base)}
+Reply with ONLY a JSON object in this shape: {${base?'':QSHAPE+'"title":"a short professional title of at most 8 words",'}"sections":["heading","heading"]}
+Give ${cfg.sections} section headings, in logical order, that together answer the question, like the chapters of a professional report.${base?'':`
+Transcription: """${raw}"""`}`,true);
+  const question=base?base.question:String(o.question||raw).trim();
+  const title=base?base.title:(String(o.title||question).trim().slice(0,90)||'Answer');
   let secs=strArr(o.sections).slice(0,cfg.count[1]);
   if(secs.length<cfg.count[0])secs=secs.length?secs:['Answer'];
   const sections=[];
@@ -476,16 +503,16 @@ Reply with ONLY a JSON object: {"links":[{"title":"...","url":"https://...","why
 }
 
 /* ---------- Picture content: one request, sized to fit one page ---------- */
-async function buildPicture(raw,level,setMsg){
+async function buildPicture(raw,level,setMsg,base){
   const cfg=LEN[level];
   setMsg('Writing the answer…');
-  const o=await ai(`A person asked a question by voice. The transcription may contain mistakes, fumbled words, missing words or poor grammar. Work out what they mean.
+  const o=await ai(`${lead(base)}
 Write a one-page summary that answers it. ${cfg.pic}
-Reply with ONLY a JSON object in this shape: {"question":"the question rewritten in correct, clear, grammatical English with the same meaning","title":"a short professional title of at most 8 words","sections":[{"heading":"...","text":"one paragraph in full sentences","bullets":["..."]}]}
-Rules: bullets is optional (an empty array is fine). Do not use markdown symbols. Do not put the heading inside the text. The whole answer must be short enough to fit on one page.
-Transcription: """${raw}"""`,true);
-  const question=String(o.question||raw).trim();
-  const title=String(o.title||question).trim().slice(0,90)||'Answer';
+Reply with ONLY a JSON object in this shape: {${base?'':QSHAPE+'"title":"a short professional title of at most 8 words",'}"sections":[{"heading":"...","text":"one paragraph in full sentences","bullets":["..."]}]}
+Rules: bullets is optional (an empty array is fine). Do not use markdown symbols. Do not put the heading inside the text. The whole answer must be short enough to fit on one page.${base?'':`
+Transcription: """${raw}"""`}`,true);
+  const question=base?base.question:String(o.question||raw).trim();
+  const title=base?base.title:(String(o.title||question).trim().slice(0,90)||'Answer');
   const sections=(Array.isArray(o.sections)?o.sections:[]).map(x=>({heading:String((x&&x.heading)||'').trim(),text:String((x&&x.text)||'').trim(),bullets:strArr(x&&x.bullets)}))
     .filter(x=>x.heading&&(x.text||x.bullets.length));
   if(!sections.length)throw new Error('The AI reply was empty. Please try again.');
@@ -493,19 +520,101 @@ Transcription: """${raw}"""`,true);
 }
 
 /* ---------- Voice content: one request, plain spoken text, nothing added ---------- */
-async function buildSpeech(raw,level,setMsg){
+async function buildSpeech(raw,level,setMsg,base){
   const cfg=LEN[level];
   setMsg('Writing the spoken answer…');
-  const o=await ai(`A person asked a question by voice. The transcription may contain mistakes, fumbled words, missing words or poor grammar. Work out what they mean.
+  const o=await ai(`${lead(base)}
 Write the answer as it will be spoken aloud by a voice. ${cfg.speech}
-Reply with ONLY a JSON object in this shape: {"question":"the question rewritten in correct, clear, grammatical English with the same meaning","title":"a short title of at most 8 words","speech":"the spoken answer"}
-Rules for the speech: plain flowing sentences only. No greeting, no introduction, no sign-off, no mention of any app or of yourself. No markdown, no lists, no symbols, no headings. Do not read out web addresses.
-Transcription: """${raw}"""`,true);
-  const question=String(o.question||raw).trim();
-  const title=String(o.title||question).trim().slice(0,90)||'Answer';
+Reply with ONLY a JSON object in this shape: {${base?'':QSHAPE+'"title":"a short title of at most 8 words",'}"speech":"the spoken answer"}
+Rules for the speech: plain flowing sentences only. No greeting, no introduction, no sign-off, no mention of any app or of yourself. No markdown, no lists, no symbols, no headings. Do not read out web addresses.${base?'':`
+Transcription: """${raw}"""`}`,true);
+  const question=base?base.question:String(o.question||raw).trim();
+  const title=base?base.title:(String(o.title||question).trim().slice(0,90)||'Answer');
   const speech=String(o.speech||'').replace(/https?:\/\/\S+/g,'').replace(/[*#_`>~|]+/g,' ').replace(/\s+/g,' ').trim();
   if(!speech)throw new Error('The AI reply was empty. Please try again.');
   return {question,title,original:raw,speech};
+}
+
+/* ---------- Voice as an audio file: the answer is turned into speech by the saved key, then kept as a .wav file ---------- */
+const TTS={google:'gemini-2.5-flash-preview-tts',openai:['gpt-4o-mini-tts','tts-1']};
+function b64bytes(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
+function wavOf(parts,rate){
+  let n=0;parts.forEach(p=>{n+=p.length});
+  const h=new DataView(new ArrayBuffer(44));
+  const w=(o,t)=>{for(let i=0;i<t.length;i++)h.setUint8(o+i,t.charCodeAt(i))};
+  w(0,'RIFF');h.setUint32(4,36+n,true);w(8,'WAVE');w(12,'fmt ');h.setUint32(16,16,true);
+  h.setUint16(20,1,true);h.setUint16(22,1,true);h.setUint32(24,rate,true);h.setUint32(28,rate*2,true);h.setUint16(32,2,true);h.setUint16(34,16,true);
+  w(36,'data');h.setUint32(40,n,true);
+  return new Blob([h.buffer,...parts],{type:'audio/wav'});
+}
+function bigChunks(t,max){
+  const sents=(String(t).replace(/\s+/g,' ').match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g)||[String(t)]).map(x=>x.trim()).filter(Boolean);
+  const out=[];let cur='';
+  for(let x of sents){
+    while(x.length>max){let cut=x.lastIndexOf(' ',max);if(cut<max/2)cut=max;if(cur){out.push(cur);cur=''}out.push(x.slice(0,cut).trim());x=x.slice(cut).trim()}
+    if(cur&&(cur+' '+x).length>max){out.push(cur);cur=x}else cur=(cur+' '+x).trim();
+  }
+  if(cur)out.push(cur);
+  return out.filter(Boolean);
+}
+async function findTTS(k){
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200',{headers:{'x-goog-api-key':k}});
+  if(!r.ok)throw new Error(String(r.status));
+  const j=await r.json();
+  const c=(j.models||[]).map(m=>m.name.replace('models/','')).filter(n=>/tts/.test(n)&&/flash/.test(n))
+    .sort((a,b)=>verNum(b)-verNum(a)||(/preview/.test(a)?1:0)-(/preview/.test(b)?1:0));
+  if(!c.length)throw new Error('404');
+  return c[0];
+}
+async function ttsGoogle(k,text){
+  const go=async()=>{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TTS.google}:generateContent`,{
+      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
+      body:JSON.stringify({contents:[{parts:[{text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:'Kore'}}}}})
+    });
+    if(!r.ok)throw new Error(String(r.status));
+    const j=await r.json();
+    const part=((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).find(x=>x.inlineData&&x.inlineData.data);
+    if(!part)throw new Error('no audio');
+    const m=/rate=(\d+)/.exec(part.inlineData.mimeType||'');
+    return {pcm:b64bytes(part.inlineData.data),rate:m?+m[1]:24000};
+  };
+  try{return await go()}
+  catch(e){
+    if(e.message!=='404'&&e.message!=='400')throw e;
+    TTS.google=await findTTS(k);
+    return await go();
+  }
+}
+async function ttsOpenAI(k,text){
+  let last=new Error('error');
+  for(const m of TTS.openai){
+    const r=await fetch('https://api.openai.com/v1/audio/speech',{
+      method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k},
+      body:JSON.stringify({model:m,voice:'alloy',input:text,response_format:'pcm'})
+    });
+    if(r.ok)return {pcm:new Uint8Array(await r.arrayBuffer()),rate:24000};
+    last=new Error(String(r.status));
+    if(r.status!==404&&r.status!==400)throw last;
+  }
+  throw last;
+}
+async function makeAudio(text,setMsg){
+  if(!keys.length)throw new Error('no key');
+  const pieces=bigChunks(text,2500);let last='';
+  for(const k of keys){
+    try{
+      const parts=[];let rate=24000;
+      for(let i=0;i<pieces.length;i++){
+        setMsg(pieces.length>1?`Making the audio file, part ${i+1} of ${pieces.length}…`:'Making the audio file…');
+        const r=await (k.p==='google'?ttsGoogle:ttsOpenAI)(k.k,pieces[i]);
+        if(!r.pcm||!r.pcm.length)throw new Error('empty audio');
+        parts.push(r.pcm);rate=r.rate;
+      }
+      return wavOf(parts,rate);
+    }catch(e){last=e.message||'error'}
+  }
+  throw new Error(`The audio file could not be made (${last}).`);
 }
 
 /* ---------- Picture: one A4 page (1240 x 1754), always fitted so it never runs past the page ---------- */
@@ -612,14 +721,28 @@ function pickVoice(){
   const v=(window.speechSynthesis&&speechSynthesis.getVoices&&speechSynthesis.getVoices())||[];
   return v.find(x=>/^en[-_]IN/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;
 }
-function stopSpeech(){
-  speakGen++;playingId=null;
+let audioEl=null,audioUrl=null;
+function halt(){
+  speakGen++;
   try{if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}
-  renderList();
+  if(audioEl){try{audioEl.pause()}catch(e){}audioEl.onended=null;audioEl.onerror=null;audioEl=null}
+  if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=null}
+}
+function stopSpeech(){halt();playingId=null;renderList()}
+function playBlob(b,id){
+  halt();
+  audioUrl=URL.createObjectURL(b);
+  const a=new Audio(audioUrl);audioEl=a;playingId=id;renderList();
+  msg('Playing. Tap Stop to stop.');
+  const end=t=>{if(audioEl!==a)return;halt();playingId=null;renderList();if(t||$('#msg').textContent.startsWith('Playing'))msg(t||'')};
+  a.onended=()=>end('');
+  a.onerror=()=>end('The audio could not be played.');
+  const pr=a.play();
+  if(pr&&pr.catch)pr.catch(()=>end('Tap Listen to hear the answer.'));
 }
 function speakText(text,id){
   if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined')return msg('Voice playback is not available in this browser.');
-  try{speechSynthesis.cancel()}catch(e){}
+  halt();
   const gen=++speakGen;playingId=id;renderList();
   const parts=chunkText(text);let idx=0,anyStarted=false;
   msg('Speaking. Tap Stop to stop.');
@@ -767,71 +890,80 @@ async function makePDF(doc){
   return pdf.output('blob');
 }
 
-/* ---------- saving, opening, downloading (location chosen by the user), deleting ---------- */
-const typeOf=it=>it.type==='picture'||it.type==='voice'?it.type:'pdf';
-const KIND={pdf:{mime:'application/pdf',ext:'.pdf',desc:'PDF document',noun:'PDF'},picture:{mime:'image/png',ext:'.png',desc:'PNG picture',noun:'picture'}};
+/* ---------- opening, sharing (phone share sheet), deleting ---------- */
+const KIND={pdf:{mime:'application/pdf',ext:'.pdf',noun:'PDF'},picture:{mime:'image/png',ext:'.png',noun:'picture'},voice:{mime:'audio/wav',ext:'.wav',noun:'audio file'}};
 function fileName(t){return (t||'replyO').replace(/[^\w\- ]+/g,'').trim().slice(0,60)||'replyO'}
-async function openFile(i){
-  const it=items[i];if(!it)return;
-  const k=typeOf(it);
-  if(k==='voice')return playItem(i);
-  const b=await idbGet(it.id);
-  if(!b)return msg(`That ${KIND[k].noun} is no longer saved on this phone.`);
+const openQ=new Set();
+async function openFile(i,k){
+  const it=items[i],o=it&&it.outs[k];if(!o||!o.key||k==='voice')return;
+  const w=window.open('','_blank');
+  let b=null;try{b=await idbGet(o.key)}catch(e){}
+  if(!b){if(w)w.close();return msg(`That ${KIND[k].noun} is no longer saved on this phone.`)}
   const u=URL.createObjectURL(b);
-  window.open(u,'_blank');
-  setTimeout(()=>URL.revokeObjectURL(u),60000);
+  if(!w)return msg('The file could not open. Allow pop-ups for this page and try again.');
+  w.location.href=u;
+  setTimeout(()=>URL.revokeObjectURL(u),120000);
 }
-async function downloadFile(i){
-  const it=items[i];if(!it)return;
-  const k=typeOf(it);if(k==='voice')return;
+async function shareOut(i,k){
+  const it=items[i],o=it&&it.outs[k];if(!o)return;
+  if(!o.key)return msg('This voice answer has no audio file, so it cannot be shared. It can still be played.');
   const K=KIND[k];
-  const b=await idbGet(it.id);
+  let b=null;try{b=await idbGet(o.key)}catch(e){}
   if(!b)return msg(`That ${K.noun} is no longer saved on this phone.`);
   const name=fileName(it.title)+K.ext;
-  if(window.showSaveFilePicker){
-    try{
-      const h=await window.showSaveFilePicker({suggestedName:name,types:[{description:K.desc,accept:{[K.mime]:[K.ext]}}]});
-      const w=await h.createWritable();await w.write(b);await w.close();
-      return msg('Saved to the location you chose.');
-    }catch(e){if(e&&e.name==='AbortError')return msg('Download cancelled.')}
+  let file;try{file=new File([b],name,{type:K.mime})}catch(e){file=null}
+  if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:it.title});return msg('')}
+    catch(e){if(e&&e.name==='AbortError')return msg('Sharing cancelled.')}
   }
   const u=URL.createObjectURL(b);
   const a=document.createElement('a');a.href=u;a.download=name;
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),60000);
-  msg('Download started. Your phone will choose where it goes.');
+  msg('Sharing is not available here, so the file was saved to this phone instead.');
 }
-function playItem(i){
-  const it=items[i];if(!it||typeOf(it)!=='voice')return;
-  if(playingId===it.id){stopSpeech();msg('');return}
-  speakText(it.text||'',it.id);
+async function playVoice(i){
+  const it=items[i],o=it&&it.outs.voice;if(!o)return;
+  if(playingId===it.eid){stopSpeech();msg('');return}
+  if(o.key){
+    let b=null;try{b=await idbGet(o.key)}catch(e){}
+    if(b)return playBlob(b,it.eid);
+  }
+  speakText(o.text||'',it.eid);
 }
 async function deleteItem(i){
   const it=items[i];if(!it)return;
-  if(!confirm(`Delete "${it.title}"? The question and its ${typeOf(it)==='voice'?'answer':typeOf(it)} will be removed from this phone. This cannot be undone.`))return;
-  if(playingId===it.id)stopSpeech();
-  if(typeOf(it)!=='voice'){try{await idbDel(it.id)}catch(e){}}
-  items.splice(i,1);saveItems();renderList();msg('Deleted.');
+  const n=Object.keys(it.outs).length;
+  if(!confirm(`Delete "${it.title}"? The question and ${n>1?'all its answers':'its answer'} will be removed from this phone. This cannot be undone.`))return;
+  if(playingId===it.eid)stopSpeech();
+  for(const k of Object.keys(it.outs)){const o=it.outs[k];if(o&&o.key){try{await idbDel(o.key)}catch(e){}}}
+  const idx=items.indexOf(it);if(idx>=0)items.splice(idx,1);
+  openQ.delete(it.eid);saveItems();renderList();msg('Deleted.');
+}
+function outRow(it,i,k){
+  const o=it.outs[k],t=esc(it.title||'');
+  let sub,btns,icon;
+  if(k==='voice'){
+    const on=playingId===it.eid;
+    icon=SPK_SVG;sub=o.key?'Audio file':'Phone voice only';
+    btns=`<button class="btn sm" data-act="play" data-i="${i}" aria-label="${on?'Stop':'Listen to'} voice answer: ${t}">${on?'Stop':'Listen'}</button>`+
+      (o.key?`<button class="btn sm" data-act="share" data-i="${i}" data-k="voice" aria-label="Share voice answer: ${t}">Share</button>`:'');
+  }else{
+    icon=k==='picture'?IMG_SVG:FILE_SVG;sub=k==='picture'?'Image':'Document';
+    btns=`<button class="btn sm" data-act="open" data-i="${i}" data-k="${k}" aria-label="Open ${KIND[k].noun}: ${t}">Open</button>
+      <button class="btn sm" data-act="share" data-i="${i}" data-k="${k}" aria-label="Share ${KIND[k].noun}: ${t}">Share</button>`;
+  }
+  const on=k==='voice'&&playingId===it.eid;
+  return `<li class="out${on?' playing':''}"><span class="ico">${icon}</span><span class="outname">${OUT_NAME[k]}<small>${sub}</small></span>${on?'<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>':''}<span class="btns">${btns}</span></li>`;
 }
 function renderList(){
   $('#empty').hidden=items.length>0;
   $('#list').innerHTML=items.map((it,i)=>{
-    const k=typeOf(it),t=esc(it.title||'');
-    const tag=k==='voice'?'Voice':k==='picture'?'Picture':'PDF';
-    let acts;
-    if(k==='voice'){
-      const on=playingId===it.id;
-      acts=`<button class="pdfbtn" data-act="play" data-i="${i}" aria-label="${on?'Stop':'Play'} voice answer: ${t}" title="${on?'Stop':'Play'}">${SPK_SVG}</button>
-        <button class="btn sm" data-act="play" data-i="${i}" aria-label="${on?'Stop':'Play'} voice answer: ${t}">${on?'Stop':'Play'}</button>`;
-    }else{
-      acts=`<button class="pdfbtn" data-act="open" data-i="${i}" aria-label="Open ${k==='picture'?'picture':'PDF'}: ${t}" title="Open">${k==='picture'?IMG_SVG:FILE_SVG}</button>
-        <button class="btn sm" data-act="dl" data-i="${i}" aria-label="Download ${k==='picture'?'picture':'PDF'}: ${t}">Download</button>`;
-    }
-    return `<li class="item">
-      <div class="txt"><div class="q">${esc(it.q)}</div><div class="when">${tag} · ${esc(new Date(it.date).toLocaleString('en-IN'))}</div></div>
-      <div class="acts">${acts}
-        <button class="btn sm del" data-act="del" data-i="${i}" aria-label="Delete: ${t}">Delete</button>
-      </div>
+    const t=esc(it.title||''),open=openQ.has(it.eid);
+    return `<li class="entry"><p class="meta"><span>${esc(it.level||'')}</span><span>${esc(new Date(it.date).toLocaleString('en-IN'))}</span></p>
+      <button class="q${open?' open':''}" data-act="toggle" data-i="${i}" aria-expanded="${open}">${esc(it.q)}</button>
+      <ul class="outs">${OUT_ORDER.filter(k=>it.outs[k]).map(k=>outRow(it,i,k)).join('')}</ul>
+      <div class="foot"><button class="btn sm del" data-act="del" data-i="${i}" aria-label="Delete question and answers: ${t}">Delete</button></div>
     </li>`;
   }).join('');
 }
@@ -888,34 +1020,49 @@ async function askByVoice(){
 }
 async function process(raw){
   busy=true;$('#askBtn').disabled=true;
+  if(playingId)stopSpeech();
   document.querySelectorAll('input[name="out"]').forEach(r=>r.disabled=true);
-  const mode=outMode,level=lenIdx;
+  const modes=OUT_ORDER.filter(m=>outSel.includes(m)),level=lenIdx;
   try{
-    const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-    let item;
-    if(mode==='pdf'){
-      const doc=await buildDoc(raw,level,msg);
-      msg('Making the PDF…');
-      await idbPut(id,await makePDF(doc));
-      item={id,type:'pdf',q:doc.question,original:doc.original,title:doc.title};
-    }else if(mode==='picture'){
-      const doc=await buildPicture(raw,level,msg);
-      msg('Making the picture…');
-      await idbPut(id,await makePicture(doc));
-      item={id,type:'picture',q:doc.question,original:doc.original,title:doc.title};
-    }else{
-      const doc=await buildSpeech(raw,level,msg);
-      item={id,type:'voice',q:doc.question,original:doc.original,title:doc.title,text:doc.speech};
+    const eid='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+    const entry={eid,q:raw,original:raw,title:'',date:new Date().toISOString(),level:LEN[level].name,outs:{}};
+    let base=null,firstErr=null;const notes=[];
+    for(const mode of modes){
+      try{
+        if(mode==='pdf'){
+          const doc=await buildDoc(raw,level,msg,base);
+          if(!base)base={question:doc.question,title:doc.title};
+          msg('Making the PDF…');
+          await idbPut(eid+'-pdf',await makePDF(doc));
+          entry.outs.pdf={key:eid+'-pdf'};
+        }else if(mode==='picture'){
+          const doc=await buildPicture(raw,level,msg,base);
+          if(!base)base={question:doc.question,title:doc.title};
+          msg('Making the picture…');
+          await idbPut(eid+'-picture',await makePicture(doc));
+          entry.outs.picture={key:eid+'-picture'};
+        }else{
+          const doc=await buildSpeech(raw,level,msg,base);
+          if(!base)base={question:doc.question,title:doc.title};
+          let key=null;
+          try{const a=await makeAudio(doc.speech,msg);await idbPut(eid+'-voice',a);key=eid+'-voice'}
+          catch(e){notes.push('The audio file could not be made, so the voice answer plays with the phone voice only.')}
+          entry.outs.voice={text:doc.speech,key};
+        }
+      }catch(e){if(!firstErr)firstErr=e;notes.push(`The ${OUT_NAME[mode]} could not be made.`)}
     }
-    item.date=new Date().toISOString();item.level=LEN[level].name;
-    items.unshift(item);saveItems();renderList();
-    if(mode==='voice')speakText(item.text,item.id);
-    else msg(`Done. Your ${mode==='pdf'?'PDF':'picture'} is in the list below.`);
+    if(!Object.keys(entry.outs).length)throw firstErr||new Error('Something went wrong. Please try again.');
+    entry.q=base?base.question:raw;entry.title=base?base.title:raw.slice(0,60);
+    items.unshift(entry);saveItems();renderList();
+    const n=Object.keys(entry.outs).length;
+    msg(`Done. ${n>1?n+' answers are':'Your answer is'} in the list below.${notes.length?' '+notes.join(' '):''}`);
+    if(entry.outs.voice&&!notes.length)playVoice(0);
   }catch(e){
     msg(e.message||'Something went wrong. Please try again.');
   }finally{
     busy=false;$('#askBtn').disabled=false;
     document.querySelectorAll('input[name="out"]').forEach(r=>r.disabled=false);
+    msg($('#msg').textContent);
   }
 }
 
@@ -933,7 +1080,11 @@ function showView(name){
 
 /* ---------- events ---------- */
 $('#askBtn').addEventListener('click',askByVoice);
-document.querySelectorAll('input[name="out"]').forEach(r=>r.addEventListener('change',()=>{if(r.checked){outMode=r.value;try{localStorage.setItem(OUT_KEY,outMode)}catch(e){}}}));
+document.querySelectorAll('input[name="out"]').forEach(r=>r.addEventListener('change',()=>{
+  const now=OUT_ORDER.filter(v=>{const el=document.querySelector(`input[name="out"][value="${v}"]`);return el&&el.checked});
+  if(!now.length){r.checked=true;return msg('Keep at least one output ticked.')}
+  outSel=now;try{localStorage.setItem(OUT_KEY,JSON.stringify(outSel))}catch(e){}
+}));
 $('#len').addEventListener('input',e=>{lenIdx=+e.target.value;localStorage.setItem(LEN_STORE,String(lenIdx));renderLen()});
 $('#stopBtn').addEventListener('click',()=>{if(rec)try{rec.stop()}catch(e){}});
 $('#cancelBtn').addEventListener('click',()=>{cancelled=true;if(rec)try{rec.abort()}catch(e){}showOverlay(false)});
@@ -957,10 +1108,12 @@ document.addEventListener('click',e=>{
   /* questions and responses */
   const b=closest('[data-act]');
   if(!b)return;
-  const act=b.dataset.act,i=+b.dataset.i;
-  if(act==='open')openFile(i);
-  else if(act==='dl')downloadFile(i);
-  else if(act==='play')playItem(i);
+  const act=b.dataset.act,i=+b.dataset.i,k=b.dataset.k;
+  const back=()=>{const n=document.querySelector(`#list [data-act="${act}"][data-i="${i}"]${k?`[data-k="${k}"]`:''}`);if(n&&document.activeElement!==n)n.focus()};
+  if(act==='toggle'){const it=items[i];if(it){if(openQ.has(it.eid))openQ.delete(it.eid);else openQ.add(it.eid);renderList();back()}}
+  else if(act==='open')openFile(i,k);
+  else if(act==='share')shareOut(i,k);
+  else if(act==='play')Promise.resolve(playVoice(i)).then(back);
   else if(act==='del')deleteItem(i);
 });
 document.addEventListener('keydown',e=>{
