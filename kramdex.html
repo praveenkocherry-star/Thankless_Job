@@ -48,6 +48,7 @@ button{cursor:pointer}
 .deckbar .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* deck name inside a deck: display only, very small, no border */
 .deckname{flex:1;min-width:0;font-size:1.1rem;font-weight:900;text-align:center;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em;color:var(--yellow);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.homebar{grid-template-columns:repeat(2,1fr)}
 .tabs{position:relative;flex:none;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:1px solid var(--white)}
 .tab{min-height:2.125rem;border:1px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.62rem;overflow-wrap:normal;padding:.2rem .1rem}
 .tab[aria-selected="true"]{background:var(--orange);color:var(--black)}
@@ -321,6 +322,9 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .files .frow{display:flex;align-items:center;min-width:0}
 .files .fname{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:clip}
 .files .xbtn{flex:none;width:.8rem;height:.8rem;min-width:.8rem;margin-left:3ch;padding:0;font-size:.4rem;line-height:1;box-shadow:none;border-width:1px}
+/* ---- build 8: Home and Settings bar on the landing page, sized like replyo ---- */
+.homebar{grid-template-columns:1fr 1fr;gap:.5rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px))}
+.homebar .tab{min-height:2.2rem;font-size:.85rem;padding:.2rem .3rem;overflow-wrap:normal;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
 </style>
 </head>
 <body>
@@ -347,6 +351,10 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     <button class="tab" role="tab" data-tab="overview">Overview</button>
     <button class="tab" role="tab" data-tab="study">Flashcards</button>
     <button class="tab" role="tab" data-tab="quiz">Quiz</button>
+  </nav>
+  <nav class="tabs homebar" id="homebar" aria-label="Home and Settings" hidden>
+    <button class="tab" data-hometab="home" aria-selected="true">Home</button>
+    <button class="tab" data-hometab="settings" aria-selected="false">Settings</button>
   </nav>
 </div>
 
@@ -1056,6 +1064,7 @@ const PROV_ORDER=['google','openai'];
 const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini'};
 const AI_BASE={openai:'https://api.openai.com/v1'};
 let keyUI={open:false,adding:null,msg:''};
+let homeTab='home';
 function loadKeys(){
   let list=[];
   try{
@@ -1647,7 +1656,7 @@ function answer(j){
 /* ---------- shell ---------- */
 function renderHome(){
   const cur=THEME_LIST.find(t=>t[0]===currentTheme())||THEME_LIST[0];
-  $('#view-home').innerHTML=`
+  const settings=`
     <div class="panel theme-panel">
       <span class="label" id="themeLbl">Themes</span>
       <div class="tdd">
@@ -1657,11 +1666,15 @@ function renderHome(){
         </ul>
       </div>
     </div>
-    ${keyPanel()}<div class="homesep" aria-hidden="true"></div>
+    ${keyPanel()}`;
+  const home=`
     <button class="btn lg block" id="newdeck">+ New deck</button>
     <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
 `;
+  $('#view-home').innerHTML=homeTab==='settings'?settings:home;
+  document.querySelectorAll('[data-hometab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.hometab===homeTab)));
 }
+
 function renderAll(){
   const d=D();if(!d)return;
   if(db.tab==='create')renderCreate();
@@ -1675,6 +1688,7 @@ function render(){
   $('#deckbar').hidden=!d;
   $('#tabs').hidden=!d;
   $('#view-home').hidden=!!d;
+  $('#homebar').hidden=!!d;
   if(d)$('#dname').textContent=d.name;
   ['create','overview','study','quiz'].forEach(t=>{$('#view-'+t).hidden=!d||db.tab!==t});
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===db.tab)));
@@ -1700,6 +1714,7 @@ document.addEventListener('click',e=>{
   if(ds.tab!==undefined){db.tab=ds.tab;study=quiz=null;speechStop();{const tp={overview:'ov',study:'cards',quiz:'quiz'}[ds.tab];if(tp){const dd=D();if(dd)openDeckTab(dd)}}if(ds.tab==='overview')ovSpeakPending=true;render();resetScroll();return}
   if(ds.opt!==undefined){answer(+ds.opt);return}
   if(ds.d!==undefined){const d=D();d.difficulty=ds.d;study=quiz=null;save();renderAll();return}
+  if(ds.hometab!==undefined){homeTab=ds.hometab;keyUI.msg='';renderHome();resetScroll();return}
   if(ds.themePick!==undefined){setTheme(ds.themePick);renderHome();return}
   if(ds.kadd!==undefined){keyUI={open:true,adding:ds.kadd,msg:''};renderHome();return}
   if(ds.kclose!==undefined){keyUI.adding=null;keyUI.msg='';renderHome();return}

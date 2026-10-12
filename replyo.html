@@ -76,6 +76,11 @@ input[type=range]::-moz-range-thumb{width:1rem;height:1rem;border-radius:50%;bac
 input[type=range]::-moz-range-track{background:transparent}
 .notches{display:flex;justify-content:space-between;font-size:.6rem;font-weight:800;color:var(--white)}
 
+/* bottom bar: Home and Settings */
+.tabs{position:relative;flex:none;z-index:10;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:1px solid var(--white)}
+.tab{min-height:2.2rem;border:1px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.85rem;padding:.2rem .3rem;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
+.tab[aria-selected="true"]{background:var(--orange);color:var(--black)}
+
 /* output choice: three radio buttons */
 .radios{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
 .rad{position:relative;display:block}
@@ -157,7 +162,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     <div class="letterhead" aria-hidden="true"></div>
   </header>
 
-  <section class="wrap">
+  <section class="wrap" id="viewHome" role="tabpanel" aria-labelledby="tabHome">
     <div class="twin">
       <button class="btn ask" id="askBtn">Ask a question</button>
       <div class="panel">
@@ -176,9 +181,6 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     </div>
     <p class="msg" id="msg" role="status" aria-live="polite"></p>
 
-    <div class="panel theme-panel" id="themeHost"></div>
-    <div class="panel apipanel" id="keyHost"></div>
-
     <div class="homesep" aria-hidden="true"></div>
 
     <div class="panel">
@@ -187,7 +189,19 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
       <ul class="list" id="list"></ul>
     </div>
   </section>
+
+  <section class="wrap" id="viewSettings" role="tabpanel" aria-labelledby="tabSettings" hidden>
+    <div class="panel theme-panel" id="themeHost"></div>
+
+    <div class="homesep" aria-hidden="true"></div>
+
+    <div class="panel apipanel" id="keyHost"></div>
+  </section>
 </div>
+<nav class="tabs" role="tablist" aria-label="Pages">
+  <button class="tab" role="tab" id="tabHome" data-tab="home" aria-selected="true" aria-controls="viewHome">Home</button>
+  <button class="tab" role="tab" id="tabSettings" data-tab="settings" aria-selected="false" aria-controls="viewSettings" tabindex="-1">Settings</button>
+</nav>
 </div>
 
 <div id="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="ovTitle">
@@ -403,7 +417,7 @@ async function callOne(p,k,prompt,json){
   return json?parseJSON(text):text;
 }
 async function ai(prompt,json){
-  if(!keys.length)throw new Error('Save an API key first, then ask again.');
+  if(!keys.length)throw new Error('Add an API key in Settings first, then ask again.');
   let last='';
   for(const k of keys){
     try{return await callOne(k.p,k.k,prompt,json)}catch(e){last=e.message||'error'}
@@ -854,7 +868,7 @@ function listen(){
 }
 async function askByVoice(){
   if(busy)return;
-  if(!keys.length)return msg('Save an API key first, then ask.');
+  if(!keys.length)return msg('Add an API key in Settings first, then ask.');
   if(location.protocol==='file:')return msg('Voice input does not work when the app is opened from a file. Open replyO online (the https web address).');
   cancelled=false;
   $('#ovTitle').textContent='Listening';
@@ -900,6 +914,18 @@ async function process(raw){
   }
 }
 
+/* ---------- Home and Settings pages ---------- */
+function showView(name){
+  const home=name!=='settings';
+  $('#viewHome').hidden=!home;
+  $('#viewSettings').hidden=home;
+  const th=$('#tabHome'),ts=$('#tabSettings');
+  th.setAttribute('aria-selected',String(home));ts.setAttribute('aria-selected',String(!home));
+  th.tabIndex=home?0:-1;ts.tabIndex=home?-1:0;
+  const l=$('#tddList');if(l&&!l.hidden){l.hidden=true;const bt=$('#tddBtn');if(bt)bt.setAttribute('aria-expanded','false')}
+  $('#scroll').scrollTop=0;
+}
+
 /* ---------- events ---------- */
 $('#askBtn').addEventListener('click',askByVoice);
 document.querySelectorAll('input[name="out"]').forEach(r=>r.addEventListener('change',()=>{if(r.checked){outMode=r.value;try{localStorage.setItem(OUT_KEY,outMode)}catch(e){}}}));
@@ -909,6 +935,8 @@ $('#cancelBtn').addEventListener('click',()=>{cancelled=true;if(rec)try{rec.abor
 document.addEventListener('click',e=>{
   const t=e.target;
   const closest=s=>t.closest&&t.closest(s);
+  const tabEl=closest('[data-tab]');
+  if(tabEl){showView(tabEl.dataset.tab);return}
   /* theme drop-down */
   const tb=closest('#tddBtn');
   if(tb){const l=$('#tddList');l.hidden=!l.hidden;tb.setAttribute('aria-expanded',String(!l.hidden));return}
@@ -931,6 +959,8 @@ document.addEventListener('click',e=>{
   else if(act==='del')deleteItem(i);
 });
 document.addEventListener('keydown',e=>{
+  if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.tab){
+    const to=document.activeElement.dataset.tab==='home'?'settings':'home';showView(to);$(to==='home'?'#tabHome':'#tabSettings').focus();return}
   if(e.key==='Escape'){const l=$('#tddList');if(l&&!l.hidden){l.hidden=true;$('#tddBtn').setAttribute('aria-expanded','false');$('#tddBtn').focus()}}
 });
 
