@@ -323,11 +323,34 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .files .fname{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:clip}
 .files .xbtn{flex:none;width:.8rem;height:.8rem;min-width:.8rem;margin-left:3ch;padding:0;font-size:.4rem;line-height:1;box-shadow:none;border-width:1px}
 /* ---- build 8: Home and Settings bar on the landing page, sized like replyo ---- */
-.homebar{grid-template-columns:1fr 1fr;gap:.5rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px))}
-.homebar .tab{min-height:2.2rem;font-size:.85rem;padding:.2rem .3rem;overflow-wrap:normal;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
+.homebar{grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px))}
+.homebar .tab{min-height:2.2rem;font-size:.8rem;padding:.2rem .1rem;overflow-wrap:normal;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
 /* API banner: one full-width line under the landing Home/Settings bar */
 .apibanner{flex:none;margin:0;width:100%;box-sizing:border-box;padding:.4rem .45rem;background:var(--white);color:var(--black);font-size:.8rem;font-weight:700;line-height:1.3;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .apibanner[hidden]{display:none!important}
+/* build: slogan, progress line, four-tab dock, Got it / Missed it, quiz types, backup and about */
+.slogan{margin:.1rem 0 .3rem;text-align:center;font-size:.8rem;font-weight:800;color:var(--white)}
+.homebar .tab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deckcard{display:flex;flex-direction:column;gap:.2rem}
+.progline{margin:0;font-size:.8rem;font-weight:800;color:var(--white)}
+.grade .btn{width:auto;min-width:7.5rem;font-size:1rem;padding:.4rem .9rem;line-height:1.1;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.fillrow{display:flex;flex-direction:column;gap:.5rem}
+.fillin,.matchrow select{width:100%;min-height:2.4rem;font:inherit;font-size:1.05rem;padding:.3rem .5rem;border:1px solid var(--white);border-radius:10px;background:var(--navy);color:var(--white)}
+.matchrow{display:flex;flex-direction:column;gap:.25rem}
+.mterm{font-weight:800;color:var(--yellow)}
+.bk{display:flex;flex-direction:column;gap:.6rem}
+.bkbtns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.bkpick{display:flex;flex-direction:column;gap:.4rem;padding:.6rem;border:1px solid var(--white);border-radius:12px}
+.bksep{border:0;height:1px;background:var(--white);margin:.4rem 0}
+.bkh,.abh{font-size:1.1rem;color:var(--yellow);margin:0}
+.bkact{display:flex;flex-wrap:wrap;gap:.4rem}
+.bkmeta{font-size:.85rem}
+.bklist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem}
+.about{display:flex;flex-direction:column;gap:.3rem}
+.abh3{font-size:.95rem;color:var(--yellow);margin:.7rem 0 .1rem}
+.abp,.abl{color:var(--white);font-size:1rem;line-height:1.45;margin:.2rem 0}
+.abl{padding-left:1.3rem}
+.abcredit{margin-top:.8rem;font-weight:800}
 </style>
 </head>
 <body>
@@ -335,8 +358,9 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 <div class="scroll" id="scroll">
   <header class="top">
     <span class="brand" aria-label="Kramdex"><span aria-hidden="true">K</span><span aria-hidden="true">R</span><span aria-hidden="true">A</span><span aria-hidden="true">M</span><span aria-hidden="true">D</span><span aria-hidden="true">E</span><span aria-hidden="true">X</span></span>
+    <p class="slogan">Study less, remember more.</p>
     <div class="credit-row">
-      <div class="credit" aria-label="Developed by PK. Accessibility first."><span class="cr1">Developed by PK</span><hr><span class="cr2">Accessibility first</span></div>
+      <div class="credit" aria-label="Developed by PK Solution Labs"><span class="cr1">Developed by PK Solution Labs</span></div>
     </div>
     <div class="letterhead" aria-hidden="true"></div>
     <div class="deckbar" id="deckbar" hidden><div class="deckcol"><span id="dname" class="deckname"></span><span id="bylabel" class="bylabel"></span></div></div>
@@ -355,9 +379,11 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     <button class="tab" role="tab" data-tab="study">Flashcards</button>
     <button class="tab" role="tab" data-tab="quiz">Quiz</button>
   </nav>
-  <nav class="tabs homebar" id="homebar" aria-label="Home and Settings" hidden>
+  <nav class="tabs homebar" id="homebar" aria-label="Home, Backup, Settings and About" hidden>
     <button class="tab" data-hometab="home" aria-selected="true">Home</button>
+    <button class="tab" data-hometab="backup" aria-selected="false">Backup</button>
     <button class="tab" data-hometab="settings" aria-selected="false">Settings</button>
+    <button class="tab" data-hometab="about" aria-selected="false">About</button>
   </nav>
   <p class="apibanner" id="apibanner" hidden>Add a free API in Settings for best results</p>
 </div>
@@ -382,6 +408,7 @@ let study=null, quiz=null, busy=false, gesture=null, ignoreClick=false;
 let lastMsg='';
 const factCache=new Map();
 let ovSpeakPending=false;
+let backupUI={msg:'',list:[],restoreOpen:false};
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify({decks:db.decks}))}catch(e){}}
 function load(){
@@ -696,12 +723,35 @@ function makeQuestion(f,i,ctx,diff){
     const want=(diff==='easy'?3:4)-1;
     const pool=ctx.facts.map(x=>x.def).filter(d=>d!==f.def);
     const picks=shuffle(pool).sort((a,b)=>Math.abs(a.length-f.def.length)-Math.abs(b.length-f.def.length)).slice(0,want);
-    return {label:'Question',prompt:f.term,answer:f.def,explain:f.def,options:shuffle([f.def,...picks])};
+    return {type:'choice',label:'Question',prompt:f.term,answer:f.def,explain:f.def,options:shuffle([f.def,...picks])};
   }
+  /* The types take turns: multiple choice, true or false, fill in the blank, matching. */
+  const k=i%4;
+  const otherFacts=ctx.facts.filter(x=>x.kind!=='qa'&&x.term!==f.term&&x.def!==f.def);
+  if(k===1&&otherFacts.length){
+    const wrong=(i>>2)%2===1;
+    const other=otherFacts[(i*7)%otherFacts.length];
+    const def=wrong?other.def:f.def;
+    return {type:'truefalse',label:'True or false',prompt:`True or false. ${f.term}: ${def}`,answer:wrong?'False':'True',explain:`${f.term}: ${f.def}`,options:shuffle(['True','False'])};
+  }
+  if(k===2&&f.kind!=='qa'){
+    /* The term is the missing word: "_____ is <definition>". */
+    const stmt=/this term/i.test(hideTerm(f.def,f.term))?hideTerm(f.def,f.term).replace(/this term/gi,'_____'):`_____ is ${f.def}`;
+    return {type:'fill',label:'Fill in the blank',prompt:`Fill in the blank: ${stmt}`,answer:f.term,explain:`${f.term}: ${f.def}`,options:[]};
+  }
+  if(k===3&&otherFacts.length>=2){
+    const src=[f,...shuffle(otherFacts).slice(0,2)].filter((p,j,a)=>a.findIndex(x=>x.term.toLowerCase()===p.term.toLowerCase())===j);
+    if(src.length>=2){
+      const pairs=src.map(p=>({term:p.term,meaning:p.def}));
+      return {type:'match',label:'Matching',prompt:'Match each term with its meaning.',answer:pairs.map(p=>`${p.term} = ${p.meaning}`).join('; '),explain:'',pairs,options:shuffle(pairs.map(p=>p.meaning))};
+    }
+  }
+  /* Multiple choice: the framing alternates between a plain definition question and a short scenario. */
   const scenario=i%2===1;
   const stmt=hideTerm(f.def,f.term);
   const ask=f.kind==='topic'?'Which term is this statement about?':'Which term matches this definition?';
   const q={
+    type:'choice',
     label:scenario?'Scenario':'Definition',
     prompt:scenario?`A student reads this in a textbook: "${stmt}". ${ask}`:`${ask} ${stmt}`,
     answer:f.term,
@@ -936,7 +986,7 @@ const MEDIA_OK={google:['image','audio','video'],openai:['image']};
 const MEDIA_MAX=18*1024*1024;
 const mediaAllowed=()=>{const ai=getAI();return aiUsable(ai)&&(MEDIA_OK[ai.provider]||[]).length>0};
 let idbP=null;
-function idb(){return idbP||(idbP=new Promise((res,rej)=>{const r=indexedDB.open('cramdex-media',1);r.onupgradeneeded=()=>r.result.createObjectStore('blobs');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))}
+function idb(){return idbP||(idbP=new Promise((res,rej)=>{const r=indexedDB.open('cramdex-media',2);r.onupgradeneeded=()=>{const x=r.result;if(!x.objectStoreNames.contains('blobs'))x.createObjectStore('blobs');if(!x.objectStoreNames.contains('backups'))x.createObjectStore('backups')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))}
 async function idbPut(id,blob){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction('blobs','readwrite');t.objectStore('blobs').put(blob,id);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
 async function idbGet(id){const d=await idb();return new Promise((res,rej)=>{const q=d.transaction('blobs').objectStore('blobs').get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function idbDel(id){try{const d=await idb();d.transaction('blobs','readwrite').objectStore('blobs').delete(id)}catch(e){}}
@@ -1027,8 +1077,8 @@ function sectionText(){
   if(db.tab==='overview')return getPart(d,'ov').data.text||'';
   if(db.tab==='study'){
     const cards=getPart(d,'cards').data;
-    if(!study||!cards[study.pos])return '';
-    const ft=faceText(d.difficulty,cards[study.pos]);
+    if(!study||!Array.isArray(study.seq)||!cards[study.seq[study.pos]])return '';
+    const ft=faceText(d.difficulty,cards[study.seq[study.pos]]);
     return study.flipped?ft.back:ft.front;
   }
   if(db.tab==='quiz'){
@@ -1189,11 +1239,30 @@ function cleanCards(a){
 }
 function cleanQuiz(a,k){
   return (Array.isArray(a)?a:[]).map(q=>{
-    if(!q||typeof q.question!=='string'||!q.question.trim()||!Array.isArray(q.options))return null;
+    if(!q||typeof q.question!=='string'||!q.question.trim())return null;
+    const prompt=q.question.trim(),explain=String(q.explain||'').trim();
+    const type=String(q.type||'choice').toLowerCase();
+    if(type==='fill'){
+      const ans=String(q.answer||'').trim();
+      if(!ans||ans.length>60||!/_{3,}/.test(prompt))return null;
+      return {type:'fill',label:'Fill in the blank',prompt,answer:ans,explain,options:[]};
+    }
+    if(type==='match'){
+      const raw=(Array.isArray(q.pairs)?q.pairs:[]).map(p=>({term:String(p&&p.term||'').trim(),meaning:String(p&&p.meaning||'').trim()})).filter(p=>p.term&&p.meaning);
+      const pairs=raw.filter((p,i)=>raw.findIndex(x=>x.term===p.term)===i).slice(0,4);
+      if(pairs.length<2)return null;
+      return {type:'match',label:'Matching',prompt:prompt||'Match each term with its meaning.',answer:pairs.map(p=>`${p.term} = ${p.meaning}`).join('; '),explain,pairs,options:shuffle(pairs.map(p=>p.meaning))};
+    }
+    if(type==='truefalse'){
+      const raw=String(q.answer||'').trim().toLowerCase();
+      if(raw!=='true'&&raw!=='false')return null;
+      return {type:'truefalse',label:'True or false',prompt,answer:raw==='true'?'True':'False',explain,options:['True','False']};
+    }
+    if(!Array.isArray(q.options))return null;
     const opts=[...new Set(q.options.map(o=>String(o).trim()).filter(Boolean))].slice(0,k);
     const ans=String(q.answer||'').trim();
     if(opts.length<2||!opts.includes(ans))return null;
-    return {label:'Question',prompt:q.question.trim(),answer:ans,explain:String(q.explain||'').trim(),options:shuffle(opts)};
+    return {type:'choice',label:'Question',prompt,answer:ans,explain,options:shuffle(opts)};
   }).filter(Boolean);
 }
 const mkErr=c=>{const e=new Error(c);e.err=c;return e};
@@ -1254,7 +1323,7 @@ const EMPTY={ov:{text:'',paras:[],words:0},cards:[],quiz:[]};
 /* Minimum, Standard and Maximum: share of the created content that is shown. Default Standard. */
 const LVL_PCT=[0.3,0.6,1], LVL_NAME=['MIN','STD','MAX'];
 /* Caps: overview at most 2000 characters; at most 500 flashcards and 500 quiz questions in total (166 per level). */
-const OV_CHARS=2000, FACT_CAP=166;
+const OV_CHARS=18000, FACT_CAP=166;
 const lvlOf=d=>(typeof d.lvl==='number')?d.lvl:1;
 const wlvlOf=d=>(typeof d.wlvl==='number')?d.wlvl:1;
 function storeRec(d,key,rec){d.gen=d.gen||{};d.gen[key]=rec;save()}
@@ -1297,16 +1366,18 @@ function fallbackFor(d,key,sig,by,err){return {sig,by,err,...(key==='ov'?appOv(d
 const FACT_BATCH=30;
 const LEVELS=['easy','medium','hard'];
 const LEVEL_TEXT={easy:'Easy: plain words, one fact each.',medium:'Medium: apply or compare the facts.',hard:'Hard: precise terms, short scenarios and exact answers.'};
-const ITEM_SHAPE='{"easy":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"medium":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]},"hard":{"cards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["...","...","...","..."],"answer":"one of the options exactly","explain":"..."}]}}';
+const QUIZ_ITEM='{"type":"choice|truefalse|fill|match","question":"...","options":["...","..."],"answer":"...","pairs":[{"term":"...","meaning":"..."}],"explain":"..."}';
+const ITEM_SHAPE=`{"easy":{"cards":[{"question":"...","answer":"..."}],"quiz":[${QUIZ_ITEM}]},"medium":{"cards":[{"question":"...","answer":"..."}],"quiz":[${QUIZ_ITEM}]},"hard":{"cards":[{"question":"...","answer":"..."}],"quiz":[${QUIZ_ITEM}]}}`;
+const QUIZ_MIX='Mix the quiz types. About half are multiple choice (type "choice", 3 or 4 options, answer one of them). About a quarter are true or false (type "truefalse", options ["True","False"], answer "True" or "False"). About a quarter are fill in the blank (type "fill": the question contains _____ where the missing word goes, and the answer is that word). At most one matching question per level (type "match", 2 to 4 pairs of term and meaning taken from the facts, in "pairs"). ';
 const factLine=f=>f.kind==='def'?`${f.term}: ${f.def}`:`${f.term} -> ${f.def}`;
 function factsPrompt(sel,idxs){
   const groups=LEVELS.map((l,li)=>({l,fs:idxs.filter(i=>i%3===li)})).filter(g=>g.fs.length);
-  return `Use ONLY the facts below. Each level has its own facts; use a fact only under its own level, never at two levels. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write exactly 1 flashcard and 1 quiz question, in the style of its level. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Leave a level as {"cards":[],"quiz":[]} when it has no facts. Do not ask about the document itself.\n\n`+groups.map(g=>`${g.l.toUpperCase()} facts:\n`+g.fs.map((i,n)=>`${n+1}. ${factLine(sel[i])}`).join('\n')).join('\n\n');
+  return `Use ONLY the facts below. Each level has its own facts; use a fact only under its own level, never at two levels. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nFor EACH fact write exactly 1 flashcard and 1 quiz question, in the style of its level. ${QUIZ_MIX}${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Leave a level as {"cards":[],"quiz":[]} when it has no facts. Do not ask about the document itself.\n\n`+groups.map(g=>`${g.l.toUpperCase()} facts:\n`+g.fs.map((i,n)=>`${n+1}. ${factLine(sel[i])}`).join('\n')).join('\n\n');
 }
 function materialPrompt(d){
-  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 166 flashcards and up to 166 quiz questions at each level. Each level must use different parts of the material, so no item repeats across levels. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+  return `Use only the study material below, including any attached photos, audio or video. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to 166 flashcards and up to 166 quiz questions at each level. Each level must use different parts of the material, so no item repeats across levels. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 }
-const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 2000 characters (about 300 words). Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
+const OV_PROMPT=(d)=>`Write an overview of ALL the study material below, in plain paragraphs, with no headings or bullet points. Keep the whole overview within 18000 characters (about 3000 words). Cover the main points of every document.\n\nSTUDY MATERIAL:\n${materialText(d)}`;
 const levelUsable=(j,l)=>{const x=(j&&j[l])||{};return cleanCards(x.cards).length>0||cleanQuiz(x.quiz,4).length>0};
 /* One request, sent to the keys in order. A key that fails hands the work to the next key, and stays handed over for the rest of the run. */
 async function aiFrom(st,prompt,json,media,check){
@@ -1407,6 +1478,7 @@ function getPart(d,part){
   if(!arr.length)n=0;
   let data=arr.slice(0,n);
   if(part==='quiz'&&d.difficulty==='easy')data=data.map(q=>{
+    if(q.type&&q.type!=='choice')return q;
     if(q.options.length<=3)return q;
     const wrong=q.options.filter(o=>o!==q.answer).slice(0,2);
     return {...q,options:shuffle([q.answer,...wrong])};
@@ -1536,20 +1608,20 @@ function setRangeFill(el){
 /* ---------- flashcards ---------- */
 const SPEAK_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9h4l5-4.5v15L7 15H3z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 function emptyView(text){return `<div class="panel center"><p class="big">${esc(text)}</p></div>`}
-function knownCount(){return study?Object.values(study.marks).filter(Boolean).length:0}
+function knownCount(){const d=D();return d&&d.marks?Object.values(d.marks).filter(v=>v===true).length:0}
 function renderStudy(){
   const d=D(),el=$('#view-study');
   const c=getPart(d,'cards');
   if(c.state==='loading'){el.innerHTML=loadingView();return}
   const cards=c.data;
   if(!cards.length){study=null;el.innerHTML=emptyView('No cards yet');return}
-  if(!study)study={pos:0,flipped:false,angle:0,marks:{},speak:true};
-  const n=cards.length;
+  if(!study||!Array.isArray(study.seq))study={pos:0,flipped:false,angle:0,seq:cards.map((_,i)=>i),speak:true};
+  const n=study.seq.length;
   if(study.pos>=n){
-    el.innerHTML=`<div class="panel center"><p class="big">${knownCount()} of ${n} known</p><button class="btn lg" id="restart">Start over</button></div>`;
+    el.innerHTML=`<div class="panel center"><p class="big">${knownCount()} of ${cards.length} known</p><button class="btn lg" id="restart">Start over</button></div>`;
     return;
   }
-  const card=cards[study.pos],f=faceText(d.difficulty,card);
+  const card=cards[study.seq[study.pos]],f=faceText(d.difficulty,card);
   el.innerHTML=`<div class="statline"><span>Card ${study.pos+1} of ${n}</span><span>Known ${knownCount()}</span></div>
     ${spkBar(true)}
     <div class="stage" id="stage">
@@ -1559,18 +1631,18 @@ function renderStudy(){
       </div>
     </div>
     <div class="grade" id="grade" ${study.flipped?'':'hidden'}>
-      <button class="btn got" id="got" aria-label="Guessed right" title="Guessed right"><span aria-hidden="true">✓</span></button><button class="btn again" id="again" aria-label="Guessed wrong" title="Guessed wrong"><span aria-hidden="true">✗</span></button>
+      <button class="btn got" id="got" title="Got it"><span aria-hidden="true">✓</span> Got it</button><button class="btn again" id="again" title="Missed it"><span aria-hidden="true">✗</span> Missed it</button>
     </div>
     <p class="hint">Swipe left or right to turn the card. Swipe up for next, down for previous.</p>`;
   if(study.speak){study.speak=false;speak(f.front)}
 }
 function flipCard(dir){
-  const d=D(),cards=cardsOf(d);if(!cards.length||!study||busy||study.pos>=cards.length)return;
+  const d=D(),cards=cardsOf(d);if(!cards.length||!study||busy||study.pos>=study.seq.length)return;
   study.flipped=!study.flipped;
   study.angle=study.flipped?(dir<0?-180:180):0;
   const f=$('#flip');if(f){f.style.transform=`rotateY(${study.angle}deg)`;f.classList.toggle('is-flipped',study.flipped)}
   const g=$('#grade');if(g)g.hidden=!study.flipped;
-  const ft=faceText(d.difficulty,cards[study.pos]);
+  const ft=faceText(d.difficulty,cards[study.seq[study.pos]]);
   speak(study.flipped?ft.back:ft.front);
 }
 /* Card change: the current card turns away and the next one turns in, like a flip. dir +1 = next, -1 = previous. */
@@ -1597,13 +1669,19 @@ function runChange(dir,apply){
 }
 function move(delta){
   const d=D(),cards=cardsOf(d);if(!cards.length||!study||busy)return;
-  const next=Math.max(0,Math.min(cards.length,study.pos+delta));
+  const next=Math.max(0,Math.min(study.seq.length,study.pos+delta));
   if(next===study.pos)return;
   runChange(delta,()=>{study.pos=next;study.flipped=false;study.angle=0;study.speak=true;renderStudy()});
 }
+/* A missed card or question comes back after three more, and at most this many times, so a session always ends. */
+const REPEAT_MAX=5;
+/* Got it: the card is marked known. Missed it: the card is marked missed and comes back after three more cards. */
 function grade(ok){
-  const d=D(),cards=cardsOf(d);if(!cards.length||!study||!study.flipped||busy||study.pos>=cards.length)return;
-  study.marks[cards[study.pos].term]=ok;
+  const d=D(),cards=cardsOf(d);if(!cards.length||!study||!study.flipped||busy||study.pos>=study.seq.length)return;
+  const ci=study.seq[study.pos];
+  d.marks=d.marks||{};d.marks[cards[ci].term]=ok;save();
+  study.repeats=study.repeats||{};
+  if(!ok&&(study.repeats[ci]||0)<REPEAT_MAX){study.repeats[ci]=(study.repeats[ci]||0)+1;study.seq.splice(Math.min(study.seq.length,study.pos+4),0,ci)}
   move(1);
 }
 
@@ -1622,7 +1700,10 @@ document.addEventListener('pointerup',e=>{
 });
 
 /* ---------- quiz ---------- */
+const normAns=s=>String(s).toLowerCase().normalize('NFKC').replace(/[\s.,;:!?'"()\-]+/g,'');
 function fullQuestionText(q){
+  if(q.type==='match')return `${q.prompt} ${q.pairs.map(p=>p.term).join('. ')}. Meanings: ${q.options.join('. ')}.`;
+  if(q.type==='fill'||!q.options.length)return q.prompt;
   return `${q.prompt} ${q.options.map((o,j)=>`Option ${'ABCD'[j]}, ${o}.`).join(' ')}`;
 }
 function renderQuiz(){
@@ -1630,33 +1711,198 @@ function renderQuiz(){
   const c=getPart(d,'quiz'),qs=c.data,total=qs.length;
   if(c.state==='loading'){el.innerHTML=loadingView();return}
   if(!total){quiz=null;el.innerHTML=emptyView('No questions yet');return}
-  if(!quiz||quiz.order.length!==total)quiz={order:shuffle(qs.map((_,i)=>i)),i:0,score:0,picked:null,missed:[],speak:true};
-  if(quiz.i>=total){
+  if(!quiz||quiz.n!==total)quiz={n:total,order:shuffle(qs.map((_,i)=>i)),i:0,score:0,picked:null,missed:[],seen:new Set(),speak:true};
+  if(quiz.i>=quiz.order.length){
     const missed=quiz.missed.length?`<h3 style="margin:0;color:var(--yellow)">Review these</h3><ul class="missed">${quiz.missed.map(m=>`<li><b>${esc(m.answer)}</b><br>${esc(m.explain||'')}</li>`).join('')}</ul>`:'';
-    el.innerHTML=`<div class="panel center"><div class="score">${quiz.score}/${total}</div>${missed}<button class="btn lg" id="retake">New quiz</button></div>`;
+    el.innerHTML=`<div class="panel center"><div class="score">${quiz.score}/${quiz.n}</div>${missed}<button class="btn lg" id="retake">New quiz</button></div>`;
     return;
   }
-  const q=qs[quiz.order[quiz.i]],done=quiz.picked!==null,correct=done&&quiz.picked.ok;
-  const opts=q.options.map((o,j)=>{
-    let cls='';
-    if(done){if(o===q.answer)cls=' right';else if(j===quiz.picked.j)cls=' wrong'}
-    return `<button class="opt${cls}" data-opt="${j}" ${done?'disabled':''}><span class="k">${'ABCD'[j]}</span><span>${esc(o)}</span></button>`;
-  }).join('');
+  const q=qs[quiz.order[quiz.i]],t=q.type||'choice',done=quiz.picked!==null,correct=done&&quiz.picked.ok;
+  let body='';
+  if(t==='fill'){
+    body=`<div class="fillrow"><label class="label" for="fillIn">Your answer</label><input id="fillIn" class="fillin" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" ${done?'disabled':''} value="${done?esc(quiz.picked.text||''):''}"><button class="btn block" data-fillcheck="1" ${done?'disabled':''}>Check answer</button></div>`;
+  }else if(t==='match'){
+    body=q.pairs.map((p,i)=>{
+      const sel=done&&quiz.picked.map?quiz.picked.map[i]:-1;
+      return `<div class="matchrow"><label class="mterm" for="m${i}">${esc(p.term)}</label><select id="m${i}" ${done?'disabled':''}><option value="">Choose a meaning</option>${q.options.map((o,j)=>`<option value="${j}"${j===sel?' selected':''}>${esc(o)}</option>`).join('')}</select></div>`;
+    }).join('')+`<button class="btn block" data-matchcheck="1" ${done?'disabled':''}>Check answers</button>`;
+  }else{
+    const opts=q.options.map((o,j)=>{
+      let cls='';
+      if(done){if(o===q.answer)cls=' right';else if(j===quiz.picked.j)cls=' wrong'}
+      return `<button class="opt${cls}" data-opt="${j}" ${done?'disabled':''}><span class="k">${'ABCD'[j]}</span><span>${esc(o)}</span></button>`;
+    }).join('');
+    body=`<div class="opts">${opts}</div>`;
+  }
   const fb=done?`<div class="feedback ${correct?'ok':'no'}"><b>${correct?'Correct':'Not quite. Answer: '+esc(q.answer)}</b>${esc(q.explain||'')}</div>`:'';
-  const nxt=done?`<button class="btn block" id="qnext">${quiz.i+1<total?'Next question':'See results'}</button>`:'';
-  el.innerHTML=`<div class="statline"><span>Question ${quiz.i+1} of ${total}</span><span>Score ${quiz.score}</span></div>
+  const nxt=done?`<button class="btn block" id="qnext">${quiz.i+1<quiz.order.length?'Next question':'See results'}</button>`:'';
+  el.innerHTML=`<div class="statline"><span>Question ${quiz.i+1} of ${quiz.order.length}</span><span>Score ${quiz.score}</span></div>
     ${spkBar(true)}
-    <div class="q"><span class="label">${esc(q.label)}</span><div class="prompt">${esc(q.prompt)}</div><div class="opts">${opts}</div>${fb}${nxt}</div>`;
+    <div class="q"><span class="label">${esc(q.label)}</span><div class="prompt">${esc(q.prompt)}</div>${body}${fb}${nxt}</div>`;
   if(quiz.speak){quiz.speak=false;speak(fullQuestionText(q))}
+}
+/* A wrong answer comes back after three more questions. Only the first answer to a question counts for the score. */
+function finishQuestion(ok,picked){
+  const qs=questionsOf(D());if(!quiz||!qs.length)return;
+  const qi=quiz.order[quiz.i],q=qs[qi];
+  quiz.picked={...picked,ok};
+  if(!quiz.seen.has(qi)){quiz.seen.add(qi);if(ok)quiz.score++;else quiz.missed.push(q)}
+  quiz.repeats=quiz.repeats||{};
+  if(!ok&&(quiz.repeats[qi]||0)<REPEAT_MAX){quiz.repeats[qi]=(quiz.repeats[qi]||0)+1;quiz.order.splice(Math.min(quiz.order.length,quiz.i+4),0,qi)}
+  renderQuiz();
 }
 function answer(j){
   const qs=questionsOf(D());if(!quiz||quiz.picked!==null||!qs.length)return;
   const q=qs[quiz.order[quiz.i]];
+  if(q.type&&q.type!=='choice'&&q.type!=='truefalse')return;
   const ok=q.options[j]===q.answer;
-  quiz.picked={j,ok};
-  if(ok)quiz.score++;else quiz.missed.push(q);
-  renderQuiz();
+  finishQuestion(ok,{j});
   speak(ok?'Correct':`Not quite. The answer is ${q.answer}.`);
+}
+function answerFill(){
+  const qs=questionsOf(D());if(!quiz||quiz.picked!==null||!qs.length)return;
+  const q=qs[quiz.order[quiz.i]];if(q.type!=='fill')return;
+  const inp=$('#fillIn');const text=inp?inp.value.trim():'';
+  if(!text){speak('Type your answer first.');return}
+  const ok=normAns(text)===normAns(q.answer);
+  finishQuestion(ok,{text});
+  speak(ok?'Correct':`Not quite. The answer is ${q.answer}.`);
+}
+function answerMatch(){
+  const qs=questionsOf(D());if(!quiz||quiz.picked!==null||!qs.length)return;
+  const q=qs[quiz.order[quiz.i]];if(q.type!=='match')return;
+  const map=q.pairs.map((_,i)=>{const v=$('#m'+i);return v&&v.value!==''?+v.value:-1});
+  if(map.some(x=>x<0)){speak('Choose a meaning for every term.');return}
+  const ok=map.every((x,i)=>q.options[x]===q.pairs[i].meaning);
+  finishQuestion(ok,{map});
+  speak(ok?'Correct':`Not quite. The answers are: ${q.answer}.`);
+}
+
+/* ---------- backup and restore: one file with everything (decks, generated cards and quizzes, keys, theme, photos, audio and video) ---------- */
+function fmtSize(n){return n<1024?n+' bytes':n<1048576?Math.round(n/1024)+' KB':(n/1048576).toFixed(1)+' MB'}
+function backupName(dt){const p=x=>String(x).padStart(2,'0');return `kramdex-backup-${dt.getFullYear()}-${p(dt.getMonth()+1)}-${p(dt.getDate())}-${p(dt.getHours())}${p(dt.getMinutes())}.json`}
+async function bkPut(rec){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction('backups','readwrite');t.objectStore('backups').put(rec,rec.id);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function bkGet(id){const d=await idb();return new Promise((res,rej)=>{const q=d.transaction('backups').objectStore('backups').get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function bkAll(){const d=await idb();return new Promise((res,rej)=>{const q=d.transaction('backups').objectStore('backups').getAll();q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.stamp-a.stamp));q.onerror=()=>rej(q.error)})}
+async function refreshBackups(){
+  try{backupUI.list=await bkAll()}catch(e){backupUI.list=[]}
+  if(homeTab==='backup')renderHome();
+}
+async function buildBackup(){
+  const decks=JSON.parse(JSON.stringify(db.decks));
+  const ids=new Set();
+  decks.forEach(d=>(d.sources||[]).forEach(s=>{if(s.blobId)ids.add(s.blobId)}));
+  const media=[];
+  for(const id of ids){try{const b=await idbGet(id);if(b)media.push({id,type:b.type||'',data:await blobB64(b)})}catch(e){}}
+  let theme='slate';try{theme=localStorage.getItem(THEME_KEY)||'slate'}catch(e){}
+  const payload={app:'kramdex',format:1,created:new Date().toISOString(),theme,keys:loadKeys(),decks,media};
+  return new Blob([JSON.stringify(payload)],{type:'application/json'});
+}
+async function makeBackup(){
+  backupUI.msg='Making the backup. Please wait.';renderHome();
+  try{
+    const blob=await buildBackup();
+    const stamp=Date.now(),dt=new Date(stamp);
+    await bkPut({id:'b'+uid(),name:backupName(dt),when:dt.toLocaleString(),stamp,size:blob.size,blob});
+    backupUI.msg='Backup made and kept on this device. Tap Share to send it, or Save to device.';
+    await refreshBackups();
+  }catch(e){backupUI.msg='The backup could not be made. Free some space on the phone and try again.'}
+  renderHome();
+}
+async function shareBackup(id){
+  try{
+    const rec=await bkGet(id);if(!rec)return;
+    const file=new File([rec.blob],rec.name,{type:'application/json'});
+    if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[file]})){backupUI.msg='Sharing is not available on this device. Use Save to device instead.';renderHome();return}
+    await navigator.share({files:[file],title:'Kramdex backup'});
+    backupUI.msg='Backup shared.';
+  }catch(e){backupUI.msg=(e&&e.name==='AbortError')?'Sharing was cancelled.':'Sharing did not finish. Use Save to device instead.'}
+  renderHome();
+}
+async function saveBackup(id){
+  try{
+    const rec=await bkGet(id);if(!rec)return;
+    if(window.showSaveFilePicker){
+      try{
+        const h=await window.showSaveFilePicker({suggestedName:rec.name,types:[{description:'Kramdex backup',accept:{'application/json':['.json']}}]});
+        const w=await h.createWritable();await w.write(rec.blob);await w.close();
+        backupUI.msg='Backup saved to the folder you chose.';renderHome();return;
+      }catch(e){if(e&&e.name==='AbortError'){backupUI.msg='Saving was cancelled.';renderHome();return}}
+    }
+    const url=URL.createObjectURL(rec.blob);const a=document.createElement('a');
+    a.href=url;a.download=rec.name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    backupUI.msg="Backup saved to this device's download folder.";
+  }catch(e){backupUI.msg='The backup could not be saved.'}
+  renderHome();
+}
+async function restoreFrom(blob,label){
+  let p=null;
+  try{p=JSON.parse(await blob.text())}catch(e){p=null}
+  if(!p||p.app!=='kramdex'||!Array.isArray(p.decks)){backupUI.msg='This file is not a Kramdex backup.';renderHome();return}
+  if(!window.confirm(`Restore ${label}? This replaces the decks, keys and theme on this phone.`))return;
+  try{
+    for(const m of (Array.isArray(p.media)?p.media:[])){
+      try{const bin=atob(m.data);const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);await idbPut(m.id,new Blob([arr],{type:m.type||''}))}catch(e){}
+    }
+    db.decks=p.decks.filter(d=>d&&typeof d.id==='string');
+    save();
+    if(Array.isArray(p.keys))writeKeys(p.keys);
+    if(typeof p.theme==='string')setTheme(p.theme);
+    load();
+    db.active=null;db.tab='create';study=quiz=null;homeTab='home';
+    backupUI.restoreOpen=false;backupUI.msg='The backup has been restored.';
+    render();
+    refreshBackups();
+  }catch(e){backupUI.msg='The backup could not be restored.';renderHome()}
+}
+async function restoreStored(id){
+  const rec=await bkGet(id).catch(()=>null);
+  if(!rec){backupUI.msg='That backup could not be found.';renderHome();return}
+  await restoreFrom(rec.blob,rec.name);
+}
+/* Progress line on the Home list: known and missed cards for the deck's current level. */
+function progressLine(d){
+  const rec=d.gen&&d.gen[d.difficulty];
+  if(!rec||!Array.isArray(rec.cards)||!rec.cards.length)return '';
+  const total=Math.max(1,Math.round(rec.cards.length*LVL_PCT[lvlOf(d)]));
+  const vals=Object.values(d.marks||{});
+  const known=Math.min(total,vals.filter(v=>v===true).length),missed=vals.filter(v=>v===false).length;
+  return `${known} of ${total} known, ${missed} missed`;
+}
+function backupView(){
+  const rows=(backupUI.list||[]).map(b=>`<li class="file bkrow"><div class="frow"><span class="fname">${esc(b.name)}</span></div><p class="hint bkmeta">${esc(b.when)}, ${esc(fmtSize(b.size))}</p><div class="bkact"><button class="btn sm" data-bshare="${esc(b.id)}">Share</button><button class="btn sm" data-bsave="${esc(b.id)}">Save to device</button><button class="btn sm" data-brestore="${esc(b.id)}">Restore</button></div></li>`).join('');
+  return `<div class="panel bk">
+    <div class="bkbtns"><button class="btn lg" id="bkBackup">Backup</button><button class="btn lg" id="bkRestore" aria-expanded="${backupUI.restoreOpen?'true':'false'}">Restore</button></div>
+    ${backupUI.restoreOpen?`<div class="bkpick"><label class="label" for="bkFile">Choose a backup file from this phone or another place</label><input type="file" id="bkFile" accept=".json,application/json"></div>`:''}
+    ${backupUI.msg?`<p class="hint" role="status">${esc(backupUI.msg)}</p>`:''}
+    <hr class="bksep">
+    <h2 class="bkh">Backups on this device</h2>
+    ${rows?`<ul class="files bklist">${rows}</ul>`:'<p class="hint">No backups yet. Tap Backup to make one.</p>'}
+  </div>`;
+}
+function aboutView(){
+  return `<section class="panel about" aria-labelledby="abH">
+    <h2 id="abH" class="abh">About Kramdex</h2>
+    <p class="abp">Kramdex turns your notes, documents, photos, audio and links into an overview, flashcards and a quiz.</p>
+    <h3 class="abh3">What it does</h3>
+    <ul class="abl">
+      <li>Builds an overview, flashcards and a quiz from your material.</li>
+      <li>Uses AI if you add a free key in Settings. Without a key, it still builds the content with built-in app logic.</li>
+      <li>Quiz questions come in several types: multiple choice, true or false, fill in the blank and matching.</li>
+      <li>Reads cards and questions aloud.</li>
+    </ul>
+    <h3 class="abh3">How to use it</h3>
+    <ol class="abl">
+      <li>Create a deck and add your material.</li>
+      <li>Open Overview, Flashcards or Quiz.</li>
+      <li>Add a free API key in Settings for best results.</li>
+      <li>Use Backup to keep a copy of your data.</li>
+    </ol>
+    <h3 class="abh3">Your data</h3>
+    <p class="abp">Everything stays on this phone. A backup includes your API keys, so keep backup files private.</p>
+    <p class="abp abcredit">Developed by PK Solution Labs</p>
+  </section>`;
 }
 
 /* ---------- shell ---------- */
@@ -1675,9 +1921,9 @@ function renderHome(){
     ${keyPanel()}`;
   const home=`
     <button class="btn lg block" id="newdeck">+ New deck</button>
-    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
+    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckcard"><div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div>${progressLine(d)?`<p class="progline">${esc(progressLine(d))}</p>`:''}</div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
 `;
-  $('#view-home').innerHTML=homeTab==='settings'?settings:home;
+  $('#view-home').innerHTML=homeTab==='settings'?settings:homeTab==='backup'?backupView():homeTab==='about'?aboutView():home;
   document.querySelectorAll('[data-hometab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.hometab===homeTab)));
 }
 
@@ -1721,7 +1967,7 @@ document.addEventListener('click',e=>{
   if(ds.tab!==undefined){db.tab=ds.tab;study=quiz=null;speechStop();{const tp={overview:'ov',study:'cards',quiz:'quiz'}[ds.tab];if(tp){const dd=D();if(dd)openDeckTab(dd)}}if(ds.tab==='overview')ovSpeakPending=true;render();resetScroll();return}
   if(ds.opt!==undefined){answer(+ds.opt);return}
   if(ds.d!==undefined){const d=D();d.difficulty=ds.d;study=quiz=null;save();renderAll();return}
-  if(ds.hometab!==undefined){homeTab=ds.hometab;keyUI.msg='';renderHome();resetScroll();return}
+  if(ds.hometab!==undefined){homeTab=ds.hometab;keyUI.msg='';if(homeTab==='backup'){backupUI.msg='';refreshBackups()}renderHome();resetScroll();return}
   if(ds.themePick!==undefined){setTheme(ds.themePick);renderHome();return}
   if(ds.kadd!==undefined){keyUI={open:true,adding:ds.kadd,msg:''};renderHome();return}
   if(ds.kclose!==undefined){keyUI.adding=null;keyUI.msg='';renderHome();return}
@@ -1731,6 +1977,11 @@ document.addEventListener('click',e=>{
   if(ds.cdel!==undefined){camShots.splice(+ds.cdel,1);renderSheet();return}
   if(ds.cmode!==undefined){camMode=ds.cmode;renderSheet();return}
   if(ds.addlink!==undefined){addLink(ds.addlink);return}
+  if(ds.fillcheck!==undefined){answerFill();return}
+  if(ds.matchcheck!==undefined){answerMatch();return}
+  if(ds.bshare!==undefined){shareBackup(ds.bshare);return}
+  if(ds.bsave!==undefined){saveBackup(ds.bsave);return}
+  if(ds.brestore!==undefined){restoreStored(ds.brestore);return}
   switch(b.id){
     case 'backHome':goHome();break;
     case 'newdeck':newDeck();break;
@@ -1747,9 +1998,11 @@ document.addEventListener('click',e=>{
     case 'snext':move(1);break;
     case 'again':grade(false);break;
     case 'got':grade(true);break;
-    case 'restart':study.pos=0;study.flipped=false;study.angle=0;study.marks={};study.speak=true;renderStudy();break;
+    case 'restart':{const dd=D();if(dd)dd.marks={};study={pos:0,flipped:false,angle:0,seq:cardsOf(dd).map((_,i)=>i),speak:true};save();renderStudy();break}
     case 'qnext':if(quiz){quiz.i++;quiz.picked=null;quiz.speak=true;renderQuiz()}break;
     case 'retake':quiz=null;renderQuiz();break;
+    case 'bkBackup':makeBackup();break;
+    case 'bkRestore':backupUI.restoreOpen=!backupUI.restoreOpen;backupUI.msg='';renderHome();break;
     case 'spkMute':setMute(!spk.muted);break;
     case 'apiUpdate':keyUI={open:!keyUI.open,adding:null,msg:''};renderHome();break;
     case 'tddBtn':{const l=$('#tddList'),bt=$('#tddBtn');if(l){l.hidden=!l.hidden;bt.setAttribute('aria-expanded',String(!l.hidden))}break}
@@ -1774,6 +2027,7 @@ document.addEventListener('drop',e=>{
 });
 document.addEventListener('change',e=>{
   const t=e.target;
+  if(t.id==='bkFile'){if(t.files&&t.files[0])restoreFrom(t.files[0],t.files[0].name);t.value='';return}
   if(t.id==='file'){addFiles([...t.files]);t.value='';return}
   if(t.id==='media'){addMedia([...t.files]);t.value='';return}
   if(t.id==='camfb'){if(t.files[0])camShots.push({blob:t.files[0],kind:'image',url:''});t.value='';renderSheet();return}
@@ -1785,6 +2039,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='owords'){setRangeFill(e.target);D().wlvl=+e.target.value;return}
   if(e.target.id==='count'){setRangeFill(e.target);D().lvl=+e.target.value;study=quiz=null;return}
 });
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='fillIn'){e.preventDefault();answerFill()}});
 document.addEventListener('submit',e=>{e.preventDefault()});
 
 /* ---------- themes ---------- */
