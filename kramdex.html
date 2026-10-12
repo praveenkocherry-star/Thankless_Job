@@ -351,6 +351,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .abcredit{margin-top:.8rem;font-weight:800}
 .about p,.about li{text-align:justify;text-align-last:justify;text-justify:inter-word}
 .about h2,.about h3{text-align:left}
+.rec-timer{margin:.2rem 0;text-align:center;font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--white)}
 </style>
 </head>
 <body>
@@ -446,6 +447,7 @@ function openDeck(id){
 }
 function resetScroll(){const sc=$('#scroll');if(sc)sc.scrollTop=0}
 function showHome(){
+  if(aRec)recStop();
   db.active=null;study=quiz=null;lastMsg='';speechStop();
   render();resetScroll();
 }
@@ -883,6 +885,7 @@ function stopCam(){
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}
 }
 function closeSheet(){
+  if(aRec)recStop();
   stopCam();
   camShots.forEach(s=>{if(s.url)URL.revokeObjectURL(s.url)});
   camShots=[];sheetKind=null;lastMsg='';
@@ -959,11 +962,12 @@ function renderSheet(){
         <label class="btn sm block upl" for="camfb"><input type="file" id="camfb" accept="image/*" capture="environment">Use the phone camera app</label>
         ${camErr?`<p class="hint">${esc(camErr)}</p>`:''}
         <ul class="files">${shots}</ul>`;
-    el.innerHTML=`<div class="sbody">${head('Image media')}
+    el.innerHTML=`<div class="sbody">${head('Media')}
       <div class="panel"><span class="label">1. From this phone</span>
         <label class="btn lg block upl" for="media"><input type="file" id="media" multiple accept="image/*,audio/*,video/*">Choose photos, audio or video</label>
         <p class="hint">Choose several at once. Google reads photos, audio and video. OpenAI reads photos.</p></div>
       <div class="panel"><span class="label">2. Camera</span>${cam}</div>
+      ${audioSec()}
       ${msg}</div>`;
     const v=$('#camv');if(v&&camStream)v.srcObject=camStream;
   }else if(sheetKind==='links'){
@@ -981,9 +985,79 @@ function renderSheet(){
   }
 }
 
+/* ---------- live audio recording (media panel, section 3). Needs a saved Google key.
+   Long sessions (hours) are kept in memory in 10-second pieces and saved as one recording when stopped. ---------- */
+let aRec=null,recBusy=false,recMsg='';
+const fmtHMS=s=>[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(x=>String(x).padStart(2,'0')).join(':');
+function recElapsed(){if(!aRec)return 0;return aRec.acc+(aRec.paused?0:Date.now()-aRec.t0)}
+function tickRec(){const t=$('#recTimer');if(t&&aRec)t.textContent=fmtHMS(Math.floor(recElapsed()/1000))}
+function audioSec(){
+  const aOK=loadKeys().some(k=>k.provider==='google');
+  const on=!!aRec,paused=on&&aRec.paused;
+  let body;
+  if(!aOK)body='<p class="hint">Audio recording needs a saved Google key. Add one in Settings.</p>';
+  else body=`<p class="rec-timer" id="recTimer" role="timer" aria-label="Recording time">${on?fmtHMS(Math.floor(recElapsed()/1000)):'00:00:00'}</p>
+    <div class="apirow">${on
+      ?`<button class="btn" id="recPause">${paused?'Resume':'Pause'}</button><button class="btn got" id="recStop">Stop and save</button>`
+      :'<button class="btn lg block" id="recStart">Start audio recording</button>'}</div>
+    <p class="hint">${on?(paused?'Paused. Nothing is recorded while paused.':'Recording. For long sessions keep the screen on and the phone charged.'):'Records a session of any length as one recording, added to this deck\'s files.'}</p>`;
+  return `<div class="panel"><span class="label">3. Audio recording</span>${body}${recMsg?`<p class="hint" aria-live="polite">${esc(recMsg)}</p>`:''}</div>`;
+}
+function audioMime(){
+  const c=['audio/webm;codecs=opus','audio/webm','audio/mp4'];
+  return c.find(m=>typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';
+}
+async function recStart(){
+  if(aRec||recBusy)return;
+  recMsg='';recBusy=true;
+  if(typeof MediaRecorder==='undefined'||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){recBusy=false;recMsg='Audio recording is not supported in this browser.';renderSheet();return}
+  let stream;
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
+  catch(e){recBusy=false;recMsg='Microphone access was refused or is not available.';renderSheet();return}
+  const type=audioMime();
+  let rec;
+  try{rec=new MediaRecorder(stream,{...(type?{mimeType:type}:{}),audioBitsPerSecond:32000})}
+  catch(e){stream.getTracks().forEach(t=>t.stop());recBusy=false;recMsg='This browser cannot record audio.';renderSheet();return}
+  const a={rec,stream,chunks:[],t0:Date.now(),acc:0,paused:false,deckId:db.active,wake:null,mime:rec.mimeType||type||'audio/webm'};
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)a.chunks.push(e.data)};
+  rec.start(10000);
+  aRec=a;recBusy=false;
+  try{if(navigator.wakeLock)a.wake=await navigator.wakeLock.request('screen')}catch(e){}
+  a.timer=setInterval(tickRec,1000);
+  recMsg='Recording started.';renderSheet();
+}
+function recPause(){
+  const a=aRec;if(!a)return;
+  if(a.rec.state==='recording'){a.rec.pause();a.acc+=Date.now()-a.t0;a.paused=true;recMsg='Paused.'}
+  else if(a.rec.state==='paused'){a.rec.resume();a.t0=Date.now();a.paused=false;recMsg='Recording again.'}
+  renderSheet();
+}
+async function recStop(){
+  const a=aRec;if(!a)return;
+  const secs=Math.floor(recElapsed()/1000);
+  aRec=null;clearInterval(a.timer);
+  if(a.wake){try{a.wake.release()}catch(e){}}
+  await new Promise(res=>{a.rec.onstop=()=>res();if(a.rec.state!=='inactive')a.rec.stop();else res()});
+  a.stream.getTracks().forEach(t=>t.stop());
+  const blob=new Blob(a.chunks,{type:(a.mime||'audio/webm').split(';')[0]});
+  await saveRecording(a.deckId,blob,secs);
+}
+async function saveRecording(deckId,blob,secs){
+  const d=db.decks.find(x=>x.id===deckId);
+  if(!d||!blob.size){recMsg='Nothing was recorded.';renderAll();renderSheet();return}
+  try{
+    const id='m'+uid();await idbPut(id,blob);
+    const n=d.sources.filter(s=>s.kind==='media'&&s.mediaKind==='audio'&&s.rec).length+1;
+    d.sources.push({name:`Audio recording ${n} (${fmtHMS(secs)})`,kind:'media',mediaKind:'audio',mime:blob.type||'audio/webm',size:blob.size,blobId:id,rec:true});
+    save();study=quiz=null;
+    recMsg=`Saved: audio recording ${n}, ${fmtHMS(secs)}, added to this deck's files.`;
+  }catch(e){recMsg='The recording could not be saved on this phone. Free some space and try again.'}
+  renderAll();renderSheet();
+}
+
 /* ---------- media: photos, audio and video. Only with a saved key that accepts them. Kept in IndexedDB (too large for localStorage). ---------- */
 const MEDIA_OK={google:['image','audio','video'],openai:['image']};
-const MEDIA_MAX=18*1024*1024;
+const MEDIA_MAX=500*1024*1024;
 const mediaAllowed=()=>{const ai=getAI();return aiUsable(ai)&&(MEDIA_OK[ai.provider]||[]).length>0};
 let idbP=null;
 function idb(){return idbP||(idbP=new Promise((res,rej)=>{const r=indexedDB.open('cramdex-media',2);r.onupgradeneeded=()=>{const x=r.result;if(!x.objectStoreNames.contains('blobs'))x.createObjectStore('blobs');if(!x.objectStoreNames.contains('backups'))x.createObjectStore('backups')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))}
@@ -1002,12 +1076,12 @@ async function addMedia(files){
     catch(e){failed.push(f.name)}
   }
   setBusy('');save();study=quiz=null;
-  if(failed.length)lastMsg=`Not added (not a photo, audio or video file, or over 18 MB): ${failed.join(', ')}.`;
+  if(failed.length)lastMsg=`Not added (not a photo, audio or video file, or over 500 MB): ${failed.join(', ')}.`;
   renderAll();renderSheet();
 }
 async function loadMedia(d){
   const out=[];
-  for(const s of d.sources){if(s.kind!=='media')continue;try{const b=await idbGet(s.blobId);if(b)out.push({name:s.name,mediaKind:s.mediaKind,mime:s.mime||b.type,blob:b})}catch(e){}}
+  for(const s of d.sources){if(s.kind!=='media')continue;try{const b=await idbGet(s.blobId);if(b)out.push({name:s.name,mediaKind:s.mediaKind,mime:s.mime||b.type,blob:b,blobId:s.blobId})}catch(e){}}
   return out;
 }
 function blobB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=()=>rej(r.error);r.readAsDataURL(b)})}
@@ -1285,15 +1359,45 @@ async function pickGoogleModel(k){
 }
 /* One call to the saved provider. Google and OpenAI each have their own request shape.
    A failure carries the HTTP status code (or a short reason) in .err so it can be shown. */
+/* Google file upload for large or audio/video media (inline base64 is limited to about 20 MB per request).
+   Each file is uploaded once per key and reused for the rest of the run. */
+const GFILE_MIN=8*1024*1024;
+const gfiles=new Map();
+function geminiMime(t){t=String(t||'');if(t.startsWith('audio/webm'))return 'video/webm';if(t.startsWith('audio/mp4'))return 'video/mp4';return t.split(';')[0]||''}
+async function gUpload(k,m){
+  const ck=k+'|'+(m.blobId||m.name);
+  if(gfiles.has(ck))return gfiles.get(ck);
+  const mime=geminiMime(m.mime||m.blob.type)||'application/octet-stream';
+  const G='https://generativelanguage.googleapis.com/';
+  const start=await fetch(G+'upload/v1beta/files',{method:'POST',headers:{'x-goog-api-key':k,'Content-Type':'application/json','X-Goog-Upload-Protocol':'resumable','X-Goog-Upload-Command':'start','X-Goog-Upload-Header-Content-Length':String(m.blob.size),'X-Goog-Upload-Header-Content-Type':mime},body:JSON.stringify({file:{display_name:String(m.name||'recording').slice(0,100)}})});
+  if(!start.ok)throw mkErr('upload '+start.status);
+  const url=start.headers.get('x-goog-upload-url');
+  if(!url)throw mkErr('upload');
+  const up=await fetch(url,{method:'POST',headers:{'X-Goog-Upload-Offset':'0','X-Goog-Upload-Command':'upload, finalize'},body:m.blob});
+  if(!up.ok)throw mkErr('upload '+up.status);
+  let f=((await up.json())||{}).file||{};
+  for(let i=0;f.state==='PROCESSING'&&i<300;i++){
+    await new Promise(r=>setTimeout(r,2000));
+    const g=await fetch(G+'v1beta/'+f.name,{headers:{'x-goog-api-key':k},signal:timeoutSignal()});
+    if(!g.ok)throw mkErr('file '+g.status);
+    f=await g.json();
+  }
+  if(f.state==='FAILED')throw mkErr('file failed');
+  if(!f.uri||f.state==='PROCESSING')throw mkErr('file not ready');
+  const out={uri:f.uri,mime};gfiles.set(ck,out);return out;
+}
 async function callAI(ai,prompt,json,media){
   const p=ai.provider,k=ai.key;
   const allowed=MEDIA_OK[p]||[];
-  const mb=media&&media.length?await Promise.all(media.filter(m=>allowed.includes(m.mediaKind)).map(async m=>({...m,b64:await blobB64(m.blob)}))):[];
+  const mb=media&&media.length?await Promise.all(media.filter(m=>allowed.includes(m.mediaKind)).map(async m=>{
+    if(p==='google'&&(m.mediaKind!=='image'||m.blob.size>GFILE_MIN)){const f=await gUpload(k,m);return {...m,uri:f.uri,mime:f.mime}}
+    return {...m,b64:await blobB64(m.blob)};
+  })):[];
   const imgs=mb.filter(m=>m.mediaKind==='image');
   const build=()=>{
     if(p==='google')return {url:`https://generativelanguage.googleapis.com/v1beta/models/${googleModel}:generateContent`,
       headers:{'Content-Type':'application/json','x-goog-api-key':k},
-      body:{contents:[{parts:[{text:prompt},...mb.map(m=>({inline_data:{mime_type:m.mime||'application/octet-stream',data:m.b64}}))]}],generationConfig:{temperature:0.3,...(json?{responseMimeType:'application/json'}:{})}}};
+      body:{contents:[{parts:[{text:prompt},...mb.map(m=>m.uri?{file_data:{mime_type:m.mime,file_uri:m.uri}}:{inline_data:{mime_type:geminiMime(m.mime)||'application/octet-stream',data:m.b64}})]}],generationConfig:{temperature:0.3,...(json?{responseMimeType:'application/json'}:{})}}};
     return {url:AI_BASE[p]+'/chat/completions',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
       body:{model:AI_MODELS[p],messages:[{role:'user',content:imgs.length?[{type:'text',text:prompt},...imgs.map(m=>({type:'image_url',image_url:{url:'data:'+m.mime+';base64,'+m.b64}}))]:prompt}],...(json?{response_format:{type:'json_object'}}:{})}};
@@ -1414,25 +1518,35 @@ async function runAll(d,media){
   const o=await aiFrom(stOv,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
   if(o){const t=capWords(o.out,OV_WORDS);res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
   else res.ov={by:'failed',err:stOv.lastErr||'no usable key',...appOv(d)};
-  const idxAll=sel.map((_,i)=>i),batches=[];
-  if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
   const check=j=>LEVELS.some(l=>levelUsable(j,l));
   const lv={easy:{cards:[],quiz:[]},medium:{cards:[],quiz:[]},hard:{cards:[],quiz:[]}};
   const lvAI={easy:0,medium:0,hard:0},lvApp={easy:0,medium:0,hard:0};
+  const addAI=(r,l)=>{const x=(r&&r.out&&r.out[l])||{};const cards=cleanCards(x.cards),quiz=cleanQuiz(x.quiz,4);if(cards.length||quiz.length){lv[l].cards.push(...cards);lv[l].quiz.push(...quiz);lvAI[l]++;return true}return false};
   let via='';
-  for(const idxs of batches){
-    const r=idxs
-      ? await aiFrom(stText,factsPrompt(sel,idxs),true,null,check)
-      : await aiFrom(stMedia,materialPrompt(d),true,media,check);
+  if(hasMedia){
+    /* Recordings and photos: one request with the study material (text and media) builds the sets.
+       If it fails, app logic builds each level from the facts. */
+    const r=await aiFrom(stMedia,materialPrompt(d),true,media,check);
     if(r)via=r.by;
-    LEVELS.forEach((l,li)=>{
-      const lf=idxs?idxs.filter(i=>i%3===li).map(i=>sel[i]):null;
-      if(lf&&!lf.length)return;
-      const x=r?((r.out&&r.out[l])||{}):{};
-      const cards=r?cleanCards(x.cards):[],quiz=r?cleanQuiz(x.quiz,4):[];
-      if(cards.length||quiz.length){lv[l].cards.push(...cards);lv[l].quiz.push(...quiz);lvAI[l]++}
-      else{const f=appLevel(d,l,lf||undefined);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++}
+    LEVELS.forEach(l=>{
+      if(r&&addAI(r,l))return;
+      const f=appLevel(d,l);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++;
     });
+  }else{
+    const idxAll=sel.map((_,i)=>i),batches=[];
+    if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
+    for(const idxs of batches){
+      const r=idxs
+        ? await aiFrom(stText,factsPrompt(sel,idxs),true,null,check)
+        : await aiFrom(stText,materialPrompt(d),true,null,check);
+      if(r)via=r.by;
+      LEVELS.forEach((l,li)=>{
+        const lf=idxs?idxs.filter(i=>i%3===li).map(i=>sel[i]):null;
+        if(lf&&!lf.length)return;
+        if(r&&addAI(r,l))return;
+        const f=appLevel(d,l,lf||undefined);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++;
+      });
+    }
   }
   const err=stText.lastErr||stMedia.lastErr||'no usable key';
   for(const l of LEVELS){
@@ -2020,6 +2134,9 @@ document.addEventListener('click',e=>{
     case 'camShutter':camShoot();break;
     case 'camRec':camRecToggle();break;
     case 'camTick':camFinish();break;
+    case 'recStart':recStart();break;
+    case 'recPause':recPause();break;
+    case 'recStop':recStop();break;
     case 'shuffle':{const d=D();if(d)reshuffle(d,db.tab==='study'?'cards':'quiz');break}
   }
 });
