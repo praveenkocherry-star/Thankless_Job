@@ -1263,16 +1263,15 @@ function syncSpk(){
 }
 
 /* ---------- AI keys. Several keys can be saved (one per provider; Google may have several, each from a different project).
-   Stored only on this phone. Keys are tried in fallback order: OpenAI and Mistral (text only), then Google. ---------- */
+   Stored only on this phone. Google and OpenAI keys only. ---------- */
 const KEYS_STORE='cramdeck.keys', AI_STORE='cramdeck.ai', OLD_GKEY='cramdeck.gkey';
-const PROV_NAME={google:'Google',openai:'OpenAI',mistral:'Mistral'};
-const PROV_RANK={google:0,openai:1,mistral:2};
-/* Mistral keys have no standard prefix. They are accepted when they are plain letters and digits and are not another provider's key. */
-const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/,mistral:/^(?!sk-|AIza|AQ\.|xai-)[A-Za-z0-9]{16,}$/};
-const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys',mistral:'https://console.mistral.ai/api-keys'};
-const PROV_ORDER=['google','openai','mistral'];
-const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini',mistral:'mistral-small-latest'};
-const AI_BASE={openai:'https://api.openai.com/v1',mistral:'https://api.mistral.ai/v1'};
+const PROV_NAME={google:'Google',openai:'OpenAI'};
+const PROV_RANK={google:0,openai:1};
+const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/};
+const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys'};
+const PROV_ORDER=['google','openai'];
+const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini'};
+const AI_BASE={openai:'https://api.openai.com/v1'};
 let keyUI={open:false,adding:null,msg:''};
 let homeTab='home';
 function loadKeys(){
@@ -1318,7 +1317,7 @@ function keyPanel(){
   const keys=loadKeys();
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=PROV_ORDER.map(p=>`<a class="kbtn" href="${PROV_KEYPAGE[p]}" target="_blank" rel="noopener">${PROV_NAME[p]}</a>`).join('');
-  const steps=`<ol class="ksteps"><li>Tap Google, OpenAI or Mistral and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
+  const steps=`<ol class="ksteps"><li>Tap Google or OpenAI and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
   const counts=PROV_ORDER.map(p=>[p,keys.filter(k=>k.provider===p).length]).filter(x=>x[1]).map(x=>`${PROV_NAME[x[0]]} ${x[1]}`).join(', ');
   const summary=keys.length?`API keys saved<span class="kcount">${esc(counts)}</span>`:'No API keys saved yet';
   const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><button class="btn sm delkey" data-kremove="${i}">Delete key <span aria-hidden="true">✕</span></button></li>`).join('');
@@ -1333,9 +1332,9 @@ function keyPanel(){
   const whatDo=`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">
     <li><b>Google:</b> reads text, photos, audio and video. Free limit about 15 requests a minute and 1,500 a day for each project.</li>
     <li><b>OpenAI:</b> reads text and photos. Free use is capped at about $100 a month; paying $5 raises the limits.</li>
-    <li><b>Mistral:</b> reads text only. Free plan: about 1 request a second, 500,000 tokens a minute and 1 billion tokens a month. Needs phone verification to activate.</li></ul>
+</ul>
     <p class="hint">Figures are from published summaries and may change. Check each provider's page.</p></div>`;
-  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google, OpenAI and Mistral keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
+  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google and OpenAI keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
   const body=keyUI.open||!keys.length
     ?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`
     :'';
@@ -1469,7 +1468,6 @@ async function gUpload(k,m){
   if(!f.uri||f.state==='PROCESSING')throw mkErr('file not ready');
   const out={uri:f.uri,mime};gfiles.set(ck,out);return out;
 }
-let mistralNext=0;
 async function callAI(ai,prompt,json,media,opts){
   const p=ai.provider,k=ai.key;
   const allowed=MEDIA_OK[p]||[];
@@ -1487,12 +1485,9 @@ async function callAI(ai,prompt,json,media,opts){
       body:{model:AI_MODELS[p],messages:[{role:'user',content:imgs.length?[{type:'text',text:prompt},...imgs.map(m=>({type:'image_url',image_url:{url:'data:'+m.mime+';base64,'+m.b64}}))]:prompt}],...(json?{response_format:{type:'json_object'}}:{})}};
   };
   const send=async()=>{const q=build();try{return await fetch(q.url,{method:'POST',headers:q.headers,body:JSON.stringify(q.body),signal:timeoutSignal()})}catch(e){throw mkErr('no response')}};
-  /* Mistral free plan: about 1 request a second. Each call reserves its own start time, so parallel jobs stay spaced out.
-     One 429 is retried after a short wait for every provider. */
-  const spaceMistral=()=>{if(p!=='mistral')return;const start=Math.max(Date.now(),mistralNext);mistralNext=start+1100;return start>Date.now()?sleepMs(start-Date.now()):null};
-  await spaceMistral();
+  /* One 429 (rate limit) is retried after a short wait. */
   let r=await send();
-  if(!r.ok&&r.status===429){await sleepMs(p==='mistral'?3000:6000);await spaceMistral();r=await send()}
+  if(!r.ok&&r.status===429){await sleepMs(6000);r=await send()}
   if(!r.ok&&p==='google'&&(r.status===404||r.status===401)&&!googleListed){
     googleListed=true;
     let m2=null;try{m2=await pickGoogleModel(k)}catch(e){}
@@ -1594,13 +1589,13 @@ async function aiFrom(st,prompt,json,media,check){
 /* Key order. With photos, audio or video: Google keys first (OpenAI reads photos only).
    With text or documents only: OpenAI keys first, then Google. Saved order is kept within each provider. */
 const keyOrder=(ks,withMedia)=>ks.slice().sort((a,b)=>{
-  const rank=k=>withMedia?(k.provider==='google'?0:1):(k.provider==='openai'?0:k.provider==='mistral'?1:2);
+  const rank=k=>withMedia?(k.provider==='google'?0:1):(k.provider==='openai'?0:1);
   return rank(a)-rank(b);
 });
 /* ---------- parallel generation. Each key takes one job at a time; the keys run side by side.
    Text jobs can use any text key. Images use Google or OpenAI. Audio, video and links use Google only. ---------- */
 const sleepMs=ms=>new Promise(r=>setTimeout(r,ms));
-const TEXT_PROVS=['openai','mistral','google'];
+const TEXT_PROVS=['openai','google'];
 const MEDIA_JOB_ITEMS=20, IMG_PER_JOB=4;
 function mediaPrompt(d,files){
   const kinds=[...new Set(files.map(f=>f.mediaKind))].join(' and ');
