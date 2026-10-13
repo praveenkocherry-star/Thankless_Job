@@ -1263,15 +1263,16 @@ function syncSpk(){
 }
 
 /* ---------- AI keys. Several keys can be saved (one per provider; Google may have several, each from a different project).
-   Stored only on this phone. Keys are tried in fallback order: Google, then OpenAI. ---------- */
+   Stored only on this phone. Keys are tried in fallback order: OpenAI and Mistral (text only), then Google. ---------- */
 const KEYS_STORE='cramdeck.keys', AI_STORE='cramdeck.ai', OLD_GKEY='cramdeck.gkey';
-const PROV_NAME={google:'Google',openai:'OpenAI'};
-const PROV_RANK={google:0,openai:1};
-const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/};
-const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys'};
-const PROV_ORDER=['google','openai'];
-const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini'};
-const AI_BASE={openai:'https://api.openai.com/v1'};
+const PROV_NAME={google:'Google',openai:'OpenAI',mistral:'Mistral'};
+const PROV_RANK={google:0,openai:1,mistral:2};
+/* Mistral keys have no standard prefix. They are accepted when they are plain letters and digits and are not another provider's key. */
+const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/,mistral:/^(?!sk-|AIza|AQ\.|xai-)[A-Za-z0-9]{16,}$/};
+const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys',mistral:'https://console.mistral.ai/api-keys'};
+const PROV_ORDER=['google','openai','mistral'];
+const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini',mistral:'mistral-small-latest'};
+const AI_BASE={openai:'https://api.openai.com/v1',mistral:'https://api.mistral.ai/v1'};
 let keyUI={open:false,adding:null,msg:''};
 let homeTab='home';
 function loadKeys(){
@@ -1317,7 +1318,7 @@ function keyPanel(){
   const keys=loadKeys();
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=PROV_ORDER.map(p=>`<a class="kbtn" href="${PROV_KEYPAGE[p]}" target="_blank" rel="noopener">${PROV_NAME[p]}</a>`).join('');
-  const steps=`<ol class="ksteps"><li>Tap Google or OpenAI and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
+  const steps=`<ol class="ksteps"><li>Tap Google, OpenAI or Mistral and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
   const counts=PROV_ORDER.map(p=>[p,keys.filter(k=>k.provider===p).length]).filter(x=>x[1]).map(x=>`${PROV_NAME[x[0]]} ${x[1]}`).join(', ');
   const summary=keys.length?`API keys saved<span class="kcount">${esc(counts)}</span>`:'No API keys saved yet';
   const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><button class="btn sm delkey" data-kremove="${i}">Delete key <span aria-hidden="true">✕</span></button></li>`).join('');
@@ -1331,9 +1332,10 @@ function keyPanel(){
   }
   const whatDo=`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">
     <li><b>Google:</b> reads text, photos, audio and video. Free limit about 15 requests a minute and 1,500 a day for each project.</li>
-    <li><b>OpenAI:</b> reads text and photos. Free use is capped at about $100 a month; paying $5 raises the limits.</li></ul>
+    <li><b>OpenAI:</b> reads text and photos. Free use is capped at about $100 a month; paying $5 raises the limits.</li>
+    <li><b>Mistral:</b> reads text only. Free plan: about 1 request a second, 500,000 tokens a minute and 1 billion tokens a month. Needs phone verification to activate.</li></ul>
     <p class="hint">Figures are from published summaries and may change. Check each provider's page.</p></div>`;
-  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google and OpenAI keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
+  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google, OpenAI and Mistral keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
   const body=keyUI.open||!keys.length
     ?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`
     :'';
@@ -1358,7 +1360,7 @@ function sampleText(t,budget){
   return parts.join('\n[...]\n');
 }
 function materialText(d){
-  const src=d.sources.filter(s=>s.kind!=='media').map(s=>({name:s.name,body:s.kind==='link'?('Link to read ('+s.linkType+'): '+s.url):s.text?cleanSource(s.text):(s.rows||[]).map(r=>(r||[]).map(c=>c==null?'':String(c)).join(' | ')).join('\n')}));
+  const src=d.sources.filter(s=>s.kind!=='media'&&s.kind!=='link').map(s=>({name:s.name,body:s.kind==='link'?('Link to read ('+s.linkType+'): '+s.url):s.text?cleanSource(s.text):(s.rows||[]).map(r=>(r||[]).map(c=>c==null?'':String(c)).join(' | ')).join('\n')}));
   if(!src.length)return '';
   const budget=Math.floor(MATERIAL_CHARS/src.length);
   return src.map(x=>`--- ${x.name} ---\n${sampleText(x.body,budget)}`).join('\n\n');
@@ -1467,7 +1469,8 @@ async function gUpload(k,m){
   if(!f.uri||f.state==='PROCESSING')throw mkErr('file not ready');
   const out={uri:f.uri,mime};gfiles.set(ck,out);return out;
 }
-async function callAI(ai,prompt,json,media){
+let mistralNext=0;
+async function callAI(ai,prompt,json,media,opts){
   const p=ai.provider,k=ai.key;
   const allowed=MEDIA_OK[p]||[];
   const mb=media&&media.length?await Promise.all(media.filter(m=>allowed.includes(m.mediaKind)).map(async m=>{
@@ -1478,13 +1481,18 @@ async function callAI(ai,prompt,json,media){
   const build=()=>{
     if(p==='google')return {url:`https://generativelanguage.googleapis.com/v1beta/models/${googleModel}:generateContent`,
       headers:{'Content-Type':'application/json','x-goog-api-key':k},
-      body:{contents:[{parts:[{text:prompt},...mb.map(m=>m.uri?{file_data:{mime_type:m.mime,file_uri:m.uri}}:{inline_data:{mime_type:geminiMime(m.mime)||'application/octet-stream',data:m.b64}})]}],generationConfig:{temperature:0.3,...(json?{responseMimeType:'application/json'}:{})}}};
+      body:{contents:[{parts:[{text:prompt},...mb.map(m=>m.uri?{file_data:{mime_type:m.mime,file_uri:m.uri}}:{inline_data:{mime_type:geminiMime(m.mime)||'application/octet-stream',data:m.b64}})]}],generationConfig:{temperature:0.3,...(json?{responseMimeType:'application/json'}:{})},...(opts&&opts.urlContext?{tools:[{url_context:{}}]}:{})}};
     return {url:AI_BASE[p]+'/chat/completions',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
       body:{model:AI_MODELS[p],messages:[{role:'user',content:imgs.length?[{type:'text',text:prompt},...imgs.map(m=>({type:'image_url',image_url:{url:'data:'+m.mime+';base64,'+m.b64}}))]:prompt}],...(json?{response_format:{type:'json_object'}}:{})}};
   };
   const send=async()=>{const q=build();try{return await fetch(q.url,{method:'POST',headers:q.headers,body:JSON.stringify(q.body),signal:timeoutSignal()})}catch(e){throw mkErr('no response')}};
+  /* Mistral free plan: about 1 request a second. Each call reserves its own start time, so parallel jobs stay spaced out.
+     One 429 is retried after a short wait for every provider. */
+  const spaceMistral=()=>{if(p!=='mistral')return;const start=Math.max(Date.now(),mistralNext);mistralNext=start+1100;return start>Date.now()?sleepMs(start-Date.now()):null};
+  await spaceMistral();
   let r=await send();
+  if(!r.ok&&r.status===429){await sleepMs(p==='mistral'?3000:6000);await spaceMistral();r=await send()}
   if(!r.ok&&p==='google'&&(r.status===404||r.status===401)&&!googleListed){
     googleListed=true;
     let m2=null;try{m2=await pickGoogleModel(k)}catch(e){}
@@ -1494,7 +1502,7 @@ async function callAI(ai,prompt,json,media){
   let j;try{j=await r.json()}catch(e){throw mkErr('unreadable reply')}
   let text;
   if(p==='google')text=((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(x=>x.text||'').join('');
-  else text=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
+  else{const c=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;text=Array.isArray(c)?c.map(x=>(x&&x.text)||'').join(''):(c||'')}
   text=String(text).trim();
   if(!text)throw mkErr('empty reply');
   return json?parseJSON(text):text;
@@ -1586,53 +1594,111 @@ async function aiFrom(st,prompt,json,media,check){
 /* Key order. With photos, audio or video: Google keys first (OpenAI reads photos only).
    With text or documents only: OpenAI keys first, then Google. Saved order is kept within each provider. */
 const keyOrder=(ks,withMedia)=>ks.slice().sort((a,b)=>{
-  const rank=k=>withMedia?(k.provider==='google'?0:1):(k.provider==='openai'?0:1);
+  const rank=k=>withMedia?(k.provider==='google'?0:1):(k.provider==='openai'?0:k.provider==='mistral'?1:2);
   return rank(a)-rank(b);
 });
+/* ---------- parallel generation. Each key takes one job at a time; the keys run side by side.
+   Text jobs can use any text key. Images use Google or OpenAI. Audio, video and links use Google only. ---------- */
+const sleepMs=ms=>new Promise(r=>setTimeout(r,ms));
+const TEXT_PROVS=['openai','mistral','google'];
+const MEDIA_JOB_ITEMS=20, IMG_PER_JOB=4;
+function mediaPrompt(d,files){
+  const kinds=[...new Set(files.map(f=>f.mediaKind))].join(' and ');
+  const names=files.map(f=>f.name).join(', ');
+  return `Use ONLY the attached ${kinds} (${names}). Do not use anything else. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to ${MEDIA_JOB_ITEMS} flashcards and up to ${MEDIA_JOB_ITEMS} quiz questions at each level. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.`;
+}
+function linkPrompt(d,links){
+  const list=links.map(s=>`${s.linkType||'web'}: ${s.url}`).join('\n');
+  return `Read the web pages and videos at these links, and use ONLY what you can read from them. If a link cannot be read, create nothing from it. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to ${MEDIA_JOB_ITEMS} flashcards and up to ${MEDIA_JOB_ITEMS} quiz questions at each level. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.\n\nLINKS:\n${list}`;
+}
+/* Runs the jobs at the same time. A job goes to the next key it may use when one fails; a job no key may use finishes at once. */
+async function runJobs(jobs,keys){
+  const usable=(j,k)=>j.provs.includes(k.provider)&&!j.tried.has(k.i);
+  const busy=new Set();
+  const sweep=()=>{for(const j of jobs){if(!j.done&&!busy.has(j)&&!keys.some(k=>usable(j,k)))j.done=true}};
+  const left=()=>jobs.some(j=>!j.done);
+  const worker=async k=>{
+    while(left()){
+      sweep();
+      const job=jobs.find(j=>!j.done&&!busy.has(j)&&usable(j,k));
+      if(!job){await sleepMs(150);continue}
+      busy.add(job);
+      try{job.result=await job.run(k);job.done=true}
+      catch(e){job.lastErr=(e&&e.err)||'no response';job.tried.add(k.i)}
+      finally{busy.delete(job)}
+    }
+  };
+  sweep();
+  await Promise.all(keys.map(worker));
+}
+/* Interleaves the lists so each source (each batch or file) gets a fair share of the final set. */
+function interleave(lists){const out=[];const max=Math.max(0,...lists.map(l=>l.length));for(let i=0;i<max;i++)for(const l of lists)if(i<l.length)out.push(l[i]);return out}
+function dedupeItems(items){const seen=new Set();return items.filter(x=>{const k=String(x.term||x.prompt||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,90);if(!k||seen.has(k))return false;seen.add(k);return true})}
 async function runAll(d,media){
   const allKeys=loadKeys();
-  const hasMedia=!!(media&&media.length);
-  const mediaOK=!hasMedia?allKeys:allKeys.filter(k=>(MEDIA_OK[k.provider]||[]).length>0);
-  const stText={keys:keyOrder(allKeys,false),ki:0,lastErr:''},stMedia={keys:keyOrder(mediaOK,true),ki:0,lastErr:''};
-  const stOv=hasMedia?stMedia:stText;
   const sel=balancedFacts(d),res={};
-  const o=await aiFrom(stOv,OV_PROMPT(d),false,media,t=>String(t||'').trim().length>0);
-  if(o){const t=capWords(o.out,OV_WORDS);res.ov={by:'ai',via:o.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)}}
-  else res.ov={by:'failed',err:stOv.lastErr||'no usable key',...appOv(d)};
-  const check=j=>LEVELS.some(l=>levelUsable(j,l));
-  const lv={easy:{cards:[],quiz:[]},medium:{cards:[],quiz:[]},hard:{cards:[],quiz:[]}};
-  const lvAI={easy:0,medium:0,hard:0},lvApp={easy:0,medium:0,hard:0};
-  const addAI=(r,l)=>{const x=(r&&r.out&&r.out[l])||{};const cards=cleanCards(x.cards),quiz=cleanQuiz(x.quiz,4);if(cards.length||quiz.length){lv[l].cards.push(...cards);lv[l].quiz.push(...quiz);lvAI[l]++;return true}return false};
-  let via='';
-  if(hasMedia){
-    /* Recordings and photos: one request with the study material (text and media) builds the sets.
-       If it fails, app logic builds each level from the facts. */
-    const r=await aiFrom(stMedia,materialPrompt(d),true,media,check);
-    if(r)via=r.by;
-    LEVELS.forEach(l=>{
-      if(r&&addAI(r,l))return;
-      const f=appLevel(d,l);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++;
-    });
-  }else{
-    const idxAll=sel.map((_,i)=>i),batches=[];
-    if(idxAll.length){for(let i=0;i<idxAll.length;i+=FACT_BATCH)batches.push(idxAll.slice(i,i+FACT_BATCH))}else batches.push(null);
-    for(const idxs of batches){
-      const r=idxs
-        ? await aiFrom(stText,factsPrompt(sel,idxs),true,null,check)
-        : await aiFrom(stText,materialPrompt(d),true,null,check);
-      if(r)via=r.by;
-      LEVELS.forEach((l,li)=>{
-        const lf=idxs?idxs.filter(i=>i%3===li).map(i=>sel[i]):null;
-        if(lf&&!lf.length)return;
-        if(r&&addAI(r,l))return;
-        const f=appLevel(d,l,lf||undefined);lv[l].cards.push(...f.cards);lv[l].quiz.push(...f.quiz);lvApp[l]++;
-      });
+  const mediaAll=media||[];
+  const av=mediaAll.filter(m=>m.mediaKind==='audio'||m.mediaKind==='video');
+  const imgs=mediaAll.filter(m=>m.mediaKind==='image');
+  const links=d.sources.filter(s=>s.kind==='link');
+  const jobs=[];
+  const mkJob=(provs,run,meta)=>{jobs.push({provs,run,meta,tried:new Set(),result:null,done:false,lastErr:''})};
+  const check=out=>{if(!LEVELS.some(l=>levelUsable(out,l)))throw mkErr('no usable items');return out};
+  const withBy=(k,p)=>p.then(out=>({out,by:k.provider}));
+  /* 1. Overview (one job). Audio, video or links need Google; images need Google or OpenAI. */
+  const ovProvs=(av.length||links.length)?['google']:imgs.length?['google','openai']:TEXT_PROVS;
+  mkJob(ovProvs,k=>withBy(k,callAI(k,OV_PROMPT(d),false,mediaAll.length?mediaAll:null).then(t=>{if(!String(t||'').trim())throw mkErr('empty reply');return t})),{kind:'ov'});
+  /* 2. Text: facts in batches, each batch to any text key. */
+  const idxAll=sel.map((_,i)=>i);
+  if(idxAll.length){
+    for(let i=0;i<idxAll.length;i+=FACT_BATCH){
+      const idxs=idxAll.slice(i,i+FACT_BATCH);
+      mkJob(TEXT_PROVS,k=>withBy(k,callAI(k,factsPrompt(sel,idxs),true,null).then(check)),{kind:'facts',idxs});
     }
+  }else if(materialText(d)&&!av.length&&!imgs.length){
+    mkJob(TEXT_PROVS,k=>withBy(k,callAI(k,materialPrompt(d),true,null).then(check)),{kind:'material'});
   }
-  const err=stText.lastErr||stMedia.lastErr||'no usable key';
+  /* 3. Audio and video: one job per file, Google only. */
+  for(const m of av)mkJob(['google'],k=>withBy(k,callAI(k,mediaPrompt(d,[m]),true,[m]).then(check)),{kind:'media',name:m.name});
+  /* 4. Images: groups of photos, Google or OpenAI. */
+  for(let i=0;i<imgs.length;i+=IMG_PER_JOB){
+    const g=imgs.slice(i,i+IMG_PER_JOB);
+    mkJob(['google','openai'],k=>withBy(k,callAI(k,mediaPrompt(d,g),true,g).then(check)),{kind:'media',name:g.map(x=>x.name).join(', ')});
+  }
+  /* 5. Links: Google only, with Google reading the pages. */
+  if(links.length)mkJob(['google'],k=>withBy(k,callAI(k,linkPrompt(d,links),true,null,{urlContext:true}).then(check)),{kind:'link'});
+
+  await runJobs(jobs,allKeys);
+
+  const [ovJob,...rest]=jobs;
+  const usedBy={};
+  const tally=p=>{usedBy[p]=(usedBy[p]||0)+1};
+  if(ovJob.result){
+    tally(ovJob.result.by);
+    const t=capWords(ovJob.result.out,OV_WORDS);
+    res.ov={by:'ai',via:ovJob.result.by,err:'',text:t,paras:t.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),words:wordsIn(t)};
+  }else res.ov={by:'failed',err:ovJob.lastErr||'no usable key',...appOv(d)};
+
+  const cardLists={easy:[],medium:[],hard:[]},quizLists={easy:[],medium:[],hard:[]};
+  const lvAI={easy:0,medium:0,hard:0},lvApp={easy:0,medium:0,hard:0};
+  let err='';
+  for(const j of rest){
+    const isFacts=j.meta.kind==='facts'||j.meta.kind==='material';
+    if(j.result)tally(j.result.by);else err=err||j.lastErr;
+    LEVELS.forEach((l,li)=>{
+      const lf=j.meta.kind==='facts'?j.meta.idxs.filter(i=>i%3===li).map(i=>sel[i]):null;
+      if(lf&&!lf.length)return;
+      const x=(j.result&&j.result.out&&j.result.out[l])||{};
+      const c=j.result?cleanCards(x.cards):[],q=j.result?cleanQuiz(x.quiz,4):[];
+      if(c.length||q.length){cardLists[l].push(c);quizLists[l].push(q);lvAI[l]++}
+      else if(isFacts){const f=appLevel(d,l,lf||undefined);cardLists[l].push(f.cards);quizLists[l].push(f.quiz);lvApp[l]++}
+    });
+  }
+  const via=Object.keys(usedBy).sort((a,b)=>usedBy[b]-usedBy[a])[0]||'';
   for(const l of LEVELS){
     const by=lvApp[l]===0?'ai':(lvAI[l]>0?'mixed':'failed');
-    res[l]={by,via,err:by==='ai'?'':err,cards:lv[l].cards.slice(0,FACT_CAP),quiz:lv[l].quiz.slice(0,FACT_CAP)};
+    const cards=dedupeItems(interleave(cardLists[l])),quiz=dedupeItems(interleave(quizLists[l]));
+    res[l]={by,via,err:(by==='ai'&&!err)?'':err,cards:cards.slice(0,FACT_CAP),quiz:quiz.slice(0,FACT_CAP)};
   }
   return res;
 }
@@ -1708,6 +1774,7 @@ const cardsOf=d=>d?getPart(d,'cards').data:[];
 const questionsOf=d=>d?getPart(d,'quiz').data:[];
 function loadingView(){return '<div class="busybox" role="status">Creating content with AI</div>'}
 function byText(by,err,via){
+  if(by==='ai'&&err)return 'Built with AI ('+(PROV_NAME[via]||'AI')+'); some files were not read (AI failed'+(/^\d+$/.test(err)?' '+err:': '+err)+')';
   if(by==='ai')return 'Built with AI ('+(PROV_NAME[via]||'AI')+')';
   if(by==='mixed')return 'Built with AI ('+(PROV_NAME[via]||'AI')+') and app logic';
   if(by==='failed')return 'Built with app logic (AI failed'+(err?(/^\d+$/.test(err)?' '+err:': '+err):'')+')';
