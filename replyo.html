@@ -250,15 +250,21 @@ const LIB={
 const LEN=[
   {name:'MIN',sections:'3 or 4',count:[3,4],
    words:'Write 2 or 3 short paragraphs of 40 to 60 words each. Be direct and to the point.',links:false,
-   pic:'Use 2 sections and about 90 words in total. Be straight to the point.',
+   vis:'Add a table or a flowchart in at most two sections of the whole document, and only where it truly helps.',
+   photoQ:3,photoN:1,picN:1,
+   pic:'Use 2 sections and about 80 words of text in total. Add 3 key facts and a flowchart of 3 or 4 steps. No table and no chart. Be straight to the point.',
    speech:'Write about 80 words. Be straight to the point: the direct answer and nothing else.'},
   {name:'STD',sections:'5 to 7',count:[5,7],
    words:'Write 4 paragraphs of 70 to 100 words each. Be descriptive: explain the background and the reasoning, and give examples.',links:false,
-   pic:'Use 3 or 4 sections and about 220 words in total. Be descriptive: explain the key background and reasoning.',
+   vis:'Add a table, a flowchart or a bar chart in most sections, wherever it helps understanding.',
+   photoQ:5,photoN:3,picN:2,
+   pic:'Use 3 sections and about 130 words of text in total. Add 3 key facts, a flowchart of 4 or 5 steps, a small table, and a bar chart only if there are real numbers. Be descriptive: explain the key background and reasoning.',
    speech:'Write about 250 words. Be descriptive: give the answer, then the background, reasoning and a useful example.'},
   {name:'MAX',sections:'8 or 9',count:[8,9],
    words:'Write 5 or 6 paragraphs of 90 to 130 words each. Be exhaustive: cover nuance, examples, comparisons, exceptions and implications.',links:true,
-   pic:'Use 5 sections and about 400 words in total, so it fits one page. The last section is titled "Explore further" and has 4 to 6 bullets naming reputable organisations, books or websites to look up. Do not write web addresses.',
+   vis:'Add a table, a flowchart or a bar chart in nearly every section: a table to compare things, a flowchart for any process or sequence, a bar chart for any numbers.',
+   photoQ:7,photoN:5,picN:2,
+   pic:'Use 4 sections and about 190 words of text in total. The last section is titled "Explore further" and has 4 to 6 bullets naming reputable organisations, books or websites to look up. Do not write web addresses. Add 4 key facts, a flowchart of 5 or 6 steps, a table of 4 or 5 rows, and a bar chart of 4 to 6 numbers.',
    speech:'Write between 900 and 1200 words. Be as exhaustive as you can: the direct answer, background, detailed explanation, examples, nuances, exceptions and implications. End with avenues for further exploration: the names of reputable organisations, books, courses or websites the listener can look up. Do not read out web addresses.'}
 ];
 
@@ -445,13 +451,70 @@ async function callOne(p,k,prompt,json){
   if(!text)throw new Error('empty reply');
   return json?parseJSON(text):text;
 }
+/* Job list: each saved key is a worker that does one job at a time. A key that is free takes the next waiting job straight away.
+   A job that fails on one key goes back to the list for another key. A key that is refused (401 or 403) is set aside for this answer;
+   a key that is rate limited rests for a short while. */
+const pool={par:false,jobs:[],wake:null};
+const prog={done:0,total:0};
+const kst=new Map();
+const kstate=k=>{let t=kst.get(k);if(!t){t={busy:false,until:0,dead:false};kst.set(k,t)}return t};
+function resetPool(par){pool.par=par;prog.done=0;prog.total=0;keys.forEach(k=>{const t=kstate(k);t.dead=false;t.until=0})}
+function showProg(){if(pool.par&&busy)msg(`Working… ${prog.done} of ${prog.total} parts done`)}
+function schedule(fn,opts){
+  return new Promise((resolve,reject)=>{
+    prog.total++;
+    pool.jobs.push({fn,resolve,reject,tried:new Set(),only:opts&&opts.only,attempts:0,last:''});
+    showProg();pump();
+  });
+}
+function pump(){
+  clearTimeout(pool.wake);pool.wake=null;
+  const now=Date.now(),live=keys.filter(k=>!kstate(k).dead);
+  const can=(j,k)=>!j.tried.has(k)&&(!j.only||j.only===k.p);
+  for(let i=pool.jobs.length-1;i>=0;i--){
+    const j=pool.jobs[i];
+    if(!live.some(k=>can(j,k))){pool.jobs.splice(i,1);prog.done++;j.reject(new Error(j.last||'no key'))}
+  }
+  let next=Infinity;
+  for(const k of live){
+    const t=kstate(k);if(t.busy)continue;
+    if(t.until>now){next=Math.min(next,t.until);continue}
+    const ji=pool.jobs.findIndex(j=>can(j,k));if(ji<0)continue;
+    const j=pool.jobs.splice(ji,1)[0];
+    runJob(k,t,j);
+  }
+  if(pool.jobs.length&&next<Infinity)pool.wake=setTimeout(pump,Math.max(50,next-Date.now()));
+}
+async function runJob(k,t,j){
+  t.busy=true;
+  try{
+    const r=await j.fn(k);
+    prog.done++;j.resolve(r);showProg();
+  }catch(e){
+    const m=(e&&e.message)||'error';j.last=m;
+    if(/^(429|5\d\d)$/.test(m)||/fetch|network|load failed/i.test(m)){
+      j.attempts++;t.until=Date.now()+(m==='429'?15000:3000);
+      if(j.attempts>=3){prog.done++;j.reject(new Error(m))}else pool.jobs.unshift(j);
+    }else{
+      if(m==='401'||m==='403')t.dead=true;
+      j.tried.add(k);pool.jobs.unshift(j);
+    }
+  }finally{t.busy=false;pump()}
+}
 async function ai(prompt,json){
   if(!keys.length)throw new Error('Add an API key in Settings first, then ask again.');
-  let last='';
-  for(const k of keys){
-    try{return await callOne(k.p,k.k,prompt,json)}catch(e){last=e.message||'error'}
-  }
-  throw new Error(`The AI could not answer (${last}). Check the key and its free quota.`);
+  try{return await schedule(k=>callOne(k.p,k.k,prompt,json))}
+  catch(e){throw new Error(`The AI could not answer (${(e&&e.message)||'error'}). Check the key and its free quota.`)}
+}
+/* One request that gives all the outputs the same corrected question and title (used when several outputs are ticked and several keys are saved). */
+async function fixQuestion(raw,level){
+  const cfg=LEN[level];
+  const o=await ai(`${GUESS}
+Reply with ONLY a JSON object in this shape: {${QSHAPE}"title":"a short professional title of at most 8 words",${photoShape(cfg)}}
+${photoRule(cfg)}
+Transcription: """${raw}"""`,true);
+  const question=String(o.question||raw).trim();
+  return {question,title:String(o.title||question).trim().slice(0,90)||'Answer',photos:strArr(o.photos)};
 }
 
 /* ---------- building the document: one request for the outline, one per section, one for further links (MAX) ---------- */
@@ -468,28 +531,90 @@ function linksOf(a){
 const GUESS='A person asked a question by voice. The transcription may contain mistakes, fumbled words, missing words or poor grammar. Work out what they mean.';
 const QSHAPE='"question":"the question rewritten in correct, clear, grammatical English with the same meaning",';
 const lead=base=>base?`The question is: """${base.question}"""`:GUESS;
+/* ---------- photos: real photographs from Wikimedia Commons (free licences only), each with its credit ---------- */
+const wikiMemo=new Map();
+const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,no)=>setTimeout(()=>no(new Error('timeout')),ms))]);
+function plainText(h){try{return (new DOMParser().parseFromString(String(h||''),'text/html').body.textContent||'').replace(/\s+/g,' ').trim()}catch(e){return ''}}
+function wikiPhoto(query){
+  const key=String(query||'').toLowerCase().trim();
+  if(!key)return Promise.resolve(null);
+  if(!wikiMemo.has(key))wikiMemo.set(key,(async()=>{
+    try{
+      const u='https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=12&gsrsearch='+encodeURIComponent(key+' filetype:bitmap')+'&prop=imageinfo&iiprop=url|size|mime|extmetadata&iiurlwidth=1000';
+      const r=await withTimeout(fetch(u),10000);if(!r.ok)return null;
+      const j=await r.json();
+      const pages=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));
+      for(const pg of pages){
+        const ii=pg.imageinfo&&pg.imageinfo[0];if(!ii||!ii.thumburl)continue;
+        if(ii.mime!=='image/jpeg'||(ii.width||0)<900||(ii.height||0)<500)continue;
+        if(/\b(logo|flag|map|diagram|chart|screenshot|poster|banner|stamp|coat of arms)\b/i.test(pg.title||''))continue;
+        const md=ii.extmetadata||{};
+        const lic=plainText(md.LicenseShortName&&md.LicenseShortName.value);
+        if(!/^(CC0|CC BY|CC BY-SA|Public domain|PD)/i.test(lic)||/\bND\b/i.test(lic))continue;
+        const ir=await withTimeout(fetch(ii.thumburl),15000);if(!ir.ok)continue;
+        const bmp=await createImageBitmap(await ir.blob());
+        const w=Math.min(bmp.width,1000),h=Math.round(bmp.height*w/bmp.width);
+        const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(bmp,0,0,w,h);
+        const who=plainText(md.Artist&&md.Artist.value).slice(0,60)||'Unknown author';
+        return {canvas:cv,url:ii.thumburl,credit:`${who}, ${lic}, via Wikimedia Commons`};
+      }
+    }catch(e){}
+    return null;
+  })());
+  return wikiMemo.get(key);
+}
+async function getPhotos(queries,n){
+  const qs=(Array.isArray(queries)?queries:[]).map(x=>String(x).trim()).filter(Boolean).slice(0,n+2);
+  const res=await Promise.all(qs.map(wikiPhoto));
+  const seen=new Set(),out=[];
+  for(const p of res){if(p&&!seen.has(p.url)){seen.add(p.url);out.push(p)}}
+  return out.slice(0,n);
+}
+const photoShape=cfg=>`"photos":[${Array.from({length:cfg.photoQ},()=>'"search phrase"').join(',')}]`;
+const photoRule=cfg=>`For "photos" give ${cfg.photoQ} short search phrases for finding real photographs on Wikimedia Commons that suit the subject: places, buildings, objects, tools, landscapes or nature. Never a person's name, never an abstract idea, never anything made mostly of text.`;
+function factsOf(a){return (Array.isArray(a)?a:[]).map(x=>({value:String((x&&x.value)||'').trim().slice(0,14),label:String((x&&x.label)||'').trim().slice(0,60)})).filter(x=>x.value&&x.label).slice(0,4)}
+function chartOf(c){
+  if(!c||!Array.isArray(c.items))return null;
+  const items=c.items.map(x=>({label:String((x&&x.label)||'').trim().slice(0,40),value:parseFloat(String(x&&x.value).replace(/,/g,''))})).filter(x=>x.label&&isFinite(x.value)&&x.value>=0).slice(0,6);
+  return items.length>=2&&Math.max(...items.map(i=>i.value))>0?{title:String(c.title||'').trim().slice(0,70),unit:String(c.unit||'').trim().slice(0,20),items}:null;
+}
+function flowOf(f){
+  if(!f)return null;
+  const steps=strArr(f.steps).map(x=>x.slice(0,70)).slice(0,6);
+  return steps.length>=3?{title:String(f.title||'').trim().slice(0,70),steps}:null;
+}
+function picTableOf(t){
+  const b=tableOf(t);if(!b)return null;
+  const headers=b.headers.slice(0,5).map(x=>x.slice(0,30));
+  const rows=b.rows.slice(0,6).map(r=>headers.map((_,j)=>String(r[j]==null?'':r[j]).slice(0,60)));
+  return rows.length?{title:String((t&&t.title)||'').trim().slice(0,70),headers,rows}:null;
+}
+
 async function buildDoc(raw,level,setMsg,base){
   const cfg=LEN[level];
   if(!base)setMsg('Writing a clear version of your question…');
   const o=await ai(`${lead(base)}
-Reply with ONLY a JSON object in this shape: {${base?'':QSHAPE+'"title":"a short professional title of at most 8 words",'}"sections":["heading","heading"]}
-Give ${cfg.sections} section headings, in logical order, that together answer the question, like the chapters of a professional report.${base?'':`
+Reply with ONLY a JSON object in this shape: {${base?'':QSHAPE+'"title":"a short professional title of at most 8 words",'+photoShape(cfg)+','}"facts":[{"value":"a short figure or word","label":"what it means"}],"sections":["heading","heading"]}
+Give ${cfg.sections} section headings, in logical order, that together answer the question, like the chapters of a professional report.
+Give 3 or 4 key facts that sum up the subject. Use only well-established figures and write them as approximate when unsure. Use an empty list if there are none.${base?'':`
+${photoRule(cfg)}
 Transcription: """${raw}"""`}`,true);
   const question=base?base.question:String(o.question||raw).trim();
   const title=base?base.title:(String(o.title||question).trim().slice(0,90)||'Answer');
+  const photoQs=base?(base.photos||[]):strArr(o.photos);
+  const photoP=getPhotos(photoQs,cfg.photoN);
   let secs=strArr(o.sections).slice(0,cfg.count[1]);
   if(secs.length<cfg.count[0])secs=secs.length?secs:['Answer'];
-  const sections=[];
-  for(let i=0;i<secs.length;i++){
+  const doSec=async i=>{
     setMsg(`Writing section ${i+1} of ${secs.length}: ${secs[i]}`);
     const s=await ai(`You are writing a professional document that answers this question: "${question}"
 Document title: "${title}". Full outline: ${secs.map((x,n)=>(n+1)+'. '+x).join('; ')}.
 Write ONLY section ${i+1}: "${secs[i]}". Do not repeat the other sections.
-Reply with ONLY a JSON object in this shape: {"paragraphs":["..."],"bullets":["..."],"table":{"headers":["..."],"rows":[["..."]]} or null,"flow":["step","step"] or null}
-Rules: ${cfg.words} Use full sentences with specific facts. Use bullets only for short lists (an empty array is fine). Use a table only if a comparison helps, otherwise null. Use flow only for an ordered process, otherwise null. Do not use markdown symbols. Do not put the heading inside the text.`,true);
-    sections.push({heading:secs[i],paragraphs:strArr(s.paragraphs),bullets:strArr(s.bullets),table:tableOf(s.table),flow:strArr(s.flow),links:[]});
-  }
-  if(cfg.links){
+Reply with ONLY a JSON object in this shape: {"paragraphs":["..."],"bullets":["..."],"table":{"headers":["..."],"rows":[["..."]]} or null,"flow":["step","step"] or null,"chart":{"title":"...","unit":"...","items":[{"label":"...","value":0}]} or null}
+Rules: ${cfg.words} Use full sentences with specific facts. Use bullets only for short lists (an empty array is fine). ${cfg.vis} Use a table only for a real comparison, otherwise null. Use flow only for an ordered process, otherwise null. Use chart only for real numbers you are confident about, otherwise null. Keep every table cell and flow step short. Do not use markdown symbols. Do not put the heading inside the text.`,true);
+    return {heading:secs[i],paragraphs:strArr(s.paragraphs),bullets:strArr(s.bullets),table:tableOf(s.table),flow:strArr(s.flow),chart:chartOf(s.chart),links:[]};
+  };
+  const doLinks=async()=>{
     setMsg('Finding links for further exploration…');
     let links=[];
     try{
@@ -497,9 +622,19 @@ Rules: ${cfg.words} Use full sentences with specific facts. Use bullets only for
 Reply with ONLY a JSON object: {"links":[{"title":"...","url":"https://...","why":"one sentence on what it covers"}]}`,true);
       links=linksOf(l.links);
     }catch(e){links=[]}
-    sections.push({heading:'Further exploration',paragraphs:['The resources below go deeper into this topic. Each address is printed in the document so you can open it. Check each link before relying on it.'],bullets:[],table:null,flow:[],links});
+    return {heading:'Further exploration',paragraphs:['The resources below go deeper into this topic. Each address is printed in the document so you can open it. Check each link before relying on it.'],bullets:[],table:null,flow:[],chart:null,links};
+  };
+  const sections=[];
+  if(pool.par){
+    const linkP=cfg.links?doLinks():null;
+    const got=await Promise.all(secs.map((_,i)=>doSec(i)));
+    sections.push(...got);
+    if(linkP)sections.push(await linkP);
+  }else{
+    for(let i=0;i<secs.length;i++)sections.push(await doSec(i));
+    if(cfg.links)sections.push(await doLinks());
   }
-  return {question,title,original:raw,sections};
+  return {question,title,original:raw,sections,facts:factsOf(o.facts),photos:photoQs,photoP};
 }
 
 /* ---------- Picture content: one request, sized to fit one page ---------- */
@@ -507,16 +642,18 @@ async function buildPicture(raw,level,setMsg,base){
   const cfg=LEN[level];
   setMsg('Writing the answer…');
   const o=await ai(`${lead(base)}
-Write a one-page summary that answers it. ${cfg.pic}
-Reply with ONLY a JSON object in this shape: {${base?'':QSHAPE+'"title":"a short professional title of at most 8 words",'}"sections":[{"heading":"...","text":"one paragraph in full sentences","bullets":["..."]}]}
-Rules: bullets is optional (an empty array is fine). Do not use markdown symbols. Do not put the heading inside the text. The whole answer must be short enough to fit on one page.${base?'':`
+Write a one-page illustrated summary that answers it. ${cfg.pic}
+Reply with ONLY a JSON object in this shape: {${base?'':QSHAPE+'"title":"a short professional title of at most 8 words",'+photoShape(cfg)+','}"facts":[{"value":"a short figure or word","label":"what it means"}],"sections":[{"heading":"...","text":"one paragraph in full sentences","bullets":["..."]}],"flow":{"title":"...","steps":["..."]} or null,"table":{"title":"...","headers":["..."],"rows":[["..."]]} or null,"chart":{"title":"...","unit":"...","items":[{"label":"...","value":0}]} or null}
+Rules: bullets is optional (an empty array is fine). Key facts must be well-established figures, written as approximate when unsure. Use a chart only for real numbers you are confident about, otherwise null. Keep every flowchart step and every table cell under 8 words. Do not use markdown symbols. Do not put the heading inside the text. The whole answer must be short enough to fit on one page.${base?'':`
+${photoRule(cfg)}
 Transcription: """${raw}"""`}`,true);
   const question=base?base.question:String(o.question||raw).trim();
   const title=base?base.title:(String(o.title||question).trim().slice(0,90)||'Answer');
   const sections=(Array.isArray(o.sections)?o.sections:[]).map(x=>({heading:String((x&&x.heading)||'').trim(),text:String((x&&x.text)||'').trim(),bullets:strArr(x&&x.bullets)}))
     .filter(x=>x.heading&&(x.text||x.bullets.length));
   if(!sections.length)throw new Error('The AI reply was empty. Please try again.');
-  return {question,title,original:raw,sections};
+  const photoQs=base?(base.photos||[]):strArr(o.photos);
+  return {question,title,original:raw,sections,facts:factsOf(o.facts),flow:flowOf(o.flow),table:picTableOf(o.table),chart:chartOf(o.chart),photos:photoQs,photoP:getPhotos(photoQs,cfg.picN)};
 }
 
 /* ---------- Voice content: one request, plain spoken text, nothing added ---------- */
@@ -601,32 +738,46 @@ async function ttsOpenAI(k,text){
 }
 async function makeAudio(text,setMsg){
   if(!keys.length)throw new Error('no key');
-  const pieces=bigChunks(text,2500);let last='';
-  for(const k of keys){
+  const pieces=bigChunks(text,2500);
+  const one=async(p,k,pc)=>{
+    const r=await (p==='google'?ttsGoogle:ttsOpenAI)(k,pc);
+    if(!r.pcm||!r.pcm.length)throw new Error('empty audio');
+    return r;
+  };
+  const provs=['google','openai'].map(p=>[p,keys.filter(k=>k.p===p).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  let last='';
+  for(const p of provs){
     try{
-      const parts=[];let rate=24000;
-      for(let i=0;i<pieces.length;i++){
-        setMsg(pieces.length>1?`Making the audio file, part ${i+1} of ${pieces.length}…`:'Making the audio file…');
-        const r=await (k.p==='google'?ttsGoogle:ttsOpenAI)(k.k,pieces[i]);
-        if(!r.pcm||!r.pcm.length)throw new Error('empty audio');
-        parts.push(r.pcm);rate=r.rate;
+      let rs;
+      if(pool.par){
+        rs=await Promise.all(pieces.map(pc=>schedule(k=>one(p,k.k,pc),{only:p})));
+      }else{
+        rs=[];
+        for(let i=0;i<pieces.length;i++){
+          setMsg(pieces.length>1?`Making the audio file, part ${i+1} of ${pieces.length}…`:'Making the audio file…');
+          rs.push(await schedule(k=>one(p,k.k,pieces[i]),{only:p}));
+        }
       }
-      return wavOf(parts,rate);
+      return wavOf(rs.map(r=>r.pcm),rs[0].rate);
     }catch(e){last=e.message||'error'}
   }
   throw new Error(`The audio file could not be made (${last}).`);
 }
 
-/* ---------- Picture: one A4 page (1240 x 1754), always fitted so it never runs past the page ---------- */
-function makePicture(doc){
+/* ---------- Picture: one A4 page (1240 x 1754) with photos, key facts, flowchart, table and chart; always fitted so it never runs past the page ---------- */
+function makePicture(doc,photos){
+  photos=photos||[];
   return new Promise((resolve,reject)=>{
-    const W=1240,H=1754,M=90,FF='Arial, Helvetica, sans-serif';
+    const W=1240,H=1754,M=60,CW=W-2*M,FF='Arial, Helvetica, sans-serif';
+    const NAVY='#16324f',TEAL='#1f8a8a',AMBER='#e8a33d',PALE='#eef3f8',INK='#1c2733',MID='#5b6b7c',LINE='#c9d5e2';
     const c=document.createElement('canvas');c.width=W;c.height=H;
     const ctx=c.getContext('2d');
     if(!ctx)return reject(new Error('This browser cannot make pictures.'));
-    const LIMIT=H-M-30,START=150,TW=W-2*M;
+    const BAR=84,TOP=BAR+22,BOTTOM=H-44,GAP=16;
     const fnt=(sz,wt,it)=>`${it?'italic ':''}${wt} ${Math.round(sz)}px ${FF}`;
     const date=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+    const fmtNum=v=>Number(v.toFixed(2)).toLocaleString('en-IN');
+    const facts=doc.facts||[];
     const wcache=new Map();
     const wid=t=>{const key=ctx.font+'|'+t;let v=wcache.get(key);if(v===undefined){v=ctx.measureText(t).width;wcache.set(key,v)}return v};
     function wrap(text,w){
@@ -641,62 +792,226 @@ function makePicture(doc){
       if(cur.length)lines.push(cur.join(' '));
       return lines;
     }
-    function layout(fs,secs){
-      const cmds=[];let y=START;
-      const para=(text,sz,wt,it,o={})=>{
-        ctx.font=fnt(sz,wt,it);
-        const ind=o.indent||0,w=TW-ind,lh=sz*1.42;
-        const lines=wrap(o.bullet?'•  '+text:text,w);
-        lines.forEach((ln,k)=>{cmds.push({k:'t',s:ln,x:M+ind,y:y+sz,font:ctx.font,j:o.justify!==false&&k<lines.length-1,w});y+=lh});
-        y+=o.gap===undefined?sz*0.5:o.gap;
-      };
-      const rule=gap=>{cmds.push({k:'l',y:y,x1:M,x2:W-M,lw:1.5});y+=gap};
-      para(doc.title,fs*1.7,'bold',false,{justify:false,gap:fs*0.25});
-      para('Date: '+date,fs*0.7,'normal',false,{justify:false,gap:fs*0.9});
-      para('Question',fs*1.1,'bold',false,{justify:false,gap:fs*0.1});
-      rule(fs*0.5);
-      para(doc.question,fs*1.05,'normal',false,{justify:false,gap:fs*0.2});
-      para('Original spoken question: '+doc.original,fs*0.75,'normal',true,{justify:false,gap:fs*1});
-      para('Response',fs*1.1,'bold',false,{justify:false,gap:fs*0.1});
-      rule(fs*0.6);
-      secs.forEach((x,i)=>{
-        para(`${i+1}.  ${x.heading}`,fs*1.05,'bold',false,{justify:false,gap:fs*0.2});
-        if(x.text)para(x.text,fs,'normal',false,{gap:fs*0.3});
-        x.bullets.forEach(b=>para(b,fs,'normal',false,{bullet:true,indent:22,justify:false,gap:fs*0.2}));
-        y+=fs*0.5;
-      });
-      return {cmds,y};
+    function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+    function cover(img,x,y,w,h,r){
+      ctx.save();rr(x,y,w,h,r);ctx.clip();
+      const s=Math.max(w/img.width,h/img.height),dw=img.width*s,dh=img.height*s;
+      ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);ctx.restore();
     }
-    /* find the largest font size (14 to 26) at which everything fits; if none does, drop the last section and try again */
-    let secs=doc.sections.slice(),fs=14,res=null;
-    for(;;){
-      let lo=14,hi=26,best=null,bestFs=14;
-      while(lo<=hi){
-        const mid=(lo+hi)>>1,r=layout(mid,secs);
-        if(r.y<=LIMIT){best=r;bestFs=mid;lo=mid+1}else hi=mid-1;
-      }
-      if(best){res=best;fs=bestFs;break}
-      if(secs.length<=1){res=layout(14,secs);fs=14;break}
-      secs=secs.slice(0,-1);
+    /* a block of text is measured first and drawn later */
+    function tb(text,x,w,sz,wt,it,color,o){
+      o=o||{};
+      ctx.font=fnt(sz,wt,it);
+      const lines=wrap(text,w),lh=sz*1.38;
+      return {h:lines.length*lh,draw(y){
+        ctx.fillStyle=color;ctx.font=fnt(sz,wt,it);ctx.textBaseline='alphabetic';
+        lines.forEach((ln,k)=>{
+          const by=y+k*lh+sz*1.02;
+          if(o.center){ctx.fillText(ln,x+(w-wid(ln))/2,by);return}
+          if(o.just&&k<lines.length-1){
+            const ws=ln.split(' ');
+            if(ws.length>1){
+              const tot=ws.reduce((a,t)=>a+wid(t),0),gap=(w-tot)/(ws.length-1),sp=wid(' ');
+              if(gap<=sp*3){let cx=x;for(const t of ws){ctx.fillText(t,cx,by);cx+=wid(t)+gap}return}
+            }
+          }
+          ctx.fillText(ln,x,by);
+        });
+      }};
     }
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle='#000';ctx.lineWidth=2;ctx.strokeRect(30,30,W-60,H-60);
-    ctx.fillStyle='#000';ctx.textBaseline='alphabetic';
-    ctx.font=fnt(28,'bold');ctx.fillText('Created by replyO',M,82);
-    ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(M,102);ctx.lineTo(W-M,102);ctx.stroke();
-    for(const m of res.cmds){
-      if(m.k==='l'){ctx.lineWidth=m.lw;ctx.beginPath();ctx.moveTo(m.x1,m.y);ctx.lineTo(m.x2,m.y);ctx.stroke();continue}
-      ctx.font=m.font;
-      if(m.j){
-        const ws=m.s.split(' ');
-        if(ws.length>1){
-          const tot=ws.reduce((a,x)=>a+wid(x),0);
-          const gap=(m.w-tot)/(ws.length-1),sp=wid(' ');
-          if(gap<=sp*3){let x=m.x;for(const wd of ws){ctx.fillText(wd,x,m.y);x+=wid(wd)+gap}continue}
+    const heroBlock=(fs,small)=>{
+      const ph=small?null:photos[0];
+      const t=tb(doc.title,M+40,CW-80,fs*2.1,'bold',false,'#ffffff');
+      const base=ph?Math.round(CW*0.27):Math.round(CW*0.16);
+      const h=Math.max(base,Math.round(t.h+120));
+      return {h,draw(y,extra){
+        const hh=h+(extra||0);
+        ctx.save();rr(M,y,CW,hh,24);ctx.clip();
+        if(ph)cover(ph.canvas,M,y,CW,hh,0);
+        else{
+          const g=ctx.createLinearGradient(M,y,M+CW,y+hh);g.addColorStop(0,NAVY);g.addColorStop(1,TEAL);ctx.fillStyle=g;ctx.fillRect(M,y,CW,hh);
+          ctx.globalAlpha=.16;ctx.fillStyle='#ffffff';
+          for(const a of [[M+CW-120,y+40,170],[M+CW-330,y+hh-10,110],[M+160,y-40,120],[M+CW-40,y+hh-20,70]]){ctx.beginPath();ctx.arc(a[0],a[1],a[2],0,7);ctx.fill()}
+          ctx.globalAlpha=1;
         }
-      }
-      ctx.fillText(m.s,m.x,m.y);
+        const g2=ctx.createLinearGradient(0,y+hh*0.2,0,y+hh);g2.addColorStop(0,'rgba(10,25,45,0)');g2.addColorStop(1,'rgba(10,25,45,0.85)');
+        ctx.fillStyle=g2;ctx.fillRect(M,y,CW,hh);
+        ctx.restore();
+        const ty=y+hh-34-t.h;
+        ctx.fillStyle=AMBER;ctx.fillRect(M+40,ty-20,96,7);
+        t.draw(ty);
+      }};
+    };
+    const qBlock=fs=>{
+      const pad=20,ix=M+pad+14,iw=CW-2*pad-14;
+      const lab=tb('QUESTION',ix,iw,fs*.7,'bold',false,TEAL);
+      const q=tb(doc.question,ix,iw,fs*1.15,'bold',false,NAVY);
+      const o=tb('Original spoken question: '+doc.original,ix,iw,fs*.75,'normal',true,MID);
+      const h=pad*2+lab.h+4+q.h+10+o.h;
+      return {h,draw(y){
+        ctx.fillStyle=PALE;rr(M,y,CW,h,18);ctx.fill();
+        ctx.save();rr(M,y,CW,h,18);ctx.clip();ctx.fillStyle=TEAL;ctx.fillRect(M,y,10,h);ctx.restore();
+        let yy=y+pad;lab.draw(yy);yy+=lab.h+4;q.draw(yy);yy+=q.h+10;o.draw(yy);
+      }};
+    };
+    const factsBlock=fs=>{
+      const n=facts.length,g=16,tw=(CW-g*(n-1))/n,pad=16;
+      const cells=facts.map(x=>{
+        let sz=fs*2;ctx.font=fnt(sz,'bold');
+        while(wid(x.value)>tw-24&&sz>fs){sz-=1;ctx.font=fnt(sz,'bold')}
+        return {v:tb(x.value,0,tw-24,sz,'bold',false,TEAL,{center:true}),l:tb(x.label,0,tw-24,fs*.78,'normal',false,INK,{center:true})};
+      });
+      const lh=Math.max(...cells.map(k=>k.l.h)),vh=Math.max(...cells.map(k=>k.v.h));
+      const h=Math.round(pad*2+vh+6+lh);
+      return {h,draw(y){
+        cells.forEach((cl,i)=>{
+          const x=M+i*(tw+g);
+          ctx.fillStyle='#ffffff';rr(x,y,tw,h,16);ctx.fill();ctx.strokeStyle=LINE;ctx.lineWidth=2;ctx.stroke();
+          ctx.fillStyle=AMBER;ctx.fillRect(x+tw/2-24,y,48,6);
+          ctx.save();ctx.translate(x+12,0);cl.v.draw(y+pad);cl.l.draw(y+pad+vh+6);ctx.restore();
+        });
+      }};
+    };
+    const secBlock=(fs,sec,i)=>{
+      const r=fs*.95,hx=M+r*2+16,hw=CW-(r*2+16);
+      const hd=tb(sec.heading,hx,hw,fs*1.2,'bold',false,NAVY);
+      const hh=Math.max(hd.h,r*2);
+      const tx=sec.text?tb(sec.text,M,CW,fs,'normal',false,INK,{just:true}):null;
+      const bl=sec.bullets.map(b=>tb(b,M+34,CW-34,fs,'normal',false,INK));
+      const h=hh+8+(tx?tx.h+6:0)+bl.reduce((a,b)=>a+b.h+4,0);
+      return {h,draw(y){
+        ctx.fillStyle=NAVY;ctx.beginPath();ctx.arc(M+r,y+hh/2,r,0,7);ctx.fill();
+        ctx.fillStyle='#ffffff';ctx.font=fnt(fs,'bold');const sn=String(i+1);ctx.fillText(sn,M+r-wid(sn)/2,y+hh/2+fs*.35);
+        hd.draw(y+(hh-hd.h)/2);
+        let yy=y+hh+8;
+        if(tx){tx.draw(yy);yy+=tx.h+6}
+        bl.forEach(b=>{ctx.fillStyle=TEAL;ctx.beginPath();ctx.arc(M+12,yy+fs*.7,5,0,7);ctx.fill();b.draw(yy);yy+=b.h+4});
+      }};
+    };
+    const flowBlock=fs=>{
+      const st=doc.flow.steps,n=st.length,per=n<=4?n:Math.ceil(n/2),rows=Math.ceil(n/per),ag=46,rg=40;
+      const bw=(CW-ag*(per-1))/per,pad=16,nr=fs*.62;
+      const ttl=tb(doc.flow.title||'How it works',M,CW,fs*1.1,'bold',false,NAVY);
+      const cells=st.map(x=>tb(x,0,bw-pad*2,fs*.88,'normal',false,INK,{center:true}));
+      const rowH=[];for(let r=0;r<rows;r++)rowH.push(Math.max(...cells.slice(r*per,r*per+per).map(k=>k.h))+pad*2+nr);
+      const h=Math.round(ttl.h+12+rowH.reduce((a,b)=>a+b,0)+rg*(rows-1));
+      return {h,draw(y){
+        ttl.draw(y);let yy=y+ttl.h+12;
+        for(let r=0;r<rows;r++){
+          for(let k=0;k<per&&r*per+k<n;k++){
+            const i=r*per+k,x=M+k*(bw+ag),bh=rowH[r]-nr;
+            ctx.fillStyle=PALE;rr(x,yy+nr,bw,bh,16);ctx.fill();ctx.strokeStyle=NAVY;ctx.lineWidth=2.5;ctx.stroke();
+            ctx.fillStyle=TEAL;ctx.beginPath();ctx.arc(x+bw/2,yy+nr,nr,0,7);ctx.fill();
+            ctx.fillStyle='#ffffff';ctx.font=fnt(fs*.8,'bold');const sn=String(i+1);ctx.fillText(sn,x+bw/2-wid(sn)/2,yy+nr+fs*.28);
+            ctx.save();ctx.translate(x+pad,0);cells[i].draw(yy+nr+pad+(bh-pad*2-cells[i].h)/2);ctx.restore();
+            if(k>0){
+              const ay=yy+nr+bh/2;
+              ctx.strokeStyle=NAVY;ctx.fillStyle=NAVY;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-ag+8,ay);ctx.lineTo(x-14,ay);ctx.stroke();
+              ctx.beginPath();ctx.moveTo(x-4,ay);ctx.lineTo(x-17,ay-9);ctx.lineTo(x-17,ay+9);ctx.closePath();ctx.fill();
+            }
+          }
+          if(r<rows-1){
+            const lastIdx=Math.min(n-1,r*per+per-1),lastK=lastIdx-r*per;
+            const sx=M+lastK*(bw+ag)+bw/2,sy=yy+rowH[r],mid=sy+rg/2,nx=M+bw/2,top=sy+rg;
+            ctx.strokeStyle=NAVY;ctx.fillStyle=NAVY;ctx.lineWidth=4;
+            ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,mid);ctx.lineTo(nx,mid);ctx.lineTo(nx,top-14);ctx.stroke();
+            ctx.beginPath();ctx.moveTo(nx,top-3);ctx.lineTo(nx-9,top-16);ctx.lineTo(nx+9,top-16);ctx.closePath();ctx.fill();
+          }
+          yy+=rowH[r]+rg;
+        }
+      }};
+    };
+    const tableBlock=fs=>{
+      const t=doc.table,nc=t.headers.length,cw=CW/nc,pad=12,sz=fs*.86;
+      const ttl=t.title?tb(t.title,M,CW,fs*1.1,'bold',false,NAVY):null;
+      const hdr=t.headers.map(x=>tb(x,0,cw-pad*2,sz,'bold',false,'#ffffff'));
+      const body=t.rows.map(r=>t.headers.map((_,j)=>tb(String(r[j]==null?'':r[j]),0,cw-pad*2,sz,'normal',false,INK)));
+      const hh=Math.max(...hdr.map(k=>k.h))+pad*1.4;
+      const rh=body.map(r=>Math.max(...r.map(k=>k.h))+pad*1.2);
+      const off=ttl?ttl.h+10:0,th=hh+rh.reduce((a,b)=>a+b,0);
+      return {h:Math.round(off+th),draw(y){
+        if(ttl)ttl.draw(y);
+        const yy=y+off;
+        ctx.save();rr(M,yy,CW,th,14);ctx.clip();
+        ctx.fillStyle=NAVY;ctx.fillRect(M,yy,CW,hh);
+        hdr.forEach((k,j)=>{ctx.save();ctx.translate(M+j*cw+pad,0);k.draw(yy+(hh-k.h)/2);ctx.restore()});
+        let ry=yy+hh;
+        body.forEach((r,i)=>{ctx.fillStyle=i%2?'#ffffff':PALE;ctx.fillRect(M,ry,CW,rh[i]);r.forEach((k,j)=>{ctx.save();ctx.translate(M+j*cw+pad,0);k.draw(ry+(rh[i]-k.h)/2);ctx.restore()});ry+=rh[i]});
+        ctx.restore();
+        ctx.strokeStyle=LINE;ctx.lineWidth=2;rr(M,yy,CW,th,14);ctx.stroke();
+      }};
+    };
+    const chartBlock=fs=>{
+      const ch=doc.chart,lw=CW*.3,vw=150,bh=fs*1.3,gap=fs*.4,maxV=Math.max(...ch.items.map(i=>i.value));
+      const ttl=ch.title?tb(ch.title+(ch.unit?' ('+ch.unit+')':''),M,CW,fs*1.1,'bold',false,NAVY):null;
+      const labs=ch.items.map(i=>tb(i.label,M,lw-16,fs*.85,'normal',false,INK));
+      const rowH=labs.map(l=>Math.max(bh,l.h));
+      const off=ttl?ttl.h+10:0,cols=[TEAL,NAVY,AMBER];
+      return {h:Math.round(off+rowH.reduce((a,b)=>a+b+gap,0)-gap),draw(y){
+        if(ttl)ttl.draw(y);
+        let yy=y+off;const bwMax=CW-lw-vw;
+        ch.items.forEach((it,i)=>{
+          labs[i].draw(yy+(rowH[i]-labs[i].h)/2);
+          const w=Math.max(8,bwMax*it.value/maxV);
+          ctx.fillStyle=cols[i%3];rr(M+lw,yy+(rowH[i]-bh)/2,w,bh,bh/3);ctx.fill();
+          ctx.fillStyle=INK;ctx.font=fnt(fs*.85,'bold');ctx.fillText(fmtNum(it.value),M+lw+w+10,yy+rowH[i]/2+fs*.3);
+          yy+=rowH[i]+gap;
+        });
+      }};
+    };
+    const photoBlock=(ph,hgt)=>({h:hgt,draw(y){cover(ph.canvas,M,y,CW,hgt,18)}});
+    const creditBlock=(fs,used)=>{
+      const t=tb('Photos: '+used.map((p,i)=>`${i+1}. ${p.credit}`).join('   '),M,CW,Math.max(11,fs*.6),'normal',false,MID);
+      return {h:Math.round(t.h),draw(y){t.draw(y)}};
+    };
+    function compose(fs,drop,small){
+      const items=[];
+      const add=(id,b)=>items.push({id,b});
+      add('hero',heroBlock(fs,small));
+      add('q',qBlock(fs));
+      if(facts.length>=2&&!drop.has('facts'))add('facts',factsBlock(fs));
+      const vis=[];
+      if(doc.flow&&!drop.has('flow'))vis.push(['flow',flowBlock(fs)]);
+      if(doc.table&&!drop.has('table'))vis.push(['table',tableBlock(fs)]);
+      if(doc.chart&&!drop.has('chart'))vis.push(['chart',chartBlock(fs)]);
+      const p2=!small&&photos[1]&&!drop.has('photo2');
+      if(p2)vis.push(['photo2',photoBlock(photos[1],Math.round(CW*.15))]);
+      const secs=doc.sections.filter((_,i)=>!drop.has('sec'+i));
+      secs.forEach((x,i)=>{add('sec',secBlock(fs,x,i));if(vis[i])add(vis[i][0],vis[i][1])});
+      for(let k=secs.length;k<vis.length;k++)add(vis[k][0],vis[k][1]);
+      const used=[];if(!small&&photos[0])used.push(photos[0]);if(p2)used.push(photos[1]);
+      if(used.length)add('credit',creditBlock(fs,used));
+      let y=TOP;items.forEach(it=>{it.y=y;y+=it.b.h+GAP});
+      return {items,end:y-GAP};
     }
+    /* find the largest text size (14 to 26) at which everything fits; if none does, drop the least important block and try again */
+    const order=['photo2','chart','table'];
+    for(let i=doc.sections.length-1;i>=2;i--)order.push('sec'+i);
+    order.push('facts','flow');
+    const drop=new Set();let small=false,res=null,di=0;
+    for(;;){
+      let lo=14,hi=26,best=null;
+      while(lo<=hi){const mid=(lo+hi)>>1,r=compose(mid,drop,small);if(r.end<=BOTTOM){best={r,fs:mid};lo=mid+1}else hi=mid-1}
+      if(best){res=best;break}
+      if(di<order.length){drop.add(order[di++]);continue}
+      if(!small){small=true;continue}
+      res={r:compose(14,drop,small),fs:14};break;
+    }
+    const items=res.r.items,extra=Math.max(0,BOTTOM-res.r.end);
+    const gapX=items.length>1?Math.min(extra/(items.length-1),34):0;
+    const heroX=Math.min(Math.max(0,extra-gapX*(items.length-1)),150);
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=NAVY;ctx.fillRect(0,0,W,BAR);
+    ctx.fillStyle=AMBER;ctx.fillRect(0,BAR,W,6);
+    ctx.fillStyle='#ffffff';ctx.textBaseline='alphabetic';
+    ctx.font=fnt(34,'bold');ctx.fillText('Created by replyO',M,BAR/2+12);
+    ctx.font=fnt(24,'normal');ctx.fillText(date,W-M-ctx.measureText(date).width,BAR/2+9);
+    let y=TOP;
+    items.forEach(it=>{
+      it.b.draw(y,it.id==='hero'?heroX:0);
+      y+=it.b.h+(it.id==='hero'?heroX:0)+GAP+gapX;
+    });
+    ctx.fillStyle=NAVY;ctx.fillRect(0,H-14,W,14);
     c.toBlob(b=>b?resolve(b):reject(new Error('The picture could not be made.')),'image/png');
   });
 }
@@ -778,7 +1093,8 @@ function loadScript(src){
     document.head.appendChild(s);
   }));
 }
-async function makePDF(doc){
+async function makePDF(doc,photos){
+  photos=photos||[];
   await loadScript(LIB.jspdf);await loadScript(LIB.table);
   const pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4'});
   const W=210,M=20,TW=W-2*M,TOP=28,BOT=280,LH=k=>k*0.53;
@@ -835,32 +1151,91 @@ async function makePDF(doc){
       const lines=pdf.splitTextToSize(s,bw-8);
       const bh=Math.max(12,lines.length*4.6+6);
       need(bh+10);
-      pdf.setDrawColor(0);pdf.setLineWidth(0.4);pdf.roundedRect(bx,y,bw,bh,2,2);
+      pdf.setDrawColor(22,50,79);pdf.setFillColor(238,243,249);pdf.setLineWidth(0.4);pdf.roundedRect(bx,y,bw,bh,2,2,'FD');pdf.setTextColor(0);
       const top=y+(bh-lines.length*4.6)/2+3.4;
       lines.forEach((ln,k)=>pdf.text(ln,cx,top+k*4.6,{align:'center'}));
       y+=bh;
       if(i<steps.length-1){
         pdf.setLineWidth(0.4);pdf.line(cx,y,cx,y+5);
-        pdf.setFillColor(0);pdf.triangle(cx-1.6,y+4.6,cx+1.6,y+4.6,cx,y+7.2,'F');
+        pdf.setFillColor(22,50,79);pdf.triangle(cx-1.6,y+4.6,cx+1.6,y+4.6,cx,y+7.2,'F');
         y+=8;
       }else y+=4;
     });
+    pdf.setDrawColor(0);pdf.setFillColor(0);
   };
   const table=t=>{
     pdf.autoTable({
       head:[t.headers],body:t.rows,startY:y,
       margin:{left:M,right:M,top:TOP,bottom:20},
-      theme:'grid',
+      theme:'grid',alternateRowStyles:{fillColor:[238,243,249]},
       styles:{font:'helvetica',fontSize:10,textColor:0,lineColor:0,lineWidth:0.2,cellPadding:2.4,halign:'left',valign:'top'},
-      headStyles:{fillColor:0,textColor:255,fontStyle:'bold'},
+      headStyles:{fillColor:[22,50,79],textColor:255,fontStyle:'bold'},
       didDrawPage:header
     });
     y=pdf.lastAutoTable.finalY+6;
   };
 
+  const fmt=v=>String(Number(v.toFixed(2)));
+  const jpegs=new Map();
+  const photoJpeg=(ph,ratio)=>{
+    const key=ph.url+'|'+ratio;
+    if(!jpegs.has(key)){
+      const src=ph.canvas;let sw=src.width,sh=Math.round(sw/ratio);
+      if(sh>src.height){sh=src.height;sw=Math.round(sh*ratio)}
+      const cv=document.createElement('canvas');cv.width=Math.min(sw,1000);cv.height=Math.round(cv.width/ratio);
+      cv.getContext('2d').drawImage(src,Math.round((src.width-sw)/2),Math.round((src.height-sh)/2),sw,sh,0,0,cv.width,cv.height);
+      jpegs.set(key,cv.toDataURL('image/jpeg',0.85));
+    }
+    return jpegs.get(key);
+  };
+  const photoBlock=(ph,ratio)=>{
+    const h=TW/ratio;
+    need(h+10);
+    pdf.addImage(photoJpeg(ph,ratio),'JPEG',M,y,TW,h);
+    y+=h+1.5;
+    pdf.setFont('helvetica','italic');pdf.setFontSize(7.5);pdf.setTextColor(90);
+    pdf.splitTextToSize('Photo: '+ph.credit,TW).forEach(l=>{pdf.text(l,M,y+2.6);y+=3.2});
+    pdf.setTextColor(0);y+=3;
+  };
+  const factTiles=facts=>{
+    const n=facts.length,gap=4,tw=(TW-gap*(n-1))/n,th=22;
+    need(th+8);
+    facts.forEach((f,i)=>{
+      const x=M+i*(tw+gap);
+      pdf.setDrawColor(22,50,79);pdf.setFillColor(238,243,249);pdf.setLineWidth(0.3);pdf.roundedRect(x,y,tw,th,2,2,'FD');
+      pdf.setFont('helvetica','bold');let fs=16;pdf.setFontSize(fs);
+      while(pdf.getTextWidth(f.value)>tw-4&&fs>8){fs-=1;pdf.setFontSize(fs)}
+      pdf.setTextColor(31,138,138);pdf.text(f.value,x+tw/2,y+9,{align:'center'});
+      pdf.setFont('helvetica','normal');pdf.setFontSize(8.5);pdf.setTextColor(0);
+      pdf.splitTextToSize(f.label,tw-4).slice(0,2).forEach((l,k)=>pdf.text(l,x+tw/2,y+14+k*3.8,{align:'center'}));
+    });
+    pdf.setDrawColor(0);pdf.setFillColor(0);y+=th+6;
+  };
+  const barChart=ch=>{
+    const n=ch.items.length,rowH=7.5,h=9+n*rowH+4;
+    need(h+4);
+    pdf.setFont('helvetica','bold');pdf.setFontSize(10.5);pdf.setTextColor(0);
+    if(ch.title)pdf.text(ch.title,M,y+4);
+    y+=8;
+    const lw=52,bw=TW-lw-34,max=Math.max(...ch.items.map(i=>i.value));
+    const cols=[[22,50,79],[31,138,138],[232,163,61]];
+    ch.items.forEach((it,i)=>{
+      pdf.setFont('helvetica','normal');pdf.setFontSize(9.5);pdf.setTextColor(0);
+      pdf.text(pdf.splitTextToSize(it.label,lw-3)[0],M,y+4.6);
+      const w=Math.max(1,bw*it.value/max);
+      pdf.setFillColor(...cols[i%3]);pdf.rect(M+lw,y+0.8,w,5,'F');
+      pdf.setTextColor(0);pdf.text(fmt(it.value)+(ch.unit?' '+ch.unit:''),M+lw+w+2,y+4.6);
+      y+=rowH;
+    });
+    pdf.setFillColor(0);y+=4;
+  };
+  const secPhoto={};photos.slice(1).forEach((p,k)=>{secPhoto[k*2+1]=p});
+
   header();
   para(doc.title,{size:20,style:'bold',gap:4});
   para('Date: '+new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}),{size:10,gap:6});
+  if(photos[0])photoBlock(photos[0],2.6);
+  if(doc.facts&&doc.facts.length>=2)factTiles(doc.facts);
   heading('Question');
   para(doc.question,{size:12});
   para('Original spoken question: '+doc.original,{size:10,style:'italic',gap:6});
@@ -870,11 +1245,13 @@ async function makePDF(doc){
   heading('Response',16);
   doc.sections.forEach((s,i)=>{
     heading(`${i+1}.  ${s.heading}`,13);
-    s.paragraphs.forEach(p=>para(p));
+    s.paragraphs.forEach((p,pi)=>{para(p);if(pi===0&&secPhoto[i])photoBlock(secPhoto[i],3.2)});
+    if(!s.paragraphs.length&&secPhoto[i])photoBlock(secPhoto[i],3.2);
     s.bullets.forEach(b=>para('•  '+b,{indent:4,gap:2}));
     if(s.bullets.length)y+=1.5;
     if(s.table)table(s.table);
     if(s.flow.length)flow(s.flow);
+    if(s.chart)barChart(s.chart);
     (s.links||[]).forEach(l=>{
       para(l.title,{style:'bold',gap:0.5});
       if(l.why)para(l.why,{size:10,gap:0.5});
@@ -1018,45 +1395,65 @@ async function askByVoice(){
   if(!text)return msg('Nothing was heard. Please tap Ask a question and try again.');
   await process(text);
 }
+async function runMode(mode,eid,entry,base,level,raw,say){
+  if(mode==='pdf'){
+    const doc=await buildDoc(raw,level,say,base);
+    const ph=await doc.photoP;
+    msg('Making the PDF…');
+    await idbPut(eid+'-pdf',await makePDF(doc,ph));
+    entry.outs.pdf={key:eid+'-pdf'};
+    return {doc,note:''};
+  }
+  if(mode==='picture'){
+    const doc=await buildPicture(raw,level,say,base);
+    const ph=await doc.photoP;
+    msg('Making the picture…');
+    await idbPut(eid+'-picture',await makePicture(doc,ph));
+    entry.outs.picture={key:eid+'-picture'};
+    return {doc,note:''};
+  }
+  const doc=await buildSpeech(raw,level,say,base);
+  let key=null,note='';
+  try{const a=await makeAudio(doc.speech,say);await idbPut(eid+'-voice',a);key=eid+'-voice'}
+  catch(e){note='The audio file could not be made, so the voice answer plays with the phone voice only.'}
+  entry.outs.voice={text:doc.speech,key};
+  return {doc,note};
+}
 async function process(raw){
   busy=true;$('#askBtn').disabled=true;
   if(playingId)stopSpeech();
   document.querySelectorAll('input[name="out"]').forEach(r=>r.disabled=true);
   const modes=OUT_ORDER.filter(m=>outSel.includes(m)),level=lenIdx;
+  const par=keys.length>1;
+  resetPool(par);
   try{
     const eid='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
     const entry={eid,q:raw,original:raw,title:'',date:new Date().toISOString(),level:LEN[level].name,outs:{}};
     let base=null,firstErr=null;const notes=[];
-    for(const mode of modes){
-      try{
-        if(mode==='pdf'){
-          const doc=await buildDoc(raw,level,msg,base);
-          if(!base)base={question:doc.question,title:doc.title};
-          msg('Making the PDF…');
-          await idbPut(eid+'-pdf',await makePDF(doc));
-          entry.outs.pdf={key:eid+'-pdf'};
-        }else if(mode==='picture'){
-          const doc=await buildPicture(raw,level,msg,base);
-          if(!base)base={question:doc.question,title:doc.title};
-          msg('Making the picture…');
-          await idbPut(eid+'-picture',await makePicture(doc));
-          entry.outs.picture={key:eid+'-picture'};
-        }else{
-          const doc=await buildSpeech(raw,level,msg,base);
-          if(!base)base={question:doc.question,title:doc.title};
-          let key=null;
-          try{const a=await makeAudio(doc.speech,msg);await idbPut(eid+'-voice',a);key=eid+'-voice'}
-          catch(e){notes.push('The audio file could not be made, so the voice answer plays with the phone voice only.')}
-          entry.outs.voice={text:doc.speech,key};
-        }
-      }catch(e){if(!firstErr)firstErr=e;notes.push(`The ${OUT_NAME[mode]} could not be made.`)}
+    if(!par){
+      for(const mode of modes){
+        try{
+          const r=await runMode(mode,eid,entry,base,level,raw,msg);
+          if(!base)base={question:r.doc.question,title:r.doc.title,photos:r.doc.photos};
+          if(r.note)notes.push(r.note);
+        }catch(e){if(!firstErr)firstErr=e;notes.push(`The ${OUT_NAME[mode]} could not be made.`)}
+      }
+    }else{
+      if(modes.includes('pdf'))loadScript(LIB.jspdf).then(()=>loadScript(LIB.table)).catch(()=>{});
+      if(modes.length>1)base=await fixQuestion(raw,level);
+      const rs=await Promise.allSettled(modes.map(mode=>runMode(mode,eid,entry,base,level,raw,()=>{})));
+      rs.forEach((r,i)=>{
+        if(r.status==='fulfilled'){
+          if(!base)base={question:r.value.doc.question,title:r.value.doc.title,photos:r.value.doc.photos};
+          if(r.value.note)notes.push(r.value.note);
+        }else{if(!firstErr)firstErr=r.reason;notes.push(`The ${OUT_NAME[modes[i]]} could not be made.`)}
+      });
     }
     if(!Object.keys(entry.outs).length)throw firstErr||new Error('Something went wrong. Please try again.');
     entry.q=base?base.question:raw;entry.title=base?base.title:raw.slice(0,60);
     items.unshift(entry);saveItems();renderList();
     const n=Object.keys(entry.outs).length;
     msg(`Done. ${n>1?n+' answers are':'Your answer is'} in the list below.${notes.length?' '+notes.join(' '):''}`);
-    if(entry.outs.voice&&!notes.length)playVoice(0);
   }catch(e){
     msg(e.message||'Something went wrong. Please try again.');
   }finally{
