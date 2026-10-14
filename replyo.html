@@ -15,7 +15,7 @@
 [data-theme="sunset"]{--navy:#000;--navy2:#4a2b1f;--yellow:#ffe3c9;--orange:#ff8c42;--black:#000;--white:#ffd0a6;--ph:#ffc9a0}
 [data-theme="forest"]{--navy:#000;--navy2:#1f3b2c;--yellow:#d8f3dc;--orange:#6cc48a;--black:#000;--white:#b7e4c7;--ph:#a9d8b8}
 [data-theme="royal"]{--navy:#000;--navy2:#33204d;--yellow:#eadcf7;--orange:#b07ce8;--black:#000;--white:#d7bdf2;--ph:#cdb4ea}
-[data-theme="ocean"]{--navy:#000;--navy2:#163f44;--yellow:#d2f5f2;--orange:#4fd1c5;--black:#000;--white:#a8ece6;--ph:#9fdcd6}
+[data-theme="cyancharcoal"]{--navy:#000;--navy2:#2c3238;--yellow:#ffffff;--orange:#22d3ee;--black:#000;--white:#7ee8f5;--ph:#a9b8c0}
 [data-theme="crimson"]{--navy:#000;--navy2:#4a1820;--yellow:#ffd9de;--orange:#e5484d;--black:#000;--white:#ffb3bb;--ph:#f2a6b0}
 [data-theme="golden"]{--navy:#000;--navy2:#4a3d15;--yellow:#fff4c2;--orange:#f5c518;--black:#000;--white:#ffe98a;--ph:#f5e39a}
 [data-theme="rose"]{--navy:#000;--navy2:#4d2a3a;--yellow:#ffdeea;--orange:#f08fb8;--black:#000;--white:#ffc2da;--ph:#f5b6cf}
@@ -77,8 +77,8 @@ input[type=range]::-moz-range-track{background:transparent}
 .notches{display:flex;justify-content:space-between;font-size:.6rem;font-weight:800;color:var(--white)}
 
 /* bottom bar: Home and Settings */
-.tabs{position:relative;flex:none;z-index:10;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:1px solid var(--white)}
-.tab{min-height:2.2rem;border:1px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.85rem;padding:.2rem .3rem;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
+.tabs{position:relative;flex:none;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;padding:.6rem .45rem calc(.6rem + env(safe-area-inset-bottom,0px));background:var(--navy);border-top:1px solid var(--white)}
+.tab{min-height:2.2rem;border:1px solid var(--white);border-radius:14px;background:var(--navy);color:var(--yellow);font-weight:800;font-size:.78rem;padding:.2rem .15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
 .tab[aria-selected="true"]{background:var(--orange);color:var(--black)}
 /* banner under the bar (same format as Kramdex): solid light bar, dark text, centred, one line */
 .apibanner{flex:none;margin:0;width:100%;box-sizing:border-box;padding:.4rem .45rem;background:var(--white);color:var(--black);font-size:min(.8rem,3.3vw);font-weight:700;line-height:1.3;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -133,6 +133,34 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .kcount{display:block;font-size:.62rem;font-weight:700;color:var(--white)}
 .apipanel .keyline .btn.sm,.apipanel .krow .btn.sm{min-height:.95rem;height:.95rem;padding:0 .4rem;font-size:.6rem;line-height:1;border-radius:8px;box-shadow:none;outline:0}
 .delkey{background:#b00020!important;color:#fff!important;border-color:#fff!important}
+.copykey{background:#f5c518!important;color:#000!important;border-color:#fff!important}
+.kbt{display:flex;gap:.3rem;flex:none}
+
+/* slogan under the name */
+.slogan{margin:0;text-align:center;font-size:.8rem;font-weight:800;color:var(--white)}
+
+/* backup tab */
+.bkbtns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.bkbtns .btn{min-height:2.4rem;font-size:.85rem}
+.bkpick{display:flex;flex-direction:column;gap:.4rem;padding:.5rem;border:1px solid var(--white);border-radius:12px}
+.bkpick input{font-size:.75rem;color:var(--yellow);max-width:100%}
+.bklist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem}
+.bkrow{border:1px solid var(--white);border-radius:10px;padding:.3rem .5rem;background:var(--navy);display:flex;flex-direction:column;gap:.2rem}
+.bkname{font-weight:800;font-size:.72rem;color:var(--yellow);overflow-wrap:anywhere}
+.bkmeta{text-align:left!important;font-size:.62rem}
+.bkact{display:flex;flex-wrap:wrap;gap:.3rem}
+.bkact .btn.sm{min-height:1.6rem;box-shadow:none;outline:0}
+
+/* about tab: justified on both sides, last line left, hyphenated, lists indented */
+.about{gap:.3rem;padding:.7rem .8rem}
+.abh{margin:0;font-size:1.05rem;font-weight:900;color:var(--yellow)}
+.abh3{margin:.8rem 0 .1rem;font-size:.85rem;font-weight:900;color:var(--yellow)}
+.abp,.abl{margin:.25rem 0;color:var(--white);font-size:.8rem;font-weight:600;line-height:1.6}
+.abl{padding-left:1.6rem;display:block}
+.abl li{margin:.35rem 0;padding-left:.25rem}
+.about p,.about li{text-align:justify;text-justify:inter-word;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.about h2,.about h3{text-align:left}
+.about p.abcredit{margin-top:.9rem;font-weight:800;text-align:center;color:var(--yellow)}
 
 /* questions and responses */
 .qrhead{margin:0;font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--yellow)}
@@ -158,6 +186,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .entry .btn.sm{min-height:1.8rem;padding:.1rem .55rem;font-size:.66rem;border-radius:9px;box-shadow:none;outline:0;flex:none}
 .entry .btn.sm.del{background:#b00020;color:#fff}
 .foot{display:flex;justify-content:flex-end}
+.aiby{margin:0;font-size:.56rem;font-weight:700;line-height:1.35;color:var(--white);text-align:left;overflow-wrap:anywhere}
 .toast{flex:none;margin:.3rem 0 0;padding:.4rem .6rem;border:1px solid var(--white);border-radius:12px;background:var(--navy2);color:var(--yellow);font-weight:800;font-size:.8rem;overflow-wrap:anywhere;outline:1px solid var(--black);outline-offset:1px;box-shadow:0 0 0 2px var(--white)}
 
 /* listening screen */
@@ -172,8 +201,9 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 <div class="scroll" id="scroll">
   <header class="top">
     <span class="brand" aria-label="replyO"><span aria-hidden="true">r</span><span aria-hidden="true">e</span><span aria-hidden="true">p</span><span aria-hidden="true">l</span><span aria-hidden="true">y</span><span aria-hidden="true">O</span></span>
+    <p class="slogan">Just ask and get it your way.</p>
     <div class="credit-row">
-      <div class="credit" aria-label="Developed by PK Solution Labs"><span class="cr1">Developed by PK Solution Labs</span></div>
+      <div class="credit" aria-label="Developed by Sigma Vidhi"><span class="cr1">Developed by Sigma Vidhi</span></div>
     </div>
     <div class="letterhead" aria-hidden="true"></div>
   </header>
@@ -211,11 +241,51 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 
     <div class="panel apipanel" id="keyHost"></div>
   </section>
+
+  <section class="wrap" id="viewBackup" role="tabpanel" aria-labelledby="tabBackup" hidden></section>
+
+  <section class="wrap" id="viewAbout" role="tabpanel" aria-labelledby="tabAbout" hidden>
+    <div class="panel about" aria-labelledby="abH">
+      <h2 id="abH" class="abh">About replyO</h2>
+      <p class="abp">replyO listens to your spoken question and answers it as a PDF, a Picture, a Voice recording, or all three.</p>
+      <h3 class="abh3">What it does</h3>
+      <ul class="abl">
+        <li>Writes down what you say and corrects the wording with AI.</li>
+        <li>Answers as a PDF, a Picture or a Voice recording. You can tick more than one.</li>
+        <li>Lets you choose the length: MIN is short and to the point, STD is descriptive, MAX is as complete as possible.</li>
+        <li>Adds photos, tables, flowcharts and charts to the PDF and the Picture when they help you understand.</li>
+        <li>Keeps every question with its answers in the Questions &amp; Responses list.</li>
+        <li>Lets you share any answer, including the voice file, with other apps.</li>
+      </ul>
+      <h3 class="abh3">How to use it</h3>
+      <ol class="abl">
+        <li>Open Settings and add a free API key from Google, OpenAI or Hugging Face.</li>
+        <li>Go to Home and tick PDF, Picture, Voice, or any mix.</li>
+        <li>Move the slider to MIN, STD or MAX.</li>
+        <li>Tap Ask a question, speak, then tap Stop and send.</li>
+        <li>Wait for the message that says Done. Your answers appear in the list.</li>
+        <li>Tap Open to view an answer, Share to send it, or Listen to hear the voice. The voice never starts by itself.</li>
+        <li>Open Backup now and then to keep a copy of everything.</li>
+      </ol>
+      <h3 class="abh3">Good to know</h3>
+      <ul class="abl">
+        <li>You can save several keys. With more than one key, replyO works faster because the keys share the job.</li>
+        <li>Voice files are made with a Google or OpenAI key. A Hugging Face key is used for the written answers.</li>
+        <li>Photos come from Wikimedia Commons, and each photo is credited. If no photo is found, a graphic is used instead.</li>
+        <li>Voice input works when replyO is opened from its web address, not from a saved file.</li>
+      </ul>
+      <h3 class="abh3">Your data</h3>
+      <p class="abp">Everything stays in this browser on this phone. A backup includes your API keys, so keep backup files private. Clearing the browser data removes your answers unless you have a backup.</p>
+      <p class="abp abcredit">Developed by Sigma Vidhi</p>
+    </div>
+  </section>
 </div>
 <p class="toast" id="msg" role="status" aria-live="polite" hidden></p>
 <nav class="tabs" role="tablist" aria-label="Pages">
   <button class="tab" role="tab" id="tabHome" data-tab="home" aria-selected="true" aria-controls="viewHome">Home</button>
+  <button class="tab" role="tab" id="tabBackup" data-tab="backup" aria-selected="false" aria-controls="viewBackup" tabindex="-1">Backup</button>
   <button class="tab" role="tab" id="tabSettings" data-tab="settings" aria-selected="false" aria-controls="viewSettings" tabindex="-1">Settings</button>
+  <button class="tab" role="tab" id="tabAbout" data-tab="about" aria-selected="false" aria-controls="viewAbout" tabindex="-1">About</button>
 </nav>
 <p class="apibanner" id="apibanner" role="status">Add a free API key in Settings to start using this app</p>
 </div>
@@ -239,9 +309,10 @@ const SPK_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><pa
 const FILE_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 2h8l6 6v14H6z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="19" font-size="5" text-anchor="middle" fill="currentColor" font-weight="bold">PDF</text></svg>';
 const PROV={
   google:{name:'Google',re:/^(AIza|AQ\.)/,page:'https://aistudio.google.com/apikey'},
-  openai:{name:'OpenAI',re:/^sk-/,page:'https://platform.openai.com/api-keys'}
+  openai:{name:'OpenAI',re:/^sk-/,page:'https://platform.openai.com/api-keys'},
+  hf:{name:'Hugging Face',re:/^hf_/,page:'https://huggingface.co/settings/tokens'}
 };
-const MODEL={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini'};
+const MODEL={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini',hf:'meta-llama/Llama-3.3-70B-Instruct'};
 const LIB={
   jspdf:'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   table:'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
@@ -288,8 +359,8 @@ const saveItems=()=>localStorage.setItem(ITEMS_STORE,JSON.stringify(items));
 
 let dbp=null;
 function idb(){return dbp||(dbp=new Promise((ok,no)=>{
-  const r=indexedDB.open('ask4pdf',1);
-  r.onupgradeneeded=()=>r.result.createObjectStore('pdfs');
+  const r=indexedDB.open('ask4pdf',2);
+  r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('pdfs'))d.createObjectStore('pdfs');if(!d.objectStoreNames.contains('backups'))d.createObjectStore('backups')};
   r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);
 }))}
 async function idbPut(id,blob){const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('pdfs','readwrite');t.objectStore('pdfs').put(blob,id);t.oncomplete=ok;t.onerror=()=>no(t.error)})}
@@ -310,7 +381,7 @@ const THEME_LIST=[
   ['sunset','Sunset Orange','#ff7a2f',false],
   ['forest','Forest Green','#2f8f4e',true],
   ['royal','Royal Purple','#7b2fbf',true],
-  ['ocean','Ocean Teal','#1aa3a3',true],
+  ['cyancharcoal','Cyan Charcoal','#22d3ee',false],
   ['crimson','Crimson Red','#d62839',false],
   ['golden','Golden Yellow','#f5c518',true],
   ['rose','Rose Pink','#e86fa0',false],
@@ -358,10 +429,10 @@ function renderKeys(){
   $('#apibanner').hidden=keys.length>0;
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=Object.keys(PROV).map(p=>`<a class="kbtn" href="${PROV[p].page}" target="_blank" rel="noopener">${PROV[p].name}</a>`).join('');
-  const steps='<ol class="ksteps"><li>Tap Google or OpenAI and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>';
+  const steps='<ol class="ksteps"><li>Tap Google, OpenAI or Hugging Face and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>';
   const counts=Object.keys(PROV).map(p=>[p,keys.filter(k=>k.p===p).length]).filter(x=>x[1]).map(x=>`${PROV[x[0]].name} ${x[1]}`).join(', ');
   const summary=keys.length?`API keys saved<span class="kcount">${esc(counts)}</span>`:'No API keys saved yet';
-  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV[k.p].name} key</span><button class="btn sm delkey" data-kdel="${i}">Delete key <span aria-hidden="true">✕</span></button></li>`).join('');
+  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV[k.p].name} key</span><span class="kbt"><button class="btn sm copykey" data-kcopy="${i}">Copy key</button><button class="btn sm delkey" data-kdel="${i}">Delete key <span aria-hidden="true">✕</span></button></span></li>`).join('');
   let addArea='';
   if(keyUI.adding){
     addArea=`<div class="panel kadd"><span class="label">Paste your ${PROV[keyUI.adding].name} key</span>
@@ -372,9 +443,10 @@ function renderKeys(){
   }
   const whatDo=`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">
     <li><b>Google:</b> free limit about 15 requests a minute and 1,500 a day for each project.</li>
-    <li><b>OpenAI:</b> free use is capped at about $100 a month; paying $5 raises the limits.</li></ul>
+    <li><b>OpenAI:</b> free use is capped at about $100 a month; paying $5 raises the limits.</li>
+    <li><b>Hugging Face:</b> free accounts get a small monthly allowance. It is used for the written answers, not for voice files.</li></ul>
     <p class="hint">Figures are from published summaries and may change. Check each provider's page.</p></div>`;
-  const multi='<p class="knote"><b>Why several keys?</b> You can save as many Google and OpenAI keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically. Google keys from different projects each have their own quota.</p>';
+  const multi='<p class="knote"><b>Why several keys?</b> You can save as many Google, OpenAI and Hugging Face keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically. Google keys from different projects each have their own quota.</p>';
   const body=keyUI.open||!keys.length?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`:'';
   $('#keyHost').innerHTML=`<span class="label">Create your free API key</span>
     <div class="kbtns">${provBtns}</div>
@@ -388,6 +460,16 @@ function saveNewKey(){
   if(!v){keyUI.msg='Paste the key first.';return renderKeys()}
   if(!PROV[p].re.test(v)){keyUI.msg=`That does not look like a ${PROV[p].name} key. Check it and try again.`;return renderKeys()}
   keys.push({p,k:v});saveKeys();keyUI.adding=null;keyUI.msg=`${PROV[p].name} key saved.`;renderKeys();
+}
+async function copyKey(i){
+  const k=keys[i];if(!k)return;
+  let ok=false;
+  try{await navigator.clipboard.writeText(k.k);ok=true}catch(e){}
+  if(!ok){
+    try{const t=document.createElement('textarea');t.value=k.k;t.setAttribute('readonly','');t.style.cssText='position:fixed;left:-999px;top:0';document.body.appendChild(t);t.select();ok=document.execCommand('copy');t.remove()}catch(e){ok=false}
+  }
+  keyUI.msg=ok?`${PROV[k.p].name} key copied.`:'The key could not be copied.';
+  renderKeys();
 }
 function deleteKey(i){
   const k=keys[i];if(!k)return;
@@ -414,6 +496,15 @@ async function findModel(p,k){
     if(!c.length)throw new Error('404');
     return c[0];
   }
+  if(p==='hf'){
+    const r=await fetch('https://router.huggingface.co/v1/models',{headers:{Authorization:'Bearer '+k}});
+    if(!r.ok)throw new Error(String(r.status));
+    const j=await r.json();
+    const ids=(j.data||[]).map(m=>m.id).filter(id=>/instruct/i.test(id));
+    const c=ids.filter(id=>/llama/i.test(id)).sort((a,b)=>verNum(b)-verNum(a)).concat(ids);
+    if(!c.length)throw new Error('404');
+    return c[0];
+  }
   const r=await fetch('https://api.openai.com/v1/models',{headers:{Authorization:'Bearer '+k}});
   if(!r.ok)throw new Error(String(r.status));
   const j=await r.json();
@@ -430,6 +521,15 @@ async function requestOnce(p,k,prompt,json){
     if(!r.ok)throw new Error(String(r.status));
     const j=await r.json();
     return ((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(x=>x.text||'').join('');
+  }
+  if(p==='hf'){
+    const r=await fetch('https://router.huggingface.co/v1/chat/completions',{
+      method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k},
+      body:JSON.stringify({model:MODEL.hf,messages:[{role:'user',content:json?prompt+'\nReply with the JSON object only, no other text.':prompt}],temperature:0.4,max_tokens:6000})
+    });
+    if(!r.ok)throw new Error(String(r.status));
+    const j=await r.json();
+    return (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
   }
   const r=await fetch('https://api.openai.com/v1/chat/completions',{
     method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k},
@@ -454,11 +554,12 @@ async function callOne(p,k,prompt,json){
 /* Job list: each saved key is a worker that does one job at a time. A key that is free takes the next waiting job straight away.
    A job that fails on one key goes back to the list for another key. A key that is refused (401 or 403) is set aside for this answer;
    a key that is rate limited rests for a short while. */
-const pool={par:false,jobs:[],wake:null};
+const pool={par:false,jobs:[],wake:null,stats:{}};
+const tally=(p,good)=>{const t=pool.stats[p]||(pool.stats[p]={ok:0,fail:0});t[good?'ok':'fail']++};
 const prog={done:0,total:0};
 const kst=new Map();
 const kstate=k=>{let t=kst.get(k);if(!t){t={busy:false,until:0,dead:false};kst.set(k,t)}return t};
-function resetPool(par){pool.par=par;prog.done=0;prog.total=0;keys.forEach(k=>{const t=kstate(k);t.dead=false;t.until=0})}
+function resetPool(par){pool.par=par;pool.stats={};prog.done=0;prog.total=0;keys.forEach(k=>{const t=kstate(k);t.dead=false;t.until=0})}
 function showProg(){if(pool.par&&busy)msg(`Working… ${prog.done} of ${prog.total} parts done`)}
 function schedule(fn,opts){
   return new Promise((resolve,reject)=>{
@@ -489,9 +590,10 @@ async function runJob(k,t,j){
   t.busy=true;
   try{
     const r=await j.fn(k);
+    tally(k.p,true);
     prog.done++;j.resolve(r);showProg();
   }catch(e){
-    const m=(e&&e.message)||'error';j.last=m;
+    const m=(e&&e.message)||'error';j.last=m;tally(k.p,false);
     if(/^(429|5\d\d)$/.test(m)||/fetch|network|load failed/i.test(m)){
       j.attempts++;t.until=Date.now()+(m==='429'?15000:3000);
       if(j.attempts>=3){prog.done++;j.reject(new Error(m))}else pool.jobs.unshift(j);
@@ -1333,6 +1435,19 @@ function outRow(it,i,k){
   const on=k==='voice'&&playingId===it.eid;
   return `<li class="out${on?' playing':''}"><span class="ico">${icon}</span><span class="outname">${OUT_NAME[k]}<small>${sub}</small></span>${on?'<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>':''}<span class="btns">${btns}</span></li>`;
 }
+/* A very small line under each question: which AI made it, which failed, how many attempts passed and failed. */
+function aiNote(it){
+  const a=it.ai;if(!a)return '';
+  const ps=['google','openai','hf'].filter(p=>PROV[p]&&a[p]&&(a[p].ok||a[p].fail));
+  if(!ps.length)return '';
+  const nm=p=>PROV[p].name;
+  const list=arr=>arr.length>1?arr.slice(0,-1).map(nm).join(', ')+' and '+nm(arr[arr.length-1]):nm(arr[0]);
+  const worked=ps.filter(p=>a[p].ok),dead=ps.filter(p=>!a[p].ok),part=ps.filter(p=>a[p].ok&&a[p].fail);
+  const pass=ps.reduce((n,p)=>n+a[p].ok,0),all=ps.reduce((n,p)=>n+a[p].ok+a[p].fail,0);
+  if(pass===all)return `Made with ${list(worked)}. All worked: ${pass} of ${all} attempts passed.`;
+  const per=ps.map(p=>`${nm(p)}: ${a[p].ok} passed${a[p].fail?', '+a[p].fail+' failed':''}`).join('. ');
+  return `${worked.length?'Made with '+list(worked)+'. ':''}${dead.length?list(dead)+' failed. ':''}${part.length?'Some attempts failed on '+list(part)+'. ':''}${per}.`;
+}
 function renderList(){
   $('#empty').hidden=items.length>0;
   $('#list').innerHTML=items.map((it,i)=>{
@@ -1340,6 +1455,7 @@ function renderList(){
     return `<li class="entry"><p class="meta"><span>${esc(it.level||'')}</span><span>${esc(new Date(it.date).toLocaleString('en-IN'))}</span></p>
       <button class="q${open?' open':''}" data-act="toggle" data-i="${i}" aria-expanded="${open}">${esc(it.q)}</button>
       <ul class="outs">${OUT_ORDER.filter(k=>it.outs[k]).map(k=>outRow(it,i,k)).join('')}</ul>
+      ${aiNote(it)?`<p class="aiby">${esc(aiNote(it))}</p>`:''}
       <div class="foot"><button class="btn sm del" data-act="del" data-i="${i}" aria-label="Delete question and answers: ${t}">Delete</button></div>
     </li>`;
   }).join('');
@@ -1451,6 +1567,7 @@ async function process(raw){
     }
     if(!Object.keys(entry.outs).length)throw firstErr||new Error('Something went wrong. Please try again.');
     entry.q=base?base.question:raw;entry.title=base?base.title:raw.slice(0,60);
+    entry.ai=JSON.parse(JSON.stringify(pool.stats));
     items.unshift(entry);saveItems();renderList();
     const n=Object.keys(entry.outs).length;
     msg(`Done. ${n>1?n+' answers are':'Your answer is'} in the list below.${notes.length?' '+notes.join(' '):''}`);
@@ -1463,15 +1580,124 @@ async function process(raw){
   }
 }
 
-/* ---------- Home and Settings pages ---------- */
+/* ---------- backup and restore: one file with everything (questions, answers, photos, voice files, keys, theme) ---------- */
+const bk={msg:'',list:[],restoreOpen:false};
+const fmtSize=n=>n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+function backupName(dt){const p=x=>String(x).padStart(2,'0');return `replyo-backup-${dt.getFullYear()}-${p(dt.getMonth()+1)}-${p(dt.getDate())}-${p(dt.getHours())}${p(dt.getMinutes())}.json`}
+async function bkPut(rec){const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('backups','readwrite');t.objectStore('backups').put(rec,rec.id);t.oncomplete=ok;t.onerror=()=>no(t.error)})}
+async function bkGet(id){const d=await idb();return new Promise((ok,no)=>{const q=d.transaction('backups').objectStore('backups').get(id);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})}
+async function bkAll(){const d=await idb();return new Promise((ok,no)=>{const q=d.transaction('backups').objectStore('backups').getAll();q.onsuccess=()=>ok((q.result||[]).sort((a,b)=>b.stamp-a.stamp));q.onerror=()=>no(q.error)})}
+const blobToData=b=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r.readAsDataURL(b)});
+function dataToBlob(str){
+  const i=str.indexOf(','),m=/^data:([^;,]*)/.exec(str.slice(0,i));
+  const bin=atob(str.slice(i+1)),u=new Uint8Array(bin.length);
+  for(let n=0;n<bin.length;n++)u[n]=bin.charCodeAt(n);
+  return new Blob([u],{type:(m&&m[1])||'application/octet-stream'});
+}
+async function buildBackup(){
+  const files={};
+  for(const it of items)for(const k of Object.keys(it.outs)){
+    const o=it.outs[k];
+    if(o&&o.key&&!files[o.key]){try{const b=await idbGet(o.key);if(b)files[o.key]=await blobToData(b)}catch(e){}}
+  }
+  const payload={app:'replyo',format:1,when:new Date().toISOString(),keys,items,theme:currentTheme(),len:lenIdx,out:outSel,files};
+  return new Blob([JSON.stringify(payload)],{type:'application/json'});
+}
+async function refreshBackups(){
+  try{bk.list=await bkAll()}catch(e){bk.list=[]}
+  renderBackup();
+}
+async function makeBackup(){
+  bk.msg='Making the backup. Please wait.';renderBackup();
+  try{
+    const blob=await buildBackup();
+    const dt=new Date();
+    await bkPut({id:'b'+dt.getTime().toString(36)+Math.random().toString(36).slice(2,6),name:backupName(dt),when:dt.toLocaleString(),stamp:dt.getTime(),size:blob.size,blob});
+    bk.msg='Backup made and kept on this device. Tap Share to send it, or Save to device.';
+    await refreshBackups();
+  }catch(e){bk.msg='The backup could not be made. Free some space on the phone and try again.';renderBackup()}
+}
+async function shareBackup(id){
+  try{
+    const rec=await bkGet(id);if(!rec){bk.msg='That backup could not be found.';return renderBackup()}
+    const file=new File([rec.blob],rec.name,{type:'application/json'});
+    if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[file]})){bk.msg='Sharing is not available on this device. Use Save to device instead.';return renderBackup()}
+    await navigator.share({files:[file],title:'replyO backup'});
+    bk.msg='Backup shared.';
+  }catch(e){bk.msg=(e&&e.name==='AbortError')?'Sharing was cancelled.':'Sharing did not finish. Use Save to device instead.'}
+  renderBackup();
+}
+async function saveBackup(id){
+  try{
+    const rec=await bkGet(id);if(!rec){bk.msg='That backup could not be found.';return renderBackup()}
+    if(window.showSaveFilePicker){
+      try{
+        const h=await window.showSaveFilePicker({suggestedName:rec.name,types:[{description:'replyO backup',accept:{'application/json':['.json']}}]});
+        const w=await h.createWritable();await w.write(rec.blob);await w.close();
+        bk.msg='Backup saved to the folder you chose.';return renderBackup();
+      }catch(e){if(e&&e.name==='AbortError'){bk.msg='Saving was cancelled.';return renderBackup()}}
+    }
+    const u=URL.createObjectURL(rec.blob);
+    const a=document.createElement('a');a.href=u;a.download=rec.name;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),60000);
+    bk.msg="Backup saved to this device's download folder.";
+  }catch(e){bk.msg='The backup could not be saved.'}
+  renderBackup();
+}
+async function restoreFrom(text){
+  let p=null;try{p=JSON.parse(text)}catch(e){}
+  if(!p||p.app!=='replyo'||!Array.isArray(p.items)){bk.msg='This file is not a replyO backup.';return renderBackup()}
+  if(!confirm('Restore this backup? It replaces the questions, answers, keys and settings now on this phone.')){bk.msg='Restore cancelled.';return renderBackup()}
+  try{
+    if(playingId)stopSpeech();
+    const oldKeys=[];
+    for(const it of items)for(const k of Object.keys(it.outs)){const o=it.outs[k];if(o&&o.key)oldKeys.push(o.key)}
+    const f=p.files||{};
+    for(const id of Object.keys(f))await idbPut(id,dataToBlob(f[id]));
+    for(const id of oldKeys){if(!(id in f)){try{await idbDel(id)}catch(e){}}}
+    keys=(Array.isArray(p.keys)?p.keys:[]).filter(x=>x&&PROV[x.p]&&x.k);saveKeys();
+    items=p.items.map(migrate).filter(Boolean);saveItems();
+    if(p.theme)setTheme(p.theme);
+    lenIdx=Math.max(0,Math.min(2,+p.len||0));try{localStorage.setItem(LEN_STORE,String(lenIdx))}catch(e){}
+    const o=OUT_ORDER.filter(x=>Array.isArray(p.out)&&p.out.includes(x));outSel=o.length?o:['pdf'];
+    try{localStorage.setItem(OUT_KEY,JSON.stringify(outSel))}catch(e){}
+    openQ.clear();
+    renderTheme();renderLen();renderOut();renderKeys();renderList();
+    bk.restoreOpen=false;bk.msg='The backup has been restored.';
+  }catch(e){bk.msg='The backup could not be restored.'}
+  renderBackup();
+}
+async function restoreSaved(id){
+  try{const rec=await bkGet(id);if(!rec){bk.msg='That backup could not be found.';return renderBackup()}await restoreFrom(await rec.blob.text())}
+  catch(e){bk.msg='The backup could not be restored.';renderBackup()}
+}
+function renderBackup(){
+  const rows=bk.list.map(b=>`<li class="bkrow"><span class="bkname">${esc(b.name)}</span><p class="hint bkmeta">${esc(b.when)}, ${esc(fmtSize(b.size))}</p><div class="bkact"><button class="btn sm" data-bshare="${esc(b.id)}">Share</button><button class="btn sm" data-bsave="${esc(b.id)}">Save to device</button><button class="btn sm" data-brestore="${esc(b.id)}">Restore</button></div></li>`).join('');
+  $('#viewBackup').innerHTML=`<div class="panel">
+      <div class="bkbtns"><button class="btn" id="bkBackup">Backup</button><button class="btn" id="bkRestore" aria-expanded="${bk.restoreOpen?'true':'false'}">Restore</button></div>
+      ${bk.restoreOpen?`<div class="bkpick"><label class="label" for="bkFile">Choose a backup file from this phone or another place</label><input type="file" id="bkFile" accept=".json,application/json"></div>`:''}
+      ${bk.msg?`<p class="hint" role="status">${esc(bk.msg)}</p>`:''}
+    </div>
+    <div class="homesep" aria-hidden="true"></div>
+    <div class="panel"><h2 class="qrhead">Backups on this device</h2>
+      ${rows?`<ul class="bklist">${rows}</ul>`:'<p class="hint">No backups yet. Tap Backup to make one.</p>'}
+    </div>`;
+}
+
+/* ---------- pages: Home, Backup, Settings, About ---------- */
+const VIEWS=['home','backup','settings','about'];
+const viewId=n=>'#view'+n[0].toUpperCase()+n.slice(1);
+const tabId=n=>'#tab'+n[0].toUpperCase()+n.slice(1);
 function showView(name){
-  const home=name!=='settings';
-  $('#viewHome').hidden=!home;
-  $('#viewSettings').hidden=home;
-  const th=$('#tabHome'),ts=$('#tabSettings');
-  th.setAttribute('aria-selected',String(home));ts.setAttribute('aria-selected',String(!home));
-  th.tabIndex=home?0:-1;ts.tabIndex=home?-1:0;
+  if(!VIEWS.includes(name))name='home';
+  VIEWS.forEach(n=>{
+    const on=n===name;
+    $(viewId(n)).hidden=!on;
+    const t=$(tabId(n));t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;
+  });
   const l=$('#tddList');if(l&&!l.hidden){l.hidden=true;const bt=$('#tddBtn');if(bt)bt.setAttribute('aria-expanded','false')}
+  if(name==='backup'){bk.msg='';bk.restoreOpen=false;renderBackup();refreshBackups()}
   $('#scroll').scrollTop=0;
 }
 
@@ -1498,10 +1724,17 @@ document.addEventListener('click',e=>{
   if(!closest('.tdd')){const l=$('#tddList');if(l&&!l.hidden){l.hidden=true;$('#tddBtn').setAttribute('aria-expanded','false')}}
   /* key panel */
   if(closest('#apiUpdate')){keyUI.open=!keyUI.open;if(!keyUI.open)keyUI.adding=null;keyUI.msg='';return renderKeys()}
+  const kc=closest('[data-kcopy]');if(kc)return copyKey(+kc.dataset.kcopy);
   const kd=closest('[data-kdel]');if(kd)return deleteKey(+kd.dataset.kdel);
   const ka=closest('[data-kadd]');if(ka){keyUI.adding=ka.dataset.kadd;keyUI.msg='';renderKeys();const n=$('#newKey');if(n)n.focus();return}
   if(closest('[data-ksave]'))return saveNewKey();
   if(closest('[data-kclose]')){keyUI.adding=null;keyUI.msg='';return renderKeys()}
+  /* backup tab */
+  if(closest('#bkBackup'))return makeBackup();
+  if(closest('#bkRestore')){bk.restoreOpen=!bk.restoreOpen;bk.msg='';return renderBackup()}
+  const bs=closest('[data-bshare]');if(bs)return shareBackup(bs.dataset.bshare);
+  const bv=closest('[data-bsave]');if(bv)return saveBackup(bv.dataset.bsave);
+  const br=closest('[data-brestore]');if(br)return restoreSaved(br.dataset.brestore);
   /* questions and responses */
   const b=closest('[data-act]');
   if(!b)return;
@@ -1515,8 +1748,17 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{
   if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.tab){
-    const to=document.activeElement.dataset.tab==='home'?'settings':'home';showView(to);$(to==='home'?'#tabHome':'#tabSettings').focus();return}
+    const cur=VIEWS.indexOf(document.activeElement.dataset.tab),step=e.key==='ArrowRight'?1:-1;
+    const to=VIEWS[(cur+step+VIEWS.length)%VIEWS.length];showView(to);$(tabId(to)).focus();return}
   if(e.key==='Escape'){const l=$('#tddList');if(l&&!l.hidden){l.hidden=true;$('#tddBtn').setAttribute('aria-expanded','false');$('#tddBtn').focus()}}
+});
+
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t&&t.id==='bkFile'&&t.files&&t.files[0]){
+    const f=t.files[0];
+    f.text().then(restoreFrom).catch(()=>{bk.msg='The backup could not be read.';renderBackup()});
+  }
 });
 
 let savedTheme='slate';

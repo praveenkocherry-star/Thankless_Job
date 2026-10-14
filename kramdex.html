@@ -9,17 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700;800&display=swap">
 <style>
 /* Themes: each sets the same colour tokens. "custom" is set from the swatches. */
-:root,[data-theme="night"]{--navy:#0A1A4F;--navy2:#11246B;--yellow:#E8D878;--orange:#E0A463;--black:#0B0B0B;--white:#DCE1EE;--ph:#C9D3F5}
-[data-theme="forest"]{--navy:#0B2E1F;--navy2:#145A3C;--yellow:#D7E8CC;--orange:#8FCFA8;--black:#06140D;--white:#DCE1EE;--ph:#B7E4C7}
-[data-theme="plum"]{--navy:#2A0B3A;--navy2:#44156A;--yellow:#E8D2E3;--orange:#D27BC0;--black:#1A0018;--white:#DCE1EE;--ph:#E9C6F0}
-[data-theme="peace"]{--navy:#1F3A4D;--navy2:#2C5266;--yellow:#F2EBDD;--orange:#A7C7B5;--black:#0E1E27;--white:#E6EEF0;--ph:#BFD3D9}
-[data-theme="ocean"]{--navy:#0B2A3C;--navy2:#14496B;--yellow:#CDEEF7;--orange:#5FC3D8;--black:#051521;--white:#D6ECF3;--ph:#A9DCE8}
-[data-theme="sand"]{--navy:#3B2F22;--navy2:#5A4730;--yellow:#F3E6C8;--orange:#E3B66B;--black:#1E160C;--white:#EFE4CC;--ph:#E7D6B0}
-[data-theme="rose"]{--navy:#3A1424;--navy2:#5C2338;--yellow:#F9DDE6;--orange:#E88FA9;--black:#1F0A12;--white:#F3DCE4;--ph:#F2C4D3}
-[data-theme="slate"]{--navy:#1E2430;--navy2:#2D3646;--yellow:#E4E8F0;--orange:#9AA8C0;--black:#0E1219;--white:#D9DEE8;--ph:#BCC6D6}
-[data-theme="ember"]{--navy:#3A1A0E;--navy2:#5C2D17;--yellow:#FBE3CF;--orange:#F0A35E;--black:#1E0D05;--white:#F4DCCB;--ph:#F6C9A6}
-[data-theme="mint"]{--navy:#0F3530;--navy2:#17524A;--yellow:#DDF5EC;--orange:#7FD6B5;--black:#062019;--white:#D4EEE5;--ph:#B2E6D2}
-[data-theme="lavender"]{--navy:#2B2750;--navy2:#3E3A72;--yellow:#ECE9FB;--orange:#B7AEF0;--black:#13112A;--white:#E0DCF5;--ph:#CFC8F0}
+:root{--navy:#000;--navy2:#2a3140;--yellow:#e3e9f2;--orange:#9aa9bf;--black:#000;--white:#cdd6e3;--ph:#bcc7d6}
 
 *{box-sizing:border-box;min-width:0}
 [hidden]{display:none!important}
@@ -71,6 +61,8 @@ button{cursor:pointer}
 .decks .deck{min-height:2.6rem;padding:.35rem .8rem;font-size:1rem;border-radius:12px}
 /* deck rows on the landing page: name button (black, white border) with small Rename and Delete on the same line */
 .deckrow{display:flex;align-items:center;gap:.4rem;min-width:0}
+.deckwrap{display:flex;flex-direction:column;gap:.2rem;min-width:0}
+.deckby{margin:0;font-size:.7rem;font-weight:700;color:var(--white);text-align:center;overflow-wrap:anywhere}
 .deckopen{flex:1;min-width:0;height:1.2rem;min-height:1.2rem;padding:0 .5rem;background:#000000;color:#DCE1EE;border:1px solid var(--white);border-radius:12px;text-align:center;font-size:.8rem;font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-shadow:0 2px 0 var(--white)}
 .deckrow .renbtn,.deckrow .delbtn{flex:none;width:3.42rem;min-height:1rem;padding:0 .2rem;border:1px solid var(--white);border-radius:8px;font-size:.7rem;font-weight:900;line-height:1.1}
 .renbtn{background:#E3C56A;color:#000000}
@@ -267,7 +259,6 @@ input[type=range]::-moz-range-thumb{width:1rem;height:1rem}
 [data-theme="sunset"]{--navy:#000;--navy2:#4a2b1f;--yellow:#ffe3c9;--orange:#ff8c42;--black:#000;--white:#ffd0a6;--ph:#ffc9a0}
 [data-theme="forest"]{--navy:#000;--navy2:#1f3b2c;--yellow:#d8f3dc;--orange:#6cc48a;--black:#000;--white:#b7e4c7;--ph:#a9d8b8}
 [data-theme="royal"]{--navy:#000;--navy2:#33204d;--yellow:#eadcf7;--orange:#b07ce8;--black:#000;--white:#d7bdf2;--ph:#cdb4ea}
-[data-theme="ocean"]{--navy:#000;--navy2:#163f44;--yellow:#d2f5f2;--orange:#4fd1c5;--black:#000;--white:#a8ece6;--ph:#9fdcd6}
 [data-theme="crimson"]{--navy:#000;--navy2:#4a1820;--yellow:#ffd9de;--orange:#e5484d;--black:#000;--white:#ffb3bb;--ph:#f2a6b0}
 [data-theme="golden"]{--navy:#000;--navy2:#4a3d15;--yellow:#fff4c2;--orange:#f5c518;--black:#000;--white:#ffe98a;--ph:#f5e39a}
 [data-theme="rose"]{--navy:#000;--navy2:#4d2a3a;--yellow:#ffdeea;--orange:#f08fb8;--black:#000;--white:#ffc2da;--ph:#f5b6cf}
@@ -277,6 +268,7 @@ input[type=range]::-moz-range-thumb{width:1rem;height:1rem}
 [data-theme="burgundy"]{--navy:#000;--navy2:#3f1520;--yellow:#f3d3dc;--orange:#a8334f;--black:#000;--white:#e0a3b4;--ph:#d99aaf}
 [data-theme="indigo"]{--navy:#000;--navy2:#232b5e;--yellow:#dfe4ff;--orange:#8190ff;--black:#000;--white:#c3cbff;--ph:#b4bef5}
 [data-theme="sand"]{--navy:#000;--navy2:#4a4131;--yellow:#f8f0de;--orange:#dcc597;--black:#000;--white:#efe2c6;--ph:#e6d7b8}
+[data-theme="cyan"]{--navy:#000;--navy2:#2b2f36;--yellow:#ffffff;--orange:#22d3ee;--black:#000;--white:#e6fbff;--ph:#bdeef5}
 /* the swatch box inside the drop-down */
 .sw{display:inline-block;width:.9rem;height:.9rem;border:1px solid var(--white);border-radius:3px;flex:none}
 /* a few twinkling stars on the panels of the starry themes (sparse, gentle) */
@@ -317,6 +309,8 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .apipanel .apirow{border-top:1px solid var(--white);padding-top:.4rem}
 .apipanel .apirow .btn.sm,.apipanel .krow .btn.sm{min-height:.95rem;height:.95rem;padding:0 .4rem;font-size:.66rem;line-height:1;border-radius:8px}
 .delkey{background:#b00020 !important;color:#fff !important;border-color:#fff !important}
+.copykey{background:#E3C56A !important;color:#000 !important;border-color:#fff !important}
+.kbtns2{display:flex;flex-wrap:wrap;gap:.3rem;justify-content:flex-end}
 .kcount{display:block;font-size:.7rem;font-weight:700;color:var(--white)}
 .files .file{display:flex;flex-direction:column;align-items:stretch;gap:.2rem}
 .files .frow{display:flex;align-items:center;min-width:0}
@@ -347,9 +341,9 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .about{display:flex;flex-direction:column;gap:.3rem}
 .abh3{font-size:.95rem;color:var(--yellow);margin:.7rem 0 .1rem}
 .abp,.abl{color:var(--white);font-size:1rem;line-height:1.45;margin:.2rem 0}
-.abl{padding-left:1.3rem}
+.abl{padding-left:1.6rem}
 .abcredit{margin-top:.8rem;font-weight:800}
-.about p,.about li{text-align:justify;text-align-last:justify;text-justify:inter-word}
+.about p,.about li{text-align:left}
 .about h2,.about h3{text-align:left}
 .rec-timer{margin:.2rem 0;text-align:center;font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--white)}
 </style>
@@ -361,7 +355,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
     <span class="brand" aria-label="Kramdex"><span aria-hidden="true">K</span><span aria-hidden="true">R</span><span aria-hidden="true">A</span><span aria-hidden="true">M</span><span aria-hidden="true">D</span><span aria-hidden="true">E</span><span aria-hidden="true">X</span></span>
     <p class="slogan">Study less, remember more.</p>
     <div class="credit-row">
-      <div class="credit" aria-label="Developed by PK Solution Labs"><span class="cr1">Developed by PK Solution Labs</span></div>
+      <div class="credit" aria-label="Developed by Sigma vidhi"><span class="cr1">Developed by Sigma vidhi</span></div>
     </div>
     <div class="letterhead" aria-hidden="true"></div>
     <div class="deckbar" id="deckbar" hidden><div class="deckcol"><span id="dname" class="deckname"></span><span id="bylabel" class="bylabel"></span></div></div>
@@ -1137,7 +1131,7 @@ async function recFlush(){
 }
 
 /* ---------- media: photos, audio and video. Only with a saved key that accepts them. Kept in IndexedDB (too large for localStorage). ---------- */
-const MEDIA_OK={google:['image','audio','video'],openai:['image']};
+const MEDIA_OK={google:['image','audio','video'],openai:['image'],huggingface:[]};
 const MEDIA_MAX=500*1024*1024;
 const mediaAllowed=()=>{const ai=getAI();return aiUsable(ai)&&(MEDIA_OK[ai.provider]||[]).length>0};
 let idbP=null;
@@ -1263,15 +1257,15 @@ function syncSpk(){
 }
 
 /* ---------- AI keys. Several keys can be saved (one per provider; Google may have several, each from a different project).
-   Stored only on this phone. Google and OpenAI keys only. ---------- */
+   Stored only on this phone. Google, OpenAI and Hugging Face keys. ---------- */
 const KEYS_STORE='cramdeck.keys', AI_STORE='cramdeck.ai', OLD_GKEY='cramdeck.gkey';
-const PROV_NAME={google:'Google',openai:'OpenAI'};
-const PROV_RANK={google:0,openai:1};
-const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/};
-const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys'};
-const PROV_ORDER=['google','openai'];
-const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini'};
-const AI_BASE={openai:'https://api.openai.com/v1'};
+const PROV_NAME={google:'Google',openai:'OpenAI',huggingface:'Hugging Face'};
+const PROV_RANK={google:0,openai:1,huggingface:2};
+const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/,huggingface:/^hf_/};
+const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys',huggingface:'https://huggingface.co/settings/tokens'};
+const PROV_ORDER=['google','openai','huggingface'];
+const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini',huggingface:'meta-llama/Llama-3.3-70B-Instruct'};
+const AI_BASE={openai:'https://api.openai.com/v1',huggingface:'https://router.huggingface.co/v1'};
 let keyUI={open:false,adding:null,msg:''};
 let homeTab='home';
 function loadKeys(){
@@ -1302,6 +1296,18 @@ function removeKey(idx){
   writeKeys(list.filter((_,j)=>j!==idx));
   tried.clear();keyUI.msg='';renderHome();
 }
+/* Copies one saved key to the clipboard with one tap. Falls back to selecting a hidden field where the clipboard API is missing. */
+function copyKey(idx){
+  const k=loadKeys()[idx];if(!k)return;
+  const done=()=>{keyUI.msg=`${PROV_NAME[k.provider]} key copied.`;renderHome()};
+  const fallback=()=>{
+    const t=document.createElement('textarea');t.value=k.key;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';
+    document.body.appendChild(t);t.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+    t.remove();
+    if(ok)done();else{keyUI.msg='Could not copy. Select the key and copy it.';renderHome()}
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(k.key).then(done,fallback);else fallback();
+}
 function saveNewKey(){
   const p=keyUI.adding;if(!p)return;
   const v=(($('#newkey')||{}).value||'').trim();
@@ -1317,10 +1323,10 @@ function keyPanel(){
   const keys=loadKeys();
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=PROV_ORDER.map(p=>`<a class="kbtn" href="${PROV_KEYPAGE[p]}" target="_blank" rel="noopener">${PROV_NAME[p]}</a>`).join('');
-  const steps=`<ol class="ksteps"><li>Tap Google or OpenAI and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
+  const steps=`<ol class="ksteps"><li>Tap Google, OpenAI or Hugging Face and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
   const counts=PROV_ORDER.map(p=>[p,keys.filter(k=>k.provider===p).length]).filter(x=>x[1]).map(x=>`${PROV_NAME[x[0]]} ${x[1]}`).join(', ');
   const summary=keys.length?`API keys saved<span class="kcount">${esc(counts)}</span>`:'No API keys saved yet';
-  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><button class="btn sm delkey" data-kremove="${i}">Delete key <span aria-hidden="true">✕</span></button></li>`).join('');
+  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><span class="kbtns2"><button class="btn sm copykey" data-kcopy="${i}">Copy key</button><button class="btn sm delkey" data-kremove="${i}">Delete key <span aria-hidden="true">✕</span></button></span></li>`).join('');
   let addArea='';
   if(keyUI.adding){
     addArea=`<div class="panel kadd"><span class="label">Paste your ${PROV_NAME[keyUI.adding]} key</span>
@@ -1332,9 +1338,10 @@ function keyPanel(){
   const whatDo=`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">
     <li><b>Google:</b> reads text, photos, audio and video. Free limit about 15 requests a minute and 1,500 a day for each project.</li>
     <li><b>OpenAI:</b> reads text and photos. Free use is capped at about $100 a month; paying $5 raises the limits.</li>
+    <li><b>Hugging Face:</b> reads text only. Free use has limits set by Hugging Face.</li>
 </ul>
     <p class="hint">Figures are from published summaries and may change. Check each provider's page.</p></div>`;
-  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google and OpenAI keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
+  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google, OpenAI and Hugging Face keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
   const body=keyUI.open||!keys.length
     ?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`
     :'';
@@ -1439,7 +1446,7 @@ async function pickGoogleModel(k){
   c.sort((a,b)=>b.v-a.v||b.lite-a.lite);
   return c.length?c[0].id:null;
 }
-/* One call to the saved provider. Google and OpenAI each have their own request shape.
+/* One call to the saved provider. Google has its own request shape; OpenAI and Hugging Face both use the chat completions shape.
    A failure carries the HTTP status code (or a short reason) in .err so it can be shown. */
 /* Google file upload for large or audio/video media (inline base64 is limited to about 20 MB per request).
    Each file is uploaded once per key and reused for the rest of the run. */
@@ -1482,7 +1489,7 @@ async function callAI(ai,prompt,json,media,opts){
       body:{contents:[{parts:[{text:prompt},...mb.map(m=>m.uri?{file_data:{mime_type:m.mime,file_uri:m.uri}}:{inline_data:{mime_type:geminiMime(m.mime)||'application/octet-stream',data:m.b64}})]}],generationConfig:{temperature:0.3,...(json?{responseMimeType:'application/json'}:{})},...(opts&&opts.urlContext?{tools:[{url_context:{}}]}:{})}};
     return {url:AI_BASE[p]+'/chat/completions',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
-      body:{model:AI_MODELS[p],messages:[{role:'user',content:imgs.length?[{type:'text',text:prompt},...imgs.map(m=>({type:'image_url',image_url:{url:'data:'+m.mime+';base64,'+m.b64}}))]:prompt}],...(json?{response_format:{type:'json_object'}}:{})}};
+      body:{model:AI_MODELS[p],messages:[{role:'user',content:imgs.length?[{type:'text',text:prompt},...imgs.map(m=>({type:'image_url',image_url:{url:'data:'+m.mime+';base64,'+m.b64}}))]:prompt}],...(json&&p==='openai'?{response_format:{type:'json_object'}}:{})}};
   };
   const send=async()=>{const q=build();try{return await fetch(q.url,{method:'POST',headers:q.headers,body:JSON.stringify(q.body),signal:timeoutSignal()})}catch(e){throw mkErr('no response')}};
   /* One 429 (rate limit) is retried after a short wait. */
@@ -1587,15 +1594,16 @@ async function aiFrom(st,prompt,json,media,check){
   return null;
 }
 /* Key order. With photos, audio or video: Google keys first (OpenAI reads photos only).
-   With text or documents only: OpenAI keys first, then Google. Saved order is kept within each provider. */
+   With text or documents only: OpenAI keys first, then Google, then Hugging Face. Saved order is kept within each provider. */
 const keyOrder=(ks,withMedia)=>ks.slice().sort((a,b)=>{
-  const rank=k=>withMedia?(k.provider==='google'?0:1):(k.provider==='openai'?0:1);
+  const TXT={openai:0,google:1,huggingface:2};
+  const rank=k=>withMedia?(k.provider==='google'?0:1):(TXT[k.provider]??3);
   return rank(a)-rank(b);
 });
 /* ---------- parallel generation. Each key takes one job at a time; the keys run side by side.
-   Text jobs can use any text key. Images use Google or OpenAI. Audio, video and links use Google only. ---------- */
+   Text jobs can use any text key (Google, OpenAI or Hugging Face). Images use Google or OpenAI. Audio, video and links use Google only. ---------- */
 const sleepMs=ms=>new Promise(r=>setTimeout(r,ms));
-const TEXT_PROVS=['openai','google'];
+const TEXT_PROVS=['openai','google','huggingface'];
 const MEDIA_JOB_ITEMS=20, IMG_PER_JOB=4;
 function mediaPrompt(d,files){
   const kinds=[...new Set(files.map(f=>f.mediaKind))].join(' and ');
@@ -1607,7 +1615,8 @@ function linkPrompt(d,links){
   return `Read the web pages and videos at these links, and use ONLY what you can read from them. If a link cannot be read, create nothing from it. Reply with ONE JSON object only, in this shape:\n${ITEM_SHAPE}\nCreate up to ${MEDIA_JOB_ITEMS} flashcards and up to ${MEDIA_JOB_ITEMS} quiz questions at each level. ${LEVEL_TEXT.easy} ${LEVEL_TEXT.medium} ${LEVEL_TEXT.hard} Quiz answers must be one of the options. ${QUIZ_MIX}Do not ask about the document itself.\n\nLINKS:\n${list}`;
 }
 /* Runs the jobs at the same time. A job goes to the next key it may use when one fails; a job no key may use finishes at once. */
-async function runJobs(jobs,keys){
+const bumpStat=(s,p,ok)=>{s[p]=s[p]||{ok:0,fail:0};ok?s[p].ok++:s[p].fail++};
+async function runJobs(jobs,keys,stats){
   const usable=(j,k)=>j.provs.includes(k.provider)&&!j.tried.has(k.i);
   const busy=new Set();
   const sweep=()=>{for(const j of jobs){if(!j.done&&!busy.has(j)&&!keys.some(k=>usable(j,k)))j.done=true}};
@@ -1618,8 +1627,8 @@ async function runJobs(jobs,keys){
       const job=jobs.find(j=>!j.done&&!busy.has(j)&&usable(j,k));
       if(!job){await sleepMs(150);continue}
       busy.add(job);
-      try{job.result=await job.run(k);job.done=true}
-      catch(e){job.lastErr=(e&&e.err)||'no response';job.tried.add(k.i)}
+      try{job.result=await job.run(k);job.done=true;if(stats)bumpStat(stats,k.provider,true)}
+      catch(e){job.lastErr=(e&&e.err)||'no response';job.tried.add(k.i);if(stats)bumpStat(stats,k.provider,false)}
       finally{busy.delete(job)}
     }
   };
@@ -1663,7 +1672,8 @@ async function runAll(d,media){
   /* 5. Links: Google only, with Google reading the pages. */
   if(links.length)mkJob(['google'],k=>withBy(k,callAI(k,linkPrompt(d,links),true,null,{urlContext:true}).then(check)),{kind:'link'});
 
-  await runJobs(jobs,allKeys);
+  const stats={};
+  await runJobs(jobs,allKeys,stats);
 
   const [ovJob,...rest]=jobs;
   const usedBy={};
@@ -1695,12 +1705,13 @@ async function runAll(d,media){
     const cards=dedupeItems(interleave(cardLists[l])),quiz=dedupeItems(interleave(quizLists[l]));
     res[l]={by,via,err:(by==='ai'&&!err)?'':err,cards:cards.slice(0,FACT_CAP),quiz:quiz.slice(0,FACT_CAP)};
   }
+  res.stats=stats;
   return res;
 }
 function startAll(d,sig){
   const bk=d.id;
   genBusy.set(bk,sig);tried.add(bk+'|'+sig);
-  const finish=res=>{if(genBusy.get(bk)!==sig)return;for(const k of KEYS4)storeRec(d,k,{sig,...res[k]})};
+  const finish=res=>{if(genBusy.get(bk)!==sig)return;for(const k of KEYS4)storeRec(d,k,{sig,...res[k]});if(res.stats)storeRec(d,'stats',{sig,counts:res.stats})};
   loadMedia(d)
     .then(media=>runAll(d,media))
     .then(finish,e=>{
@@ -1709,6 +1720,17 @@ function startAll(d,sig){
       finish(res);
     })
     .finally(()=>{if(genBusy.get(bk)===sig){genBusy.delete(bk);if(db.active===d.id)renderAll()}});
+}
+/* Landing page, under each deck: which AI built it and how its requests went. Hidden when the files changed since. */
+function deckByLine(d){
+  const r=d.gen&&d.gen.stats;
+  if(!r||!d.sources.length||r.sig!==factsOf(d).sig)return '';
+  const c=r.counts||{};
+  const provs=PROV_ORDER.filter(p=>c[p]);
+  if(!provs.length)return 'Built with app logic.';
+  const parts=provs.map(p=>`${PROV_NAME[p]} ${c[p].ok} passed${c[p].fail?`, ${c[p].fail} failed`:''}`);
+  const failed=provs.filter(p=>c[p].fail).map(p=>PROV_NAME[p]);
+  return 'Built with AI: '+parts.join('; ')+'. '+(failed.length?'Some requests failed on '+failed.join(', ')+'.':'All requests worked.');
 }
 /* Called when Overview, Flashcards or Quiz is tapped. Starts the one request unless saved AI content already matches the files. */
 function openDeckTab(d){
@@ -2164,7 +2186,7 @@ function aboutView(){
     </ol>
     <h3 class="abh3">Your data</h3>
     <p class="abp">Everything stays on this phone. A backup includes your API keys, so keep backup files private.</p>
-    <p class="abp abcredit">Developed by PK Solution Labs</p>
+    <p class="abp abcredit">Developed by Sigma vidhi</p>
   </section>`;
 }
 
@@ -2184,7 +2206,7 @@ function renderHome(){
     ${keyPanel()}`;
   const home=`
     <button class="btn lg block" id="newdeck">+ New deck</button>
-    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div></div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
+    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckwrap"><div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div><p class="deckby">${esc(deckByLine(d))}</p></div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
 `;
   $('#view-home').innerHTML=homeTab==='settings'?settings:homeTab==='backup'?backupView():homeTab==='about'?aboutView():home;
   document.querySelectorAll('[data-hometab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.hometab===homeTab)));
@@ -2236,6 +2258,7 @@ document.addEventListener('click',e=>{
   if(ds.kclose!==undefined){keyUI.adding=null;keyUI.msg='';renderHome();return}
   if(ds.ksave!==undefined){saveNewKey();return}
   if(ds.kremove!==undefined){removeKey(+ds.kremove);return}
+  if(ds.kcopy!==undefined){copyKey(+ds.kcopy);return}
   if(ds.rm!==undefined){const d=D();const s=d.sources[+ds.rm];if(s&&s.blobId)idbDel(s.blobId);d.sources.splice(+ds.rm,1);save();renderAll();renderSheet();return}
   if(ds.cdel!==undefined){camShots.splice(+ds.cdel,1);renderSheet();return}
   if(ds.cmode!==undefined){camMode=ds.cmode;renderSheet();return}
@@ -2311,7 +2334,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.i
 document.addEventListener('submit',e=>{e.preventDefault()});
 
 /* ---------- themes ---------- */
-/* Fifteen themes. Each sets the same colour tokens: the page is always pitch black, panels take the faded colour.
+/* Fifteen themes (Night and Ocean removed; Cyan Charcoal added). Each sets the same colour tokens: the page is always pitch black, panels take the faded colour.
    Themes marked stars show a few twinkling stars on their panels. Each entry: [key, name, swatch colour, stars]. */
 const THEME_LIST=[
   ['bw','Black and White','#f2f2f2',false],
@@ -2319,7 +2342,6 @@ const THEME_LIST=[
   ['sunset','Sunset Orange','#ff7a2f',false],
   ['forest','Forest Green','#2f8f4e',true],
   ['royal','Royal Purple','#7b2fbf',true],
-  ['ocean','Ocean Teal','#1aa3a3',true],
   ['crimson','Crimson Red','#d62839',false],
   ['golden','Golden Yellow','#f5c518',true],
   ['rose','Rose Pink','#e86fa0',false],
@@ -2328,7 +2350,8 @@ const THEME_LIST=[
   ['olive','Olive','#7d8229',false],
   ['burgundy','Burgundy','#7a1b31',false],
   ['indigo','Indigo','#3f51b5',true],
-  ['sand','Sand Beige','#d8c3a0',false]
+  ['sand','Sand Beige','#d8c3a0',false],
+  ['cyan','Cyan Charcoal','#22d3ee',false]
 ];
 const THEME_KEY='cramdeck.theme';
 const currentTheme=()=>document.documentElement.getAttribute('data-theme')||'slate';
