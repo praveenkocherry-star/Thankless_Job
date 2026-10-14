@@ -68,6 +68,7 @@ button{cursor:pointer}
 .deckby{margin:0;font-size:.7rem;font-weight:700;color:var(--white);text-align:center;overflow-wrap:anywhere}
 .deckrep{font-size:.7rem;color:var(--white);text-align:left;border:1px solid var(--white);border-radius:10px;padding:.3rem .5rem;background:var(--navy)}
 .deckrep summary{font-weight:800;cursor:pointer}
+.reph{font-size:.75rem;margin:.4rem 0 .15rem;color:var(--yellow)}
 .replist{margin:.3rem 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.25rem;overflow-wrap:anywhere}
 .deckopen{flex:1;min-width:0;height:1.2rem;min-height:1.2rem;padding:0 .5rem;background:#000000;color:#DCE1EE;border:1px solid var(--white);border-radius:12px;text-align:center;font-size:.8rem;font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-shadow:0 2px 0 var(--white)}
 .deckrow .renbtn,.deckrow .delbtn{flex:none;width:3.42rem;min-height:1rem;padding:0 .2rem;border:1px solid var(--white);border-radius:8px;font-size:.7rem;font-weight:900;line-height:1.1}
@@ -1266,13 +1267,13 @@ function syncSpk(){
 }
 
 /* ---------- AI keys. Several keys can be saved (one per provider; Google may have several, each from a different project).
-   Stored only on this phone. Google, OpenAI and Hugging Face keys. ---------- */
+   Stored only on this phone. Google keys only; several Google keys run at the same time. ---------- */
 const KEYS_STORE='cramdeck.keys', AI_STORE='cramdeck.ai', OLD_GKEY='cramdeck.gkey';
-const PROV_NAME={google:'Google',openai:'OpenAI',huggingface:'Hugging Face'};
+const PROV_NAME={google:'Google'};
 const PROV_RANK={google:0,openai:1,huggingface:2};
 const PROV_PREFIX={google:/^(AIza|AQ\.)/,openai:/^sk-/,huggingface:/^hf_/};
 const PROV_KEYPAGE={google:'https://aistudio.google.com/apikey',openai:'https://platform.openai.com/api-keys',huggingface:'https://huggingface.co/settings/tokens'};
-const PROV_ORDER=['google','openai','huggingface'];
+const PROV_ORDER=['google'];
 const AI_MODELS={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini',huggingface:'meta-llama/Llama-3.3-70B-Instruct'};
 const AI_BASE={openai:'https://api.openai.com/v1',huggingface:'https://router.huggingface.co/v1'};
 let keyUI={open:false,adding:null,msg:''};
@@ -1288,7 +1289,7 @@ function loadKeys(){
       else{const g=localStorage.getItem(OLD_GKEY);if(g)list=[{provider:'google',key:g}]}
     }
   }catch(e){}
-  return list.map((x,i)=>({...x,i})).sort((a,b)=>(PROV_RANK[a.provider]-PROV_RANK[b.provider])||(a.i-b.i));
+  return list.filter(x=>x.provider==='google').map((x,i)=>({...x,i})).sort((a,b)=>(PROV_RANK[a.provider]-PROV_RANK[b.provider])||(a.i-b.i));
 }
 function writeKeys(list){
   try{localStorage.setItem(KEYS_STORE,JSON.stringify(list.map(x=>({provider:x.provider,key:x.key}))));syncBanner();return true}
@@ -1332,7 +1333,7 @@ function keyPanel(){
   const keys=loadKeys();
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
   const provBtns=PROV_ORDER.map(p=>`<a class="kbtn" href="${PROV_KEYPAGE[p]}" target="_blank" rel="noopener">${PROV_NAME[p]}</a>`).join('');
-  const steps=`<ol class="ksteps"><li>Tap Google, OpenAI or Hugging Face and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>`;
+  const steps=`<ol class="ksteps"><li>Tap Google. This opens Google AI Studio. Sign in with your Google account.</li><li>Create a sample project for each key you want. In each project, press <b>Create API key</b> and copy the key.</li><li>Tap <b>Update</b>, then <b>+ Google</b>, paste the key and press Save. Repeat for each project.</li></ol>`;
   const counts=PROV_ORDER.map(p=>[p,keys.filter(k=>k.provider===p).length]).filter(x=>x[1]).map(x=>`${PROV_NAME[x[0]]} ${x[1]}`).join(', ');
   const summary=keys.length?`API keys saved<span class="kcount">${esc(counts)}</span>`:'No API keys saved yet';
   const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV_NAME[k.provider]} key</span><span class="kbtns2"><button class="btn sm copykey" data-kcopy="${i}">Copy key</button><button class="btn sm delkey" data-kremove="${i}">Delete key <span aria-hidden="true">✕</span></button></span></li>`).join('');
@@ -1344,13 +1345,11 @@ function keyPanel(){
   }else{
     addArea=`<div class="kbtns">${PROV_ORDER.map(p=>`<button class="btn sm" data-kadd="${p}">+ ${PROV_NAME[p]}</button>`).join('')}</div>`;
   }
-  const whatDo=`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">
+  const whatDo=`<div class="kwhat"><span class="label">What Google keys do</span><ul class="ksteps">
     <li><b>Google:</b> reads text, photos, audio and video. Free limit about 15 requests a minute and 1,500 a day for each project.</li>
-    <li><b>OpenAI:</b> reads text and photos. Free use is capped at about $100 a month; paying $5 raises the limits.</li>
-    <li><b>Hugging Face:</b> reads text only. Free use has limits set by Hugging Face.</li>
 </ul>
-    <p class="hint">Figures are from published summaries and may change. Check each provider's page.</p></div>`;
-  const multi=`<p class="knote"><b>Why several keys?</b> You can save as many Google, OpenAI and Hugging Face keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically, so your work keeps going. Google keys from different projects each have their own quota.</p>`;
+    <p class="hint">Figures are from published summaries and may change. Check Google's page.</p></div>`;
+  const multi=`<p class="knote"><b>Why several keys?</b> Each Google project gets its own key and its own free quota. Create several sample projects, one key in each, and save them all here. All saved Google keys work at the same time, so more keys means more requests run side by side and the app is faster. If one key runs out of quota or fails, the other keys take over its work.</p>`;
   const body=keyUI.open||!keys.length
     ?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`
     :'';
@@ -1358,7 +1357,7 @@ function keyPanel(){
     <span class="label">Create your free API key</span>
     <div class="kbtns">${provBtns}</div>
     ${steps}
-    <div class="apirow"><span class="apititle">${summary}</span>${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div>
+    <div class="apirow"><span class="apititle">${summary}</span>${!keyUI.adding&&!(keyUI.open||!keys.length)?'<button class="btn sm" data-kadd="google">+ Google</button>':''}${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div>
     ${body}${msg}</div>`;
 }
 const MATERIAL_CHARS=120000;
@@ -1613,7 +1612,7 @@ const keyOrder=(ks,withMedia)=>ks.slice().sort((a,b)=>{
    Text jobs can use any text key (Google, OpenAI or Hugging Face). Images use Google or OpenAI. Audio, video and links use Google only. ---------- */
 const sleepMs=ms=>new Promise(r=>setTimeout(r,ms));
 /* Text order: Hugging Face first; OpenAI only for requests Hugging Face could not finish; Google last. */
-const TEXT_PROVS=['huggingface','openai','google'];
+const TEXT_PROVS=['google'];
 const MEDIA_JOB_ITEMS=20, IMG_PER_JOB=4;
 function mediaPrompt(d,files){
   const kinds=[...new Set(files.map(f=>f.mediaKind))].join(' and ');
@@ -1642,8 +1641,9 @@ async function runJobs(jobs,keys,stats){
       const job=jobs.find(j=>!busy.has(j)&&usable(j,k));
       if(!job){await sleepMs(150);continue}
       busy.add(job);
-      try{job.result=await job.run(k);job.done=true;job.winner=who(k);job.attempts.push({who:who(k),ok:true});if(stats)bumpStat(stats,k.provider,true)}
-      catch(e){const err=(e&&e.err)||'no response';job.lastErr=err;job.tried.add(k.i);job.attempts.push({who:who(k),ok:false,err});advance(job);if(stats)bumpStat(stats,k.provider,false)}
+      const t0=Date.now();
+      try{job.result=await job.run(k);job.done=true;job.winner=who(k);job.attempts.push({who:who(k),ok:true,ms:Date.now()-t0});if(stats)bumpStat(stats,k.provider,true)}
+      catch(e){const err=(e&&e.err)||'no response';job.lastErr=err;job.tried.add(k.i);job.attempts.push({who:who(k),ok:false,err,ms:Date.now()-t0});advance(job);if(stats)bumpStat(stats,k.provider,false)}
       finally{busy.delete(job)}
     }
   };
@@ -1664,8 +1664,8 @@ async function runAll(d,media){
   const mkJob=(provs,run,meta)=>{jobs.push({provs,run,meta,tried:new Set(),result:null,done:false,lastErr:'',attempts:[],winner:''})};
   const check=out=>{if(!LEVELS.some(l=>levelUsable(out,l)))throw mkErr('no usable items');return out};
   const withBy=(k,p)=>p.then(out=>({out,by:k.provider}));
-  /* 1. Overview (one job). Audio, video or links need Google; images need Google or OpenAI. */
-  const ovProvs=(av.length||links.length)?['google']:imgs.length?['google','openai']:TEXT_PROVS;
+  /* 1. Overview (one job). Everything runs on the saved Google keys. */
+  const ovProvs=(av.length||links.length||imgs.length)?['google']:TEXT_PROVS;
   mkJob(ovProvs,k=>withBy(k,callAI(k,OV_PROMPT(d),false,mediaAll.length?mediaAll:null).then(t=>{if(!String(t||'').trim())throw mkErr('empty reply');return t})),{kind:'ov'});
   /* 2. Text: facts in batches, each batch to any text key. */
   const idxAll=sel.map((_,i)=>i);
@@ -1679,16 +1679,18 @@ async function runAll(d,media){
   }
   /* 3. Audio and video: one job per file, Google only. */
   for(const m of av)mkJob(['google'],k=>withBy(k,callAI(k,mediaPrompt(d,[m]),true,[m]).then(check)),{kind:'media',name:m.name});
-  /* 4. Images: groups of photos, Google or OpenAI. */
+  /* 4. Images: groups of photos, Google keys. */
   for(let i=0;i<imgs.length;i+=IMG_PER_JOB){
     const g=imgs.slice(i,i+IMG_PER_JOB);
-    mkJob(['google','openai'],k=>withBy(k,callAI(k,mediaPrompt(d,g),true,g).then(check)),{kind:'media',name:g.map(x=>x.name).join(', ')});
+    mkJob(['google'],k=>withBy(k,callAI(k,mediaPrompt(d,g),true,g).then(check)),{kind:'media',name:g.map(x=>x.name).join(', ')});
   }
   /* 5. Links: Google only, with Google reading the pages. */
   if(links.length)mkJob(['google'],k=>withBy(k,callAI(k,linkPrompt(d,links),true,null,{urlContext:true}).then(check)),{kind:'link'});
 
   const stats={};
+  const tRun0=Date.now();
   await runJobs(jobs,allKeys,stats);
+  const wallMs=Date.now()-tRun0;
 
   const [ovJob,...rest]=jobs;
   const usedBy={};
@@ -1721,14 +1723,23 @@ async function runAll(d,media){
     res[l]={by,via,err:(by==='ai'&&!err)?'':err,cards:cards.slice(0,FACT_CAP),quiz:quiz.slice(0,FACT_CAP)};
   }
   res.stats=stats;
+  res.keyReport=keyReportOf(jobs,allKeys,wallMs);
   const reqName=m=>m.kind==='ov'?'Overview':m.kind==='facts'?`Flashcards and quiz, facts ${m.idxs[0]+1}–${m.idxs[m.idxs.length-1]+1}`:m.kind==='material'?'Flashcards and quiz, from the whole material':m.kind==='link'?'Links':`Media: ${m.name||''}`;
   res.report=jobs.map(j=>({req:reqName(j.meta),order:j.order.slice(),attempts:j.attempts.slice(),winner:j.winner||''}));
   return res;
 }
+/* Per key: requests, passed, failed and time. The time saved is the time the same requests would take on one key, less the real run time (estimate). */
+function keyReportOf(jobs,keys,wallMs){
+  const who=k=>`${PROV_NAME[k.provider]} key ${keys.filter(x=>x.provider===k.provider&&x.i<=k.i).length}`;
+  const rows=keys.map(k=>({who:who(k),requests:0,ok:0,fail:0,ms:0}));
+  for(const j of jobs)for(const a of (j.attempts||[])){const r=rows.find(x=>x.who===a.who);if(!r)continue;r.requests++;if(a.ok)r.ok++;else r.fail++;r.ms+=a.ms||0}
+  const totalMs=rows.reduce((s,r)=>s+r.ms,0);
+  return {wallMs,totalMs,keyCount:keys.length,rows};
+}
 function startAll(d,sig){
   const bk=d.id;
   genBusy.set(bk,sig);tried.add(bk+'|'+sig);
-  const finish=res=>{if(genBusy.get(bk)!==sig)return;for(const k of KEYS4)storeRec(d,k,{sig,...res[k]});if(res.stats)storeRec(d,'stats',{sig,counts:res.stats,report:res.report||[]})};
+  const finish=res=>{if(genBusy.get(bk)!==sig)return;for(const k of KEYS4)storeRec(d,k,{sig,...res[k]});if(res.stats)storeRec(d,'stats',{sig,counts:res.stats,report:res.report||[],keyReport:res.keyReport||null})};
   loadMedia(d)
     .then(media=>runAll(d,media))
     .then(finish,e=>{
@@ -1748,15 +1759,29 @@ function repLine(q){
   if(!q.winner)return `${head} Failed on every key, so app logic was used.`;
   return `${head} ${a.some(x=>!x.ok)?`Covered by ${q.winner} after fallback.`:'No fallback needed.'}`;
 }
+const secs=ms=>`${(ms/1000).toFixed(1)} s`;
+function keyLines(kr){
+  const out=kr.rows.map(x=>x.requests?`${x.who}: ${x.requests} requests (${x.ok} passed, ${x.fail} failed). Average ${secs(x.ms/x.requests)} per request, total ${secs(x.ms)}.`:`${x.who}: no requests in this run.`);
+  if(kr.keyCount>1){const saved=kr.totalMs-kr.wallMs;out.push(saved>0?`The whole run took ${secs(kr.wallMs)} with ${kr.keyCount} keys. The same requests on one key would take about ${secs(kr.totalMs)}, so about ${secs(saved)} was saved (estimate).`:`The whole run took ${secs(kr.wallMs)} with ${kr.keyCount} keys (estimate: no time saved).`)}
+  else out.push(`The whole run took ${secs(kr.wallMs)} with one key.`);
+  return out;
+}
 function deckReport(d){
   const r=d.gen&&d.gen.stats;
   if(!r||!r.report||!r.report.length||!d.sources.length||r.sig!==factsOf(d).sig)return '';
-  return `<details class="deckrep"><summary>Full AI report (${r.report.length} requests)</summary><ol class="replist">${r.report.map(q=>`<li>${esc(repLine(q))}</li>`).join('')}</ol></details>`;
+  const perKey=r.keyReport?`<h4 class="reph">Per key</h4><ol class="replist">${keyLines(r.keyReport).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'';
+  return `<details class="deckrep"><summary>Full AI report (${r.report.length} requests)</summary>${perKey}<h4 class="reph">Per request</h4><ol class="replist">${r.report.map(q=>`<li>${esc(repLine(q))}</li>`).join('')}</ol></details>`;
 }
 /* Landing page, under each deck: which AI built it and how its requests went. Hidden when the files changed since. */
 function deckByLine(d){
   const r=d.gen&&d.gen.stats;
   if(!r||!d.sources.length||r.sig!==factsOf(d).sig)return '';
+  if(r.keyReport){
+    const att=r.keyReport.rows.filter(x=>x.requests);
+    if(!att.length)return 'Built with app logic.';
+    const failed=att.filter(x=>x.fail).map(x=>x.who);
+    return 'Built with AI: '+att.map(x=>`${x.who} ${x.ok} passed${x.fail?`, ${x.fail} failed`:''}`).join('; ')+'. '+(failed.length?'Some requests failed on '+failed.join(', ')+'.':'All requests worked.');
+  }
   const c=r.counts||{};
   const provs=PROV_ORDER.filter(p=>c[p]);
   if(!provs.length)return 'Built with app logic.';

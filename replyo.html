@@ -265,7 +265,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
       </ul>
       <h3 class="abh3">How to use it</h3>
       <ol class="abl">
-        <li>Open Settings and add a free API key from Google, OpenAI or Hugging Face.</li>
+        <li>Open Settings and add a free Google API key. You can add several.</li>
         <li>Go to Home and tick PDF, Picture, Voice, or any mix.</li>
         <li>Move the slider to MIN, STD or MAX.</li>
         <li>Tap Ask a question, speak, then tap Stop and send.</li>
@@ -275,8 +275,8 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
       </ol>
       <h3 class="abh3">Good to know</h3>
       <ul class="abl">
-        <li>You can save several keys. With more than one key, replyO works faster because the keys share the job.</li>
-        <li>Voice files are made with a Google or OpenAI key. A Hugging Face key is used for the written answers.</li>
+        <li>You can save several Google keys. They all work at the same time, so replyO works faster.</li>
+        <li>Under each answer, a report shows each key, how many requests it handled, and roughly how much time the extra keys saved.</li>
         <li>Photos come from Wikimedia Commons, and each photo is credited. If no photo is found, a graphic is used instead.</li>
         <li>Voice input works when replyO is opened from its web address, not from a saved file.</li>
       </ul>
@@ -314,11 +314,9 @@ const IMG_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><re
 const SPK_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8c1.5 1.2 1.5 6.8 0 8M18.5 5.5c3 2.8 3 10.2 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const FILE_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 2h8l6 6v14H6z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="19" font-size="5" text-anchor="middle" fill="currentColor" font-weight="bold">PDF</text></svg>';
 const PROV={
-  google:{name:'Google',re:/^(AIza|AQ\.)/,page:'https://aistudio.google.com/apikey'},
-  openai:{name:'OpenAI',re:/^sk-/,page:'https://platform.openai.com/api-keys'},
-  hf:{name:'Hugging Face',re:/^hf_/,page:'https://huggingface.co/settings/tokens'}
+  google:{name:'Google',re:/^(AIza|AQ\.)/,page:'https://aistudio.google.com/apikey'}
 };
-const MODEL={google:'gemini-3.1-flash-lite',openai:'gpt-4.1-mini',hf:'meta-llama/Llama-3.3-70B-Instruct'};
+const MODEL={google:'gemini-3.1-flash-lite'};
 const LIB={
   jspdf:'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   table:'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
@@ -434,28 +432,27 @@ function renderOut(){
 function renderKeys(){
   $('#apibanner').hidden=keys.length>0;
   const msg=keyUI.msg?`<p class="hint" role="status">${esc(keyUI.msg)}</p>`:'';
-  const provBtns=Object.keys(PROV).map(p=>`<a class="kbtn" href="${PROV[p].page}" target="_blank" rel="noopener">${PROV[p].name}</a>`).join('');
-  const steps='<ol class="ksteps"><li>Tap Google, OpenAI or Hugging Face and create your free account and key.</li><li>Copy the key.</li><li>Tap <b>Update</b>, then <b>+ Add key</b>, choose the provider, paste the key and press Save.</li></ol>';
-  const counts=Object.keys(PROV).map(p=>[p,keys.filter(k=>k.p===p).length]).filter(x=>x[1]).map(x=>`${PROV[x[0]].name} ${x[1]}`).join(', ');
-  const summary=keys.length?`API keys saved<span class="kcount">${esc(counts)}</span>`:'No API keys saved yet';
-  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${PROV[k.p].name} key</span><span class="kbt"><button class="btn sm copykey" data-kcopy="${i}">Copy key</button><button class="btn sm delkey" data-kdel="${i}">Delete key <span aria-hidden="true">✕</span></button></span></li>`).join('');
+  const summary=keys.length?`API keys saved<span class="kcount">Google keys saved: ${keys.length}</span>`:'No API keys saved yet';
+  const list=keys.map((k,i)=>`<li class="krow"><span class="kname">${keyLabel(k)}</span><span class="kbt"><button class="btn sm copykey" data-kcopy="${i}">Copy key</button><button class="btn sm delkey" data-kdel="${i}">Delete key <span aria-hidden="true">✕</span></button></span></li>`).join('');
   let addArea='';
   if(keyUI.adding){
-    addArea=`<div class="panel kadd"><span class="label">Paste your ${PROV[keyUI.adding].name} key</span>
-      <input class="text" id="newKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${PROV[keyUI.adding].name} key">
+    addArea=`<div class="panel kadd"><span class="label">Paste your Google key</span>
+      <input class="text" id="newKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Google key">
       <div class="apirow"><button class="btn sm" data-ksave="1">Save</button><button class="btn sm" data-kclose="1">Close</button></div></div>`;
   }else{
-    addArea=`<div class="kbtns">${Object.keys(PROV).map(p=>`<button class="btn sm" data-kadd="${p}">+ ${PROV[p].name}</button>`).join('')}</div>`;
+    addArea=`<div class="kbtns"><button class="btn sm" data-kadd="google">+ Add Google key</button></div>`;
   }
-  const whatDo=`<div class="kwhat"><span class="label">Which keys do what</span><ul class="ksteps">
-    <li><b>Google:</b> free limit about 15 requests a minute and 1,500 a day for each project.</li>
-    <li><b>OpenAI:</b> free use is capped at about $100 a month; paying $5 raises the limits.</li>
-    <li><b>Hugging Face:</b> free accounts get a small monthly allowance. It is used for the written answers, not for voice files.</li></ul>
-    <p class="hint">Figures are from published summaries and may change. Check each provider's page.</p></div>`;
-  const multi='<p class="knote"><b>Why several keys?</b> You can save as many Google, OpenAI and Hugging Face keys as you need. If one key runs out of free quota or fails, the app tries your next key automatically. Google keys from different projects each have their own quota.</p>';
+  const steps=`<ol class="ksteps">
+    <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> and sign in with your Google account.</li>
+    <li>Tap <b>Create API key</b>. Choose a Google project, or create a new one, then copy the key.</li>
+    <li>Tap <b>+ Add Google key</b>, paste the key and press Save.</li></ol>`;
+  const whatDo=`<div class="kwhat"><span class="label">Free limits</span><ul class="ksteps">
+    <li><b>Google:</b> free limit about 15 requests a minute and 1,500 a day for each project.</li></ul>
+    <p class="hint">Figures are from published summaries and may change. Check Google's page.</p></div>`;
+  const multi='<p class="knote"><b>Several keys, faster answers.</b> Add as many Google keys as you like. Create each key in a different Google project, so each one has its own free quota. All saved keys work at the same time, so more keys means answers are made faster.</p>';
   const body=keyUI.open||!keys.length?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`:'';
-  $('#keyHost').innerHTML=`<span class="label">Create your free API key</span>
-    <div class="kbtns">${provBtns}</div>
+  $('#keyHost').innerHTML=`<span class="label">Google API keys</span>
+    <div class="kbtns"><button class="btn sm" data-kadd="google">+ Add Google key</button></div>
     ${steps}
     <div class="apirow keyline"><span class="apititle">${summary}</span>${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div>
     ${body}${msg}`;
@@ -492,58 +489,23 @@ function parseJSON(t){
 const verNum=n=>{const m=String(n).match(/(\d+(?:\.\d+)?)/);return m?parseFloat(m[1]):0};
 /* If the stored model name is refused (404), look up a current one on the account and use it. */
 async function findModel(p,k){
-  if(p==='google'){
-    const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200',{headers:{'x-goog-api-key':k}});
-    if(!r.ok)throw new Error(String(r.status));
-    const j=await r.json();
-    const c=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/^models\/gemini-[\d.]+-flash(-lite)?$/.test(m.name))
-      .map(m=>m.name.replace('models/',''))
-      .sort((a,b)=>verNum(b)-verNum(a)||(/lite/.test(b)?1:0)-(/lite/.test(a)?1:0));
-    if(!c.length)throw new Error('404');
-    return c[0];
-  }
-  if(p==='hf'){
-    const r=await fetch('https://router.huggingface.co/v1/models',{headers:{Authorization:'Bearer '+k}});
-    if(!r.ok)throw new Error(String(r.status));
-    const j=await r.json();
-    const ids=(j.data||[]).map(m=>m.id).filter(id=>/instruct/i.test(id));
-    const c=ids.filter(id=>/llama/i.test(id)).sort((a,b)=>verNum(b)-verNum(a)).concat(ids);
-    if(!c.length)throw new Error('404');
-    return c[0];
-  }
-  const r=await fetch('https://api.openai.com/v1/models',{headers:{Authorization:'Bearer '+k}});
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200',{headers:{'x-goog-api-key':k}});
   if(!r.ok)throw new Error(String(r.status));
   const j=await r.json();
-  const c=(j.data||[]).map(m=>m.id).filter(id=>/^gpt-[\d.]+-mini$/.test(id)).sort((a,b)=>verNum(b)-verNum(a));
+  const c=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/^models\/gemini-[\d.]+-flash(-lite)?$/.test(m.name))
+    .map(m=>m.name.replace('models/',''))
+    .sort((a,b)=>verNum(b)-verNum(a)||(/lite/.test(b)?1:0)-(/lite/.test(a)?1:0));
   if(!c.length)throw new Error('404');
   return c[0];
 }
 async function requestOnce(p,k,prompt,json){
-  if(p==='google'){
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL.google}:generateContent`,{
-      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.4,...(json?{responseMimeType:'application/json'}:{})}})
-    });
-    if(!r.ok)throw new Error(String(r.status));
-    const j=await r.json();
-    return ((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(x=>x.text||'').join('');
-  }
-  if(p==='hf'){
-    const r=await fetch('https://router.huggingface.co/v1/chat/completions',{
-      method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k},
-      body:JSON.stringify({model:MODEL.hf,messages:[{role:'user',content:json?prompt+'\nReply with the JSON object only, no other text.':prompt}],temperature:0.4,max_tokens:6000})
-    });
-    if(!r.ok)throw new Error(String(r.status));
-    const j=await r.json();
-    return (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
-  }
-  const r=await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k},
-    body:JSON.stringify({model:MODEL.openai,messages:[{role:'user',content:prompt}],...(json?{response_format:{type:'json_object'}}:{})})
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL.google}:generateContent`,{
+    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.4,...(json?{responseMimeType:'application/json'}:{})}})
   });
   if(!r.ok)throw new Error(String(r.status));
   const j=await r.json();
-  return (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
+  return ((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(x=>x.text||'').join('');
 }
 async function callOne(p,k,prompt,json){
   let text;
@@ -565,7 +527,7 @@ const tally=(p,good)=>{const t=pool.stats[p]||(pool.stats[p]={ok:0,fail:0});t[go
 const prog={done:0,total:0};
 const kst=new Map();
 const kstate=k=>{let t=kst.get(k);if(!t){t={busy:false,until:0,dead:false};kst.set(k,t)}return t};
-function resetPool(par){pool.par=par;pool.stats={};pool.log=[];pool.seq=0;prog.done=0;prog.total=0;keys.forEach(k=>{const t=kstate(k);t.dead=false;t.until=0})}
+function resetPool(par){pool.par=par;pool.stats={};pool.log=[];pool.seq=0;pool.t0=Date.now();prog.done=0;prog.total=0;keys.forEach(k=>{const t=kstate(k);t.dead=false;t.until=0})}
 function showProg(){if(pool.par&&busy)msg(`Working… ${prog.done} of ${prog.total} parts done`)}
 function schedule(fn,opts){
   return new Promise((resolve,reject)=>{
@@ -575,9 +537,8 @@ function schedule(fn,opts){
     showProg();pump();
   });
 }
-/* Order for written answers: Hugging Face first, then every OpenAI key, then Google. A job moves on to the next provider only when
-   every usable key of the earlier provider has failed for that job. Voice audio uses OpenAI, then Google (set per job with only). */
-const ORDER_TEXT=['hf','openai','google'];
+/* Written answers and voice audio all use Google keys. Every saved Google key works at the same time. */
+const ORDER_TEXT=['google'];
 const rk=(j,k)=>j.only?0:ORDER_TEXT.indexOf(k.p);
 const viable=(j,live)=>{let r=Infinity;for(const k of live){if(j.tried.has(k)||(j.only&&j.only!==k.p))continue;const x=rk(j,k);if(x<r)r=x}return r};
 function keyLabel(k){const same=keys.filter(x=>x.p===k.p);return PROV[k.p].name+' key '+(same.indexOf(k)+1)}
@@ -605,7 +566,8 @@ function pump(){
 }
 async function runJob(k,t,j){
   t.busy=true;
-  const rec=(ok,err)=>pool.log.push({id:j.id,kind:j.kind,label:j.label,p:k.p,key:keyLabel(k),ok,err:err||''});
+  const t0=Date.now();
+  const rec=(ok,err)=>pool.log.push({id:j.id,kind:j.kind,label:j.label,p:k.p,key:keyLabel(k),ok,err:err||'',ms:Date.now()-t0});
   try{
     const r=await j.fn(k);
     tally(k.p,true);rec(true);
@@ -864,7 +826,7 @@ async function makeAudio(text,setMsg){
     if(!r.pcm||!r.pcm.length)throw new Error('empty audio');
     return r;
   };
-  const provs=['openai','google'].filter(p=>keys.some(k=>k.p===p));
+  const provs=['google'].filter(p=>keys.some(k=>k.p===p));
   let last='';
   for(const p of provs){
     try{
@@ -1490,18 +1452,28 @@ function repHtml(it){
   if(!it.report)return '';
   return `<details class="rep"><summary>How this answer was made</summary>${it.report.map(r=>`<p class="repk"><b>${esc(r.kind)}.</b> ${esc(r.summary)}</p><ul class="repl">${r.lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`).join('')}</details>`;
 }
-/* A very small line under each question: which AI made it, which failed, how many attempts passed and failed. */
-function aiNote(it){
-  const a=it.ai;if(!a)return '';
-  const ps=['google','openai','hf'].filter(p=>PROV[p]&&a[p]&&(a[p].ok||a[p].fail));
-  if(!ps.length)return '';
-  const nm=p=>PROV[p].name;
-  const list=arr=>arr.length>1?arr.slice(0,-1).map(nm).join(', ')+' and '+nm(arr[arr.length-1]):nm(arr[0]);
-  const worked=ps.filter(p=>a[p].ok),dead=ps.filter(p=>!a[p].ok),part=ps.filter(p=>a[p].ok&&a[p].fail);
-  const pass=ps.reduce((n,p)=>n+a[p].ok,0),all=ps.reduce((n,p)=>n+a[p].ok+a[p].fail,0);
-  if(pass===all)return `Made with ${list(worked)}. All worked: ${pass} of ${all} attempts passed.`;
-  const per=ps.map(p=>`${nm(p)}: ${a[p].ok} passed${a[p].fail?', '+a[p].fail+' failed':''}`).join('. ');
-  return `${worked.length?'Made with '+list(worked)+'. ':''}${dead.length?list(dead)+' failed. ':''}${part.length?'Some attempts failed on '+list(part)+'. ':''}${per}.`;
+/* Per-key figures for one answer: requests handled, passed and failed, time worked, and an estimate of the time saved by the extra keys. */
+function keyStatsOf(log){
+  const s={};
+  for(const r of log){if(!r.p)continue;const x=s[r.key]||(s[r.key]={n:0,ok:0,fail:0,ms:0});x.n++;x[r.ok?'ok':'fail']++;x.ms+=r.ms||0}
+  return s;
+}
+const secsOf=ms=>{const s=Math.round(ms/1000);return s<1?'under 1 second':s===1?'about 1 second':s<90?s+' seconds':Math.floor(s/60)+' min '+(s%60)+' s'};
+function keyBlock(it){
+  const st=it.keyStats;if(!st)return '';
+  const labels=[...new Set([...keys.map(keyLabel),...Object.keys(st)])].sort((a,b)=>(+a.split(' key ')[1])-(+b.split(' key ')[1]));
+  const lines=labels.map(l=>{
+    const x=st[l]||{n:0,ok:0,fail:0,ms:0};
+    return `${l}: ${x.n} request${x.n===1?'':'s'}, ${x.ok} passed, ${x.fail} failed${x.n?', '+secsOf(x.ms)+' of work':' (did not work on this answer)'}.`;
+  });
+  const used=labels.filter(l=>st[l]&&st[l].n>0).length;
+  const total=Object.values(st).reduce((n,x)=>n+x.n,0);
+  const saved=Math.max(0,(it.sumMs||0)-(it.wallMs||0));
+  lines.push(`Total: ${total} request${total===1?'':'s'}.`);
+  lines.push(used>1
+    ? `Took ${secsOf(it.wallMs||0)} with ${used} keys. With one key it would have taken ${secsOf(it.sumMs||0)}, so ${secsOf(saved)} was saved (estimate).`
+    : `Only one key worked on this answer, so no time was saved.`);
+  return `<div class="rep keyrep"><p class="repk"><b>Google keys.</b> Each key, its requests and its time.</p><ul class="repl">${lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></div>`;
 }
 function renderList(){
   $('#empty').hidden=items.length>0;
@@ -1510,7 +1482,7 @@ function renderList(){
     return `<li class="entry"><p class="meta"><span>${esc(it.level||'')}</span><span>${esc(new Date(it.date).toLocaleString('en-IN'))}</span></p>
       <button class="q${open?' open':''}" data-act="toggle" data-i="${i}" aria-expanded="${open}">${esc(it.q)}</button>
       <ul class="outs">${OUT_ORDER.filter(k=>it.outs[k]).map(k=>outRow(it,i,k)).join('')}</ul>
-      ${aiNote(it)?`<p class="aiby">${esc(aiNote(it))}</p>`:''}
+      ${keyBlock(it)}
       ${repHtml(it)}
       <div class="foot"><button class="btn sm del" data-act="del" data-i="${i}" aria-label="Delete question and answers: ${t}">Delete</button></div>
     </li>`;
@@ -1623,7 +1595,7 @@ async function process(raw){
     }
     if(!Object.keys(entry.outs).length)throw firstErr||new Error('Something went wrong. Please try again.');
     entry.q=base?base.question:raw;entry.title=base?base.title:raw.slice(0,60);
-    entry.ai=JSON.parse(JSON.stringify(pool.stats));
+    entry.keyStats=keyStatsOf(pool.log);entry.wallMs=Date.now()-pool.t0;entry.sumMs=pool.log.reduce((n,r)=>n+(r.ms||0),0);
     entry.report=buildReport(pool.log);
     items.unshift(entry);saveItems();renderList();
     const n=Object.keys(entry.outs).length;
@@ -1783,7 +1755,7 @@ document.addEventListener('click',e=>{
   if(closest('#apiUpdate')){keyUI.open=!keyUI.open;if(!keyUI.open)keyUI.adding=null;keyUI.msg='';return renderKeys()}
   const kc=closest('[data-kcopy]');if(kc)return copyKey(+kc.dataset.kcopy);
   const kd=closest('[data-kdel]');if(kd)return deleteKey(+kd.dataset.kdel);
-  const ka=closest('[data-kadd]');if(ka){keyUI.adding=ka.dataset.kadd;keyUI.msg='';renderKeys();const n=$('#newKey');if(n)n.focus();return}
+  const ka=closest('[data-kadd]');if(ka){keyUI.open=true;keyUI.adding=ka.dataset.kadd;keyUI.msg='';renderKeys();const n=$('#newKey');if(n)n.focus();return}
   if(closest('[data-ksave]'))return saveNewKey();
   if(closest('[data-kclose]')){keyUI.adding=null;keyUI.msg='';return renderKeys()}
   /* backup tab */
