@@ -363,6 +363,9 @@ a.btn{text-decoration:none;text-align:center}
 .bkloc{display:grid;gap:.5rem}
 .actlog li{margin:.35rem 0}
 .actwhen{font-weight:700}
+.theme-panel + .apipanel{margin-top:14px}
+a.btn.lg.kgoogle{height:40px;min-height:0;padding:0 8px;font-size:.9rem;line-height:1.2;display:flex;align-items:center;justify-content:center;text-align:center}
+.actlog{list-style:none;padding:0;margin:0}
 </style>
 </head>
 <body>
@@ -419,8 +422,10 @@ let nextId=1;
 let study=null, quiz=null, busy=false, gesture=null, ignoreClick=false;
 let lastMsg='';
 const factCache=new Map();
+const genLogged=new Set();
 let ovSpeakPending=false;
-const BK_FOLDER='Kramdex _backup', BK_LOG_KEY='cramdeck.log';
+const APP_NAME='Kramdex', BK_FOLDER=APP_NAME+'_backup', BK_LOG_KEY='cramdeck.log', BK_LOG_VER='cramdeck.log.v2';
+let aboutLog=false;
 let bkDir=null, bkPicked='', bkBase=null, bkTimer=null, bkChain=Promise.resolve(), bkNeedsPerm=false, bkMediaKnown=new Set(), bkPending=[];
 let backupUI={msg:'',choosing:false,view:'main',txs:null};
 
@@ -540,7 +545,7 @@ function splitSentences(t){
   for(const para of t.split(/\n{2,}|\n(?=\s*(?:[•\-*▪◦]|\d+[.)])\s)/)){
     const p=para.replace(/^\s*(?:[•\-*▪◦]|\d+[.)])\s+/,'').replace(/\s*\n\s*/g,' ').trim();
     if(!p)continue;
-    for(let s of p.split(/(?<=[.!?])\s+(?=["“(]?[A-Z0-9])/)){s=s.trim();if(s.split(' ').length>=3&&!s.includes('?')&&!/^(yes|no)\b/i.test(s))out.push(s)}
+    for(let s of p.replace(/([.!?])\s+(?=["“(]?[A-Z0-9])/g,'$1\u0001').split('\u0001')){s=s.trim();if(s.split(' ').length>=3&&!s.includes('?')&&!/^(yes|no)\b/i.test(s))out.push(s)}
   }
   return out;
 }
@@ -1313,7 +1318,7 @@ const aiUsable=ai=>!!ai&&!!PROV_NAME[ai.provider];
 function removeKey(idx){
   const list=loadKeys();const k=list[idx];if(!k)return;
   if(!confirm(`Delete this ${PROV_NAME[k.provider]} key? This cannot be undone.`))return;
-  writeKeys(list.filter((_,j)=>j!==idx));note('Deleted a Google API key');
+  writeKeys(list.filter((_,j)=>j!==idx));
   tried.clear();keyUI.msg='';renderHome();
 }
 /* Copies one saved key to the clipboard with one tap. Falls back to selecting a hidden field where the clipboard API is missing. */
@@ -1335,7 +1340,7 @@ function saveNewKey(){
   if(!PROV_PREFIX[p].test(v)){keyUI.msg=`This does not look like ${/^[AEIOU]/.test(PROV_NAME[p])?'an':'a'} ${PROV_NAME[p]} key. Check it and try again.`;renderHome();return}
   const list=loadKeys();list.push({provider:p,key:v});
   if(!writeKeys(list)){renderHome();return}
-  note('Added a Google API key');keyUI={open:true,adding:null,msg:''};tried.clear();study=quiz=null;
+  keyUI={open:true,adding:null,msg:''};tried.clear();study=quiz=null;
   renderHome();
 }
 /* Key panel. Heading and provider buttons, short steps, the saved keys (Remove only), add a key, and why several keys help. */
@@ -1613,7 +1618,7 @@ async function aiFrom(st,prompt,json,media,check){
    With text or documents only: OpenAI keys first, then Google, then Hugging Face. Saved order is kept within each provider. */
 const keyOrder=(ks,withMedia)=>ks.slice().sort((a,b)=>{
   const TXT={openai:0,google:1,huggingface:2};
-  const rank=k=>withMedia?(k.provider==='google'?0:1):(TXT[k.provider]??3);
+  const rank=k=>withMedia?(k.provider==='google'?0:1):(TXT[k.provider]!=null?TXT[k.provider]:3);
   return rank(a)-rank(b);
 });
 /* ---------- parallel generation. Each key takes one job at a time; the keys run side by side.
@@ -1745,7 +1750,7 @@ function keyReportOf(jobs,keys,wallMs){
   return {wallMs,totalMs,keyCount:keys.length,rows};
 }
 function startAll(d,sig){
-  note(`Started making content for "${d.name}"`);
+  const gk=d.id+'|'+sig;if(!genLogged.has(gk)){genLogged.add(gk);note(`Made content for "${d.name}"`)}
   const bk=d.id;
   genBusy.set(bk,sig);tried.add(bk+'|'+sig);
   const finish=res=>{if(genBusy.get(bk)!==sig)return;for(const k of KEYS4)storeRec(d,k,{sig,...res[k]});if(res.stats)storeRec(d,'stats',{sig,counts:res.stats,report:res.report||[],keyReport:res.keyReport||null})};
@@ -1814,6 +1819,7 @@ function ensure(d,key){
   if(genBusy.get(d.id)===sig)return 'loading';
   if(rec&&rec.sig===sig)return rec;
   if(loadKeys().length)return 'loading';
+  const gk=d.id+'|'+sig;if(!genLogged.has(gk)){genLogged.add(gk);note(`Made content for "${d.name}"`)}
   const fresh=fallbackFor(d,key,sig,'app','');
   storeRec(d,key,fresh);
   return fresh;
@@ -2188,8 +2194,7 @@ async function flushBackup(){
     if(!bkBase||bkBase.theme!==theme)payload.theme=theme;
     await writeFile(bkDir,'transaction-'+now.replace(/[:.]/g,'-')+'.json',new Blob([JSON.stringify(payload)],{type:'application/json'}));
     bkBase={decks:cur,keys:keysJs,theme};
-    const text=logList().map(e=>fmtWhen(e.t)+'  '+e.a).join('\n')+'\n';
-    await writeFile(bkDir,'activity-log.txt',new Blob([text],{type:'text/plain'}));
+    await writeLogFile();
     bkNeedsPerm=false;
     if(/^(Backups are paused|A backup could not)/.test(backupUI.msg)){backupUI.msg='';if(homeTab==='backup')renderHome()}
   }catch(e){
@@ -2206,17 +2211,24 @@ async function loadBackupCfg(){
     if(rec&&rec.handle){
       bkDir=rec.handle;bkPicked=rec.pickedName||'';bkBase=null;bkMediaKnown=new Set();
       try{bkNeedsPerm=(await bkDir.queryPermission({mode:'readwrite'}))!=='granted'}catch(e){bkNeedsPerm=true}
+      if(!bkNeedsPerm)writeLogFile().catch(()=>{});
       if(homeTab==='backup')renderHome();
     }
   }catch(e){}
 }
 /* Set up: the user picks one location. Only the device folder works in this version. */
+/* Backup location, delete options, restore page. */
 function backupPick(kind){
   if(kind==='cancel'){backupUI.choosing=false;backupUI.msg='';renderHome();return}
   if(kind==='change'){
     if(!confirm('Change the backup location? New backups go to the new folder. Backups already in the old folder stay there.'))return;
     bkDir=null;bkBase=null;bkPending=[];bkNeedsPerm=false;bkDel('config');
     backupUI.choosing=true;backupUI.msg='';renderHome();return;
+  }
+  if(kind==='remove'){
+    if(!confirm('Turn off backup? Kramdex stops making backups. Backups already in the folder are kept until you delete them.'))return;
+    bkDir=null;bkBase=null;bkPending=[];bkNeedsPerm=false;bkDel('config');
+    backupUI.choosing=false;backupUI.msg='Backup is turned off. Files already in the folder are kept.';renderHome();return;
   }
   if(kind==='drive'){
     backupUI.choosing=true;
@@ -2228,17 +2240,33 @@ function backupPick(kind){
   }
   /* The picker opens straight from the tap, so it is called before any await. */
   window.showDirectoryPicker({mode:'readwrite'}).then(async picked=>{
-    const folder=await picked.getDirectoryHandle('Kramdex _backup',{create:true});
+    const folder=await picked.getDirectoryHandle(BK_FOLDER,{create:true});
     bkDir=folder;bkPicked=picked.name||'Chosen folder';bkBase=null;bkNeedsPerm=false;bkMediaKnown=new Set();bkPending=[];
     try{await bkPut({id:'config',kind:'device',pickedName:bkPicked,handle:folder})}catch(e){}
     backupUI.choosing=false;backupUI.view='main';
     backupUI.msg='Backup is set up. Kramdex will back up after each use.';
-    note('Set up backup in the "Kramdex _backup" folder');
+    scheduleBackup('Set up backup');
     renderHome();
   }).catch(e=>{
     backupUI.msg=(e&&e.name==='AbortError')?'No folder was chosen.':'The folder could not be opened. Try again.';
     renderHome();
   });
+}
+/* Deletes every item in the backup folder: transaction files, the media folder and the log file. */
+function deleteAllBackups(){
+  if(!bkDir)return;
+  if(!confirm('Delete all backups in the "'+BK_FOLDER+'" folder? This cannot be undone. Your decks on this device are not changed.'))return;
+  backupUI.msg='Deleting backups. Please wait.';renderHome();
+  bkChain=bkChain.then(async()=>{
+    try{
+      const names=[];
+      for await(const h of bkDir.values())names.push(h.name);
+      for(const name of names)await bkDir.removeEntry(name,{recursive:true});
+      bkBase=null;bkMediaKnown=new Set();bkPending=[];
+      backupUI.msg='Deleted '+names.length+' item'+(names.length===1?'':'s')+' from the "'+BK_FOLDER+'" folder.';
+    }catch(e){backupUI.msg='The backups could not be deleted. Check that Kramdex can still write to the folder.'}
+    renderHome();
+  }).catch(()=>{});
 }
 async function allowBackup(){
   try{const r=await bkDir.requestPermission({mode:'readwrite'});bkNeedsPerm=r!=='granted'}catch(e){bkNeedsPerm=true}
@@ -2311,9 +2339,10 @@ function backupView(){
       ${rows?`<ul class="files bklist">${rows}</ul>`:''}
     </div>`;
   }
+  const choosingNow=!bkDir&&backupUI.choosing;
   let body;
   if(!bkDir){
-    body=backupUI.choosing
+    body=choosingNow
       ?`<span class="label">Choose one backup location</span>
         <div class="bkchoose"><button class="btn lg block" data-bpick="device">Personal device folder</button><button class="btn lg block" data-bpick="drive">Google Drive</button></div>
         <button class="btn sm" data-bpick="cancel">Cancel</button>`
@@ -2322,27 +2351,43 @@ function backupView(){
     body=`<div class="panel bkloc">
       <span class="label">Backup location</span>
       <p class="bkwhere">Personal device folder: <b>${esc(bkPicked)}</b></p>
-      <p class="hint">Kramdex creates a folder named "Kramdex _backup" at this location and stores this device's backups in it. Backups are made after every use of the app, once backup is set up. Each one saves only what changed. Backups include your API keys, so keep the folder private.</p>
+      <p class="hint">${esc(APP_NAME)} creates a folder named "${esc(BK_FOLDER)}" at this location and stores this device's backups in it. Backups are made after every use of the app, once backup is set up. Each one saves only what changed. Backups include your API keys, so keep the folder private.</p>
       ${bkNeedsPerm?'<button class="btn sm" data-ballow="1">Allow backups</button>':''}
-      <div class="apirow"><button class="btn sm" data-bpick="change">Change location</button></div>
+      <div class="bkchoose"><button class="btn sm" data-bpick="change">Change location</button><button class="btn sm" data-bpick="remove">Remove backup method</button><button class="btn sm" data-bdelall="1">Delete all backups</button></div>
     </div>`;
   }
   return `<div class="panel bk">
     ${body}
-    <button class="btn lg block" data-bview="restore">Restore</button>
+    ${choosingNow?'':'<button class="btn lg block" data-bview="restore">Restore</button>'}
     ${backupUI.msg?`<p class="hint" role="status">${esc(backupUI.msg)}</p>`:''}
   </div>`;
 }
-/* Activity log for the About section, newest first. */
+/* Activity log: a button in About opens the full log on its own screen. */
 function activitySection(){
-  const L=logList().slice().reverse();
-  const shown=L.slice(0,200);
   return `<h3 class="abh3">Activity log</h3>
-    <p class="abp">Every action is kept with its date and time.${bkDir?' The same log is kept as activity-log.txt in the "Kramdex _backup" folder.':''}</p>
-    ${shown.length?`<ul class="abl actlog">${shown.map(e=>`<li><span class="actwhen">${esc(fmtWhen(e.t))}</span> ${esc(e.a)}</li>`).join('')}</ul>${L.length>200?`<p class="hint">Showing the latest 200 of ${L.length} actions.</p>`:''}`:'<p class="hint">No actions yet.</p>'}`;
+    <p class="abp">Important actions only: content made, added, changed, deleted or restored, with date and time.</p>
+    <button class="btn lg block" data-aview="log">Open activity log</button>`;
 }
+function activityPage(){
+  const L=logList().slice().reverse();
+  return `<section class="panel about" aria-labelledby="alH">
+    <button class="btn sm" data-aview="main">Back</button>
+    <h2 id="alH" class="abh">Activity log</h2>
+    <p class="hint">${L.length} ${L.length===1?'entry':'entries'}, newest first.</p>
+    ${L.length?`<ol class="actlog">${L.map(e=>`<li><span class="actwhen">${esc(fmtWhen(e.t))}</span> ${esc(e.a)}</li>`).join('')}</ol>`:'<p class="hint">No activity yet.</p>'}
+  </section>`;
+}
+/* Writes the full log to the backup folder. */
+async function writeLogFile(){
+  const L=logList();
+  const text=L.map(e=>fmtWhen(e.t)+'  '+e.a).join('\n')+(L.length?'\n':'');
+  await writeFile(bkDir,'activity-log.txt',new Blob([text],{type:'text/plain'}));
+}
+/* One-time purge of the old activity log, before the new rules apply. */
+function purgeOldLog(){try{if(!localStorage.getItem(BK_LOG_VER)){localStorage.removeItem(BK_LOG_KEY);localStorage.setItem(BK_LOG_VER,'1')}}catch(e){}}
 
 function aboutView(){
+  if(aboutLog)return activityPage();
   return `<section class="panel about" aria-labelledby="abH">
     <h2 id="abH" class="abh">About Kramdex</h2>
     <p class="abp">Kramdex turns your notes, documents, photos, audio and links into an overview, flashcards and a quiz.</p>
@@ -2383,7 +2428,7 @@ function renderHome(){
     ${keyPanel()}`;
   const home=`
     <button class="btn lg block" id="newdeck">+ New deck</button>
-    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckwrap"><div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div>${deckReport(d)}</div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
+    <div class="decks">${db.decks.length?db.decks.map(d=>`<div class="deckwrap"><div class="deckrow"><button class="deckopen" data-open="${esc(d.id)}">${esc(d.name)}</button><button class="renbtn" data-rename="${esc(d.id)}" aria-label="Rename ${esc(d.name)}">Rename</button><button class="delbtn" data-deldeck="${esc(d.id)}" aria-label="Delete ${esc(d.name)}">Delete</button></div></div>`).join(''):'<p class="hint">No decks yet. Tap New deck to start.</p>'}</div>
 `;
   $('#view-home').innerHTML=homeTab==='settings'?settings:homeTab==='backup'?backupView():homeTab==='about'?aboutView():home;
   document.querySelectorAll('[data-hometab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.hometab===homeTab)));
@@ -2418,7 +2463,7 @@ document.addEventListener('click',e=>{
   if(t.closest&&t.closest('#flip')){if(!ignoreClick)flipCard(1);return}
   const b=t.closest('button,[data-open]');if(!b)return;
   const ds=b.dataset;
-  if(ds.open!==undefined){note(`Opened deck "${((db.decks.find(x=>x.id===ds.open))||{}).name||''}"`);openDeck(ds.open);return}
+  if(ds.open!==undefined){openDeck(ds.open);return}
   if(ds.deldeck!==undefined){deleteDeck(ds.deldeck);return}
   if(ds.rename!==undefined){
     const rd=db.decks.find(x=>x.id===ds.rename);if(!rd)return;
@@ -2426,11 +2471,11 @@ document.addEventListener('click',e=>{
     if(nv&&nv.trim()){rd.name=nv.trim().slice(0,60);note(`Renamed deck to "${rd.name}"`);save()}
     render();return;
   }
-  if(ds.tab!==undefined){note(`Opened ${({create:'Sources',overview:'Overview',study:'Flashcards',quiz:'Quiz'})[ds.tab]||ds.tab} in "${(D()||{}).name||''}"`);db.tab=ds.tab;study=quiz=null;speechStop();{const tp={overview:'ov',study:'cards',quiz:'quiz'}[ds.tab];if(tp){const dd=D();if(dd)openDeckTab(dd)}}if(ds.tab==='overview')ovSpeakPending=true;render();resetScroll();return}
+  if(ds.tab!==undefined){db.tab=ds.tab;study=quiz=null;speechStop();{const tp={overview:'ov',study:'cards',quiz:'quiz'}[ds.tab];if(tp){const dd=D();if(dd)openDeckTab(dd)}}if(ds.tab==='overview')ovSpeakPending=true;render();resetScroll();return}
   if(ds.opt!==undefined){answer(+ds.opt);return}
-  if(ds.d!==undefined){const d=D();d.difficulty=ds.d;note(`Changed difficulty of "${d.name}" to ${ds.d}`);study=quiz=null;save();renderAll();return}
-  if(ds.hometab!==undefined){homeTab=ds.hometab;keyUI.msg='';if(homeTab==='backup'){backupUI.msg='';backupUI.view='main';backupUI.choosing=false}note('Opened '+({settings:'Settings',backup:'Backup',about:'About'}[homeTab]||'Home'));renderHome();resetScroll();return}
-  if(ds.themePick!==undefined){note(`Changed theme to ${ds.themePick}`);setTheme(ds.themePick);renderHome();return}
+  if(ds.d!==undefined){const d=D();d.difficulty=ds.d;study=quiz=null;save();renderAll();return}
+  if(ds.hometab!==undefined){homeTab=ds.hometab;aboutLog=false;keyUI.msg='';if(homeTab==='backup'){backupUI.msg='';backupUI.view='main';backupUI.choosing=false}renderHome();resetScroll();return}
+  if(ds.themePick!==undefined){setTheme(ds.themePick);renderHome();return}
   if(ds.kadd!==undefined){keyUI={open:true,adding:ds.kadd,msg:''};renderHome();return}
   if(ds.kclose!==undefined){keyUI.adding=null;keyUI.msg='';renderHome();return}
   if(ds.ksave!==undefined){saveNewKey();return}
@@ -2447,6 +2492,8 @@ document.addEventListener('click',e=>{
   if(ds.bview!==undefined){backupUI.msg='';if(ds.bview==='restore'){loadTxs();return}backupUI.view='main';renderHome();return}
   if(ds.brest!==undefined){restoreTo(+ds.brest);return}
   if(ds.ballow!==undefined){allowBackup();return}
+  if(ds.bdelall!==undefined){deleteAllBackups();return}
+  if(ds.aview!==undefined){aboutLog=ds.aview==='log';renderHome();resetScroll();return}
   switch(b.id){
     case 'backHome':goHome();break;
     case 'newdeck':newDeck();break;
@@ -2491,7 +2538,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('dragleave',e=>{const z=e.target.closest&&e.target.closest('#drop');if(z)z.classList.remove('over')});
 document.addEventListener('drop',e=>{
   const z=e.target.closest&&e.target.closest('#drop');
-  if(z){e.preventDefault();z.classList.remove('over');addFiles([...(e.dataTransfer?.files||[])])}
+  if(z){e.preventDefault();z.classList.remove('over');addFiles([...((e.dataTransfer&&e.dataTransfer.files)||[])])}
 });
 document.addEventListener('change',e=>{
   const t=e.target;
@@ -2547,6 +2594,7 @@ load();
 try{history.replaceState(null,'')}catch(e){}
 /* System back button: from a deck it returns to the deck list; on the deck list it leaves the app. */
 window.addEventListener('popstate',()=>{if(sheetKind){closeSheet();return}if(db.active!==null)showHome()});
+purgeOldLog();
 render();
 loadBackupCfg();
 window.addEventListener('pagehide',()=>{if(bkTimer){clearTimeout(bkTimer);bkTimer=null;queueBackup()}});

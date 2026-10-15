@@ -141,7 +141,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .slogan{margin:0;text-align:center;font-size:.8rem;font-weight:800;color:var(--white)}
 
 /* backup tab */
-.bkbtns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.bkbtns{display:grid;grid-template-columns:1fr;gap:.6rem;margin-bottom:.5rem}
 .bkbtns .btn{min-height:2.4rem;font-size:.85rem}
 .bkpick{display:flex;flex-direction:column;gap:.4rem;padding:.5rem;border:1px solid var(--white);border-radius:12px}
 .bkpick input{font-size:.75rem;color:var(--yellow);max-width:100%}
@@ -163,10 +163,14 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
 .about h2,.about h3{text-align:left}
 .about p.abcredit{margin-top:.9rem;font-weight:800;text-align:center;color:var(--yellow);display:flex;align-items:center;justify-content:center;gap:.4rem;text-align-last:center}
 .about .abtile{height:3.6rem;width:auto;border-radius:0}
-.keybtn{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;margin:.2rem 0 .5rem}
+.keybtn{display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;height:1.56rem;min-height:0;padding:0 .6rem;text-align:center;text-decoration:none;margin:.2rem 0 .5rem}
+.logbtn{display:block;width:100%;box-sizing:border-box;margin:.4rem 0}
+.kstack{display:flex;flex-direction:column;gap:.4rem;align-items:stretch}
+.panelgap{height:.7rem}
+.bkpick .btn{width:100%}
 .bkloc{display:flex;flex-direction:column;gap:.25rem}
 .bkwarn{margin:.2rem 0;font-size:.75rem;font-weight:800;color:var(--yellow)}
-.actl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;max-height:22rem;overflow:auto}
+.actl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem}
 .actl li{font-size:.7rem;font-weight:600;color:var(--white);overflow-wrap:anywhere;border-bottom:1px solid var(--white);padding-bottom:.25rem}
 .actt{font-weight:800;color:var(--yellow)}
 
@@ -249,7 +253,7 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
   <section class="wrap" id="viewSettings" role="tabpanel" aria-labelledby="tabSettings" hidden>
     <div class="panel theme-panel" id="themeHost"></div>
 
-    <div class="homesep" aria-hidden="true"></div>
+    <div class="panelgap" aria-hidden="true"></div>
 
     <div class="panel apipanel" id="keyHost"></div>
   </section>
@@ -289,9 +293,17 @@ html[data-stars] .panel>*:not(.tdd){position:relative;z-index:1}
       <h3 class="abh3">Your data</h3>
       <p class="abp">Everything stays in this browser on this phone. The backup folder you choose holds your questions, answers, settings and API keys, so keep that folder private. Clearing the browser data removes your answers unless you have a backup.</p>
       <h3 class="abh3">Activity log</h3>
-      <p class="abp">Every action is listed here with its date and time. When backup is set up, the same log is kept as activity.log in your backup folder.</p>
-      <div id="actLog"></div>
+      <p class="abp">The log lists the important actions with their date and time: questions asked, questions deleted, keys added or removed, backups set up, stopped or deleted, and restores.</p>
+      <button class="btn logbtn" id="openLog" type="button">Open activity log</button>
       <p class="abp abcredit"><img class="logotile abtile" src="data:image/jpeg;base64,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" alt="Sigma Vidhi Technologies logo"></p>
+    </div>
+  </section>
+  <section class="wrap" id="viewLog" aria-labelledby="logH" hidden>
+    <div class="panel">
+      <div class="bkact"><button class="btn sm" id="logBack" type="button">Back to About</button></div>
+      <h2 id="logH" class="abh">Activity log</h2>
+      <p class="abp">Newest first. Important actions only.</p>
+      <div id="actLog"></div>
     </div>
   </section>
 </div>
@@ -448,8 +460,6 @@ function renderKeys(){
     addArea=`<div class="panel kadd"><span class="label">Paste your Google key</span>
       <input class="text" id="newKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Google key">
       <div class="apirow"><button class="btn sm" data-ksave="1">Save</button><button class="btn sm" data-kclose="1">Close</button></div></div>`;
-  }else{
-    addArea=`<div class="kbtns"><button class="btn sm" data-kadd="google">+ Add Google key</button></div>`;
   }
   const steps=`<a class="btn keybtn" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Create your free Google API key here.</a>
     <ol class="ksteps">
@@ -461,9 +471,8 @@ function renderKeys(){
   const multi='<p class="knote"><b>Several keys, faster answers.</b> Add as many Google keys as you like. Create each key in a different Google project, so each one has its own free quota. All saved keys work at the same time, so more keys means answers are made faster.</p>';
   const body=keyUI.open||!keys.length?`<ul class="klist">${list||'<li class="hint">No keys saved yet.</li>'}</ul>${addArea}${whatDo}${multi}`:'';
   $('#keyHost').innerHTML=`<span class="label">Google API keys</span>
-    <div class="kbtns"><button class="btn sm" data-kadd="google">+ Add Google key</button></div>
     ${steps}
-    <div class="apirow keyline"><span class="apititle">${summary}</span>${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div>
+    <div class="apirow keyline"><span class="apititle">${summary}</span><div class="kstack"><button class="btn sm" data-kadd="google">+ Add Google key</button>${keys.length?`<button class="btn sm" id="apiUpdate">Update</button>`:''}</div></div>
     ${body}${msg}`;
 }
 function saveNewKey(){
@@ -471,7 +480,7 @@ function saveNewKey(){
   const p=keyUI.adding;
   if(!v){keyUI.msg='Paste the key first.';return renderKeys()}
   if(!PROV[p].re.test(v)){keyUI.msg=`That does not look like a ${PROV[p].name} key. Check it and try again.`;return renderKeys()}
-  keys.push({p,k:v});saveKeys();keyUI.adding=null;keyUI.msg=`${PROV[p].name} key saved.`;renderKeys();logEvent('Added a Google key',keyLabel(keys[keys.length-1]),settingsNow());
+  keys.push({p,k:v});saveKeys();keyUI.adding=null;keyUI.msg=`${PROV[p].name} key saved.`;renderKeys();logEvent('Added a Google key',keyLabel(keys[keys.length-1]),settingsNow(),true);
 }
 async function copyKey(i){
   const k=keys[i];if(!k)return;
@@ -486,7 +495,7 @@ async function copyKey(i){
 function deleteKey(i){
   const k=keys[i];if(!k)return;
   if(!confirm(`Delete this ${PROV[k.p].name} key? This cannot be undone.`))return;
-  keys.splice(i,1);saveKeys();keyUI.msg='Key deleted.';renderKeys();logEvent('Deleted a Google key','',settingsNow());
+  keys.splice(i,1);saveKeys();keyUI.msg='Key deleted.';renderKeys();logEvent('Deleted a Google key','',settingsNow(),true);
 }
 
 /* ---------- AI calls: keys are tried in the order saved ---------- */
@@ -1406,7 +1415,7 @@ async function deleteItem(i){
   if(playingId===it.eid)stopSpeech();
   for(const k of Object.keys(it.outs)){const o=it.outs[k];if(o&&o.key){try{await idbDel(o.key)}catch(e){}}}
   const idx=items.indexOf(it);if(idx>=0)items.splice(idx,1);
-  openQ.delete(it.eid);saveItems();renderList();msg('Deleted.');logEvent('Deleted a question',it.title||'',{type:'delete',eid:it.eid});
+  openQ.delete(it.eid);saveItems();renderList();msg('Deleted.');logEvent('Deleted a question',it.title||'',{type:'delete',eid:it.eid},true);
 }
 function outRow(it,i,k){
   const o=it.outs[k],t=esc(it.title||'');
@@ -1424,49 +1433,6 @@ function outRow(it,i,k){
   const on=k==='voice'&&playingId===it.eid;
   return `<li class="out${on?' playing':''}"><span class="ico">${icon}</span><span class="outname">${OUT_NAME[k]}<small>${sub}</small></span>${on?'<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>':''}<span class="btns">${btns}</span></li>`;
 }
-function explainErr(m){
-  if(m==='401'||m==='403')return m+' (key refused)';
-  if(m==='429')return '429 (rate limited)';
-  if(/^5\d\d$/.test(m))return m+' (server error)';
-  if(/fetch|network|load failed/i.test(m))return 'network error';
-  if(m==='404')return '404 (model not found)';
-  return String(m).slice(0,90);
-}
-/* A line for every step of every output: who was tried first, what failed and why, who covered it, and which key finished it. */
-function buildReport(log){
-  const out=[];
-  for(const kind of ['Shared','PDF','Picture','Voice','Other']){
-    const rows=log.filter(r=>r.kind===kind);if(!rows.length)continue;
-    const ids=[...new Set(rows.map(r=>r.id))];
-    const lines=[];let passed=0,covered=0,failedAttempts=0;const fin={};
-    for(const id of ids){
-      const a=rows.filter(r=>r.id===id),last=a[a.length-1];
-      a.forEach(r=>{if(!r.ok)failedAttempts++});
-      if(last.ok){passed++;fin[last.key]=(fin[last.key]||0)+1}
-      if(last.ok&&a.some(r=>!r.ok)&&new Set(a.map(r=>r.p)).size>1)covered++;
-      const parts=a.map((r,i)=>{
-        if(!r.p)return `no working key was left (${explainErr(r.err)})`;
-        const head=i===0?'tried '+r.key:(!a[i-1].ok&&a[i-1].key===r.key?'retry '+r.key:'fallback to '+r.key);
-        return r.ok?`${head}, passed`:`${head}, failed: ${explainErr(r.err)}`;
-      });
-      const label=a[0].label||kind;
-      lines.push(`${label}: ${parts.join('; then ')}${last.ok?'.':'. No AI answered this step.'}`);
-    }
-    const finStr=Object.entries(fin).map(([k,n])=>`${k} (${n})`).join(', ')||'nobody';
-    out.push({kind,summary:`First tried: ${rows[0].key||'none'}. ${ids.length} steps, ${passed} passed${ids.length>passed?', '+(ids.length-passed)+' failed':''}. Failed attempts: ${failedAttempts}. Steps covered by a fallback: ${covered}. Finished by: ${finStr}.`,lines});
-  }
-  return out;
-}
-function repHtml(it){
-  if(!it.report)return '';
-  return `<details class="rep"><summary>How this answer was made</summary>${it.report.map(r=>`<p class="repk"><b>${esc(r.kind)}.</b> ${esc(r.summary)}</p><ul class="repl">${r.lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`).join('')}</details>`;
-}
-/* Per-key figures for one answer: requests handled, passed and failed, time worked, and an estimate of the time saved by the extra keys. */
-function keyStatsOf(log){
-  const s={};
-  for(const r of log){if(!r.p)continue;const x=s[r.key]||(s[r.key]={n:0,ok:0,fail:0,ms:0});x.n++;x[r.ok?'ok':'fail']++;x.ms+=r.ms||0}
-  return s;
-}
 function renderList(){
   $('#empty').hidden=items.length>0;
   $('#list').innerHTML=items.map((it,i)=>{
@@ -1474,7 +1440,6 @@ function renderList(){
     return `<li class="entry"><p class="meta"><span>${esc(it.level||'')}</span><span>${esc(new Date(it.date).toLocaleString('en-IN'))}</span></p>
       <button class="q${open?' open':''}" data-act="toggle" data-i="${i}" aria-expanded="${open}">${esc(it.q)}</button>
       <ul class="outs">${OUT_ORDER.filter(k=>it.outs[k]).map(k=>outRow(it,i,k)).join('')}</ul>
-      ${repHtml(it)}
       <div class="foot"><button class="btn sm del" data-act="del" data-i="${i}" aria-label="Delete question and answers: ${t}">Delete</button></div>
     </li>`;
   }).join('');
@@ -1586,9 +1551,7 @@ async function process(raw){
     }
     if(!Object.keys(entry.outs).length)throw firstErr||new Error('Something went wrong. Please try again.');
     entry.q=base?base.question:raw;entry.title=base?base.title:raw.slice(0,60);
-    entry.keyStats=keyStatsOf(pool.log);entry.wallMs=Date.now()-pool.t0;entry.sumMs=pool.log.reduce((n,r)=>n+(r.ms||0),0);
-    entry.report=buildReport(pool.log);
-    items.unshift(entry);saveItems();renderList();logEvent('Asked a question',`${entry.title} (${entry.level}; ${Object.keys(entry.outs).map(k=>OUT_NAME[k]).join(', ')})`,{type:'add',item:entry});
+    items.unshift(entry);saveItems();renderList();logEvent('Asked a question',`${entry.title} (${entry.level}; ${Object.keys(entry.outs).map(k=>OUT_NAME[k]).join(', ')})`,{type:'add',item:entry},true);
     const n=Object.keys(entry.outs).length;
     msg(`Done. ${n>1?n+' answers are':'Your answer is'} in the list below.${notes.length?' '+notes.join(' '):''}`);
   }catch(e){
@@ -1600,9 +1563,10 @@ async function process(raw){
   }
 }
 
-/* ---------- backup: a folder the user chooses (a device folder, or the Google Drive folder on a computer). Each use is saved there as its own file,
-   and an activity.log file is kept. Restore goes back to any saved point. ---------- */
-const BK_KEY='__replyo_backup', ACT_KEY='ask4pdf.log';
+/* ---------- backup: a folder the user chooses (a device folder, or the Google Drive folder on a computer). Inside it, replyO creates
+   a folder named <app name>_backup, and only backups are saved there. Each use is saved as its own file. Restore goes back to any saved point. ---------- */
+const APP_NAME='replyO', BK_DIR=APP_NAME+'_backup';
+const BK_KEY='__replyo_backup', ACT_KEY='ask4pdf.log', PURGE_KEY='ask4pdf.logRules';
 const bk={msg:'',choosing:false,cfg:null,handle:null,paused:false,restoreList:null};
 const blobToData=b=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r.readAsDataURL(b)});
 function dataToBlob(str){
@@ -1626,6 +1590,10 @@ async function fullState(){
 let bkChain=Promise.resolve();
 function queueBk(task){const p=bkChain.then(task);bkChain=p.catch(()=>{});return p}
 function refreshBkView(){if(!$('#viewBackup').hidden)renderBackup()}
+async function saveCfg(){
+  if(!bk.cfg||!bk.handle)return;
+  try{await idbPut(BK_KEY,{handle:bk.handle,kind:bk.cfg.kind,name:bk.cfg.name,when:bk.cfg.when,needBase:!!bk.cfg.needBase,logPurged:true})}catch(e){}
+}
 async function bkDir(){
   if(!bk.cfg)return null;
   if(!bk.handle){try{const r=await idbGet(BK_KEY);if(r&&r.handle)bk.handle=r.handle}catch(e){}}
@@ -1638,21 +1606,34 @@ async function appendText(dir,name,text){
   const fh=await dir.getFileHandle(name,{create:true});const f=await fh.getFile();
   const w=await fh.createWritable({keepExistingData:true});await w.seek(f.size);await w.write(text);await w.close();
 }
-/* Every action goes to the activity list in this browser. When a backup folder is set, it also gets its own backup file and a line in activity.log. */
-async function logEvent(action,detail,change){
+async function writeRecord(dir,at,action,detail,change){
+  const rec={format:2,app:'replyo',at,action,detail:detail||'',change};
+  await writeText(dir,at.replace(/[:.]/g,'-')+'-'+Math.random().toString(36).slice(2,6)+'.json',JSON.stringify(rec));
+}
+/* inLog: only key actions go to the activity log (questions asked and deleted, keys added and removed, backup set up, stopped or restored).
+   change: the data saved to the backup folder for this action; without it, nothing is written as a backup file. */
+async function logEvent(action,detail,change,inLog){
   const at=new Date().toISOString();
   const line=`${new Date(at).toLocaleString('en-IN')} - ${action}${detail?': '+detail:''}`;
-  try{const L=readJSON(ACT_KEY,[]);L.unshift({at,action,detail:detail||''});localStorage.setItem(ACT_KEY,JSON.stringify(L.slice(0,500)))}catch(e){}
-  renderLog();
+  if(inLog){
+    try{const L=readJSON(ACT_KEY,[]);L.unshift({at,action,detail:detail||''});localStorage.setItem(ACT_KEY,JSON.stringify(L.slice(0,1000)))}catch(e){}
+    renderLog();
+  }
   if(!bk.cfg)return;
   return queueBk(async()=>{
     try{
       const dir=await bkDir();
       if(dir){
-        const rec={format:2,app:'replyo',at,action,detail:detail||'',change:change||null};
-        if(change&&change.type==='add')rec.change={...change,files:await filesForAll([change.item])};
-        await writeText(dir,at.replace(/[:.]/g,'-')+'-'+Math.random().toString(36).slice(2,6)+'.json',JSON.stringify(rec));
-        await appendText(dir,'activity.log',line+'\n');
+        if(change){
+          if(bk.cfg.needBase&&change.type!=='baseline'){
+            await writeRecord(dir,new Date().toISOString(),'Backup restarted','',await fullState());
+            bk.cfg.needBase=false;await saveCfg();
+          }
+          const c=change.type==='add'?{...change,files:await filesForAll([change.item])}:change;
+          await writeRecord(dir,at,action,detail,c);
+          if(change.type==='baseline'){bk.cfg.needBase=false;await saveCfg()}
+        }
+        if(inLog)await appendText(dir,'activity.log',line+'\n');
       }
     }catch(e){bk.msg='A backup could not be written. Check the folder and try again.'}
     refreshBkView();
@@ -1665,11 +1646,11 @@ async function pickFolder(kind){
   try{parent=await window.showDirectoryPicker({mode:'readwrite'})}
   catch(e){bk.msg=(e&&e.name==='AbortError')?'Setting up the backup was cancelled.':'The folder could not be chosen.';return renderBackup()}
   try{
-    const dir=await parent.getDirectoryHandle('replyO_backup',{create:true});
-    bk.handle=dir;bk.cfg={kind,name:parent.name,when:new Date().toISOString()};bk.paused=false;
-    try{await idbPut(BK_KEY,{handle:dir,kind,name:parent.name,when:bk.cfg.when})}catch(e){}
-    await logEvent('Backup set up',(kind==='drive'?'Google Drive folder: ':'Folder on this device: ')+parent.name,await fullState());
-    bk.msg='Backup is set up. Your questions, answers and settings are now saved in the replyO_backup folder.';
+    const dir=await parent.getDirectoryHandle(BK_DIR,{create:true});
+    bk.handle=dir;bk.cfg={kind,name:parent.name,when:new Date().toISOString(),needBase:false};bk.paused=false;
+    try{await saveCfg()}catch(e){}
+    await logEvent('Backup set up',(kind==='drive'?'Google Drive folder: ':'Folder on this device: ')+parent.name+', inside '+BK_DIR,await fullState(),true);
+    bk.msg=`Backup is set up. Your questions, answers and settings are saved in the ${BK_DIR} folder.`;
   }catch(e){bk.cfg=null;bk.handle=null;bk.msg='Backup could not be set up. Try again.'}
   renderBackup();
 }
@@ -1680,8 +1661,34 @@ async function allowBackup(){
     if(!bk.handle)throw new Error('none');
     if((await bk.handle.requestPermission({mode:'readwrite'}))!=='granted'){bk.msg='Backups stay paused until you allow access.';return renderBackup()}
     bk.paused=false;bk.msg='Backups are on again. The current state has been saved.';
-    await logEvent('Backups resumed','current state saved',await fullState());
+    await logEvent('Backups resumed','current state saved',await fullState(),false);
   }catch(e){bk.msg='Access could not be given. Set up your backup again.'}
+  renderBackup();
+}
+async function stopBackup(){
+  bk.msg='';
+  if(!confirm('Stop backups? The backup files already in the folder are kept. New changes will not be saved until you set up backup again.'))return renderBackup();
+  bk.cfg=null;bk.handle=null;bk.paused=false;bk.restoreList=null;
+  try{await idbDel(BK_KEY)}catch(e){}
+  await logEvent('Backup stopped','',null,true);
+  bk.msg='Backup has been stopped. The files already in the folder are kept.';
+  renderBackup();
+}
+async function deleteAllBackups(){
+  bk.msg='';
+  if(!confirm(`Delete all backups in the ${BK_DIR} folder? This cannot be undone. The activity log is kept.`))return renderBackup();
+  const dir=await bkDir();
+  if(!dir){bk.msg='Backups are paused. Tap Allow backups first, then delete.';return renderBackup()}
+  try{
+    const names=[];
+    for await(const h of dir.values()){if(h.kind==='file'&&h.name.endsWith('.json'))names.push(h.name)}
+    for(const nm of names)await dir.removeEntry(nm);
+    const n=names.length;
+    bk.cfg.needBase=true;await saveCfg();
+    bk.restoreList=null;
+    await logEvent('Deleted all backups',n+' backup file'+(n===1?'':'s'),null,true);
+    bk.msg=`${n} backup file${n===1?'':'s'} deleted.`;
+  }catch(e){bk.msg='The backups could not be deleted.'}
   renderBackup();
 }
 async function openRestore(){
@@ -1735,7 +1742,7 @@ async function restoreTo(i){
     openQ.clear();
     renderTheme();renderLen();renderOut();renderKeys();renderList();
     bk.restoreList=null;
-    await logEvent('Restored to an earlier point',pick.action+', saved '+new Date(pick.at).toLocaleString('en-IN'),await fullState());
+    await logEvent('Restored to an earlier point',pick.action+', saved '+new Date(pick.at).toLocaleString('en-IN'),await fullState(),true);
     bk.msg='The data has been restored to that point.';
   }catch(e){bk.msg='The data could not be restored.'}
   renderBackup();
@@ -1745,19 +1752,32 @@ function renderLog(){
   const L=readJSON(ACT_KEY,[]);
   el.innerHTML=L.length?`<ul class="actl">${L.map(x=>`<li><span class="actt">${esc(new Date(x.at).toLocaleString('en-IN'))}</span> ${esc(x.action)}${x.detail?': '+esc(x.detail):''}</li>`).join('')}</ul>`:'<p class="hint">No activity yet.</p>';
 }
+function openLog(){
+  VIEWS.forEach(n=>{$(viewId(n)).hidden=true;const t=$(tabId(n));t.setAttribute('aria-selected',String(n==='about'));t.tabIndex=n==='about'?0:-1});
+  $('#viewLog').hidden=false;renderLog();$('#scroll').scrollTop=0;
+  const h=$('#logH');h.setAttribute('tabindex','-1');h.focus();
+}
 function renderBackup(){
   const cfg=bk.cfg;
-  const warn=cfg&&bk.paused?`<p class="bkwarn" role="status">Backups are paused. Tap Allow backups so new changes are saved.</p><div class="bkact"><button class="btn sm" id="bkAllow">Allow backups</button></div>`:'';
-  const choose=bk.choosing?`<div class="bkpick"><span class="label">Choose where the backups go</span>
+  let main;
+  if(bk.choosing){
+    main=`<div class="bkpick"><span class="label">Choose where the backups go</span>
       <button class="btn" data-pick="device">A folder on this device</button>
       <button class="btn" data-pick="drive">Google Drive folder</button>
-      <p class="hint">On a computer, choose the Google Drive folder that Google Drive for desktop shows on this computer. replyO then creates a folder named replyO_backup inside the place you choose.</p></div>`:'';
-  const loc=cfg?`<div class="bkloc"><span class="label">Backup location</span>
+      <p class="hint">replyO creates a folder named "${BK_DIR}" inside the place you choose, and saves the backups only in that folder.</p>
+      <button class="btn" id="bkCancel">Cancel</button></div>`;
+  }else{
+    const warn=cfg&&bk.paused?`<p class="bkwarn" role="status">Backups are paused. Tap Allow backups so new changes are saved.</p><div class="bkact"><button class="btn sm" id="bkAllow">Allow backups</button></div>`:'';
+    const loc=cfg?`<div class="bkloc"><span class="label">Backup location</span>
       <p class="bkname">${cfg.kind==='drive'?'Google Drive folder':'Folder on this device'}: ${esc(cfg.name)}</p>
-      <p class="hint">replyO creates a folder named "replyO_backup" in this location and keeps the backups for this device there. A backup is made after every use of the app, as long as backup is set up.</p>${warn}</div>`
-    :'<p class="hint">No backup location is set yet. Tap Set up your backup, then choose a folder.</p>';
+      <p class="hint">replyO creates a folder named "${BK_DIR}" in this location and saves the backups for this device only in that folder. A backup is made after every use of the app, as long as backup is set up.</p>${warn}</div>`
+      :'<p class="hint">No backup location is set yet. Tap Set up your backup, then choose a folder.</p>';
+    main=`<div class="bkbtns"><button class="btn" id="bkSetup">Set up your backup</button><button class="btn" id="bkRestore">Restore</button></div>
+      ${loc}
+      ${cfg?`<div class="bkbtns"><button class="btn" id="bkStop">Stop backup</button><button class="btn" id="bkDeleteAll">Delete all backups</button></div>`:''}`;
+  }
   let restoreBox='';
-  if(bk.restoreList){
+  if(bk.restoreList&&!bk.choosing){
     const rows=bk.restoreList.map((r,i)=>`<li class="bkrow"><span class="bkname">${esc(r.action)}</span><p class="hint bkmeta">${esc(new Date(r.at).toLocaleString('en-IN'))}${r.detail?' - '+esc(r.detail):''}</p><div class="bkact"><button class="btn sm" data-rto="${i}">Restore to here</button></div></li>`).join('');
     restoreBox=`<div class="homesep" aria-hidden="true"></div><div class="panel"><h2 class="qrhead">Choose a point to restore</h2>
       <p class="hint">Pick a transaction. Everything made or changed after that point is removed from this phone. The backup files are kept.</p>
@@ -1766,8 +1786,7 @@ function renderBackup(){
   }
   $('#viewBackup').innerHTML=`<div class="panel">
       <h2 class="qrhead">Backup</h2>
-      <div class="bkbtns"><button class="btn" id="bkSetup" aria-expanded="${bk.choosing?'true':'false'}">Set up your backup</button><button class="btn" id="bkRestore">Restore</button></div>
-      ${choose}${loc}
+      ${main}
       ${bk.msg?`<p class="hint" role="status">${esc(bk.msg)}</p>`:''}
     </div>${restoreBox}`;
 }
@@ -1785,7 +1804,7 @@ function showView(name){
   });
   const l=$('#tddList');if(l&&!l.hidden){l.hidden=true;const bt=$('#tddBtn');if(bt)bt.setAttribute('aria-expanded','false')}
   if(name==='backup'){bk.msg='';bk.choosing=false;bk.restoreList=null;renderBackup()}
-  if(name==='about')renderLog();
+  $('#viewLog').hidden=true;
   $('#scroll').scrollTop=0;
 }
 
@@ -1819,12 +1838,17 @@ document.addEventListener('click',e=>{
   if(closest('[data-ksave]'))return saveNewKey();
   if(closest('[data-kclose]')){keyUI.adding=null;keyUI.msg='';return renderKeys()}
   /* backup tab */
-  if(closest('#bkSetup')){bk.choosing=!bk.choosing;bk.msg='';bk.restoreList=null;return renderBackup()}
+  if(closest('#bkSetup')){bk.choosing=true;bk.msg='';bk.restoreList=null;return renderBackup()}
+  if(closest('#bkCancel')){bk.choosing=false;bk.msg='';return renderBackup()}
   const pk=closest('[data-pick]');if(pk)return pickFolder(pk.dataset.pick);
   if(closest('#bkAllow'))return allowBackup();
   if(closest('#bkRestore'))return openRestore();
   if(closest('#bkRestoreClose')){bk.restoreList=null;bk.msg='';return renderBackup()}
   const rt=closest('[data-rto]');if(rt)return restoreTo(+rt.dataset.rto);
+  if(closest('#bkStop'))return stopBackup();
+  if(closest('#bkDeleteAll'))return deleteAllBackups();
+  if(closest('#openLog'))return openLog();
+  if(closest('#logBack'))return showView('about');
   /* questions and responses */
   const b=closest('[data-act]');
   if(!b)return;
@@ -1852,8 +1876,9 @@ renderLen();
 renderOut();
 renderKeys();
 renderList();
-renderLog();
-(async()=>{try{const r=await idbGet(BK_KEY);if(r&&r.handle){bk.handle=r.handle;bk.cfg={kind:r.kind,name:r.name,when:r.when};await bkDir()}}catch(e){}renderBackup()})();
+(async()=>{try{if(!localStorage.getItem(PURGE_KEY)){localStorage.removeItem(ACT_KEY);localStorage.setItem(PURGE_KEY,'1')}}catch(e){}
+try{const r=await idbGet(BK_KEY);if(r&&r.handle){bk.handle=r.handle;bk.cfg={kind:r.kind,name:r.name,when:r.when,needBase:!!r.needBase};const dir=await bkDir();if(dir&&!r.logPurged){await writeText(dir,'activity.log','');await saveCfg()}}}catch(e){}
+renderBackup()})();
 })();
 </script>
 </body>
