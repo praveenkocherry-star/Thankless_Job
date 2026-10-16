@@ -6,322 +6,443 @@
 <title>AI YouTube Dubber</title>
 <style>
   :root{font-family:system-ui,-apple-system,sans-serif;background:#0b1020;color:#e5e7eb;margin:0}
-  body{margin:0;padding:16px;padding-bottom:40px}
+  body{margin:0;padding:16px;padding-bottom:60px}
   .wrap{max-width:640px;margin:0 auto}
   h1{font-size:1.4rem;text-align:center;margin:.4rem 0 .2rem}
   .sub{text-align:center;color:#93a3b8;font-size:.85rem;margin-bottom:1.2rem}
   .card{background:#141b31;border:1px solid #263156;border-radius:14px;padding:16px;margin-bottom:16px}
-  h2{font-size:1.05rem;margin:0 0 12px;display:flex;align-items:center;gap:8px}
-  h2 .dot{width:10px;height:10px;border-radius:50%;background:#6366f1}
-  input[type=text],input[type=password],select{width:100%;box-sizing:border-box;padding:11px;border-radius:10px;border:1px solid #2b355f;background:#0d1426;color:#e5e7eb;font-size:15px;margin-bottom:10px}
+  h2{font-size:1.05rem;margin:0 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  h2 .dot{width:10px;height:10px;border-radius:50%;background:#6366f1;flex:none}
+  input[type=text],input[type=password],select{width:100%;box-sizing:border-box;padding:11px;border-radius:10px;border:1px solid #2b355f;background:#0d1426;color:#e5e7eb;font-size:15px;margin-bottom:10px;appearance:none}
+  select{background-image:linear-gradient(45deg,transparent 50%,#818cf8 50%),linear-gradient(135deg,#818cf8 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:36px}
   input:focus,select:focus{outline:2px solid #6366f1}
   button{padding:11px 16px;border-radius:10px;border:0;font-size:15px;font-weight:600;cursor:pointer}
   .btn{background:#6366f1;color:#fff}
   .btn:disabled{opacity:.5;cursor:not-allowed}
   .btn2{background:#1d2748;color:#cbd5e1;border:1px solid #2b355f}
-  .btn-danger{background:#3b1220;color:#fca5a5;border:1px solid #7f1d1d;padding:5px 10px;font-size:12px}
+  .btn-sm{padding:6px 10px;font-size:12px}
+  .btn-danger{background:#3b1220;color:#fca5a5;border:1px solid #7f1d1d;padding:6px 10px;font-size:12px}
   .row{display:flex;gap:8px;flex-wrap:wrap}
-  .key{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#0d1426;border:1px solid #2b355f;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:13px;word-break:break-all}
-  .key .lbl{color:#93a3b8;font-size:11px}
-  .key .st{font-size:11px;padding:2px 8px;border-radius:20px;background:#1d2748;color:#93a3b8;white-space:nowrap}
-  .st.ok{background:#052e16;color:#4ade80}.st.bad{background:#3b1220;color:#fca5a5}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:#93a3b8;font-size:11px;text-transform:uppercase;padding:6px;border-bottom:1px solid #263156}
+  td{padding:9px 6px;border-bottom:1px solid #1a2340;vertical-align:middle}
+  .st{font-size:11px;padding:2px 8px;border-radius:20px;white-space:nowrap}
+  .st.ok{background:#052e16;color:#4ade80}.st.bad{background:#3b1220;color:#fca5a5}.st.idle{background:#1d2748;color:#93a3b8}
   a.link{color:#818cf8}
   .status{margin-top:12px;font-size:13px;color:#a5b4fc;white-space:pre-wrap;min-height:1.2em}
   .err{color:#fca5a5}
+  .toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#052e16;color:#4ade80;border:1px solid #14532d;padding:10px 18px;border-radius:10px;font-size:13px;z-index:9;transition:opacity .3s}
   .prog{height:6px;background:#0d1426;border-radius:4px;overflow:hidden;margin-top:8px;display:none}
   .prog>div{height:100%;width:0;background:linear-gradient(90deg,#6366f1,#a855f7);transition:width .3s}
-  .lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
-  .lang-grid label{display:flex;align-items:center;gap:6px;background:#0d1426;border:1px solid #2b355f;border-radius:10px;padding:9px;font-size:13px;cursor:pointer}
-  .lang-grid input{margin:0}
   .note{font-size:11px;color:#64748b;margin-top:10px;line-height:1.5}
-  .hidden{display:none}
+  .banner{background:#3b2e05;border:1px solid #713f12;color:#fde68a;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.5;margin-bottom:14px}
   video{width:100%;border-radius:10px;margin-top:12px;background:#000}
-  .pill{font-size:11px;background:#1d2748;border-radius:20px;padding:3px 10px;color:#93a3b8}
+  label.lbl{display:block;font-size:13px;color:#93a3b8;margin:8px 0 6px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🎬 AI YouTube Dubber</h1>
   <div class="sub">Dub any YouTube video into your language — free, on your device</div>
+  <div class="banner" id="previewBanner" style="display:none">
+    ⚠️ <b>Preview mode:</b> the UI is fully interactive here, but the chat preview blocks internet access, so video processing is disabled. <b>Download this file</b> (button in the panel above) and open it in your browser, or host it free on GitHub Pages — then everything works.
+  </div>
 
   <!-- ===== API KEYS SECTION ===== -->
   <div class="card">
-    <h2><span class="dot"></span> API Keys <span class="pill" id="keyCount">0 keys</span></h2>
-    <div class="row">
-      <a class="link" style="font-size:13px;padding:11px 0" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">➕ Create a Google AI (Gemini) API key — opens Google AI Studio</a>
+    <h2><span class="dot"></span> API Keys</h2>
+    <div style="font-size:13px;margin-bottom:8px">
+      <a class="link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">➕ Click here to create a free Gemini API key</a> <span style="color:#64748b">(opens Google AI Studio → "Create API key")</span>
     </div>
-    <input type="password" id="newKey" placeholder="Paste your Gemini API key here (AIza...)" />
+    <input type="password" id="newKey" placeholder="Paste your Gemini API key here (starts with AIza…)" />
     <div class="row">
-      <button class="btn" id="addKeyBtn">Add key</button>
-      <button class="btn2" id="clearKeysBtn">Remove all</button>
+      <button class="btn" id="addKeyBtn">＋ Add key</button>
+      <button class="btn2 btn-sm" id="exportKeysBtn" style="align-self:center">Export backup</button>
+      <button class="btn2 btn-sm" id="importKeysBtn" style="align-self:center">Import</button>
+      <button class="btn2 btn-sm" id="clearKeysBtn" style="align-self:center">Remove all</button>
     </div>
-    <div id="keyList"></div>
-    <p class="note">All added keys work simultaneously: jobs are load-balanced across keys, and if a key hits its free-tier quota the app automatically fails over to the next one. Keys are stored only in this browser's local storage.</p>
+
+    <div style="margin-top:14px">
+      <div style="font-size:13px;color:#93a3b8;margin-bottom:6px" id="storageInfo"></div>
+      <table id="keyTable" style="display:none"><thead><tr><th>#</th><th>API Key</th><th>Status</th><th>Used</th><th></th></tr></thead><tbody id="keyRows"></tbody></table>
+      <p class="note" id="emptyKeysMsg">No keys stored yet. Add one or more above — they are saved permanently in this browser and reloaded automatically next time you open the app.</p>
+    </div>
+    <p class="note">All stored keys work simultaneously: work is load-balanced across keys in parallel, and if one key hits its free daily quota, the app automatically fails over to the next available key.</p>
   </div>
 
   <!-- ===== TRANSLATE SECTION ===== -->
   <div class="card">
     <h2><span class="dot"></span> Translate a Video</h2>
-    <input type="text" id="ytUrl" placeholder="Paste YouTube link (https://youtube.com/watch?v=...)" />
-    <div style="font-size:13px;color:#93a3b8;margin:8px 0 6px">Target language (source language is auto-detected):</div>
-    <div class="lang-grid" id="langGrid"></div>
+    <label class="lbl" for="ytUrl">YouTube video link:</label>
+    <input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=…" />
+    <label class="lbl" for="langSel">Translate video audio into:</label>
+    <select id="langSel"></select>
+    <label class="lbl" for="voiceSel">AI dubbing voice:</label>
+    <select id="voiceSel">
+      <option value="Kore">Kore — firm &amp; confident (female)</option>
+      <option value="Puck">Puck — upbeat (male)</option>
+      <option value="Charon">Charon — informative (male)</option>
+      <option value="Leda">Leda — youthful (female)</option>
+      <option value="Fenrir">Fenrir — excitable (male)</option>
+      <option value="Zephyr">Zephyr — bright (female)</option>
+      <option value="Aoede">Aoede — breezy (female)</option>
+      <option value="Orus">Orus — firm (male)</option>
+    </select>
     <div style="margin-top:14px">
       <button class="btn" id="generateBtn" style="width:100%">⚡ Generate dubbed video</button>
     </div>
     <div class="status" id="status"></div>
     <div class="prog"><div id="progBar"></div></div>
     <div id="resultBox"></div>
-    <p class="note">The original video's visuals and exact duration are preserved — only the audio track is replaced with an AI voice in your chosen language. Processing runs on your device; keep this page open until the download appears.</p>
+    <p class="note">The original video's visuals and exact duration are preserved — only the audio is replaced with an AI voice in your chosen language. Long videos are processed in ~8-minute chunks so any length works. Keep this page open until the download appears.</p>
   </div>
 
   <p class="note">⚠️ Use only for videos you own or that are freely licensed. Downloading copyrighted YouTube content may violate YouTube's Terms of Service.</p>
 </div>
 
 <script>
-/* ============================ STORAGE ============================ */
-const LS_KEYS = "dubber_keys";
-let keys = JSON.parse(localStorage.getItem(LS_KEYS) || "[]");   // [{k, ok, used}]
-let keyUsage = 0;
-const saveKeys = () => { localStorage.setItem(LS_KEYS, JSON.stringify(keys)); renderKeys(); };
+"use strict";
+/* ============ SAFE STORAGE (works even in sandboxed preview) ============ */
+const store = (() => {
+  try {
+    localStorage.setItem("__t","1"); localStorage.removeItem("__t");
+    return { get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v),
+             persistent:true, label:"✓ Keys are saved permanently in this browser's local storage and will still be here next time you open the app." };
+  } catch(e) {
+    const m = {};
+    return { get:k=>(k in m?m[k]:null), set:(k,v)=>{m[k]=v;},
+             persistent:false, label:"⚠ This preview cannot save data permanently (browser security). Keys added now will vanish on reload. Download the app file and open it directly for permanent storage." };
+  }
+})();
 
-/* ============================ UI: KEYS ============================ */
 const el = id => document.getElementById(id);
-function renderKeys(){
-  el("keyList").innerHTML = keys.length ? "" : '<p class="note">No keys yet. Add one or more above.</p>';
-  keys.forEach((key,i)=>{
-    const d = document.createElement("div"); d.className="key";
-    d.innerHTML = `<span><span class="lbl">${key.k.slice(0,10)}••••${key.k.slice(-4)}</span><br>${key.ok===false?'<span class="st bad">exhausted</span>':'<span class="st ok">ready</span>'} <span class="st">used ${key.used||0}×</span></span>`;
-    const b = document.createElement("button"); b.className="btn-danger"; b.textContent="✕";
-    b.onclick = ()=>{ keys.splice(i,1); saveKeys(); };
-    d.appendChild(b); el("keyList").appendChild(d);
-  });
-  el("keyCount").textContent = keys.length + (keys.length===1?" key":" keys");
-}
-el("addKeyBtn").onclick = ()=>{
-  const v = el("newKey").value.trim();
-  if(!/^AIza[\w-]{20,}$/.test(v)){ setStatus("That doesn't look like a valid Gemini API key (should start with 'AIza').", true); return; }
-  if(keys.some(k=>k.k===v)){ setStatus("Key already added.", true); return; }
-  keys.push({k:v, ok:true, used:0}); el("newKey").value=""; saveKeys();
-};
-el("clearKeysBtn").onclick = ()=>{ if(confirm("Remove all API keys?")){ keys=[]; saveKeys(); } };
+const isPreview = !store.persistent;
+if (isPreview) el("previewBanner").style.display = "block";
 
-/* key pool: round-robin, skipping exhausted keys */
+function toast(msg, ok=true){
+  const t = document.createElement("div"); t.className="toast"; t.textContent=msg;
+  if(!ok){ t.style.background="#3b1220"; t.style.color="#fca5a5"; t.style.borderColor="#7f1d1d"; }
+  document.body.appendChild(t); setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),400);}, 2600);
+}
+function setStatus(msg, isErr=false){ el("status").textContent=msg; el("status").className="status"+(isErr?" err":""); }
+function setProg(p){ el("progBar").parentElement.style.display = p>0?"block":"none"; el("progBar").style.width=(p*100).toFixed(0)+"%"; }
+
+/* ============ API KEY MANAGER ============ */
+const LS_KEYS = "dubber_keys_v2";
+let keys = [];
+try { keys = JSON.parse(store.get(LS_KEYS) || "[]"); } catch(e){ keys = []; }
+if(!Array.isArray(keys)) keys = [];
+
+function saveKeys(){ store.set(LS_KEYS, JSON.stringify(keys)); renderKeys(); }
+
+function renderKeys(){
+  const rows = el("keyRows");
+  rows.innerHTML = "";
+  keys.forEach((key, i) => {
+    const tr = document.createElement("tr");
+    const status = key.ok===false ? '<span class="st bad">quota reached</span>' : '<span class="st ok">ready</span>';
+    tr.innerHTML =
+      `<td style="color:#64748b">${i+1}</td>`+
+      `<td><code style="color:#c7d2fe">${key.k.slice(0,8)}••••••••${key.k.slice(-4)}</code><br><span style="color:#64748b;font-size:11px">added ${key.added||"—"}</span></td>`+
+      `<td>${status}</td><td style="color:#93a3b8">${key.used||0}×</td>`;
+    const td = document.createElement("td"); td.style.textAlign="right";
+    const b = document.createElement("button"); b.className="btn-danger"; b.textContent="✕ remove";
+    b.onclick = () => { keys.splice(i,1); saveKeys(); toast("Key removed"); };
+    td.appendChild(b); tr.appendChild(td); rows.appendChild(tr);
+  });
+  el("emptyKeysMsg").style.display = keys.length ? "none" : "block";
+  el("keyTable").style.display  = keys.length ? "table" : "none";
+  el("storageInfo").innerHTML = (keys.length? `<b>${keys.length}</b> key${keys.length>1?"s":""} stored · ` : "") + store.label;
+}
+
+el("addKeyBtn").onclick = () => {
+  const v = el("newKey").value.trim();
+  if(!v){ setStatus("Paste a key first.", true); return; }
+  if(!/^AIza[A-Za-z0-9_-]{20,}$/.test(v)){ setStatus("That doesn't look like a Gemini API key — it should start with \"AIza\" and be about 39 characters.", true); return; }
+  if(keys.some(k=>k.k===v)){ setStatus("This key is already in the list.", true); return; }
+  keys.push({k:v, ok:true, used:0, added:new Date().toLocaleDateString()});
+  el("newKey").value="";
+  saveKeys();
+  toast(store.persistent ? "Key added & saved permanently ✓" : "Key added (preview: not permanent)");
+};
+
+el("clearKeysBtn").onclick = () => {
+  if(!keys.length) return;
+  if(confirm("Remove all "+keys.length+" API keys?")){ keys=[]; saveKeys(); toast("All keys removed"); }
+};
+el("exportKeysBtn").onclick = () => {
+  if(!keys.length){ toast("No keys to export", false); return; }
+  const blob = new Blob([JSON.stringify(keys.map(k=>k.k),null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="dubber-keys-backup.json"; a.click();
+  toast("Backup downloaded — keep it private!");
+};
+el("importKeysBtn").onclick = () => {
+  const i=document.createElement("input"); i.type="file"; i.accept=".json,application/json";
+  i.onchange = async () => {
+    try{
+      const arr=JSON.parse(await i.files[0].text());
+      let n=0; for(const v of arr){ if(/^AIza[A-Za-z0-9_-]{20,}$/.test(v) && !keys.some(k=>k.k===v)){ keys.push({k:v,ok:true,used:0,added:new Date().toLocaleDateString()}); n++; } }
+      saveKeys(); toast(n+" key(s) imported ✓");
+    }catch(e){ toast("Invalid backup file", false); }
+  };
+  i.click();
+};
+
+/* key pool: round-robin across ready keys, auto-failover on quota errors */
+let rr = 0;
+function readyKeys(){ return keys.filter(k=>k.ok!==false); }
 function nextKey(){
-  const ready = keys.filter(k=>k.ok!==false);
-  if(!ready.length) throw new Error("No available API keys. Add keys in the API Keys section.");
-  const key = ready[keyUsage++ % ready.length];
-  return key;
+  const ready = readyKeys();
+  if(!ready.length) throw new Error("No available API keys — add keys above (or wait for quota reset if all are exhausted).");
+  return ready[rr++ % ready.length];
 }
 function markExhausted(key){ key.ok=false; saveKeys(); }
+function reviveKeys(){ if(keys.some(k=>k.ok===false)){ keys.forEach(k=>{k.ok=true;}); saveKeys(); } }
 
-/* ============================ UI: LANGUAGES ============================ */
-const LANGS = ["Hindi","English","Malayalam","Tamil","Telugu","Kannada","Bengali","Marathi","Gujarati","Punjabi","Urdu","Spanish","French","German","Portuguese","Arabic","Russian","Chinese","Japanese","Indonesian"];
-let targetLang = "Hindi";
-el("langGrid").innerHTML = LANGS.map(l=>
-  `<label><input type="radio" name="lang" value="${l}" ${l===targetLang?"checked":""}/> ${l}</label>`).join("");
-document.querySelectorAll('input[name=lang]').forEach(r=>r.onchange=()=>targetLang=r.value);
-
-/* ============================ STATUS ============================ */
-function setStatus(msg, isErr){ el("status").textContent = msg; el("status").className = "status"+(isErr?" err":""); }
-function setProg(p){ el("progBar").parentElement.style.display = p>0?"block":"none"; el("progBar").style.width = (p*100).toFixed(0)+"%"; }
-
-/* ============================ COBALT: fetch video ============================ */
-const COBALT_INSTANCES = ["https://api.cobalt.tools/api/json","https://co.wuk.sh/api/json"];
-async function fetchVideo(url){
-  for(const api of COBALT_INSTANCES){
-    try{
-      setStatus("Fetching video stream…");
-      const r = await fetch(api,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
-        body: JSON.stringify({url, vQuality:"720", aFormat:"mp3", isAudioOnly:false})});
-      const j = await r.json();
-      if(j.status==="stream" || j.status==="redirect"){
-        const buf = await (await fetch(j.url)).blob();
-        return {buf, filename: j.filename || "video.mp4"};
-      }
-      if(j.status==="picker") throw new Error("This link is a playlist/channel — paste a single video link.");
-    }catch(e){ if(api===COBALT_INSTANCES[COBALT_INSTANCES.length-1]) throw e; }
-  }
+/* ============ LANGUAGE DROPDOWN ============ */
+const LANGS = {
+  "Indian languages":["Hindi","English","Bengali","Marathi","Telugu","Tamil","Gujarati","Urdu","Kannada","Odia","Malayalam","Punjabi","Assamese","Maithili","Sanskrit","Nepali","Sinhala"],
+  "European languages":["Spanish","French","German","Italian","Portuguese","Dutch","Polish","Romanian","Russian","Ukrainian","Greek","Czech","Swedish","Hungarian","Finnish","Danish","Norwegian"],
+  "Other Asian languages":["Chinese (Mandarin)","Japanese","Korean","Indonesian","Vietnamese","Thai","Filipino","Malay"],
+  "Middle East & Africa":["Arabic","Hebrew","Persian (Farsi)","Swahili","Hausa","Amharic","Zulu","Somali"]
+};
+const langSel = el("langSel");
+for(const group in LANGS){
+  const og=document.createElement("optgroup"); og.label=group;
+  LANGS[group].forEach(l=>{ const o=document.createElement("option"); o.value=l; o.textContent=l; og.appendChild(o); });
+  langSel.appendChild(og);
 }
+langSel.value = "Hindi";
+let targetLang = "Hindi", voice = "Kore";
+langSel.onchange = () => { targetLang = langSel.value; };
+el("voiceSel").onchange = () => { voice = el("voiceSel").value; };
 
-/* ============================ GEMINI HELPERS ============================ */
+/* ============ GEMINI ============ */
 const G_BASE = "https://generativelanguage.googleapis.com/v1beta";
 async function gemini(model, body){
-  for(let attempt=0; attempt<keys.length; attempt++){
+  const total = keys.length;
+  for(let attempt=0; attempt<total; attempt++){
     const key = nextKey();
     try{
-      const r = await fetch(`${G_BASE}/models/${model}:generateContent?key=${key.k}`,
-        {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-      if(r.status===429 || r.status===403){ markExhausted(key); continue; } // quota → failover
-      if(!r.ok){ const t = await r.text(); throw new Error("Gemini error "+r.status+": "+t.slice(0,200)); }
+      const r = await fetch(`${G_BASE}/models/${model}:generateContent?key=${encodeURIComponent(key.k)}`,{
+        method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+      if(r.status===429 || r.status===403){ markExhausted(key); continue; }   // quota → next key
+      if(!r.ok){ const t=await r.text(); throw new Error("Gemini error "+r.status+": "+t.slice(0,180)); }
       key.used=(key.used||0)+1; saveKeys();
       return await r.json();
-    }catch(e){ if(String(e.message).includes("Failed to fetch") && attempt<keys.length-1) continue; throw e; }
+    }catch(e){
+      if(attempt<total-1 && readyKeys().length) continue;
+      throw e;
+    }
   }
-  throw new Error("All API keys exhausted their free-tier quota. Try again later or add more keys.");
+  throw new Error("All API keys are exhausted. Gemini free quota resets daily — try tomorrow or add more keys.");
 }
 const partText = j => (j?.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join("");
 
-/* Step 1: transcribe (auto-detect) — Gemini 1.5 Flash accepts audio inline (base64) */
-async function transcribe(base64Audio){
+/* transcription: audio chunk (mp3 b64) → [{start,end,text}] with offset */
+async function transcribeChunk(b64Audio, offset){
   const j = await gemini("gemini-1.5-flash",{
     contents:[{role:"user",parts:[
-      {text:"Transcribe this audio exactly. Output ONLY a JSON array of segments: [{\"start\":seconds_number,\"end\":seconds_number,\"text\":\"...\"}] covering the whole audio. Detect the spoken language yourself."},
-      {inline_data:{mime_type:"audio/mp3",data:base64Audio}}]}],
-    generationConfig:{temperature:0.1}
-  });
-  const raw = partText(j).replace(/```json|```/g,"").trim();
-  const m = raw.match(/\[[\s\S]*\]/);
-  const segs = JSON.parse(m?m[0]:raw);
-  if(!Array.isArray(segs)||!segs.length) throw new Error("Could not transcribe audio.");
-  return segs;
+      {text:"Transcribe ALL speech in this audio. Output ONLY a JSON array: [{\"start\":secs,\"end\":secs,\"text\":\"...\"}] with timestamps relative to this clip. Detect the spoken language yourself. No other output."},
+      {inline_data:{mime_type:"audio/mpeg",data:b64Audio}}]}],
+    generationConfig:{temperature:0.1}});
+  const raw=partText(j).replace(/```json|```/g,"").trim();
+  const m=raw.match(/\[[\s\S]*\]/); if(!m) throw new Error("Transcription failed.");
+  const segs=JSON.parse(m[0]);
+  if(!Array.isArray(segs)||!segs.length) throw new Error("No speech detected in this part.");
+  return segs.map(s=>({start:(+s.start||0)+offset, end:(+s.end||0)+offset, text:String(s.text||"")}));
 }
 
-/* Step 2: translate segments (parallel across keys) */
+/* translation: segments' texts → translated texts (chunks in parallel) */
 async function translateSegments(segs){
-  const chunks=[]; const per = Math.max(10, Math.ceil(segs.length/ (Math.max(1,keys.filter(k=>k.ok!==false).length)*3) ));
-  for(let i=0;i<segs.length;i+=per) chunks.push(segs.slice(i,i+per));
-  const results = new Array(chunks.length);
-  await Promise.all(chunks.map(async (chunk,idx)=>{
-    const j = await gemini("gemini-1.5-flash",{
+  const per=8, chunks=[];
+  for(let i=0;i<segs.length;i+=per) chunks.push(segs.slice(i,i+per).map(s=>s.text));
+  const out=new Array(chunks.length);
+  await Promise.all(chunks.map(async(chunk,idx)=>{
+    const j=await gemini("gemini-1.5-flash",{
       contents:[{role:"user",parts:[{text:
-        `Translate each segment into ${targetLang}. Return ONLY a JSON array of the same length with translated text: `+
-        JSON.stringify(chunk.map(s=>s.text))}]},
+        `Translate each sentence into ${targetLang}. Keep meaning and tone. Return ONLY a JSON array of the same length with the translations: ${JSON.stringify(chunk)}`}]},
       generationConfig:{temperature:0.2}});
-    const raw = partText(j).replace(/```json|```/g,"").trim();
-    const m = raw.match(/\[[\s\S]*\]/); results[idx] = JSON.parse(m?m[0]:raw);
+    const raw=partText(j).replace(/```json|```/g,"").trim();
+    const m=raw.match(/\[[\s\S]*\]/);
+    const arr=JSON.parse(m?m[0]:raw);
+    out[idx]=Array.isArray(arr)?arr:[arr];
   }));
-  return results.flat();
+  return out.flat();
 }
 
-/* Step 3: TTS per segment (parallel, auto failover) — Gemini TTS returns raw PCM */
-async function ttsSegment(text, voiceStyle){
-  const j = await gemini("gemini-2.5-flash-preview-tts",{
-    contents:[{role:"user",parts:[{text:
-      `Say the following in ${targetLang}, natural conversational tone: ${text}`}]}],
-    generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:"Kore"}}}}
-  });
-  const part = (j?.candidates?.[0]?.content?.parts||[]).find(p=>p.inlineData?.data || p.inline_data?.data);
-  const b64 = part?.inlineData?.data || part?.inline_data?.data;
-  if(!b64) throw new Error("TTS returned no audio for a segment.");
-  return base64ToUint8(b64); // 24kHz 16-bit mono PCM
-}
-function base64ToUint8(b64){
-  const bin = atob(b64); const u = new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return u;
+/* TTS: one line → PCM bytes (24kHz 16-bit mono) */
+async function ttsLine(text){
+  const j=await gemini("gemini-2.5-flash-preview-tts",{
+    contents:[{role:"user",parts:[{text:`Speak the following in ${targetLang}, natural, clear, well-paced tone: ${text}`}]}],
+    generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voice}}}}});
+  const parts=j?.candidates?.[0]?.content?.parts||[];
+  const p=parts.find(p=>p.inlineData?.data||p.inline_data?.data);
+  const b64=p?.inlineData?.data||p?.inline_data?.data;
+  if(!b64) throw new Error("TTS produced no audio for a line.");
+  const bin=atob(b64), u=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+  return u;
 }
 
-/* ============================ MAIN PIPELINE ============================ */
-el("generateBtn").onclick = async ()=>{
+/* ============ COBALT: fetch video ============ */
+const COBALT = ["https://api.cobalt.tools/api/json","https://co.wuk.sh/api/json"];
+async function fetchVideo(url){
+  let lastErr;
+  for(const api of COBALT){
+    try{
+      const r=await fetch(api,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify({url, vQuality:"720", aFormat:"mp3", isAudioOnly:false})});
+      const j=await r.json();
+      if(j.status==="stream"||j.status==="redirect"){
+        const resp=await fetch(j.url);
+        if(!resp.ok) throw new Error("Stream download failed ("+resp.status+").");
+        return {buf:await resp.blob(), filename:j.filename||"video.mp4"};
+      }
+      if(j.status==="picker") lastErr=new Error("This is a playlist/channel link — paste a single video link instead.");
+      else lastErr=new Error("The video service could not process this video ("+(j.text||j.status||"unknown")+"). Try another video.");
+    }catch(e){ lastErr=e; }
+  }
+  throw new Error("Could not fetch the video. "+(lastErr?.message||"")+(isPreview?" [Note: internet access is blocked in this chat preview — download the app file and open it directly.]":""));
+}
+
+/* ============ UTILS ============ */
+function b64FromU8(u8){ let s=""; const CH=0x8000; for(let i=0;i<u8.length;i+=CH) s+=String.fromCharCode.apply(null,u8.subarray(i,i+CH)); return btoa(s); }
+function toU8(data){ if(data instanceof Uint8Array) return data; if(typeof data==="string"){ const u=new Uint8Array(data.length); for(let i=0;i<data.length;i++) u[i]=data.charCodeAt(i); return u; } return new Uint8Array(data); }
+function pcmToWav(pcmFloat, rate){
+  const n=pcmFloat.length, b=new Uint8Array(44+n*2), dv=new DataView(b.buffer);
+  const wr=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i));};
+  wr(0,"RIFF"); dv.setUint32(4,36+n*2,true); wr(8,"WAVEfmt ");
+  dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true);
+  dv.setUint32(24,rate,true); dv.setUint32(28,rate*2,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true);
+  wr(36,"data"); dv.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){ const v=Math.max(-1,Math.min(1,pcmFloat[i])); dv.setInt16(44+i*2, v<0? v*0x8000 : v*0x7FFF, true); }
+  return b;
+}
+
+/* ============ MAIN PIPELINE ============ */
+el("generateBtn").onclick = async () => {
   const url = el("ytUrl").value.trim();
-  if(!/^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\//.test(url)){ setStatus("Please paste a valid YouTube link.",true); return; }
-  if(!keys.length){ setStatus("Add at least one Gemini API key first.",true); return; }
+  if(!/^https?:\/\/(www\.|m\.|music\.)?(youtube\.com\/(watch\?v=|shorts\/|live\/)|youtu\.be\/)/.test(url)){ setStatus("Please paste a valid YouTube video link.", true); return; }
+  if(!readyKeys().length){ setStatus("Add at least one Gemini API key in the API Keys section first.", true); return; }
+  reviveKeys();
   el("generateBtn").disabled=true; el("resultBox").innerHTML="";
+  const step = (p, msg) => { setProg(p); setStatus(msg); };
   try{
-    /* 1. get video file */
-    setProg(0.05);
+    /* 1 — fetch video */
+    step(0.05, "1/7 Fetching video…");
     const {buf, filename} = await fetchVideo(url);
-    setProg(0.2); setStatus("Separating audio…");
 
-    /* 2. load ffmpeg.wasm */
+    /* 2 — load ffmpeg.wasm (cached after first run) */
+    step(0.15, "2/7 Loading on-device video engine…");
     if(!window.ffmpeg){
-      setStatus("Loading video engine (ffmpeg)…");
-      const s=document.createElement("script"); s.src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js";
-      const c=document.createElement("script"); c.src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js";
-      await new Promise((res,rej)=>{s.onload=res;s.onerror=rej;document.head.appendChild(s);});
-      await new Promise((res,rej)=>{c.onload=res;c.onerror=rej;document.head.appendChild(c);});
-      window.ffmpeg = new FFmpegWASM.FFmpeg();
+      await loadScript("https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js");
+      await loadScript("https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js");
+      const FFmpeg = self.FFmpegWASM?.FFmpeg || self.FFmpeg;
+      window.ffmpeg = new FFmpeg();
+      const toBlobURL = self.FFmpegUtil?.toBlobURL || self.FFmpegUtil.toBlobURL;
       await window.ffmpeg.load({
-        coreURL: await FFmpegUtil.toBlobURL("https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js","text/javascript"),
-        wasmURL: await FFmpegUtil.toBlobURL("https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm","application/wasm"),
+        coreURL: await toBlobURL("https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js","text/javascript"),
+        wasmURL: await toBlobURL("https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm","application/wasm"),
       });
     }
     const ff = window.ffmpeg;
     await ff.writeFile("in.mp4", new Uint8Array(await buf.arrayBuffer()));
-    await ff.exec(["-i","in.mp4","-vn","-acodec","libmp3lame","-q:a","5","audio.mp3"]);
-    const audioData = await ff.readFile("audio.mp3");
-    const audioB64 = b64FromU8(audioData);
 
-    /* 3. transcribe + detect language */
-    setProg(0.35); setStatus("Transcribing & detecting source language (AI)…");
-    const segs = await transcribe(audioB64);
-    setStatus(`Detected ${segs.length} speech segments. Translating to ${targetLang}…`);
-    setProg(0.5);
+    /* 3 — extract + chunk audio (~8 min parts) */
+    step(0.25, "3/7 Extracting audio…");
+    await ff.exec(["-i","in.mp4","-vn","-b:a","64k","audio.mp3"]);
+    await ff.exec(["-i","audio.mp3","-f","segment","-segment_time","480","-c","copy","chunk_%03d.mp3"]);
 
-    /* 4. translate */
+    /* 4 — transcribe every chunk (parallel across keys) */
+    step(0.35, "4/7 Transcribing & auto-detecting source language…");
+    const names = [];
+    for(let i=0;i<200;i++){
+      const n="chunk_"+String(i).padStart(3,"0")+".mp3";
+      try{ await ff.readFile(n); names.push(n); }catch(e){ break; }
+    }
+    if(!names.length) throw new Error("Audio extraction failed — try a different video.");
+    const CHUNK=480;
+    const segsArr = await Promise.allSettled(names.map(async (n,i)=>{
+      const b64=b64FromU8(toU8(await ff.readFile(n)));
+      return transcribeChunk(b64, i*CHUNK);
+    }));
+    const segs=[];
+    segsArr.forEach(r=>{ if(r.status==="fulfilled") segs.push(...r.value); else console.warn("part failed:", r.reason); });
+    if(!segs.length) throw new Error("Transcription failed. "+(segsArr[0].reason?.message||""));
+
+    step(0.45, `4/7 ✓ ${segs.length} lines transcribed. Translating to ${targetLang}…`);
+
+    /* 5 — translate (parallel) */
     const translated = await translateSegments(segs);
 
-    /* 5. TTS in parallel batches */
-    setStatus(`Generating ${targetLang} AI voice…`);
-    const pcms = new Array(segs.length); let done=0;
-    const CONCURRENCY = Math.max(2, keys.filter(k=>k.ok!==false).length*2);
+    /* 6 — TTS with per-segment time fitting */
+    step(0.55, `6/7 Generating ${targetLang} AI voice (${voice})…`);
+    const RATE=24000;
+    const pcms=new Array(segs.length); let done=0;
+    const CONCURRENCY=Math.max(2, Math.min(6, readyKeys().length*2));
     let cursor=0;
     async function worker(){
       while(cursor<segs.length){
         const i=cursor++;
         for(let t=0;t<2;t++){
-          try{ pcms[i]=await ttsSegment(translated[i]); break; }
-          catch(e){ if(t===1) throw e; await new Promise(r=>setTimeout(r,1000)); }
+          try{ pcms[i]=await ttsLine(translated[i]); break; }
+          catch(e){ if(t===1) console.warn("TTS fail:",e); else await new Promise(r=>setTimeout(r,800)); }
         }
-        done++; setProg(0.5+0.35*done/segs.length);
-        setStatus(`Voicing segment ${done}/${segs.length}…`);
+        done++; setProg(0.55+0.25*done/segs.length);
+        setStatus(`6/7 Voicing line ${done}/${segs.length}…`);
       }
     }
     await Promise.all(Array.from({length:CONCURRENCY},worker));
 
-    /* 6. build one WAV timed to original segments */
-    setProg(0.88); setStatus("Assembling dubbed audio track…");
-    const RATE=24000, totalSec = segs[segs.length-1].end;
-    const total = new Int16Array(Math.ceil(totalSec*RATE)+RATE);
-    let carry = null, carryOff = 0;
-    segs.forEach((s,i)=>{
-      const pcm=pcms[i]; if(!pcm) return;
-      const samples=new Int16Array(pcm.buffer,0,Math.floor(pcm.byteLength/2)*2);
-      const speed = samples.length > (s.end-s.start)*RATE ? (s.end-s.start)*RATE/samples.length : 1;
-      let srcI=carry?0:0, dst=Math.round(s.start*RATE);
-      for(let d=0; d<samples.length; d++){
-        const outPos=Math.round(dst+d*speed);
-        if(outPos>=total.length) break;
-        // simple mixing with previous segment overlap
-        total[outPos]=(total[outPos]||0)*0 + samples[d];
+    /* mix into one track: each line starts at its original timestamp,
+       gently time-compressed if it would overrun its slot */
+    step(0.82, "6/7 Assembling dubbed audio track…");
+    const totalDur = segs[segs.length-1].end + 5;
+    const mix=new Float32Array(Math.ceil(totalDur*RATE));
+    for(let i=0;i<segs.length;i++){
+      const pcm=pcms[i]; if(!pcm) continue;
+      const samples=new Int16Array(pcm.buffer, 0, Math.floor(pcm.byteLength/2));
+      const winSamples=Math.round((segs[i].end-segs[i].start)*RATE);
+      const spd = samples.length>winSamples ? samples.length/winSamples : 1;
+      const startIdx=Math.round(segs[i].start*RATE);
+      for(let d=0; d*spd<samples.length; d++){
+        const out=startIdx+d; if(out>=mix.length) break;
+        mix[out]+=samples[Math.round(d*spd)]/32768;
       }
-      carry=null;
-    });
-    const wav = pcmToWav(total, RATE);
-    await ff.writeFile("dub.wav", wav);
+    }
+    await ff.writeFile("dub.wav", pcmToWav(mix, RATE));
 
-    /* 7. mux: original video + dubbed audio, same duration */
-    setProg(0.95); setStatus("Merging with original video (same length, same visuals)…");
+    /* 7 — mux */
+    step(0.92, "7/7 Merging dubbed audio with original video (same length, same visuals)…");
     await ff.exec(["-i","in.mp4","-i","dub.wav","-map","0:v","-map","1:a",
       "-c:v","copy","-c:a","aac","-b:a","160k","-shortest","out.mp4"]);
-    const out = await ff.readFile("out.mp4");
+    const out=toU8(await ff.readFile("out.mp4"));
 
-    /* 8. deliver */
-    setProg(1); setStatus("✅ Done!");
-    const blob = new Blob([out],{type:"video/mp4"});
-    const dl = URL.createObjectURL(blob);
-    const name = (filename.replace(/\.mp4$/,"")||"video")+"_"+targetLang.toLowerCase().replace(/\s/g,"_")+".mp4";
-    el("resultBox").innerHTML = "";
+    /* deliver */
+    setProg(1); setStatus("✅ Done — your dubbed video is ready!");
+    const blob=new Blob([out],{type:"video/mp4"});
+    const dl=URL.createObjectURL(blob);
+    const name=(filename.replace(/\.[a-z0-9]+$/i,"")||"video")+"_"+targetLang.toLowerCase().replace(/[^a-z]+/g,"_")+".mp4";
+    const box=el("resultBox"); box.innerHTML="";
     const btn=document.createElement("button"); btn.className="btn"; btn.style.width="100%";
     btn.textContent="⬇ Download dubbed video ("+(blob.size/1048576).toFixed(1)+" MB)";
     btn.onclick=()=>{ const a=document.createElement("a"); a.href=dl; a.download=name; a.click(); };
-    el("resultBox").appendChild(btn);
-    const v=document.createElement("video"); v.controls=true; v.src=dl;
-    el("resultBox").appendChild(v);
+    box.appendChild(btn);
+    const v=document.createElement("video"); v.controls=true; v.src=dl; v.playsInline=true;
+    box.appendChild(v);
+    toast("Dubbed video ready ✓");
   }catch(e){
-    setStatus("❌ "+(e.message||e), true); console.error(e);
-  }finally{ el("generateBtn").disabled=false; setTimeout(()=>setProg(0),2000); }
+    console.error(e);
+    setStatus("❌ "+(e?.message||e), true);
+  }finally{
+    el("generateBtn").disabled=false;
+    setTimeout(()=>setProg(0), 2500);
+  }
 };
 
-function b64FromU8(u8){ let s=""; const CH=0x8000; for(let i=0;i<u8.length;i+=CH) s+=String.fromCharCode.apply(null,u8.subarray(i,i+CH)); return btoa(s); }
-function pcmToWav(pcm, rate){
-  const b=new Uint8Array(44+pcm.byteLength), dv=new DataView(b.buffer);
-  const wr=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i))};
-  wr(0,"RIFF");dv.setUint32(4,36+pcm.byteLength,true);wr(8,"WAVEfmt ");
-  dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);
-  dv.setUint32(24,rate,true);dv.setUint32(28,rate*2,true);dv.setUint16(32,2,true);dv.setUint16(34,16,true);
-  wr(36,"data");dv.setUint32(40,pcm.byteLength,true);
-  b.set(new Uint8Array(pcm.buffer),44); return b;
-}
+function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=()=>rej(new Error("Could not load the video engine. "+(isPreview?"Internet is blocked in this chat preview — download the app file and open it directly.":"Check your internet connection."))); document.head.appendChild(s); }); }
+
 renderKeys();
 </script>
 </body>
