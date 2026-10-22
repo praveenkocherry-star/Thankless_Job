@@ -949,16 +949,16 @@ const DEFAULT_CONFIG = {
   deliveryPerKg: 60,           // charged per kg, rounded up to the next whole kg
   welcomeBonus: 75,            // first order, any amount
   revisitBonus: 35,            // every later order, any amount
-  coinPerRupee: 1,             // Jixcy coins earned per rupee paid for products
-  coinValue: 0.05,             // value of one Jixcy coin in rupees (5 paise)
+  coinPerRupee: 1,             // Jix coins earned per rupee paid for products
+  coinValue: 0.05,             // value of one Jix coin in rupees (5 paise)
   coinBoostOn: true,
   coinBoostValue: 0.08,        // value of one coin during a special offer
-  coinBoostLabel: "Festive Jixcy coin boost",
+  coinBoostLabel: "Festive Jix coin boost",
   coinRedeemAbove: 499,        // coins can be redeemed only on product totals above this
   cancelHours: 12,             // cancel within this many hours of placing
   refundHours: 48,             // refund claim window after delivery
   prepHours: 48,               // preparation time before dispatch
-  announce: "Festive Jixcy coin boost: every Jixcy coin is worth 8 paise this week. Made to order, dispatched within 48 hours.",
+  announce: "Festive Jix coin boost: every Jix coin is worth 8 paise this week. Made to order, dispatched within 48 hours.",
   heroTitle: "Oils pressed slowly, <em>delivered fresh</em>.",
   heroLead: "Wood pressed oils, home-made desi ghee, stone ground masalas, millets, pulses and herbal care. We prepare each order only after you place it, so every bottle reaches you with its full shelf life.",
   storyIntro: "JIXCYFOODS began in 2016 with one wooden press in Malad West and a simple belief: food should taste like what it is. We still press in small lots, bottle by hand and know the growers behind every seed.",
@@ -1056,19 +1056,19 @@ const FAQS = [
   ["How long does an order take to reach me?", "Every order is prepared only after you place it. We dispatch within 48 hours of receiving your order, and the courier then takes its usual transit time to reach you. Because nothing sits on a shelf, you receive the full shelf life of the product."],
   ["Why is there a 48 hour preparation time?", "Our oils, ghee, masalas and millets are pure and organic, with a short natural shelf life. Pressing and packing on order means you receive them at their freshest, not after weeks in a warehouse."],
   ["Which areas do you deliver to?", "We deliver only within Mumbai: suburban Mumbai, Greater Mumbai and Navi (new) Mumbai. Enter your PIN code at checkout and we will confirm straight away whether we serve your area."],
-  ["How is delivery charged?", "Delivery is free when your product total is above ₹499. Below that, it is ₹60 per kg, rounded up to the next whole kg, and calculated automatically. Delivery is always payable, and no coupon or Jixcy coin can reduce it."],
+  ["How is delivery charged?", "Delivery is free when your product total is above ₹499. Below that, it is ₹60 per kg, rounded up to the next whole kg, and calculated automatically. Delivery is always payable, and no coupon or Jix coin can reduce it."],
   ["Can I cancel my order?", "Yes, within 12 hours of placing it. Cancel from Orders. After 12 hours the order is already in preparation, so it cannot be cancelled."],
-  ["What if my product arrives damaged or unsatisfactory?", "Raise a refund claim from Orders within 48 hours of delivery. Upload a photo, describe the problem, and we review it. Approved refunds go back to your original payment method, and the Jixcy coins earned on that order are reversed."],
-  ["What are Jixcy coins?", "You earn one Jixcy coin for every rupee you pay for products. Each coin is worth 5 paise, and you can redeem them on product totals above ₹499. The value of a coin can rise during special offers, at no cost to you."],
-  ["Do coupons and bonuses stack?", "Yes. Coupons, the welcome bonus, the revisit bonus and Jixcy coin redemption can all be used on one order. Delivery charges are never reduced by any of them."]
+  ["What if my product arrives damaged or unsatisfactory?", "Raise a refund claim from Orders within 48 hours of delivery. Upload a photo, describe the problem, and we review it. Approved refunds go back to your original payment method, and the Jix coins earned on that order are reversed."],
+  ["What are Jix coins?", "You earn one Jix coin for every rupee you pay for products. Each coin is worth 5 paise, and you can redeem them on product totals above ₹499. The value of a coin can rise during special offers, at no cost to you."],
+  ["Do coupons and bonuses stack?", "Yes. Coupons, the welcome bonus, the revisit bonus and Jix coin redemption can all be used on one order. Delivery charges are never reduced by any of them."]
 ];
 
 const POLICIES = {
   shipping: { title: "Shipping and preparation", body: ["We deliver within Mumbai only: suburban Mumbai, Greater Mumbai and Navi (new) Mumbai.", "Each order is prepared after it is placed and dispatched within 48 hours. Courier transit time is added after dispatch.", "Delivery is free above ₹499 of product value. Below that, ₹60 per kg, rounded up to the next whole kg, is charged. Delivery is always payable."] },
   cancellation: { title: "Cancellation", body: ["You can cancel an order within 12 hours of placing it, from the Orders page.", "After 12 hours the order enters preparation and can no longer be cancelled. Please call us if your situation is urgent."] },
-  refunds: { title: "Returns and refunds", body: ["If a product is damaged, spoiled or not as described, raise a refund claim within 48 hours of delivery.", "Attach a clear photo and describe the problem. Our team reviews every claim.", "Approved refunds go to your original payment method only. Jixcy coins earned on that order are reversed, and any Jixcy coins you redeemed on it are restored to your balance."] },
+  refunds: { title: "Returns and refunds", body: ["If a product is damaged, spoiled or not as described, raise a refund claim within 48 hours of delivery.", "Attach a clear photo and describe the problem. Our team reviews every claim.", "Approved refunds go to your original payment method only. Jix coins earned on that order are reversed, and any Jix coins you redeemed on it are restored to your balance."] },
   privacy: { title: "Privacy", body: ["We collect only your name, mobile number, email and delivery addresses, so we can take and deliver your orders.", "Mobile numbers are masked on screen. We never sell your details.", "This is a prototype. No real data is stored outside your own browser."] },
-  terms: { title: "Terms of sale", body: ["Prices are shown in rupees and include all applicable taxes. Invoice details appear on each order page.", "Coupons and Jixcy coin rewards are subject to the rules shown at checkout and may be changed or withdrawn with notice.", "This is a prototype. Payments shown are simulated and no money is charged."] }
+  terms: { title: "Terms of sale", body: ["Prices are shown in rupees and include all applicable taxes. Invoice details appear on each order page.", "Coupons and Jix coin rewards are subject to the rules shown at checkout and may be changed or withdrawn with notice.", "This is a prototype. Payments shown are simulated and no money is charged."] }
 };
 
 const DEMO_CUSTOMER = {
@@ -1253,7 +1253,7 @@ function productVisual(p, catalogEntry) {
 <script>
 /* ---- core.js ---- */
 /* ==========================================================================
-   CORE: saved state, pricing, Jixcy coins, bonuses, delivery, PIN checks,
+   CORE: saved state, pricing, Jix coins, bonuses, delivery, PIN checks,
    orders, refunds and the sample data. No DOM code in this file.
    ========================================================================== */
 const STORE_KEY = "jixcy-prototype-state";
@@ -1326,7 +1326,7 @@ function freshState() {
 
 /* Saved-data version. Bump it whenever the shape of the saved state changes:
    older saved data is then replaced with fresh sample data instead of crashing the page. */
-const STATE_VERSION = 3;
+const STATE_VERSION = 4;
 
 function loadState() {
   let loaded = null;
@@ -1465,7 +1465,7 @@ function maskPhone(p) {
 }
 
 /* ---------- Pricing engine ----------
-   Order of discounts: coupon, then welcome or revisit bonus, then Jixcy coins.
+   Order of discounts: coupon, then welcome or revisit bonus, then Jix coins.
    Delivery is never discounted and is always payable. */
 function quote(lines, opts) {
   opts = opts || {};
@@ -1507,7 +1507,7 @@ function quote(lines, opts) {
   }
   const afterBonus = round2(afterCoupon - (bonus ? bonus.amount : 0));
 
-  // 3. Jixcy coin redemption (product totals above the threshold only)
+  // 3. Jix coin redemption (product totals above the threshold only)
   const value = coinValueNow();
   const balance = user ? coinBalance(user) : 0;
   const redeemAllowed = !!user && subtotal > cfg.coinRedeemAbove;
@@ -2044,11 +2044,11 @@ function qtyControl(ctx, value, max) {
    ========================================================================== */
 const bot = { open: false, msgs: [], typing: false };
 
-const BOT_QUICK = ["Delivery areas", "How is delivery charged?", "Track my order", "Jixcy coins", "Cancel an order", "Refund a damaged item", "Suggest a product"];
+const BOT_QUICK = ["Delivery areas", "How is delivery charged?", "Track my order", "Jix coins", "Cancel an order", "Refund a damaged item", "Suggest a product"];
 
 function botGreeting() {
   const u = currentUser();
-  return `Hello${u ? ", " + u.name.split(" ")[0] : ""}. I am Jixcy-bot, JIXCYFOODS' assistant.\nAsk me about products, delivery, Jixcy coins, orders or refunds.`;
+  return `Hello${u ? ", " + u.name.split(" ")[0] : ""}. I am Jixcy-bot, JIXCYFOODS' assistant.\nAsk me about products, delivery, Jix coins, orders or refunds.`;
 }
 
 function botPanelHtml() {
@@ -2174,11 +2174,11 @@ function botAnswer(raw) {
     return { text: `Your latest order ${last.id} is ${last.status.toLowerCase()}.${extra}`, actions: [{ label: "Open my orders", href: "#/orders" }] };
   }
   if (has("cancel")) return { text: `You can cancel an order within ${cfg.cancelHours} hours of placing it, from the Orders page.\nAfter that the order is already in preparation, so it cannot be cancelled.`, actions: [{ label: "Orders", href: "#/orders" }] };
-  if (has("refund", "return", "damag", "broken", "spoil", "bad product", "not good", "quality", "leak")) return { text: `If a product is damaged, spoiled or not as described, raise a refund claim within ${cfg.refundHours} hours of delivery.\nAttach a photo. Approved refunds go back to your original payment method, and the Jixcy coins earned on that order are reversed.`, actions: [{ label: "Orders", href: "#/orders" }] };
-  if (has("coin", "jixcy coin", "reward", "cashback", "points")) {
+  if (has("refund", "return", "damag", "broken", "spoil", "bad product", "not good", "quality", "leak")) return { text: `If a product is damaged, spoiled or not as described, raise a refund claim within ${cfg.refundHours} hours of delivery.\nAttach a photo. Approved refunds go back to your original payment method, and the Jix coins earned on that order are reversed.`, actions: [{ label: "Orders", href: "#/orders" }] };
+  if (has("coin", "jix coin", "reward", "cashback", "points")) {
     const boost = cfg.coinBoostOn ? `\nRight now: ${cfg.coinBoostLabel}. Each coin is worth ${inr(cfg.coinBoostValue)}.` : `\nEach coin is worth ${inr(cfg.coinValue)}.`;
     const bal = u ? `\nYour balance: ${coinBalance(u)} coins.` : "";
-    return { text: `You earn one Jixcy coin for every rupee you pay for products. Delivery is not included.${boost}\nYou can redeem coins on product totals above ${inr(cfg.coinRedeemAbove)}. Their value can rise during special offers, at no cost to you.${bal}`, actions: [{ label: "Jixcy coins", href: u ? "#/account/coins" : "#/signin" }] };
+    return { text: `You earn one Jix coin for every rupee you pay for products. Delivery is not included.${boost}\nYou can redeem coins on product totals above ${inr(cfg.coinRedeemAbove)}. Their value can rise during special offers, at no cost to you.${bal}`, actions: [{ label: "Jix coins", href: u ? "#/account/coins" : "#/signin" }] };
   }
   if (has("welcome", "revisit", "bonus", "first order", "new customer")) return { text: `New customers get a ${inr(cfg.welcomeBonus)} welcome bonus on their first order.\nReturning customers get a ${inr(cfg.revisitBonus)} revisit bonus on every later order.\nBoth apply automatically at checkout, for any order amount.`, actions: [] };
   if (has("coupon", "code", "discount", "offer", "promo")) {
@@ -2186,7 +2186,7 @@ function botAnswer(raw) {
     return { text: `Current codes:\n${active.join("\n")}\nEnter a code at checkout. Coupons work on every order, whatever the amount.`, actions: [] };
   }
   if (!has("charge", "fee", "per kg", "free delivery", "how much") && has("area", "deliver", "pin", "pincode", "postal", "thane", "pune", "outside", "location", "serve")) return { text: `We deliver only within Mumbai: suburban Mumbai, Greater Mumbai and Navi (new) Mumbai.\nSend me your 6-digit PIN code and I will check it for you.`, actions: [] };
-  if (has("delivery charge", "delivery fee", "shipping", "free delivery", "per kg", "kg", "499", "charge")) return { text: `Delivery is free when your product total is above ${inr(cfg.freeDeliveryAbove)}.\nBelow that, it is ${inr(cfg.deliveryPerKg)} per kg, rounded up to the next whole kg, and calculated automatically.\nDelivery is always payable, and no coupon or Jixcy coin reduces it.`, actions: [] };
+  if (has("delivery charge", "delivery fee", "shipping", "free delivery", "per kg", "kg", "499", "charge")) return { text: `Delivery is free when your product total is above ${inr(cfg.freeDeliveryAbove)}.\nBelow that, it is ${inr(cfg.deliveryPerKg)} per kg, rounded up to the next whole kg, and calculated automatically.\nDelivery is always payable, and no coupon or Jix coin reduces it.`, actions: [] };
   if (has("prepar", "how long", "shelf", "fresh", "48", "why", "made to order", "made-to-order", "order time")) return { text: `Every order is prepared only after you place it. We dispatch within ${cfg.prepHours} hours of receiving your order, and the courier then takes its usual transit time.\nWhy: our oils, ghee, masalas and millets are pure and organic, with a short natural shelf life. Pressing on order means you get the full shelf life, not weeks in a warehouse.`, actions: [] };
   if (has("pay", "upi", "card", "cod", "cash", "net banking", "netbanking", "wallet")) return { text: `You can pay by UPI, debit or credit card, net banking, or cash on delivery.\nPayments are processed through our secure gateway. This is a prototype, so no money is charged.`, actions: [] };
   if (has("address", "addresses", "label")) return { text: `Save delivery addresses under Home, Work or Other. Other can be renamed, for example "Parents' house".\nOne address is your default. You can add, edit or delete addresses from your account.`, actions: [{ label: "Addresses", href: "#/account/addresses" }] };
@@ -2200,7 +2200,7 @@ function botAnswer(raw) {
     picks.forEach(p => { acts.push({ label: "Add " + p.name, kind: "add", pid: p.id, si: 0 }); });
     return { text: `Here are a few I would suggest:\n${picks.map(p => `${p.name}, from ${inr(minPrice(p))}`).join("\n")}\nTap a button to add one to your basket.`, actions: acts };
   }
-  return { text: `I can help with delivery areas, delivery charges, preparation time, cancellations, refunds, Jixcy coins, coupons, payments, addresses, products and our contact details.\nWhat would you like to know?`, actions: BOT_QUICK.slice(0, 4).map(q => ({ label: q, kind: "ask", q })) };
+  return { text: `I can help with delivery areas, delivery charges, preparation time, cancellations, refunds, Jix coins, coupons, payments, addresses, products and our contact details.\nWhat would you like to know?`, actions: BOT_QUICK.slice(0, 4).map(q => ({ label: q, kind: "ask", q })) };
 }
 
 </script>
@@ -2354,9 +2354,9 @@ function pageHome() {
   <section class="wrap section" aria-labelledby="coins-title">
     <div class="coin-band">
       <div class="coin-card">
-        <span class="eyebrow" style="color:#fff">Jixcy coins</span>
+        <span class="eyebrow" style="color:#fff">Jix coins</span>
         <h2 id="coins-title" style="margin-top:14px">Every rupee you spend earns you a coin</h2>
-        <p>Earn one Jixcy coin for each rupee you pay for products. Redeem your coins on your next order above ${inr(cfg.coinRedeemAbove)}. Coins can be used alongside coupons and bonuses.</p>
+        <p>Earn one Jix coin for each rupee you pay for products. Redeem your coins on your next order above ${inr(cfg.coinRedeemAbove)}. Coins can be used alongside coupons and bonuses.</p>
         <div class="coin-row">
           <div class="coin-chip">1 : ₹1<strong>1 coin per ₹1</strong></div>
           <div class="coin-chip">${inr(cfg.coinValue)} a coin<strong>Standard value</strong></div>
@@ -2368,7 +2368,7 @@ function pageHome() {
         <h3 class="h-md" style="margin-top:10px">Spend ₹500 on products</h3>
         <ul>
           <li><span>You pay for products</span><span>₹500</span></li>
-          <li><span>Jixcy coins earned</span><span>500 coins</span></li>
+          <li><span>Jix coins earned</span><span>500 coins</span></li>
           <li><span>Worth at standard value</span><span>${inr(500 * cfg.coinValue)}</span></li>
           ${cfg.coinBoostOn ? `<li><span>Worth during the festive boost</span><span>${inr(500 * cfg.coinBoostValue)}</span></li>` : ""}
         </ul>
@@ -2402,7 +2402,7 @@ function pageHome() {
   ${cfg.showFaq ? `
   <section class="wrap section" aria-labelledby="faq-title">
     <div class="faq-wrap">
-      <div><span class="eyebrow">Good to know</span><h2 id="faq-title" class="h-lg" style="margin-top:14px">Questions, answered</h2><p class="lead">Delivery, preparation, cancellations, refunds and Jixcy coins in plain words. Still curious? Ask Jixcy-bot.</p>
+      <div><span class="eyebrow">Good to know</span><h2 id="faq-title" class="h-lg" style="margin-top:14px">Questions, answered</h2><p class="lead">Delivery, preparation, cancellations, refunds and Jix coins in plain words. Still curious? Ask Jixcy-bot.</p>
         <div class="row" style="margin-top:22px"><button class="btn btn-brand" data-act="toggleBot">${icon("sparkles", "sm")} Ask Jixcy-bot</button></div></div>
       <div class="card pad accordion">${faqs}</div>
     </div>
@@ -2636,7 +2636,7 @@ function pageCart() {
         <div class="summary-line"><span>Products</span><span>${inr(q.subtotal)}</span></div>
         <div class="summary-line muted-line"><span>Delivery</span><span>${q.freeDelivery ? "Free" : inr(q.deliveryRaw) + " at checkout"}</span></div>
         <div class="summary-line total"><span>Estimated total</span><span>${inr(q.subtotal + (q.freeDelivery ? 0 : q.deliveryRaw))}</span></div>
-        <p class="muted small" style="margin:10px 0 18px">Coupons, your welcome or revisit bonus and Jixcy coins are applied at checkout. Delivery is always payable.</p>
+        <p class="muted small" style="margin:10px 0 18px">Coupons, your welcome or revisit bonus and Jix coins are applied at checkout. Delivery is always payable.</p>
         <div class="stack" style="margin-bottom:18px">${nudge}</div>
         <a class="btn btn-brand btn-block" href="#/checkout">Checkout ${icon("arrowRight", "sm")}</a>
         <a class="btn btn-ghost btn-block" href="#/shop" style="margin-top:10px">Keep shopping</a>
@@ -2682,16 +2682,16 @@ function pageCheckout() {
 
   const coinsBlock = q.redeemAllowed
     ? `<div class="coin-box">
-        <div class="row"><strong>Use your Jixcy coins</strong><span class="muted small">Balance ${coinBalance(user)} coins · worth ${inr(coinBalance(user) * q.value)}</span></div>
+        <div class="row"><strong>Use your Jix coins</strong><span class="muted small">Balance ${coinBalance(user)} coins · worth ${inr(coinBalance(user) * q.value)}</span></div>
         <div class="row" style="gap:12px;align-items:center">
           <label class="sr" for="coins-range">Coins to use</label>
           <input id="coins-range" type="range" min="0" max="${q.maxCoins}" step="1" value="${q.coinsRedeemed}" data-change="coinsRange" ${q.maxCoins === 0 ? "disabled" : ""} style="flex:1;min-width:160px">
-          <input class="input" style="width:110px;min-height:44px" type="number" min="0" max="${q.maxCoins}" value="${q.coinsRedeemed}" aria-label="Number of Jixcy coins to use" data-change="coinsType">
+          <input class="input" style="width:110px;min-height:44px" type="number" min="0" max="${q.maxCoins}" value="${q.coinsRedeemed}" aria-label="Number of Jix coins to use" data-change="coinsType">
           <button type="button" class="btn btn-soft btn-sm" data-act="coinsMax" ${q.maxCoins === 0 ? "disabled" : ""}>Use max</button>
         </div>
         <div class="small muted">Using ${q.coinsRedeemed} coins saves ${inr(q.coinsRedeemedValue)}. ${q.coinsRedeemed > 0 ? "Redeemed coins are restored if this order is refunded." : ""}</div>
       </div>`
-    : `<div class="notice">${icon("info")}<div>Jixcy coins can be redeemed on product totals above ${inr(S.config.coinRedeemAbove)}. ${q.subtotal > 0 ? `Add ${inr(S.config.coinRedeemAbove + 1 - q.subtotal)} more to unlock them.` : ""}</div></div>`;
+    : `<div class="notice">${icon("info")}<div>Jix coins can be redeemed on product totals above ${inr(S.config.coinRedeemAbove)}. ${q.subtotal > 0 ? `Add ${inr(S.config.coinRedeemAbove + 1 - q.subtotal)} more to unlock them.` : ""}</div></div>`;
 
   const payOpts = [
     { key: "upi", label: "UPI", sub: "PhonePe, Google Pay, Paytm or any UPI app", gw: "UPI" },
@@ -2706,12 +2706,12 @@ function pageCheckout() {
           <div><strong>${esc(o.label)}</strong><span>${esc(o.sub)}</span></div>
           <span class="gw">${esc(o.gw)}</span>
         </button>`).join("")}</div>`
-    : `<div class="notice">${icon("circleCheck")}<div>Your coupon and Jixcy coins cover the whole product total, and delivery is free. Nothing is charged, so you will go straight to confirmation.</div></div>`;
+    : `<div class="notice">${icon("circleCheck")}<div>Your coupon and Jix coins cover the whole product total, and delivery is free. Nothing is charged, so you will go straight to confirmation.</div></div>`;
 
   const lines = q.rows.map(r => `<div class="summary-line" style="padding:6px 0"><span>${esc(r.name)} <span class="muted">· ${esc(r.sizeLabel)} × ${r.qty}</span></span><span>${inr(r.line)}</span></div>`).join("");
   const bonusLine = q.bonus ? `<div class="summary-line good"><span>${esc(q.bonus.label)}</span><span>−${inr(q.bonus.amount)}</span></div>` : "";
   const couponLine = q.coupon ? `<div class="summary-line good"><span>Coupon ${esc(q.coupon.code)}</span><span>−${inr(q.coupon.amount)}</span></div>` : "";
-  const coinLine = q.coinsRedeemed > 0 ? `<div class="summary-line good"><span>Jixcy coins (${q.coinsRedeemed})</span><span>−${inr(q.coinsRedeemedValue)}</span></div>` : "";
+  const coinLine = q.coinsRedeemed > 0 ? `<div class="summary-line good"><span>Jix coins (${q.coinsRedeemed})</span><span>−${inr(q.coinsRedeemedValue)}</span></div>` : "";
 
   return `
   <section class="wrap section" style="padding-top:26px">
@@ -2727,7 +2727,7 @@ function pageCheckout() {
         </section>
 
         <section class="card checkout-block" aria-labelledby="ck-offers">
-          <h2 id="ck-offers"><span class="num">2</span>Offers and Jixcy coins</h2>
+          <h2 id="ck-offers"><span class="num">2</span>Offers and Jix coins</h2>
           <form class="coupon-row" data-form="coupon" style="margin-bottom:14px">
             <label class="sr" for="coupon-code">Coupon code</label>
             <input id="coupon-code" class="input" name="code" placeholder="Enter a coupon code" value="${esc(co.coupon)}" autocomplete="off" maxlength="20">
@@ -2764,7 +2764,7 @@ function pageCheckout() {
           <div class="summary-line"><span>Delivery</span><span>${q.freeDelivery ? "Free" : inr(q.delivery)}</span></div>
           <div class="summary-line total"><span>Total to pay</span><span>${inr(q.total)}</span></div>
         </div>
-        <div class="notice" style="margin-top:16px">${icon("sparkles")}<div>You will earn <strong>${q.coinsEarned} Jixcy coin${q.coinsEarned === 1 ? "" : "s"}</strong> on this order, worth about ${inr(q.coinsEarned * q.value)}.</div></div>
+        <div class="notice" style="margin-top:16px">${icon("sparkles")}<div>You will earn <strong>${q.coinsEarned} Jix coin${q.coinsEarned === 1 ? "" : "s"}</strong> on this order, worth about ${inr(q.coinsEarned * q.value)}.</div></div>
         <button type="button" class="btn btn-accent btn-block" style="margin-top:18px" data-act="placeOrder" ${canPlace ? "" : "disabled"}>${icon("lock", "sm")} ${!q.paymentNeeded ? "Place order" : co.pay === "cod" ? "Place order, pay " + inr(q.total) + " on delivery" : "Pay " + inr(q.total)}</button>
         ${!sel ? `<p class="muted small" style="margin-top:10px;text-align:center">Choose or add a delivery address to continue.</p>` : ""}
         ${sel && !serviceable ? `<p class="muted small" style="margin-top:10px;text-align:center">We cannot deliver to this PIN code yet.</p>` : ""}
@@ -2984,7 +2984,7 @@ function pageSignIn(mode, next) {
         <ul class="check-list">
           <li>Track each order from preparation to delivery</li>
           <li>Save Home, Work and other addresses</li>
-          <li>Earn Jixcy coins on every rupee you pay for products</li>
+          <li>Earn Jix coins on every rupee you pay for products</li>
           <li>Keep a wishlist and cancel within 12 hours if needed</li>
         </ul>
         <p class="muted small" style="margin-top:16px">We only use your details to take and deliver your orders. See our privacy page for more.</p>
@@ -3120,7 +3120,7 @@ ACTIONS.checkoutCancelAddr = () => { co.showAddr = false; co.editAddr = null; re
 function pageAccount(section) {
   const user = currentUser();
   if (!user) return pageSignIn("signin", "account");
-  const tabs = [["overview", "Overview", "user"], ["addresses", "Addresses", "home"], ["coins", "Jixcy coins", "sparkles"], ["wishlist", "Wishlist", "heart"], ["profile", "Personal details", "user"]];
+  const tabs = [["overview", "Overview", "user"], ["addresses", "Addresses", "home"], ["coins", "Jix coins", "sparkles"], ["wishlist", "Wishlist", "heart"], ["profile", "Personal details", "user"]];
   const nav = tabs.map(([k, label, ic]) => `<a href="#/account/${k}" class="${section === k ? "on" : ""}" ${section === k ? 'aria-current="page"' : ""}>${icon(ic, "sm")} ${label}</a>`).join("")
     + `<a href="#/orders">${icon("box", "sm")} Your orders</a>`
     + `<button type="button" class="link-btn signout" data-act="signOut">${icon("arrowRight", "sm")} Sign out</button>`;
@@ -3149,9 +3149,9 @@ function accountOverview(user) {
   const recent = userOrders(user.id).slice(0, 3);
   return `
   <h1 class="h-lg">Hello, ${esc(first)}</h1>
-  <p class="lead" style="margin:8px 0 22px">Your orders, addresses and Jixcy coins in one place.</p>
+  <p class="lead" style="margin:8px 0 22px">Your orders, addresses and Jix coins in one place.</p>
   <div class="kpi-row">
-    <a class="card kpi" href="#/account/coins"><span class="muted small">Jixcy coins</span><strong>${coinBalance(user)}</strong><span class="small">worth ${inr(coinBalance(user) * coinValueNow())}</span></a>
+    <a class="card kpi" href="#/account/coins"><span class="muted small">Jix coins</span><strong>${coinBalance(user)}</strong><span class="small">worth ${inr(coinBalance(user) * coinValueNow())}</span></a>
     <a class="card kpi" href="#/orders"><span class="muted small">Orders</span><strong>${userOrders(user.id).length}</strong><span class="small">placed on this account</span></a>
     <a class="card kpi" href="#/account/addresses"><span class="muted small">Default address</span><strong>${def ? esc(addressLabel(def)) : "None yet"}</strong><span class="small">${def ? esc(def.area) + ", " + def.pin : "Add one to check out"}</span></a>
     <a class="card kpi" href="#/account/wishlist"><span class="muted small">Wishlist</span><strong>${user.wishlist.length}</strong><span class="small">saved products</span></a>
@@ -3207,7 +3207,7 @@ function accountCoins(user) {
   const ledger = [...user.coinLedger].sort((x, y) => y.date.localeCompare(x.date));
   const typeLabel = { earn: "Earned", redeem: "Used at checkout", reverse: "Reversed", restore: "Restored", adjust: "Added" };
   return `
-  <h1 class="h-lg">Jixcy coins</h1>
+  <h1 class="h-lg">Jix coins</h1>
   <p class="lead" style="margin:8px 0 22px">Earn one coin for every rupee you pay for products. Delivery is not included.</p>
   <div class="coin-summary card pad-lg">
     <div><span class="muted small">Your balance</span><strong class="big-num">${bal} coins</strong><span class="small">worth about ${inr(bal * coinValueNow())}</span></div>
@@ -3309,7 +3309,7 @@ function pageOrder(id) {
     return o.deliveredAt ? fmtDate(o.deliveredAt) : "After courier transit";
   };
   const track = o.status === "Cancelled"
-    ? `<div class="notice bad">${icon("alert")}<div>This order was cancelled${o.cancelledAt ? " on " + fmtDate(o.cancelledAt) : ""}. Any Jixcy coins earned on it were reversed.</div></div>`
+    ? `<div class="notice bad">${icon("alert")}<div>This order was cancelled${o.cancelledAt ? " on " + fmtDate(o.cancelledAt) : ""}. Any Jix coins earned on it were reversed.</div></div>`
     : `<ol class="track" aria-label="Order progress">${steps.map((s, i) => `<li class="st ${i <= idx ? "done" : ""} ${i === idx ? "now" : ""}"><span class="dot" aria-hidden="true">${i < idx ? icon("check", "sm") : i + 1}</span><strong>${s}</strong><small>${esc(when(s))}</small></li>`).join("")}</ol>`;
   const p = o.pricing;
   const itemRows = o.items.map(i => `<div class="summary-line"><span>${esc(i.name)} <span class="muted">· ${esc(i.sizeLabel)} × ${i.qty}</span></span><span>${inr(i.line)}</span></div>`).join("");
@@ -3318,7 +3318,7 @@ function pageOrder(id) {
       <div class="split"><h2 class="h-md">Refund claim</h2><span class="pill ${o.refund.status === "Approved" ? "refunded" : o.refund.status === "Rejected" ? "rejected" : "refund"}">${esc(o.refund.status)}</span></div>
       <p class="small" style="margin-top:10px"><strong>Reason:</strong> ${esc(o.refund.reason)}${o.refund.note ? ". " + esc(o.refund.note) : ""}</p>
       ${o.refund.status === "Requested" ? `<p class="muted small">We are reviewing your claim and will update this order.</p>` : ""}
-      ${o.refund.status === "Approved" ? `<p class="small">A refund of ${inr(o.refund.amount)} goes to your original payment method, ${esc(o.payment.label)}. Jixcy coins earned on this order were reversed${o.coinsRedeemed ? " and the coins you redeemed were restored" : ""}.</p>` : ""}
+      ${o.refund.status === "Approved" ? `<p class="small">A refund of ${inr(o.refund.amount)} goes to your original payment method, ${esc(o.payment.label)}. Jix coins earned on this order were reversed${o.coinsRedeemed ? " and the coins you redeemed were restored" : ""}.</p>` : ""}
       ${o.refund.status === "Rejected" && o.refund.adminNote ? `<p class="small">${esc(o.refund.adminNote)}</p>` : ""}
     </div>` : "";
   return `
@@ -3337,11 +3337,11 @@ function pageOrder(id) {
           <div class="summary-line"><span>Products</span><span>${inr(p.subtotal)}</span></div>
           ${p.coupon ? `<div class="summary-line good"><span>Coupon ${esc(p.coupon.code)}</span><span>−${inr(p.coupon.amount)}</span></div>` : ""}
           ${p.bonus ? `<div class="summary-line good"><span>${esc(p.bonus.label)}</span><span>−${inr(p.bonus.amount)}</span></div>` : ""}
-          ${p.coinsRedeemed ? `<div class="summary-line good"><span>Jixcy coins (${p.coinsRedeemed})</span><span>−${inr(p.coinsRedeemedValue)}</span></div>` : ""}
+          ${p.coinsRedeemed ? `<div class="summary-line good"><span>Jix coins (${p.coinsRedeemed})</span><span>−${inr(p.coinsRedeemedValue)}</span></div>` : ""}
           <div class="summary-line"><span>Delivery</span><span>${p.delivery ? inr(p.delivery) : "Free"}</span></div>
           <div class="summary-line total"><span>Total</span><span>${inr(p.total)}</span></div>
           <p class="small muted" style="margin-top:10px">${esc(o.payment.label)}${o.payment.gateway ? " via " + esc(o.payment.gateway) : ""} · ${esc(o.payment.status)}${o.payment.ref ? " · Ref " + esc(o.payment.ref) : ""}</p>
-          <p class="small" style="margin-top:8px">${o.coinsEarned} Jixcy coins earned on this order</p>
+          <p class="small" style="margin-top:8px">${o.coinsEarned} Jix coins earned on this order</p>
         </div>
         ${o.address ? `<div class="card pad" style="margin-top:18px"><h2 class="h-md" style="margin-bottom:8px">Delivered to</h2><p class="small">${esc(o.address.name)}<br>${esc(o.address.line1)}${o.address.line2 ? ", " + esc(o.address.line2) : ""}<br>${esc(o.address.area)}, ${o.address.pin} · ${esc(o.address.region)}</p></div>` : ""}
         <div class="stack" style="margin-top:18px">
@@ -3374,7 +3374,7 @@ ACTIONS.openRefund = (el) => {
       <div class="field" style="margin-bottom:14px"><label for="rf-note">Tell us more</label><textarea id="rf-note" name="note" rows="3" maxlength="500" placeholder="For example: the jar lid was cracked on arrival."></textarea></div>
       <div class="field" style="margin-bottom:14px"><label for="rf-photo">Photo of the product or package</label><input id="rf-photo" name="photo" type="file" accept="image/*" required><span class="hint">Required. JPG or PNG, up to 1 MB.</span></div>
       <div id="rf-err" role="alert" class="small" style="color:#b3261e;min-height:20px"></div>
-      <div class="notice" style="margin:8px 0 16px">${icon("info")}<div>Approved refunds go to your original payment method only. The Jixcy coins earned on this order are reversed, and any coins you redeemed on it are restored.</div></div>
+      <div class="notice" style="margin:8px 0 16px">${icon("info")}<div>Approved refunds go to your original payment method only. The Jix coins earned on this order are reversed, and any coins you redeemed on it are restored.</div></div>
       <div class="row" style="justify-content:flex-end"><button type="button" class="btn btn-ghost" data-act="closeModal">Cancel</button><button class="btn btn-brand" type="submit">Submit claim</button></div>
     </form>`, { size: "narrow", sticky: true });
 };
@@ -3451,7 +3451,7 @@ function pageContact() {
   <section class="wrap page-head">
     <span class="eyebrow">Contact</span>
     <h1 class="h-lg" style="margin-top:14px">Talk to the people who press your oil</h1>
-    <p class="lead">Call, write or visit the shop in Malad West. For quick questions about delivery, preparation or Jixcy coins, Jixcy-bot answers at any hour.</p>
+    <p class="lead">Call, write or visit the shop in Malad West. For quick questions about delivery, preparation or Jix coins, Jixcy-bot answers at any hour.</p>
   </section>
   <section class="wrap contact-grid">
     <div class="card pad-lg">
@@ -3537,7 +3537,7 @@ FORMS.topSearch = (form) => {
 /* ---- admin.js ---- */
 /* ==========================================================================
    BACK OFFICE: single admin login, orders, refunds, products, customers,
-   reports, coupons, Jixcy coins and offers, website text, messages, settings.
+   reports, coupons, Jix coins and offers, website text, messages, settings.
    Prototype: every change lives in this browser only.
    ========================================================================== */
 const adm = { q: "", status: "all", period: "monthly", custQ: "", msgFilter: "all" };
@@ -3737,7 +3737,7 @@ ACTIONS.adminOrderView = (el) => {
         <div class="summary-line"><span>Products</span><span>${inr(p.subtotal)}</span></div>
         ${p.coupon ? `<div class="summary-line good"><span>Coupon ${esc(p.coupon.code)}</span><span>−${inr(p.coupon.amount)}</span></div>` : ""}
         ${p.bonus ? `<div class="summary-line good"><span>${esc(p.bonus.label)}</span><span>−${inr(p.bonus.amount)}</span></div>` : ""}
-        ${p.coinsRedeemed ? `<div class="summary-line good"><span>Jixcy coins (${p.coinsRedeemed})</span><span>−${inr(p.coinsRedeemedValue)}</span></div>` : ""}
+        ${p.coinsRedeemed ? `<div class="summary-line good"><span>Jix coins (${p.coinsRedeemed})</span><span>−${inr(p.coinsRedeemedValue)}</span></div>` : ""}
         <div class="summary-line"><span>Delivery (${p.weightKg} kg)</span><span>${p.delivery ? inr(p.delivery) : "Free"}</span></div>
         <div class="summary-line total"><span>Total</span><span>${inr(p.total)}</span></div>
         <p class="muted small" style="margin-top:8px">${esc(o.payment.label)}${o.payment.gateway ? " via " + esc(o.payment.gateway) : ""} · ${esc(o.payment.status)} · ${o.coinsEarned} coins earned</p>
@@ -3750,7 +3750,7 @@ ACTIONS.adminOrderView = (el) => {
 function adminRefunds() {
   const claims = S.orders.filter(o => o.refund).sort((a, b) => (b.refund.requestedAt || "").localeCompare(a.refund.requestedAt || ""));
   if (!claims.length) return `<div class="notice">${icon("circleCheck")}<div>No refund claims yet.</div></div>`;
-  return `<p class="muted small" style="margin-bottom:16px">Refunds go only to the original payment method. Approving a claim reverses the Jixcy coins earned on that order and restores the coins redeemed on it.</p>
+  return `<p class="muted small" style="margin-bottom:16px">Refunds go only to the original payment method. Approving a claim reverses the Jix coins earned on that order and restores the coins redeemed on it.</p>
   <div class="stack">${claims.map(o => `
     <article class="card pad refund-card">
       <div class="split"><div><strong>${esc(o.id)}</strong> · ${custName(o)} <span class="muted small">· claimed ${fmtDate(o.refund.requestedAt)}</span></div><span class="pill ${o.refund.status === "Requested" ? "refund" : o.refund.status === "Approved" ? "refunded" : "rejected"}">${esc(o.refund.status)}</span></div>
@@ -3769,7 +3769,7 @@ function adminRefunds() {
 ACTIONS.adminRefundApprove = (el) => {
   const o = S.orders.find(x => x.id === el.dataset.id);
   if (!o || !o.refund || o.refund.status !== "Requested") return;
-  confirmBox("Approve refund for " + o.id + "?", `${inr(o.refund.amount)} goes back to ${o.payment.label}. The ${o.coinsEarned} Jixcy coins earned on this order are reversed${o.coinsRedeemed ? " and the " + o.coinsRedeemed + " coins redeemed are restored" : ""}.`, "Approve refund", () => {
+  confirmBox("Approve refund for " + o.id + "?", `${inr(o.refund.amount)} goes back to ${o.payment.label}. The ${o.coinsEarned} Jix coins earned on this order are reversed${o.coinsRedeemed ? " and the " + o.coinsRedeemed + " coins redeemed are restored" : ""}.`, "Approve refund", () => {
     approveRefund(o); toast("Refund approved for " + o.id); render();
   }, false);
 };
@@ -3919,7 +3919,7 @@ function customerRows() {
 function customerTable() {
   const rows = customerRows();
   if (!rows.length) return `<div class="notice">${icon("search")}<div>No customers match.</div></div>`;
-  return `<div class="table-wrap"><table class="tbl"><thead><tr><th scope="col">Customer</th><th scope="col">Phone</th><th scope="col">Orders</th><th scope="col">Spent</th><th scope="col">Jixcy coins</th><th scope="col">Last order</th><th scope="col">Default area</th></tr></thead><tbody>
+  return `<div class="table-wrap"><table class="tbl"><thead><tr><th scope="col">Customer</th><th scope="col">Phone</th><th scope="col">Orders</th><th scope="col">Spent</th><th scope="col">Jix coins</th><th scope="col">Last order</th><th scope="col">Default area</th></tr></thead><tbody>
     ${rows.map(r => `<tr><td><strong>${esc(r.u.name)}</strong><div class="muted small">${esc(r.u.email)}</div>${r.count >= 2 ? `<span class="pill refunded">Repeat buyer</span>` : ""}</td><td>${esc(maskPhone(r.u.phone))}</td><td>${r.count}</td><td>${inr(r.spent)}</td><td>${r.coins}</td><td>${r.last ? fmtDate(r.last) : "None"}</td><td>${esc(r.area || "No address")}</td></tr>`).join("")}
   </tbody></table></div>`;
 }
@@ -4026,7 +4026,7 @@ ACTIONS.adminExport = (el) => {
     return csvDownload("jixcy-sales-" + adm.period + "-" + stamp + ".csv", rows);
   }
   if (kind === "customers") {
-    const rows = [["Name", "Email", "Phone (masked)", "Orders", "Net spend", "Jixcy coins", "Default area", "Last order"]];
+    const rows = [["Name", "Email", "Phone (masked)", "Orders", "Net spend", "Jix coins", "Default area", "Last order"]];
     customerRows().forEach(r => rows.push([r.u.name, r.u.email, maskPhone(r.u.phone), r.count, r.spent, r.coins, r.area, r.last || ""]));
     return csvDownload("jixcy-customers-" + stamp + ".csv", rows);
   }
@@ -4035,7 +4035,7 @@ ACTIONS.adminExport = (el) => {
 /* ---------- Coupons ---------- */
 function adminCoupons() {
   return `
-  <div class="split" style="margin-bottom:16px"><p class="muted small">Coupons apply to every order, of any amount. A coupon is applied first, then the welcome or revisit bonus, then Jixcy coins.</p><button class="btn btn-brand" data-act="adminCouponAdd">${icon("plus", "sm")} Add coupon</button></div>
+  <div class="split" style="margin-bottom:16px"><p class="muted small">Coupons apply to every order, of any amount. A coupon is applied first, then the welcome or revisit bonus, then Jix coins.</p><button class="btn btn-brand" data-act="adminCouponAdd">${icon("plus", "sm")} Add coupon</button></div>
   <div class="table-wrap"><table class="tbl"><thead><tr><th scope="col">Code</th><th scope="col">Type</th><th scope="col">Value</th><th scope="col">Cap ₹</th><th scope="col">Label shown</th><th scope="col">Active</th><th scope="col"><span class="sr">Remove</span></th></tr></thead><tbody>
     ${S.coupons.map((c, i) => `<tr>
       <td><strong>${esc(c.code)}</strong></td>
@@ -4085,19 +4085,19 @@ FORMS.adminCoupon = (form) => {
   S.coupons.push(c); saveState(); closeModal(); toast(code + " added"); render();
 };
 
-/* ---------- Jixcy coins and offers ---------- */
+/* ---------- Jix coins and offers ---------- */
 function adminCoinsOffers() {
   const cfg = S.config;
   const liability = S.users.reduce((s, u) => s + coinBalance(u), 0);
   const f = (id, label, val, step, hint) => `<div class="field"><label for="cf-${id}">${label}</label><input id="cf-${id}" name="${id}" type="number" step="${step || "1"}" min="0" value="${val}">${hint ? `<span class="hint">${hint}</span>` : ""}</div>`;
   return `
   <div class="kpi-row">
-    ${kpi("Jixcy coins in customer accounts", liability.toLocaleString("en-IN"))}
+    ${kpi("Jix coins in customer accounts", liability.toLocaleString("en-IN"))}
     ${kpi("Value of coins outstanding", inr(liability * coinValueNow()))}
     ${kpi("Festive boost", cfg.coinBoostOn ? "On" : "Off", cfg.coinBoostLabel)}
   </div>
   <form class="card pad-lg" data-form="adminOffers" novalidate style="margin-top:22px">
-    <h2 class="h-md">Jixcy coin settings and boost</h2>
+    <h2 class="h-md">Jix coin settings and boost</h2>
     <div class="form-grid" style="margin-top:14px">
       ${f("coinPerRupee", "Coins earned per ₹1 paid for products", cfg.coinPerRupee, "1", "Delivery is not included")}
       ${f("coinValue", "Standard value of one coin (₹)", cfg.coinValue, "0.01", "For example 0.05 is 5 paise")}
@@ -4109,7 +4109,7 @@ function adminCoinsOffers() {
     <h2 class="h-md" style="margin-top:30px">Bonuses and delivery</h2>
     <div class="form-grid" style="margin-top:14px">
       ${f("welcomeBonus", "Welcome bonus on the first order (₹)", cfg.welcomeBonus, "1", "Any order amount")}
-      ${f("revisitBonus", "Revisit bonus on every repeat order (₹)", cfg.revisitBonus, "1", "Separate from Jixcy coins")}
+      ${f("revisitBonus", "Revisit bonus on every repeat order (₹)", cfg.revisitBonus, "1", "Separate from Jix coins")}
       ${f("freeDeliveryAbove", "Free delivery on product totals above (₹)", cfg.freeDeliveryAbove, "1", "Exactly this amount is still charged")}
       ${f("deliveryPerKg", "Delivery per kg below the free limit (₹)", cfg.deliveryPerKg, "1", "Rounded up to the next whole kg")}
     </div>
@@ -4132,7 +4132,7 @@ FORMS.adminOffers = (form) => {
   const c = S.config;
   keys.forEach(k => { c[k] = num(k); });
   c.coinBoostOn = !!form.elements.namedItem("coinBoostOn").checked;
-  c.coinBoostLabel = fv(form, "coinBoostLabel") || "Festive Jixcy coin boost";
+  c.coinBoostLabel = fv(form, "coinBoostLabel") || "Festive Jix coin boost";
   saveState(); toast("Settings saved. They apply to new orders."); render();
 };
 
