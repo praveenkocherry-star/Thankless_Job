@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JIXCYFOODS Prototype · UAT Form</title>
+<meta name="description" content="User acceptance testing form for the JIXCYFOODS e-commerce prototype. Answers save in this browser; download the results file and send it back.">
+<style>
+:root{
+  --bg:#f6f2e8;--surface:#fffdf7;--surface2:#efe8d8;--ink:#14291d;--muted:#4f5f55;--line:#d9d0bb;
+  --brand:#1f5a3f;--on-brand:#ffffff;--accent:#b97a12;--pass:#1d6b3a;--pass-bg:#e2f6e8;--fail:#a1231a;--fail-bg:#fde5e3;
+  --blocked:#8a5a00;--blocked-bg:#fff1d6;--na:#4a4a4a;--na-bg:#ececec;--focus:#d99a2b;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0d1813;--surface:#15241b;--surface2:#1d3125;--ink:#eee8da;--muted:#a9bcb0;--line:#2c4637;
+  --brand:#7cc79a;--on-brand:#0b1611;--accent:#f0b44c;--pass:#7fd9a0;--pass-bg:#173a25;--fail:#ff9d94;--fail-bg:#45201c;
+  --blocked:#f3c56a;--blocked-bg:#3e3013;--na:#d0d0d0;--na-bg:#2d2d2d;--focus:#f0b44c}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--brand)}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2;margin:0}
+h1{font-size:clamp(1.7rem,4vw,2.4rem)}
+h2{font-size:1.5rem}
+.wrap{width:min(1100px,100% - 32px);margin-inline:auto}
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:16px;top:12px;z-index:50;background:var(--brand);color:var(--on-brand);padding:12px 18px;border-radius:10px;font-weight:700}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+header.top{background:var(--brand);color:var(--on-brand);padding:28px 0 24px}
+header.top p{margin:8px 0 0;opacity:.95}
+.badge{display:inline-block;font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px;margin-bottom:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field{display:grid;gap:6px}
+.field.full{grid-column:1/-1}
+label,.lbl{font-weight:700}
+input[type=text],input[type=email],input[type=date],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:46px;width:100%}
+textarea{min-height:76px;resize:vertical}
+.hint{font-size:.9rem;color:var(--muted)}
+.btn{font:inherit;font-weight:800;min-height:46px;padding:0 18px;border-radius:999px;border:1.5px solid var(--brand);background:var(--brand);color:var(--on-brand);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--brand)}
+.btn.danger{border-color:var(--fail);background:transparent;color:var(--fail)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 0;box-shadow:0 6px 16px -14px rgba(0,0,0,.5)}
+.toolbar .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.progress{flex:1;min-width:220px}
+.bar{height:10px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .3s}
+#saved{font-size:.88rem;color:var(--muted)}
+.logins{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;background:var(--surface2);border-radius:12px;padding:14px 16px}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;background:var(--surface);border:1px solid var(--line);padding:1px 7px;border-radius:6px}
+nav.areas ol{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+nav.areas a{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:12px;background:var(--surface2);text-decoration:none;color:var(--ink);font-weight:700}
+nav.areas a span{color:var(--muted);font-weight:600;white-space:nowrap}
+section.area{scroll-margin-top:80px}
+.area-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin:34px 0 4px}
+fieldset.tc{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:18px 20px 16px;margin:14px 0}
+fieldset.tc > legend{font-weight:800;font-size:1.08rem;padding:0 8px}
+fieldset.tc.is-fail{border-color:var(--fail);border-width:2px}
+.steps{margin:4px 0 8px}
+.steps ol{margin:4px 0 0;padding-left:22px}
+.exp{margin:6px 0 12px;padding:10px 12px;border-radius:10px;background:var(--surface2)}
+.devs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+fieldset.dev{border:1px dashed var(--line);border-radius:12px;padding:8px 12px 12px;margin:0}
+fieldset.dev legend{font-weight:800;padding:0 6px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt span{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);font-weight:700;cursor:pointer;background:var(--bg)}
+.opt input:focus-visible + span{outline:3px solid var(--focus);outline-offset:2px}
+.opt input[value=pass]:checked + span{background:var(--pass-bg);color:var(--pass);border-color:var(--pass)}
+.opt input[value=fail]:checked + span{background:var(--fail-bg);color:var(--fail);border-color:var(--fail)}
+.opt input[value=blocked]:checked + span{background:var(--blocked-bg);color:var(--blocked);border-color:var(--blocked)}
+.opt input[value=na]:checked + span{background:var(--na-bg);color:var(--na);border-color:var(--na)}
+.opt input[type=radio]:checked + span::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:8px}
+.cmt{margin-top:12px}
+.need{color:var(--fail);font-weight:700;font-size:.9rem}
+.rating{margin-top:16px;border:2px solid var(--brand);border-radius:16px;padding:16px 18px;background:var(--surface)}
+.rating legend{font-weight:800;padding:0 6px}
+.rate-opts .opt input:checked + span{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.sum{border-radius:12px;padding:12px 14px;background:var(--surface2)}
+.sum b{display:block;font-size:1.5rem;font-family:Georgia,serif}
+.pass-t{color:var(--pass)}.fail-t{color:var(--fail)}.blocked-t{color:var(--blocked)}
+.hidden{display:none!important}
+footer{padding:30px 0 60px;color:var(--muted);font-size:.9rem}
+@media (max-width:720px){
+  .toolbar{position:static}
+  body{font-size:16px}
+  .grid,.devs{grid-template-columns:1fr}
+  .card{padding:18px}
+  fieldset.tc{padding:14px 14px 12px}
+  .logins{grid-template-columns:1fr}
+}
+@media print{
+  .toolbar,.no-print,nav.areas{display:none!important}
+  body{background:#fff;color:#000;font-size:12pt}
+  .hidden{display:block!important}
+  fieldset.tc,.card,.rating{break-inside:avoid;background:#fff}
+  .opt input:not(:checked) + span{display:none}
+  .opt span{border:1px solid #000}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#tests-start">Skip to the tests</a>
+<header class="top">
+  <div class="wrap">
+    <span class="badge">User acceptance testing</span>
+    <h1>JIXCYFOODS prototype: UAT form</h1>
+    <p>Test the prototype file <strong>jixcy-foods.html</strong> on a phone and on a computer, record each result here, then download your results file and send it back.</p>
+  </div>
+</header>
+
+<div class="toolbar no-print" role="region" aria-label="Progress and actions">
+  <div class="wrap">
+    <div class="progress">
+      <div id="progress-text" aria-live="polite">0 of 0 results recorded</div>
+      <div class="bar" aria-hidden="true"><i id="progress-bar"></i></div>
+    </div>
+    <div class="row">
+      <label class="hint" for="filter">Show</label>
+      <select id="filter" style="width:auto;min-height:44px">
+        <option value="all">All tests</option>
+        <option value="open">Not yet answered</option>
+        <option value="issues">Failed or blocked</option>
+      </select>
+      <button class="btn" type="button" id="btn-csv">Download results</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <p id="saved" role="status" aria-live="polite">Your answers save automatically in this browser.</p>
+
+  <section class="card" aria-labelledby="how-title">
+    <h2 id="how-title">How to do this UAT</h2>
+    <ol>
+      <li>Open <strong>jixcy-foods.html</strong> in Chrome, Edge, Safari or Firefox. Use a phone for the phone column and a laptop or desktop for the desktop column.</li>
+      <li>Work through the areas in order. Each test lists the steps and what should happen.</li>
+      <li>For each test, mark <strong>Pass</strong>, <strong>Fail</strong>, <strong>Blocked</strong> (you could not run it) or <strong>Not applicable</strong>, separately for phone and desktop.</li>
+      <li>For every Fail or Blocked, write what happened in the comment box. Screenshots can be emailed separately; mention the test ID, for example S4.</li>
+      <li>At the end of each area, rate it from 1 (poor) to 5 (excellent). At the bottom, give your overall verdict.</li>
+      <li>Your answers save in this browser as you go, so you can stop and continue later in the same browser. To continue on another device, use <strong>Download backup</strong> and then <strong>Load backup</strong> on the other device.</li>
+      <li>When finished, press <strong>Download results</strong> and email the file to the project owner. It opens in Excel or Google Sheets.</li>
+    </ol>
+    <h3 style="margin:18px 0 10px;font-size:1.15rem">Demo logins and test data</h3>
+    <div class="logins">
+      <span class="lbl">Customer OTP</span><span><code>1234</code> (any OTP screen, including card payments)</span>
+      <span class="lbl">Demo customer</span><span>Ananya Desai, mobile <code>98201 23456</code>, or press "Use the demo customer account"</span>
+      <span class="lbl">Back office</span><span>username <code>admin</code>, password <code>jixcy2026</code></span>
+      <span class="lbl">Coupons</span><span><code>JIXCY20</code>, <code>FRESH50</code>, <code>MUMBAI100</code>; <code>OLDCODE</code> is switched off</span>
+      <span class="lbl">Mumbai PINs</span><span><code>400064</code> Malad West, <code>400097</code>, <code>400703</code> Vashi. Outside Mumbai: <code>110001</code></span>
+      <span class="lbl">Test UPI ID</span><span><code>name@okaxis</code>; test card <code>4111 1111 1111 1111</code>, expiry <code>12/29</code>, CVV <code>123</code></span>
+      <span class="lbl">Start fresh</span><span>Back office, Settings, "Reset demo data". This restores all sample orders and customers.</span>
+    </div>
+    <p class="hint" style="margin-top:12px">This is a prototype. Payments are simulated, nothing is charged, and all data stays in the browser where the prototype is open.</p>
+  </section>
+
+  <section class="card" aria-labelledby="tester-title">
+    <h2 id="tester-title">Tester details</h2>
+    <div class="grid" style="margin-top:14px">
+      <div class="field"><label for="i_name">Your name</label><input type="text" id="i_name" data-k="info.name" autocomplete="name"></div>
+      <div class="field"><label for="i_contact">Email or phone</label><input type="text" id="i_contact" data-k="info.contact" autocomplete="email"></div>
+      <div class="field"><label for="i_date">Test date</label><input type="date" id="i_date" data-k="info.date"></div>
+      <div class="field"><label for="i_role">Your role</label><input type="text" id="i_role" data-k="info.role" placeholder="For example: shop owner, customer, developer"></div>
+      <div class="field"><label for="i_phone">Phone model and browser</label><input type="text" id="i_phone" data-k="info.phone" placeholder="For example: Samsung A54, Chrome"></div>
+      <div class="field"><label for="i_desk">Computer and browser</label><input type="text" id="i_desk" data-k="info.desktop" placeholder="For example: Windows 11 laptop, Edge"></div>
+      <div class="field full"><label for="i_link">Where you opened the prototype</label><input type="text" id="i_link" data-k="info.link" placeholder="For example: GitHub link, or the file from email"></div>
+    </div>
+  </section>
+
+  <nav class="areas card no-print" aria-labelledby="areas-title">
+    <h2 id="areas-title" style="margin-bottom:12px">Test areas</h2>
+    <ol id="area-nav"></ol>
+  </nav>
+
+  <div id="tests-start" tabindex="-1"></div>
+  <div id="tests"></div>
+
+  <section class="card" aria-labelledby="overall-title" id="overall">
+    <h2 id="overall-title">Overall verdict</h2>
+    <fieldset class="rating" style="margin-top:14px">
+      <legend>Overall rating of the prototype, out of 10</legend>
+      <div class="opts rate-opts" id="overall-score"></div>
+    </fieldset>
+    <fieldset class="rating">
+      <legend>Your decision</legend>
+      <div class="opts" id="overall-verdict"></div>
+    </fieldset>
+    <div class="field" style="margin-top:16px"><label for="o_liked">What worked best</label><textarea id="o_liked" data-k="overall.liked"></textarea></div>
+    <div class="field" style="margin-top:12px"><label for="o_issues">Top issues to fix before going live</label><textarea id="o_issues" data-k="overall.issues"></textarea></div>
+    <div class="field" style="margin-top:12px"><label for="o_ideas">Suggestions and missing features</label><textarea id="o_ideas" data-k="overall.ideas"></textarea></div>
+  </section>
+
+  <section class="card" aria-labelledby="summary-title">
+    <h2 id="summary-title">Summary</h2>
+    <div id="summary" style="margin-top:14px" aria-live="polite"></div>
+  </section>
+
+  <section class="card no-print" aria-labelledby="send-title">
+    <h2 id="send-title">Send your results</h2>
+    <p>Press <strong>Download results</strong> to save a spreadsheet file (CSV) with every answer, then email it to the project owner. You can also print this page or save it as a PDF.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" type="button" id="btn-csv2">Download results</button>
+      <button class="btn ghost" type="button" id="btn-print">Print or save as PDF</button>
+      <button class="btn ghost" type="button" id="btn-backup">Download backup</button>
+      <button class="btn ghost" type="button" id="btn-load">Load backup</button>
+      <input type="file" id="file-load" accept=".json,application/json" class="hidden" aria-hidden="true" tabindex="-1">
+      <button class="btn danger" type="button" id="btn-clear">Clear all answers</button>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap">JIXCYFOODS prototype UAT form. Answers are stored only in this browser until you download them.</div></footer>
+
+<script>
+/* ---------------- Test plan ----------------
+   Each test: [id, title, steps[], expected, devices]  devices: "both" | "phone" | "desktop" */
+const AREAS = [
+ { id: "H", name: "Home, themes and navigation", tests: [
+  ["H1", "Home page opens", ["Open jixcy-foods.html."], "The page loads within a few seconds. A green announcement bar about the festive Jix coin boost appears at the top, then the JIXCYFOODS logo, menu and hero headline. No blank screen.", "both"],
+  ["H2", "Home page sections", ["Scroll from top to bottom of the home page."], "In order: hero, four categories, trust badges, bestsellers, 'Made to order' steps, Jix coins band with an example, founder Jixi Ramesh, customer reviews, questions and answers, a final call to action and the footer. No placeholder or dummy text.", "both"],
+  ["H3", "Themes sheet", ["Press the Themes button (on phone, the round colour button at the top)."], "A sheet opens with three colour icons: Forest, Copper and Ochre. Only the selected palette shows its name under the icon. There is a separate light or dark switch.", "both"],
+  ["H4", "Change palette", ["Open Themes and choose Copper, then Ochre, then Forest.", "Reload the page."], "Colours change across the whole site each time. After reloading, the last chosen palette is kept.", "both"],
+  ["H5", "Light and dark mode", ["Press the moon icon in the header, then the sun icon.", "Try dark mode with each palette."], "The site switches between light and dark. Text stays easy to read in every palette and mode.", "both"],
+  ["H6", "Questions and answers", ["On the home page, open and close several questions in the questions and answers section."], "Each question expands to show its answer and collapses again.", "both"],
+  ["H7", "Category tiles", ["Press each of the four category tiles (Oils; Ghee, masala and honey; Grains and pulses; Skin and hair care)."], "The shop opens filtered to that category.", "both"],
+  ["H8", "Footer links", ["In the footer, open each Shop and Help link.", "Tap a phone number and the email address."], "Each link opens the right page. The phone number starts a call (on phone) and the email opens your mail app.", "both"],
+  ["H9", "Bottom dock on phone", ["On a phone, look at the bottom of the screen on every page."], "A dock with six medium icons: Home, Account, Orders, Cart (a four-wheeled trolley), Ask Jixi-bot and Admin. The current section is highlighted. Every button works.", "phone"],
+  ["H10", "Desktop menu", ["On a computer, use the top menu: Home, Shop, Our story, Contact, Admin, and the account, bot and basket icons."], "Each opens the right page or panel, and the current page is highlighted.", "desktop"],
+  ["H11", "Page not found", ["Change the end of the address to #/xyz and press Enter."], "A friendly 'Page not found' message appears with buttons back to the home page and the shop.", "both"],
+  ["H12", "Keyboard use", ["On a computer, press Tab repeatedly from the top of the page."], "A 'Skip to content' link appears first. Every button and link can be reached and shows a clear focus outline.", "desktop"]
+ ]},
+ { id: "S", name: "Shop and search", tests: [
+  ["S1", "Product listing", ["Open Shop."], "All products show with a clean pack image on a white background, rating, short description, 'from' price and an Add button. The page shows the number of products.", "both"],
+  ["S2", "Search in the shop", ["In the shop search box, type ghee, then soap, then a word that matches nothing."], "Results update as you type. For no matches, a message appears with a Clear filters button that works.", "both"],
+  ["S3", "Header search", ["On a computer, type millet in the header search box and press Enter."], "The shop opens with matching results.", "desktop"],
+  ["S4", "Category filter chips", ["In the shop, press each category chip, then All products."], "The list filters to that category, and All products shows everything again.", "both"],
+  ["S5", "Sorting", ["Use the sort menu: Top rated, Price low to high, Price high to low, Name A to Z."], "The product order changes to match each choice.", "both"],
+  ["S6", "Quick add", ["Press Add on any product card."], "A confirmation message appears and the basket count in the header (and dock on phone) goes up by one.", "both"],
+  ["S7", "Wishlist when signed out", ["While signed out, press the heart on a product card."], "You are asked to sign in and taken to the sign-in page.", "both"]
+ ]},
+ { id: "P", name: "Product page", tests: [
+  ["P1", "Product details", ["Open any product from the shop."], "Breadcrumb, name, rating, description, price with size and weight, size options, quantity control, Add to basket button and wishlist heart are all shown.", "both"],
+  ["P2", "Choose a size", ["Choose each size (for example 250 ml, 500 ml, 1 litre)."], "The price and weight update, and the Add to basket button shows the new total.", "both"],
+  ["P3", "Quantity plus and minus", ["Press plus a few times, then minus down to 0."], "The quantity goes up and down by one. At 0 the minus button and Add to basket button are disabled.", "both"],
+  ["P4", "Typed quantity limits", ["Type 150 in the quantity box and move out of the box.", "Type 3."], "150 changes to 100 (the maximum). 3 is accepted.", "both"],
+  ["P5", "Add to basket", ["Choose a size and quantity 3, then press Add to basket."], "You go to the basket and see the product with the chosen size and quantity 3.", "both"],
+  ["P6", "Made-to-order and delivery notes", ["Read the notes under the quantity."], "A delivery note (free above ₹499, otherwise ₹60 per kg, Mumbai only) and a made-to-order note (dispatched within 48 hours, for full shelf life) are shown.", "both"],
+  ["P7", "Related products", ["Scroll to the bottom of a product page and open a suggested product."], "'You may also like' shows other products from the same category, and they open correctly.", "both"]
+ ]},
+ { id: "B", name: "Basket", tests: [
+  ["B1", "Empty basket", ["Remove everything from the basket, or open it when empty."], "A clear 'Your basket is empty' message with a Start shopping button.", "both"],
+  ["B2", "Basket lines and totals", ["Add two different products and open the basket."], "Each line shows image, name, size, unit price and line total. The summary shows the products total and estimated delivery.", "both"],
+  ["B3", "Change quantities", ["Use plus, minus and typing on a line. Reduce one line to 0."], "Totals update straight away. A line at 0 disappears.", "both"],
+  ["B4", "Remove a line", ["Press Remove on a line."], "The line is removed and a confirmation message appears.", "both"],
+  ["B5", "Free delivery nudge", ["Keep the products total below ₹500, then add more to go above ₹499."], "Below the limit: 'Add ₹X more for free delivery'. Above ₹499: 'You have free delivery'.", "both"],
+  ["B6", "Mini basket bar on phone", ["On a phone, add an item, then visit the home page and shop."], "A bar above the dock shows the number of items and total, with 'View basket'. It is hidden on the basket and checkout pages.", "phone"]
+ ]},
+ { id: "R", name: "Sign in and registration", tests: [
+  ["R1", "Checkout needs sign-in", ["While signed out, add an item and press Checkout."], "The sign-in page opens. After signing in you return to checkout.", "both"],
+  ["R2", "Mobile number checks", ["Try 12345, then 5123456789, then a valid number such as 98765 43210."], "Invalid numbers show a clear error. The number formats as 98765 43210 while typing.", "both"],
+  ["R3", "Unknown number on sign-in", ["On Sign in, enter a new number such as 91234 56789 and press Send OTP."], "A message says there is no account for this number, with a 'Create an account' option.", "both"],
+  ["R4", "Create an account", ["Choose Create an account, enter a new number, enter OTP 1234, then your name and email."], "The account is created and you are signed in. The message mentions the welcome bonus on the first order.", "both"],
+  ["R5", "Wrong OTP, resend and change number", ["Enter OTP 0000. Then press Resend OTP and Change number."], "Wrong OTP shows an error. Resend shows a confirmation. Change number returns to the number step.", "both"],
+  ["R6", "Duplicate registration", ["Try to create an account with 98201 23456 (the demo customer)."], "A message says an account already exists and suggests signing in.", "both"],
+  ["R7", "Demo customer", ["On the sign-in page, press 'Use the demo customer account'."], "You are signed in as Ananya Desai with saved addresses, past orders, Jix coins and a wishlist.", "both"],
+  ["R8", "Phone masking", ["Look at mobile numbers on the account page, addresses and checkout."], "Numbers are masked, for example 98XXX XX456.", "both"],
+  ["R9", "Sign out", ["In Your account, press Sign out."], "You are signed out and returned to the home page.", "both"]
+ ]},
+ { id: "A", name: "Address book and PIN checks", tests: [
+  ["A1", "Address groups", ["As the demo customer, open Your account, Addresses."], "Addresses are grouped under Home, Work and Other with counts. The default address is marked. 'Other' can show a custom name such as Parents' house.", "both"],
+  ["A2", "Add an address", ["Press Add address. Choose Other and give it a name, fill in the form with PIN 400064 and save."], "The address is saved under Other with your custom name.", "both"],
+  ["A3", "Mumbai PIN check", ["In the address form, type PIN 400703, then 110001."], "400703 shows 'Delivers to Vashi, Navi Mumbai'. 110001 shows that delivery is not available (Mumbai only), and saving is blocked with a clear message.", "both"],
+  ["A4", "Form validation", ["Try saving with a name containing numbers, a phone starting with 5, a very short street, and a 5-digit PIN."], "Each problem shows a clear message and the address is not saved.", "both"],
+  ["A5", "Edit an address", ["Press Edit on an address, change the street and save."], "The change is saved and shown.", "both"],
+  ["A6", "Set default", ["Press 'Set as default' on another address."], "The Default badge moves to that address. Checkout selects it first.", "both"],
+  ["A7", "Remove an address", ["Press Remove, then confirm."], "A confirmation appears first. After confirming, the address disappears.", "both"],
+  ["A8", "Add address during checkout", ["At checkout, press 'Add a new address' and save a valid Mumbai address."], "The new address is saved and selected for the order.", "both"]
+ ]},
+ { id: "O", name: "Coupons, bonuses and Jix coins", tests: [
+  ["O1", "Welcome bonus", ["Create a new account (R4) and go to checkout with any item."], "A ₹75 welcome bonus is applied automatically, shown as its own line.", "both"],
+  ["O2", "Revisit bonus", ["As the demo customer (who has past orders), go to checkout."], "A ₹35 revisit bonus is applied automatically.", "both"],
+  ["O3", "Coupon JIXCY20", ["At checkout, enter jixcy20 and press Apply. Try once with a small basket and once with a large one (over ₹1,500)."], "20% off the products total, never more than ₹300. Shown as its own line.", "both"],
+  ["O4", "Other coupons", ["Try FRESH50, MUMBAI100, OLDCODE and a made-up code."], "FRESH50 gives ₹50 off; MUMBAI100 gives ₹100 off. OLDCODE says it is no longer active. A made-up code says it is not valid.", "both"],
+  ["O5", "Remove coupon", ["After applying a coupon, press Remove."], "The coupon line disappears and totals go back.", "both"],
+  ["O6", "Discount order and delivery", ["Apply a coupon with the bonus and some Jix coins on an order below ₹500."], "Discounts apply in order: coupon, then bonus, then coins. Delivery is never reduced by any of them.", "both"],
+  ["O7", "Coins below ₹500", ["As the demo customer, check out with a products total of ₹499 or less."], "A note says coins can be used on product totals above ₹499 and how much more to add.", "both"],
+  ["O8", "Redeem coins", ["Raise the products total above ₹499. Use the slider, type a number, then press 'Use max'."], "The coins discount updates each time and shows how much it saves. Used coins never exceed your balance.", "both"],
+  ["O9", "Coins earned", ["Look at the order summary at checkout."], "It shows the Jix coins you will earn: one per rupee paid for products (delivery not included), and roughly what they are worth.", "both"],
+  ["O10", "Coins page", ["Open Your account, Jix coins."], "Shows the balance, its value, the rules (including the festive boost value of 8 paise) and a list of coin activity.", "both"]
+ ]},
+ { id: "D", name: "Delivery charges", tests: [
+  ["D1", "Below ₹500, by weight", ["Put one 1 litre Groundnut Oil (₹410, about 0.92 kg) in the basket and check out."], "Delivery is ₹60 (1 kg).", "both"],
+  ["D2", "Rounding up to the next kg", ["Put one 1 litre Groundnut Oil (₹410) and one 100 ml Virgin Coconut Oil (₹70) in the basket: ₹480, about 1.01 kg."], "Delivery is ₹120 (rounded up to 2 kg).", "both"],
+  ["D3", "Above ₹499 is free", ["Make the products total ₹500 or more."], "Delivery shows Free.", "both"],
+  ["D4", "Exactly ₹499 is charged", ["In the back office, set one product price to ₹499 (see Z7). Order exactly one of it."], "Delivery is charged, because free delivery is only above ₹499.", "both"],
+  ["D5", "Preparation time note", ["Read section 3 of checkout."], "It explains the order is prepared after you place it, dispatched within 48 hours, then courier transit, so you get the full shelf life.", "both"]
+ ]},
+ { id: "C", name: "Checkout and payments", tests: [
+  ["C1", "Checkout layout", ["Open checkout with items in the basket."], "Step bar, then four sections: Delivery address, Offers and Jix coins, Delivery and preparation, Payment. An order summary with the total to pay.", "both"],
+  ["C2", "UPI payment", ["Choose UPI and press Pay. Enter 'abc', then name@okaxis."], "A payment window shows the amount. 'abc' is rejected. A valid ID shows 'Approve the payment request in your UPI app', then the order confirmation opens.", "both"],
+  ["C3", "Card payment", ["Choose card. Try a short card number, then 4111 1111 1111 1111, 12/29, 123. Enter OTP 0000, then 1234."], "Card errors are clear. An OTP step appears. Wrong OTP is rejected; 1234 completes the payment and the order opens.", "both"],
+  ["C4", "Net banking", ["Choose Net banking, pick a bank, press Pay."], "'Redirecting to your bank' appears, then the order is placed.", "both"],
+  ["C5", "Cash on delivery", ["Choose Cash on delivery."], "The button reads 'Place order, pay ₹X on delivery'. The order is placed without a payment window, and the payment shows 'Pay on delivery'.", "both"],
+  ["C6", "Cancel payment", ["Start a UPI or card payment and press Cancel or close the window."], "The window closes, no order is created and the basket is unchanged.", "both"],
+  ["C7", "Nothing to pay", ["In the back office, add coupon FREE100: Percent, value 100, cap 5000 (see Z14). Make a basket over ₹499 and apply FREE100."], "Total to pay is ₹0 with free delivery. A note says nothing is charged, the button reads 'Place order', and the order is confirmed without a payment step.", "both"],
+  ["C8", "Order confirmation", ["After any successful order, look at the page that opens."], "The order number (JX- followed by digits), a 4-step progress tracker, items, the payment breakdown, delivery address and coins earned. The basket is now empty.", "both"],
+  ["C9", "Gateway names", ["Look at the payment options and payment windows."], "Realistic gateway names appear (UPI apps, Razorpay), with a clear note that this prototype charges nothing.", "both"]
+ ]},
+ { id: "X", name: "Orders, cancellation and refunds", tests: [
+  ["X1", "Orders list", ["As the demo customer, open Orders."], "Orders are listed newest first, each with status, total, payment method and a View order button.", "both"],
+  ["X2", "Order tracker", ["Open an order."], "A 4-step tracker (Placed, Preparing, Dispatched, Delivered) with dates, including when dispatch is due.", "both"],
+  ["X3", "Cancel within 12 hours", ["Place a new order. In Orders, press Cancel order, read the hours left, and confirm."], "A confirmation appears. The order changes to Cancelled, and any Jix coins earned on it are removed from your balance.", "both"],
+  ["X4", "No cancel after 12 hours", ["Look at older orders, such as the delivered ones."], "No Cancel button appears on orders older than 12 hours.", "both"],
+  ["X5", "Report a problem within 48 hours", ["As the demo customer, find order JX-1091 (delivered recently) and press 'Report a problem'. If the 48 hour window has closed, reset demo data in the back office and sign in as the demo customer again."], "A form opens with the hours left, a reason list, a details box, a photo upload and a note that refunds go to the original payment method only.", "both"],
+  ["X6", "Photo is required", ["Submit the claim without a photo. Then try a photo over 1 MB, then a small photo."], "No photo: error. Too large: error. Small photo: the claim is submitted.", "both"],
+  ["X7", "Claim status", ["Open the order after submitting the claim."], "A 'Refund claim' box shows status Requested and your reason.", "both"],
+  ["X8", "No claim after 48 hours", ["Look at order JX-1092 (delivered long ago)."], "No 'Report a problem' option appears.", "both"],
+  ["X9", "Refund outcome", ["After the back office approves your claim (Z6), open the order and the Jix coins page."], "The claim shows Approved, the refund goes to the original payment method, coins earned on that order are reversed, and any coins you used on it are restored.", "both"]
+ ]},
+ { id: "U", name: "Your account", tests: [
+  ["U1", "Account overview", ["Open Your account."], "A greeting, tiles for Jix coins, orders, default address and wishlist (each opens its page) and recent orders.", "both"],
+  ["U2", "Edit personal details", ["Open Personal details. Enter an invalid email, then valid details, and save."], "Invalid email is rejected. Valid changes save and show across the site. The mobile number is shown masked and cannot be edited here.", "both"],
+  ["U3", "Wishlist", ["Save two products with the heart, open Wishlist, remove one."], "Saved products appear and removal works.", "both"]
+ ]},
+ { id: "J", name: "Ask Jixi-bot", tests: [
+  ["J1", "Open and close the bot", ["Open Ask Jixi-bot (floating button on computer, dock button on phone). Close it with the X, and on computer also with Escape."], "A chat panel opens with a greeting and quick question buttons, and closes again.", "both"],
+  ["J2", "Quick questions", ["Press each quick question button."], "Each gives a correct, relevant answer.", "both"],
+  ["J3", "Delivery charges", ["Type: What is the delivery charge?"], "Answer: free above ₹499, otherwise ₹60 per kg rounded up, delivery always payable.", "both"],
+  ["J4", "PIN check", ["Type 400064, then 110001."], "400064 is confirmed as Malad West. 110001 is reported as outside the delivery area.", "both"],
+  ["J5", "Policies and offers", ["Ask about cancelling, refunds, Jix coins, coupons, payment methods, preparation time and the founder."], "Each answer matches the rules in this form and on the site.", "both"],
+  ["J6", "Product help", ["Ask the bot to suggest a product, for example 'suggest an oil for cooking'."], "It suggests a few products with prices, and each Add button puts that product in the basket.", "both"],
+  ["J7", "Contact details", ["Ask: How can I contact you?"], "It gives the Malad West shop address, the phone numbers 7303466463 and 7021260518, and the opening hours.", "both"]
+ ]},
+ { id: "I", name: "Story, contact and policies", tests: [
+  ["I1", "Our story page", ["Open Our story."], "Company introduction, photos, four preparation steps, founder Jixi Ramesh with biography and quote, and an Ask Jixi-bot button.", "both"],
+  ["I2", "Contact details", ["Open Contact."], "Address: Shop no 1, Surbhi CHS, Jankalyan Nagar, Malad West, Mumbai 400064. Phones 73034 66463 and 70212 60518. Email, opening hours and a drawn map.", "both"],
+  ["I3", "Contact form", ["Submit with a bad phone number and a 5-letter message. Then submit valid details."], "Errors are clear. Valid details show 'Thank you. We have received your message.' and the form clears.", "both"],
+  ["I4", "Policy pages", ["Open Shipping, Cancellation, Returns and refunds, Privacy and Terms from the footer."], "Each page opens with its text and a side menu to the other policies.", "both"]
+ ]},
+ { id: "Z", name: "Back office (admin)", tests: [
+  ["Z1", "Admin sign-in", ["Open Admin. Read the screen. Try a wrong password, then admin and jixcy2026."], "The demo login is shown with a 'Prototype only' note. Wrong password is rejected. Correct details open the Dashboard.", "both"],
+  ["Z2", "Admin navigation", ["On computer, use the tab bar at the top. On phone, use the Admin dock button and swipe through the tabs."], "All 11 tabs open: Dashboard, Orders, Refunds, Products, Customers, Reports, Coupons, Coins and offers, Website text, Messages, Settings.", "both"],
+  ["Z3", "Dashboard", ["Look at the Dashboard."], "Six tiles (orders, net revenue, to prepare or dispatch, open refunds, new messages, customers), latest orders and shortcuts.", "both"],
+  ["Z4", "Manage orders", ["In Orders, search by a customer name and by a PIN. Filter by status. Move an order from Placed to Preparing to Dispatched to Delivered. Press View."], "Search and filter work. Status moves forward only. A placed or preparing order can also be cancelled. View shows full details.", "both"],
+  ["Z5", "Orders CSV", ["Press 'Export orders CSV'."], "A CSV file downloads and opens in Excel with all orders.", "both"],
+  ["Z6", "Refund claims", ["In Refunds, approve the claim for JX-1006 (Sneha Kulkarni) and, if you made one in X6, approve or reject yours. Try rejecting without a reason."], "Approve asks for confirmation and explains the coin effects. Reject requires a reason. Status updates to Approved or Rejected.", "both"],
+  ["Z7", "Edit prices", ["In Products, change a price and move out of the box. Check the shop."], "A 'price updated' message appears and the shop and product page show the new price.", "both"],
+  ["Z8", "Edit product details and visibility", ["Change a product name and description. Untick 'Show in the shop'."], "Changes appear in the shop. A hidden product no longer appears in the shop.", "both"],
+  ["Z9", "Change a product photo", ["Press 'Change photo' and choose a photo under 1 MB. Then press 'Use drawn pack image'."], "The photo replaces the pack image in the shop. The second button restores the drawn pack.", "both"],
+  ["Z10", "Add a product", ["Press Add product, fill in all fields and save."], "It appears in the shop in the chosen category and can be bought.", "both"],
+  ["Z11", "Delete a product", ["Delete a product and confirm."], "It disappears from the shop, basket and wishlists. Past orders still show it.", "both"],
+  ["Z12", "Customers", ["Open Customers, search, and export the customers CSV."], "Customers are listed with masked phone, orders, spend, coins, last order and area. Repeat buyers are tagged. The CSV downloads.", "both"],
+  ["Z13", "Reports", ["Open Reports and switch between Weekly, Monthly and Yearly. Download the Sales CSV."], "Sales chart and table, orders by status, top products, payment method split, delivery by PIN area and repeat buyers. There are no stock or inventory reports anywhere.", "both"],
+  ["Z14", "Coupons", ["Add coupon FREE100 (Percent, 100, cap 5000). Change a coupon value. Switch FRESH50 off and try it at checkout. Remove a coupon."], "Each change saves. A switched-off code is refused at checkout. Removed codes no longer work.", "both"],
+  ["Z15", "Coins and offers", ["Change the revisit bonus to 40, the boosted coin value to 0.10, and switch the boost off and on. Save and check checkout."], "Checkout and the coins page use the new values.", "both"],
+  ["Z16", "Website text", ["Change the announcement text, home headline, a question and answer, and a policy paragraph. Untick 'Customer reviews'. Save and view the site."], "Every text change shows on the site. The reviews section is hidden. The layout does not change.", "both"],
+  ["Z17", "Messages", ["Open Messages. Find the message you sent in I3. Add a note, set status Replied and save. Use the filter."], "Your message is listed. The note and status save. The filter shows only matching messages.", "both"],
+  ["Z18", "Settings", ["Try changing the password with a wrong current password, then a short one, then correctly. Sign out and sign in with the new password. Finally press Reset demo data."], "Errors are clear. The new password works. Reset restores sample data and signs you out of the back office.", "both"]
+ ]},
+ { id: "Q", name: "Overall quality", tests: [
+  ["Q1", "No placeholder text", ["While testing, watch for 'lorem ipsum', 'TBD', broken images or empty boxes."], "None appear anywhere.", "both"],
+  ["Q2", "Phone layout", ["On a phone, visit every page."], "Nothing is cut off and there is no sideways scrolling. Buttons are easy to tap.", "phone"],
+  ["Q3", "Data is kept", ["Place an order, add an address, then close and reopen the prototype in the same browser."], "Basket, account, orders and settings are still there.", "both"],
+  ["Q4", "Speed", ["Move quickly between pages."], "Pages change instantly with no visible delay or flicker.", "both"],
+  ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "Consistent JIXCYFOODS branding, Jixi-bot spelled with a hyphen, clear English, no mention of Telegram or stock levels.", "both"],
+  ["Q6", "Screen reader and keyboard (optional)", ["If you use a screen reader or keyboard only, try the main shopping flow."], "Buttons and fields are announced with clear names, and the flow can be completed without a mouse.", "both"]
+ ]}
+];
+const DEVICES = { phone: "Phone", desktop: "Desktop" };
+const RESULTS = [["pass", "Pass"], ["fail", "Fail"], ["blocked", "Blocked"], ["na", "Not applicable"]];
+const VERDICTS = [["accept", "Accept as is"], ["accept-changes", "Accept with minor changes"], ["rework", "Needs rework before approval"]];
+const KEY = "jixcy-uat-form";
+
+let state = { info: {}, res: {}, com: {}, rate: {}, rnote: {}, overall: {} };
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const devsOf = (t) => t[4] === "both" ? ["phone", "desktop"] : [t[4]];
+
+/* ---------------- Storage ---------------- */
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { const s = JSON.parse(raw); if (s && typeof s === "object") mergeState(s); }
+  } catch (e) {}
+}
+function mergeState(s) {
+  ["info", "res", "com", "rate", "rnote", "overall"].forEach(k => { if (s[k] && typeof s[k] === "object") state[k] = Object.assign({}, s[k]); });
+}
+let saveTimer = null;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      $("#saved").textContent = "Saved in this browser at " + new Date().toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }) + ".";
+    } catch (e) {
+      $("#saved").textContent = "This browser could not save your answers. Please use Download backup regularly.";
+    }
+  }, 250);
+}
+
+/* ---------------- Rendering ---------------- */
+function radioGroup(name, options, extraClass) {
+  return `<div class="opts ${extraClass || ""}">${options.map(([v, l]) => `<label class="opt"><input type="radio" name="${name}" value="${v}"><span>${esc(l)}</span></label>`).join("")}</div>`;
+}
+function render() {
+  $("#area-nav").innerHTML = AREAS.map(a => `<li><a href="#area-${a.id}">${esc(a.name)} <span id="nav-${a.id}"></span></a></li>`).join("");
+  $("#tests").innerHTML = AREAS.map(a => `
+    <section class="area" id="area-${a.id}" aria-labelledby="area-title-${a.id}">
+      <div class="area-head"><h2 id="area-title-${a.id}">${esc(a.id)}. ${esc(a.name)}</h2><span class="hint" id="count-${a.id}"></span></div>
+      ${a.tests.map(t => `
+        <fieldset class="tc" id="tc-${t[0]}" data-test="${t[0]}">
+          <legend>${esc(t[0])}. ${esc(t[1])}</legend>
+          <div class="steps"><span class="lbl">Steps</span><ol>${t[2].map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>
+          <p class="exp"><strong>Expected:</strong> ${esc(t[3])}</p>
+          <div class="devs">${devsOf(t).map(d => `
+            <fieldset class="dev"><legend>${DEVICES[d]} result for ${esc(t[0])}</legend>${radioGroup(`res|${t[0]}|${d}`, RESULTS)}</fieldset>`).join("")}
+            ${t[4] !== "both" ? `<p class="hint" style="align-self:center">This test is for ${DEVICES[t[4]].toLowerCase()} only.</p>` : ""}
+          </div>
+          <div class="field cmt"><label for="com-${t[0]}">Comments for ${esc(t[0])} <span class="need hidden" id="need-${t[0]}">(please describe the problem)</span></label><textarea id="com-${t[0]}" data-k="com.${t[0]}" rows="2"></textarea></div>
+        </fieldset>`).join("")}
+      <fieldset class="rating">
+        <legend>Rate the area "${esc(a.name)}" from 1 (poor) to 5 (excellent)</legend>
+        ${radioGroup(`rate|${a.id}`, [["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]], "rate-opts")}
+        <div class="field" style="margin-top:12px"><label for="rnote-${a.id}">Notes on ${esc(a.name)}</label><textarea id="rnote-${a.id}" data-k="rnote.${a.id}" rows="2"></textarea></div>
+      </fieldset>
+    </section>`).join("");
+  $("#overall-score").innerHTML = radioGroup("overall|score", Array.from({ length: 10 }, (_, i) => [String(i + 1), String(i + 1)]), "rate-opts").replace(/^<div class="opts rate-opts">|<\/div>$/g, "");
+  $("#overall-verdict").innerHTML = radioGroup("overall|verdict", VERDICTS).replace(/^<div class="opts ">|<\/div>$/g, "");
+}
+
+function restore() {
+  $$("[data-k]").forEach(el => {
+    const [grp, key] = el.dataset.k.split(".");
+    const v = state[grp] && state[grp][key];
+    el.value = v == null ? "" : v;
+  });
+  $$("input[type=radio]").forEach(r => {
+    const [grp, a, b] = r.name.split("|");
+    let v;
+    if (grp === "res") v = state.res[a + "|" + b];
+    else if (grp === "rate") v = state.rate[a];
+    else if (grp === "overall") v = state.overall[a];
+    r.checked = v === r.value;
+  });
+  if (!state.info.date) { const d = new Date(); const iso = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); $("#i_date").value = iso; state.info.date = iso; }
+}
+
+/* ---------------- Progress and summary ---------------- */
+function tally() {
+  const t = { total: 0, done: 0, pass: 0, fail: 0, blocked: 0, na: 0, perArea: {}, needComment: [], perDevice: { phone: { pass: 0, fail: 0, blocked: 0 }, desktop: { pass: 0, fail: 0, blocked: 0 } } };
+  AREAS.forEach(a => {
+    const pa = { total: 0, done: 0 };
+    a.tests.forEach(test => {
+      let hasIssue = false;
+      devsOf(test).forEach(d => {
+        const v = state.res[test[0] + "|" + d];
+        t.total++; pa.total++;
+        if (v) { t.done++; pa.done++; t[v]++; if (t.perDevice[d][v] != null) t.perDevice[d][v]++; }
+        if (v === "fail" || v === "blocked") hasIssue = true;
+      });
+      const box = $("#tc-" + test[0]);
+      const needs = hasIssue && !(state.com[test[0]] || "").trim();
+      if (box) { box.classList.toggle("is-fail", hasIssue); $("#need-" + test[0]).classList.toggle("hidden", !needs); }
+      if (needs) t.needComment.push(test[0]);
+    });
+    t.perArea[a.id] = pa;
+  });
+  return t;
+}
+function updateProgress() {
+  const t = tally();
+  const pct = t.total ? Math.round(t.done / t.total * 100) : 0;
+  $("#progress-text").textContent = `${t.done} of ${t.total} results recorded (${pct}%)`;
+  $("#progress-bar").style.width = pct + "%";
+  AREAS.forEach(a => {
+    const pa = t.perArea[a.id];
+    const txt = `${pa.done} of ${pa.total} done`;
+    $("#nav-" + a.id).textContent = txt;
+    $("#count-" + a.id).textContent = txt;
+  });
+  const rated = AREAS.filter(a => state.rate[a.id]);
+  const avg = rated.length ? (rated.reduce((s, a) => s + Number(state.rate[a.id]), 0) / rated.length).toFixed(1) : "None yet";
+  const verdict = (VERDICTS.find(v => v[0] === state.overall.verdict) || [null, "Not given yet"])[1];
+  $("#summary").innerHTML = `
+    <div class="sum-grid">
+      <div class="sum"><span>Recorded</span><b>${t.done} / ${t.total}</b></div>
+      <div class="sum"><span>Passed</span><b class="pass-t">${t.pass}</b></div>
+      <div class="sum"><span>Failed</span><b class="fail-t">${t.fail}</b></div>
+      <div class="sum"><span>Blocked</span><b class="blocked-t">${t.blocked}</b></div>
+      <div class="sum"><span>Not applicable</span><b>${t.na}</b></div>
+      <div class="sum"><span>Average area rating</span><b>${avg}</b></div>
+      <div class="sum"><span>Overall score</span><b>${state.overall.score ? state.overall.score + " / 10" : "Not given"}</b></div>
+    </div>
+    <p style="margin-top:14px">Phone: ${t.perDevice.phone.pass} passed, ${t.perDevice.phone.fail} failed, ${t.perDevice.phone.blocked} blocked. Desktop: ${t.perDevice.desktop.pass} passed, ${t.perDevice.desktop.fail} failed, ${t.perDevice.desktop.blocked} blocked.</p>
+    <p>Decision: <strong>${esc(verdict)}</strong></p>
+    ${t.needComment.length ? `<p class="need">Failed or blocked tests still missing a comment: ${t.needComment.map(id => `<a href="#tc-${id}">${id}</a>`).join(", ")}</p>` : ""}`;
+  applyFilter();
+}
+function applyFilter() {
+  const f = $("#filter").value;
+  AREAS.forEach(a => {
+    let visible = 0;
+    a.tests.forEach(test => {
+      const vals = devsOf(test).map(d => state.res[test[0] + "|" + d]);
+      let show = true;
+      if (f === "open") show = vals.some(v => !v);
+      if (f === "issues") show = vals.some(v => v === "fail" || v === "blocked");
+      $("#tc-" + test[0]).classList.toggle("hidden", !show);
+      if (show) visible++;
+    });
+    $("#area-" + a.id).classList.toggle("hidden", f !== "all" && visible === 0);
+  });
+}
+
+/* ---------------- Events ---------------- */
+document.addEventListener("input", (e) => {
+  const el = e.target;
+  if (el.dataset && el.dataset.k) {
+    const [grp, key] = el.dataset.k.split(".");
+    state[grp][key] = el.value;
+    save(); updateProgress();
+  }
+});
+document.addEventListener("change", (e) => {
+  const el = e.target;
+  if (el.type === "radio" && el.checked) {
+    const [grp, a, b] = el.name.split("|");
+    if (grp === "res") state.res[a + "|" + b] = el.value;
+    else if (grp === "rate") state.rate[a] = el.value;
+    else if (grp === "overall") state.overall[a] = el.value;
+    save(); updateProgress();
+  }
+  if (el.id === "filter") applyFilter();
+});
+
+function download(name, text, type) {
+  const blob = new Blob([text], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function fileStem() {
+  const who = (state.info.name || "tester").trim().replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") || "tester";
+  return "jixcy-uat-results-" + who + "-" + (state.info.date || "");
+}
+const label = (v) => (RESULTS.find(r => r[0] === v) || [null, v ? v : "Not tested"])[1];
+function toCsv() {
+  const cell = (v) => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  const rows = [];
+  const t = tally();
+  rows.push(["JIXCYFOODS prototype: UAT results"]);
+  rows.push(["Tester", state.info.name || ""], ["Contact", state.info.contact || ""], ["Date", state.info.date || ""], ["Role", state.info.role || ""], ["Phone and browser", state.info.phone || ""], ["Computer and browser", state.info.desktop || ""], ["Opened from", state.info.link || ""]);
+  rows.push([]);
+  rows.push(["Summary"], ["Results recorded", t.done + " of " + t.total], ["Passed", t.pass], ["Failed", t.fail], ["Blocked", t.blocked], ["Not applicable", t.na], ["Overall score out of 10", state.overall.score || ""], ["Decision", (VERDICTS.find(v => v[0] === state.overall.verdict) || [null, ""])[1]]);
+  rows.push([]);
+  rows.push(["Area", "Test ID", "Test", "Steps", "Expected result", "Phone result", "Desktop result", "Comments"]);
+  AREAS.forEach(a => a.tests.forEach(test => {
+    const ph = test[4] === "desktop" ? "Not applicable" : label(state.res[test[0] + "|phone"]);
+    const dk = test[4] === "phone" ? "Not applicable" : label(state.res[test[0] + "|desktop"]);
+    rows.push([a.name, test[0], test[1], test[2].map((s, i) => (i + 1) + ". " + s).join(" "), test[3], ph, dk, state.com[test[0]] || ""]);
+  }));
+  rows.push([]);
+  rows.push(["Area ratings (1 to 5)", "Rating", "Notes"]);
+  AREAS.forEach(a => rows.push([a.name, state.rate[a.id] || "", state.rnote[a.id] || ""]));
+  rows.push([]);
+  rows.push(["What worked best", state.overall.liked || ""], ["Top issues to fix", state.overall.issues || ""], ["Suggestions", state.overall.ideas || ""]);
+  return "﻿" + rows.map(r => r.map(cell).join(",")).join("\r\n");
+}
+function exportCsv() {
+  const t = tally();
+  if (t.needComment.length && !confirm("Some failed or blocked tests have no comment (" + t.needComment.join(", ") + "). Download anyway?")) return;
+  download(fileStem() + ".csv", toCsv(), "text/csv;charset=utf-8");
+  $("#saved").textContent = "Results file downloaded. Please email it to the project owner.";
+}
+$("#btn-csv").addEventListener("click", exportCsv);
+$("#btn-csv2").addEventListener("click", exportCsv);
+$("#btn-print").addEventListener("click", () => { $("#filter").value = "all"; applyFilter(); window.print(); });
+$("#btn-backup").addEventListener("click", () => {
+  download(fileStem() + "-backup.json", JSON.stringify({ form: "jixcy-uat", saved: new Date().toISOString(), state }, null, 1), "application/json");
+  $("#saved").textContent = "Backup downloaded. Load it on another device to continue there.";
+});
+$("#btn-load").addEventListener("click", () => $("#file-load").click());
+$("#file-load").addEventListener("change", (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(String(r.result));
+      if (!data || data.form !== "jixcy-uat" || !data.state) throw new Error("not a backup");
+      state = { info: {}, res: {}, com: {}, rate: {}, rnote: {}, overall: {} };
+      mergeState(data.state); restore(); save(); updateProgress();
+      $("#saved").textContent = "Backup loaded. You can continue where you left off.";
+    } catch (err) { $("#saved").textContent = "That file is not a backup of this UAT form."; }
+    e.target.value = "";
+  };
+  r.readAsText(f);
+});
+$("#btn-clear").addEventListener("click", () => {
+  if (!confirm("Clear every answer in this form? Download a backup first if you may need them.")) return;
+  state = { info: {}, res: {}, com: {}, rate: {}, rnote: {}, overall: {} };
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  restore(); updateProgress();
+  $("#saved").textContent = "All answers cleared.";
+});
+
+/* ---------------- Start ---------------- */
+render(); load(); restore(); updateProgress();
+</script>
+</body>
+</html>
