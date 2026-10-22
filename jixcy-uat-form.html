@@ -220,15 +220,15 @@ footer{padding:30px 0 60px;color:var(--muted);font-size:.9rem}
    Each test: [id, title, steps[], expected, devices]  devices: "both" | "phone" | "desktop" */
 const AREAS = [
  { id: "H", name: "Home, themes and navigation", tests: [
-  ["H1", "Home page opens", ["Open jixcy-foods.html."], "The page loads within a few seconds. A green announcement bar about the festive Jix coin boost appears at the top, then the JIXCYFOODS logo, menu and hero headline. No blank screen.", "both"],
-  ["H2", "Home page sections", ["Scroll from top to bottom of the home page."], "In order: hero, four categories, trust badges, bestsellers, 'Made to order' steps, Jix coins band with an example, founder Jixi Ramesh, customer reviews, questions and answers, a final call to action and the footer. No placeholder or dummy text.", "both"],
+  ["H1", "Home page opens", ["Open jixcy-foods.html."], "The page loads within a few seconds. A green announcement bar about the festive Jixcy coin boost appears at the top, then the JIXCYFOODS logo, menu and hero headline. No blank screen.", "both"],
+  ["H2", "Home page sections", ["Scroll from top to bottom of the home page."], "In order: hero, four categories, trust badges, bestsellers, 'Made to order' steps, Jixcy coins band with an example, founder Jixcy Ramesh, customer reviews, questions and answers, a final call to action and the footer. No placeholder or dummy text.", "both"],
   ["H3", "Themes sheet", ["Press the Themes button (on phone, the round colour button at the top)."], "A sheet opens with three colour icons: Forest, Copper and Ochre. Only the selected palette shows its name under the icon. There is a separate light or dark switch.", "both"],
   ["H4", "Change palette", ["Open Themes and choose Copper, then Ochre, then Forest.", "Reload the page."], "Colours change across the whole site each time. After reloading, the last chosen palette is kept.", "both"],
   ["H5", "Light and dark mode", ["Press the moon icon in the header, then the sun icon.", "Try dark mode with each palette."], "The site switches between light and dark. Text stays easy to read in every palette and mode.", "both"],
   ["H6", "Questions and answers", ["On the home page, open and close several questions in the questions and answers section."], "Each question expands to show its answer and collapses again.", "both"],
   ["H7", "Category tiles", ["Press each of the four category tiles (Oils; Ghee, masala and honey; Grains and pulses; Skin and hair care)."], "The shop opens filtered to that category.", "both"],
   ["H8", "Footer links", ["In the footer, open each Shop and Help link.", "Tap a phone number and the email address."], "Each link opens the right page. The phone number starts a call (on phone) and the email opens your mail app.", "both"],
-  ["H9", "Bottom dock on phone", ["On a phone, look at the bottom of the screen on every page."], "A dock with six medium icons: Home, Account, Orders, Cart (a four-wheeled trolley), Ask Jixi-bot and Admin. The current section is highlighted. Every button works.", "phone"],
+  ["H9", "Bottom dock on phone", ["On a phone, look at the bottom of the screen on every page."], "A dock with six medium icons: Home, Account, Orders, Cart (a four-wheeled trolley), Ask Jixcy-bot and Admin. The current section is highlighted. Every button works.", "phone"],
   ["H10", "Desktop menu", ["On a computer, use the top menu: Home, Shop, Our story, Contact, Admin, and the account, bot and basket icons."], "Each opens the right page or panel, and the current page is highlighted.", "desktop"],
   ["H11", "Page not found", ["Change the end of the address to #/xyz and press Enter."], "A friendly 'Page not found' message appears with buttons back to the home page and the shop.", "both"],
   ["H12", "Keyboard use", ["On a computer, press Tab repeatedly from the top of the page."], "A 'Skip to content' link appears first. Every button and link can be reached and shows a clear focus outline.", "desktop"]
@@ -266,7 +266,7 @@ const AREAS = [
   ["R4", "Create an account", ["Choose Create an account, enter a new number, enter OTP 1234, then your name and email."], "The account is created and you are signed in. The message mentions the welcome bonus on the first order.", "both"],
   ["R5", "Wrong OTP, resend and change number", ["Enter OTP 0000. Then press Resend OTP and Change number."], "Wrong OTP shows an error. Resend shows a confirmation. Change number returns to the number step.", "both"],
   ["R6", "Duplicate registration", ["Try to create an account with 98201 23456 (the demo customer)."], "A message says an account already exists and suggests signing in.", "both"],
-  ["R7", "Demo customer", ["On the sign-in page, press 'Use the demo customer account'."], "You are signed in as Ananya Desai with saved addresses, past orders, Jix coins and a wishlist.", "both"],
+  ["R7", "Demo customer", ["On the sign-in page, press 'Use the demo customer account'."], "You are signed in as Ananya Desai with saved addresses, past orders, Jixcy coins and a wishlist.", "both"],
   ["R8", "Phone masking", ["Look at mobile numbers on the account page, addresses and checkout."], "Numbers are masked, for example 98XXX XX456.", "both"],
   ["R9", "Sign out", ["In Your account, press Sign out."], "You are signed out and returned to the home page.", "both"]
  ]},
@@ -280,17 +280,17 @@ const AREAS = [
   ["A7", "Remove an address", ["Press Remove, then confirm."], "A confirmation appears first. After confirming, the address disappears.", "both"],
   ["A8", "Add address during checkout", ["At checkout, press 'Add a new address' and save a valid Mumbai address."], "The new address is saved and selected for the order.", "both"]
  ]},
- { id: "O", name: "Coupons, bonuses and Jix coins", tests: [
+ { id: "O", name: "Coupons, bonuses and Jixcy coins", tests: [
   ["O1", "Welcome bonus", ["Create a new account (R4) and go to checkout with any item."], "A ₹75 welcome bonus is applied automatically, shown as its own line.", "both"],
   ["O2", "Revisit bonus", ["As the demo customer (who has past orders), go to checkout."], "A ₹35 revisit bonus is applied automatically.", "both"],
   ["O3", "Coupon JIXCY20", ["At checkout, enter jixcy20 and press Apply. Try once with a small basket and once with a large one (over ₹1,500)."], "20% off the products total, never more than ₹300. Shown as its own line.", "both"],
   ["O4", "Other coupons", ["Try FRESH50, MUMBAI100, OLDCODE and a made-up code."], "FRESH50 gives ₹50 off; MUMBAI100 gives ₹100 off. OLDCODE says it is no longer active. A made-up code says it is not valid.", "both"],
   ["O5", "Remove coupon", ["After applying a coupon, press Remove."], "The coupon line disappears and totals go back.", "both"],
-  ["O6", "Discount order and delivery", ["Apply a coupon with the bonus and some Jix coins on an order below ₹500."], "Discounts apply in order: coupon, then bonus, then coins. Delivery is never reduced by any of them.", "both"],
+  ["O6", "Discount order and delivery", ["Apply a coupon with the bonus and some Jixcy coins on an order below ₹500."], "Discounts apply in order: coupon, then bonus, then coins. Delivery is never reduced by any of them.", "both"],
   ["O7", "Coins below ₹500", ["As the demo customer, check out with a products total of ₹499 or less."], "A note says coins can be used on product totals above ₹499 and how much more to add.", "both"],
   ["O8", "Redeem coins", ["Raise the products total above ₹499. Use the slider, type a number, then press 'Use max'."], "The coins discount updates each time and shows how much it saves. Used coins never exceed your balance.", "both"],
-  ["O9", "Coins earned", ["Look at the order summary at checkout."], "It shows the Jix coins you will earn: one per rupee paid for products (delivery not included), and roughly what they are worth.", "both"],
-  ["O10", "Coins page", ["Open Your account, Jix coins."], "Shows the balance, its value, the rules (including the festive boost value of 8 paise) and a list of coin activity.", "both"]
+  ["O9", "Coins earned", ["Look at the order summary at checkout."], "It shows the Jixcy coins you will earn: one per rupee paid for products (delivery not included), and roughly what they are worth.", "both"],
+  ["O10", "Coins page", ["Open Your account, Jixcy coins."], "Shows the balance, its value, the rules (including the festive boost value of 8 paise) and a list of coin activity.", "both"]
  ]},
  { id: "D", name: "Delivery charges", tests: [
   ["D1", "Below ₹500, by weight", ["Put one 1 litre Groundnut Oil (₹410, about 0.92 kg) in the basket and check out."], "Delivery is ₹60 (1 kg).", "both"],
@@ -300,7 +300,7 @@ const AREAS = [
   ["D5", "Preparation time note", ["Read section 3 of checkout."], "It explains the order is prepared after you place it, dispatched within 48 hours, then courier transit, so you get the full shelf life.", "both"]
  ]},
  { id: "C", name: "Checkout and payments", tests: [
-  ["C1", "Checkout layout", ["Open checkout with items in the basket."], "Step bar, then four sections: Delivery address, Offers and Jix coins, Delivery and preparation, Payment. An order summary with the total to pay.", "both"],
+  ["C1", "Checkout layout", ["Open checkout with items in the basket."], "Step bar, then four sections: Delivery address, Offers and Jixcy coins, Delivery and preparation, Payment. An order summary with the total to pay.", "both"],
   ["C2", "UPI payment", ["Choose UPI and press Pay. Enter 'abc', then name@okaxis."], "A payment window shows the amount. 'abc' is rejected. A valid ID shows 'Approve the payment request in your UPI app', then the order confirmation opens.", "both"],
   ["C3", "Card payment", ["Choose card. Try a short card number, then 4111 1111 1111 1111, 12/29, 123. Enter OTP 0000, then 1234."], "Card errors are clear. An OTP step appears. Wrong OTP is rejected; 1234 completes the payment and the order opens.", "both"],
   ["C4", "Net banking", ["Choose Net banking, pick a bank, press Pay."], "'Redirecting to your bank' appears, then the order is placed.", "both"],
@@ -313,30 +313,30 @@ const AREAS = [
  { id: "X", name: "Orders, cancellation and refunds", tests: [
   ["X1", "Orders list", ["As the demo customer, open Orders."], "Orders are listed newest first, each with status, total, payment method and a View order button.", "both"],
   ["X2", "Order tracker", ["Open an order."], "A 4-step tracker (Placed, Preparing, Dispatched, Delivered) with dates, including when dispatch is due.", "both"],
-  ["X3", "Cancel within 12 hours", ["Place a new order. In Orders, press Cancel order, read the hours left, and confirm."], "A confirmation appears. The order changes to Cancelled, and any Jix coins earned on it are removed from your balance.", "both"],
+  ["X3", "Cancel within 12 hours", ["Place a new order. In Orders, press Cancel order, read the hours left, and confirm."], "A confirmation appears. The order changes to Cancelled, and any Jixcy coins earned on it are removed from your balance.", "both"],
   ["X4", "No cancel after 12 hours", ["Look at older orders, such as the delivered ones."], "No Cancel button appears on orders older than 12 hours.", "both"],
   ["X5", "Report a problem within 48 hours", ["As the demo customer, find order JX-1091 (delivered recently) and press 'Report a problem'. If the 48 hour window has closed, reset demo data in the back office and sign in as the demo customer again."], "A form opens with the hours left, a reason list, a details box, a photo upload and a note that refunds go to the original payment method only.", "both"],
   ["X6", "Photo is required", ["Submit the claim without a photo. Then try a photo over 1 MB, then a small photo."], "No photo: error. Too large: error. Small photo: the claim is submitted.", "both"],
   ["X7", "Claim status", ["Open the order after submitting the claim."], "A 'Refund claim' box shows status Requested and your reason.", "both"],
   ["X8", "No claim after 48 hours", ["Look at order JX-1092 (delivered long ago)."], "No 'Report a problem' option appears.", "both"],
-  ["X9", "Refund outcome", ["After the back office approves your claim (Z6), open the order and the Jix coins page."], "The claim shows Approved, the refund goes to the original payment method, coins earned on that order are reversed, and any coins you used on it are restored.", "both"]
+  ["X9", "Refund outcome", ["After the back office approves your claim (Z6), open the order and the Jixcy coins page."], "The claim shows Approved, the refund goes to the original payment method, coins earned on that order are reversed, and any coins you used on it are restored.", "both"]
  ]},
  { id: "U", name: "Your account", tests: [
-  ["U1", "Account overview", ["Open Your account."], "A greeting, tiles for Jix coins, orders, default address and wishlist (each opens its page) and recent orders.", "both"],
+  ["U1", "Account overview", ["Open Your account."], "A greeting, tiles for Jixcy coins, orders, default address and wishlist (each opens its page) and recent orders.", "both"],
   ["U2", "Edit personal details", ["Open Personal details. Enter an invalid email, then valid details, and save."], "Invalid email is rejected. Valid changes save and show across the site. The mobile number is shown masked and cannot be edited here.", "both"],
   ["U3", "Wishlist", ["Save two products with the heart, open Wishlist, remove one."], "Saved products appear and removal works.", "both"]
  ]},
- { id: "J", name: "Ask Jixi-bot", tests: [
-  ["J1", "Open and close the bot", ["Open Ask Jixi-bot (floating button on computer, dock button on phone). Close it with the X, and on computer also with Escape."], "A chat panel opens with a greeting and quick question buttons, and closes again.", "both"],
+ { id: "J", name: "Ask Jixcy-bot", tests: [
+  ["J1", "Open and close the bot", ["Open Ask Jixcy-bot (floating button on computer, dock button on phone). Close it with the X, and on computer also with Escape."], "A chat panel opens with a greeting and quick question buttons, and closes again.", "both"],
   ["J2", "Quick questions", ["Press each quick question button."], "Each gives a correct, relevant answer.", "both"],
   ["J3", "Delivery charges", ["Type: What is the delivery charge?"], "Answer: free above ₹499, otherwise ₹60 per kg rounded up, delivery always payable.", "both"],
   ["J4", "PIN check", ["Type 400064, then 110001."], "400064 is confirmed as Malad West. 110001 is reported as outside the delivery area.", "both"],
-  ["J5", "Policies and offers", ["Ask about cancelling, refunds, Jix coins, coupons, payment methods, preparation time and the founder."], "Each answer matches the rules in this form and on the site.", "both"],
+  ["J5", "Policies and offers", ["Ask about cancelling, refunds, Jixcy coins, coupons, payment methods, preparation time and the founder."], "Each answer matches the rules in this form and on the site.", "both"],
   ["J6", "Product help", ["Ask the bot to suggest a product, for example 'suggest an oil for cooking'."], "It suggests a few products with prices, and each Add button puts that product in the basket.", "both"],
   ["J7", "Contact details", ["Ask: How can I contact you?"], "It gives the Malad West shop address, the phone numbers 7303466463 and 7021260518, and the opening hours.", "both"]
  ]},
  { id: "I", name: "Story, contact and policies", tests: [
-  ["I1", "Our story page", ["Open Our story."], "Company introduction, photos, four preparation steps, founder Jixi Ramesh with biography and quote, and an Ask Jixi-bot button.", "both"],
+  ["I1", "Our story page", ["Open Our story."], "Company introduction, photos, four preparation steps, founder Jixcy Ramesh with biography and quote, and an Ask Jixcy-bot button.", "both"],
   ["I2", "Contact details", ["Open Contact."], "Address: Shop no 1, Surbhi CHS, Jankalyan Nagar, Malad West, Mumbai 400064. Phones 73034 66463 and 70212 60518. Email, opening hours and a drawn map.", "both"],
   ["I3", "Contact form", ["Submit with a bad phone number and a 5-letter message. Then submit valid details."], "Errors are clear. Valid details show 'Thank you. We have received your message.' and the form clears.", "both"],
   ["I4", "Policy pages", ["Open Shipping, Cancellation, Returns and refunds, Privacy and Terms from the footer."], "Each page opens with its text and a side menu to the other policies.", "both"]
@@ -366,7 +366,7 @@ const AREAS = [
   ["Q2", "Phone layout", ["On a phone, visit every page."], "Nothing is cut off and there is no sideways scrolling. Buttons are easy to tap.", "phone"],
   ["Q3", "Data is kept", ["Place an order, add an address, then close and reopen the prototype in the same browser."], "Basket, account, orders and settings are still there.", "both"],
   ["Q4", "Speed", ["Move quickly between pages."], "Pages change instantly with no visible delay or flicker.", "both"],
-  ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "Consistent JIXCYFOODS branding, Jixi-bot spelled with a hyphen, clear English, no mention of Telegram or stock levels.", "both"],
+  ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "Consistent JIXCYFOODS branding, Jixcy-bot spelled with a hyphen, clear English, no mention of Telegram or stock levels.", "both"],
   ["Q6", "Screen reader and keyboard (optional)", ["If you use a screen reader or keyboard only, try the main shopping flow."], "Buttons and fields are announced with clear names, and the flow can be completed without a mouse.", "both"]
  ]}
 ];
