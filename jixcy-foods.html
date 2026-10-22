@@ -14,7 +14,8 @@
   /* Paint the saved palette and mode before the first frame, so there is no flash. */
   try {
     var t = JSON.parse(localStorage.getItem("jixcy-prototype-state") || "null");
-    if (t && t.theme) { document.documentElement.dataset.palette = t.theme.palette; document.documentElement.dataset.theme = t.theme.mode; }
+    if (t && t.theme && ["forest", "copper", "ochre"].indexOf(t.theme.palette) > -1) document.documentElement.dataset.palette = t.theme.palette;
+    if (t && t.theme && (t.theme.mode === "dark" || t.theme.mode === "light")) document.documentElement.dataset.theme = t.theme.mode;
   } catch (e) {}
 </script>
 <style>
@@ -1305,7 +1306,7 @@ function freshState() {
   const seededOrders = seedOrders(now);
   const seededUsers = seedUsers(seededOrders);
   return {
-    v: 1,
+    v: STATE_VERSION,
     catalog: clone(PRODUCTS).map(p => ({ ...p, visible: true, photo: null })),
     config: clone(DEFAULT_CONFIG),
     coupons: clone(COUPONS_SEED),
@@ -1323,22 +1324,49 @@ function freshState() {
   };
 }
 
+/* Saved-data version. Bump it whenever the shape of the saved state changes:
+   older saved data is then replaced with fresh sample data instead of crashing the page. */
+const STATE_VERSION = 2;
+
 function loadState() {
   let loaded = null;
   try {
     const raw = localStorage.getItem(STORE_KEY);
     if (raw) loaded = JSON.parse(raw);
   } catch (e) { loaded = null; }
-  if (loaded && loaded.v === 1 && Array.isArray(loaded.catalog)) {
-    S = loaded;
-    // Keep the catalogue in step with the built-in list if new products were added.
-    PRODUCTS.forEach(p => { if (!S.catalog.find(c => c.id === p.id)) S.catalog.push({ ...clone(p), visible: true, photo: null }); });
-    S.config = { ...clone(DEFAULT_CONFIG), ...S.config };
-    if (!S.nextOrder || S.nextOrder < 1100) S.nextOrder = 1100;
-  } else {
+  const usable = loaded && typeof loaded === "object" && loaded.v === STATE_VERSION && Array.isArray(loaded.catalog) && loaded.catalog.length > 0;
+  if (!usable) {
     S = freshState();
+    saveState();
+    return S;
   }
+  try { S = repairState(loaded); }
+  catch (e) { S = freshState(); saveState(); }
   return S;
+}
+
+/* Checks every part of saved data and fills in anything missing or malformed. */
+function repairState(s) {
+  const base = freshState();
+  const arr = (x, d) => (Array.isArray(x) ? x : d);
+  const obj = (x) => (x && typeof x === "object" && !Array.isArray(x) ? x : {});
+  const out = { ...base, ...obj(s), v: STATE_VERSION };
+  out.catalog = arr(s.catalog, []).filter(p => p && p.id && p.name && Array.isArray(p.sizes) && p.sizes.length && p.sizes.every(z => z && typeof z.p === "number"))
+    .map(p => ({ visible: true, photo: null, ...p }));
+  PRODUCTS.forEach(p => { if (!out.catalog.find(c => c.id === p.id)) out.catalog.push({ ...clone(p), visible: true, photo: null }); });
+  out.config = { ...clone(DEFAULT_CONFIG), ...obj(s.config) };
+  out.coupons = arr(s.coupons, base.coupons).filter(c => c && c.code);
+  out.users = arr(s.users, base.users).filter(u => u && u.id && u.name)
+    .map(u => ({ ...u, addresses: arr(u.addresses, []), wishlist: arr(u.wishlist, []), coinLedger: arr(u.coinLedger, []) }));
+  out.orders = arr(s.orders, base.orders).filter(o => o && o.id && o.pricing && o.payment && Array.isArray(o.items) && o.placedAt);
+  out.messages = arr(s.messages, base.messages).filter(m => m && m.id);
+  out.cart = arr(s.cart, []).filter(c => c && out.catalog.some(p => p.id === c.pid && p.sizes[c.si]) && c.qty > 0);
+  out.admin = { ...base.admin, ...obj(s.admin) };
+  const t = obj(s.theme);
+  out.theme = { palette: ["forest", "copper", "ochre"].includes(t.palette) ? t.palette : "forest", mode: t.mode === "dark" ? "dark" : "light" };
+  if (out.sessionUserId && !out.users.some(u => u.id === out.sessionUserId)) out.sessionUserId = null;
+  if (!out.nextOrder || out.nextOrder < 1100) out.nextOrder = 1100;
+  return out;
 }
 
 let saveWarned = false;
@@ -4257,12 +4285,27 @@ ACTIONS.adminReset = () => {
 </script>
 <script>
 /* ---- init.js ---- */
-/* Start-up: load the saved state, apply text overrides, paint the theme and draw the first page. */
+/* Start-up: load the saved state, apply text overrides, paint the theme and draw the first page.
+   If anything fails, show a recovery screen instead of a blank page. */
+function showRecovery(err) {
+  try { console.error("JIXCYFOODS start-up failed:", err); } catch (e) {}
+  const app = document.getElementById("app") || document.body;
+  app.innerHTML = '<section style="max-width:560px;margin:60px auto;padding:32px;border-radius:24px;background:#fffdf7;border:1px solid #e2dac6;font-family:Manrope,Arial,sans-serif;color:#14291d">'
+    + '<h1 style="font-family:Georgia,serif;font-size:1.8rem;margin:0 0 12px">The prototype needs a quick reset</h1>'
+    + '<p style="line-height:1.6;margin:0 0 20px">Saved demo data in this browser comes from an older version and could not be read. Resetting clears only the demo data for this prototype, then reloads the page.</p>'
+    + '<button id="jx-reset" style="min-height:48px;padding:0 24px;border:0;border-radius:999px;background:#1f5a3f;color:#fff;font-weight:800;font-size:1rem;cursor:pointer">Reset demo data and reload</button></section>';
+  const btn = document.getElementById("jx-reset");
+  if (btn) btn.addEventListener("click", () => { try { localStorage.removeItem("jixcy-prototype-state"); } catch (e) {} location.reload(); });
+}
 (function startJixcy() {
-  loadState();
-  applyOverrides();
-  applyTheme();
-  render();
+  try {
+    loadState();
+    applyOverrides();
+    applyTheme();
+    render();
+  } catch (err) {
+    showRecovery(err);
+  }
 })();
 
 </script>
