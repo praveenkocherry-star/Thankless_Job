@@ -4,113 +4,155 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JIXCYFOODS Prototype · UAT Form</title>
+<meta name="theme-color" content="#f5f5f7">
 <meta name="description" content="User acceptance testing form for the JIXCYFOODS e-commerce prototype. Answers save in this browser; download the results file and send it back.">
+<script>
+  /* Apply the saved or system light/dark choice before the first paint. */
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("jixcy-uat-theme"); } catch (e) {}
+    if (t !== "light" && t !== "dark") t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
 <style>
-:root{
-  --bg:#f6f2e8;--surface:#fffdf7;--surface2:#efe8d8;--ink:#14291d;--muted:#4f5f55;--line:#d9d0bb;
-  --brand:#1f5a3f;--on-brand:#ffffff;--accent:#b97a12;--pass:#1d6b3a;--pass-bg:#e2f6e8;--fail:#a1231a;--fail-bg:#fde5e3;
-  --blocked:#8a5a00;--blocked-bg:#fff1d6;--na:#4a4a4a;--na-bg:#ececec;--focus:#d99a2b;
+:root,html[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f5f5f7;--surface:#ffffff;--fill:#e8e8ed;--fill-on:#ffffff;--ink:#1d1d1f;--muted:#6e6e73;--line:#e5e5ea;
+  --accent:#0071e3;--accent-press:#0077ed;--on-accent:#ffffff;--link:#0066cc;
+  --pass:#1d7c37;--fail:#d70015;--blocked:#b25000;--na:#6e6e73;--focus:rgba(0,113,227,.45);
+  --glass:rgba(245,245,247,.8);--shadow:0 1px 2px rgba(0,0,0,.04),0 6px 22px rgba(0,0,0,.05);
 }
-@media (prefers-color-scheme:dark){
-  :root{--bg:#0d1813;--surface:#15241b;--surface2:#1d3125;--ink:#eee8da;--muted:#a9bcb0;--line:#2c4637;
-  --brand:#7cc79a;--on-brand:#0b1611;--accent:#f0b44c;--pass:#7fd9a0;--pass-bg:#173a25;--fail:#ff9d94;--fail-bg:#45201c;
-  --blocked:#f3c56a;--blocked-bg:#3e3013;--na:#d0d0d0;--na-bg:#2d2d2d;--focus:#f0b44c}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#000000;--surface:#1c1c1e;--fill:#2c2c2e;--fill-on:#636366;--ink:#f5f5f7;--muted:#98989d;--line:#38383a;
+  --accent:#0a84ff;--accent-press:#409cff;--on-accent:#ffffff;--link:#2997ff;
+  --pass:#30d158;--fail:#ff453a;--blocked:#ff9f0a;--na:#98989d;--focus:rgba(10,132,255,.5);
+  --glass:rgba(0,0,0,.72);--shadow:none;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-a{color:var(--brand)}
-h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2;margin:0}
-h1{font-size:clamp(1.7rem,4vw,2.4rem)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;letter-spacing:-.011em;-webkit-font-smoothing:antialiased}
+a{color:var(--link)}
+h1,h2,h3{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;letter-spacing:-.025em;line-height:1.1;margin:0;font-weight:700}
+h1{font-size:clamp(2.2rem,5vw,3.4rem);letter-spacing:-.035em}
 h2{font-size:1.5rem}
-.wrap{width:min(1100px,100% - 32px);margin-inline:auto}
+.wrap{width:min(1000px,100% - 32px);margin-inline:auto}
 .skip{position:absolute;left:-9999px}
-.skip:focus{left:16px;top:12px;z-index:50;background:var(--brand);color:var(--on-brand);padding:12px 18px;border-radius:10px;font-weight:700}
-:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-header.top{background:var(--brand);color:var(--on-brand);padding:28px 0 24px}
-header.top p{margin:8px 0 0;opacity:.95}
-.badge{display:inline-block;font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px;margin-bottom:10px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0}
+.skip:focus{left:16px;top:12px;z-index:60;background:var(--accent);color:var(--on-accent);padding:12px 18px;border-radius:12px;font-weight:600}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:10px}
+header.hero{padding:56px 0 18px}
+.kicker{font-size:1rem;font-weight:600;color:var(--accent);margin:0 0 8px}
+.sub{font-size:1.15rem;color:var(--muted);margin:14px 0 0;max-width:720px;line-height:1.45}
+.toolbar{position:sticky;top:0;z-index:30;background:var(--glass);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line);padding:10px 0}
+.toolbar .wrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.progress{flex:1;min-width:220px;font-size:.9rem;font-weight:500}
+.bar{height:6px;border-radius:999px;background:var(--fill);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .35s}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#saved{font-size:.88rem;color:var(--muted);margin:16px 0 0}
+.card{background:var(--surface);border-radius:22px;padding:26px;margin:18px 0;box-shadow:var(--shadow);border:1px solid var(--line)}
+html[data-theme="light"] .card{border-color:transparent}
+.card h2{margin-bottom:6px}
+.card ol{padding-left:20px;margin:12px 0 0;display:grid;gap:8px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .field{display:grid;gap:6px}
 .field.full{grid-column:1/-1}
-label,.lbl{font-weight:700}
-input[type=text],input[type=email],input[type=date],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:46px;width:100%}
+label,.lbl{font-weight:600;font-size:.9rem}
+input[type=text],input[type=email],input[type=date],select,textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid transparent;border-radius:12px;padding:10px 14px;min-height:46px;width:100%;transition:border-color .2s,box-shadow .2s,background .2s}
+html[data-theme="dark"] input[type=text],html[data-theme="dark"] input[type=email],html[data-theme="dark"] input[type=date],html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:var(--fill)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--focus);background:var(--surface)}
 textarea{min-height:76px;resize:vertical}
-.hint{font-size:.9rem;color:var(--muted)}
-.btn{font:inherit;font-weight:800;min-height:46px;padding:0 18px;border-radius:999px;border:1.5px solid var(--brand);background:var(--brand);color:var(--on-brand);cursor:pointer}
-.btn.ghost{background:transparent;color:var(--brand)}
-.btn.danger{border-color:var(--fail);background:transparent;color:var(--fail)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.toolbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 0;box-shadow:0 6px 16px -14px rgba(0,0,0,.5)}
-.toolbar .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
-.progress{flex:1;min-width:220px}
-.bar{height:10px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-top:4px}
-.bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .3s}
-#saved{font-size:.88rem;color:var(--muted)}
-.logins{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;background:var(--surface2);border-radius:12px;padding:14px 16px}
-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;background:var(--surface);border:1px solid var(--line);padding:1px 7px;border-radius:6px}
+.hint{font-size:.88rem;color:var(--muted)}
+.btn{font:inherit;font-weight:600;font-size:.95rem;min-height:44px;padding:0 20px;border-radius:980px;border:0;background:var(--accent);color:var(--on-accent);cursor:pointer;transition:background .2s,transform .15s}
+.btn:hover{background:var(--accent-press)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--fill);color:var(--ink)}
+.btn.ghost:hover{background:var(--line)}
+.btn.danger{background:transparent;color:var(--fail);box-shadow:inset 0 0 0 1px var(--fail)}
+.icon-toggle{display:inline-flex;align-items:center;gap:8px}
+.icon-toggle svg{width:18px;height:18px}
+.logins{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;background:var(--bg);border-radius:16px;padding:16px 18px;margin-top:4px}
+html[data-theme="dark"] .logins{background:var(--fill)}
+code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.9em;font-weight:600;background:var(--surface);border:1px solid var(--line);padding:1px 7px;border-radius:7px}
 nav.areas ol{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
-nav.areas a{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:12px;background:var(--surface2);text-decoration:none;color:var(--ink);font-weight:700}
-nav.areas a span{color:var(--muted);font-weight:600;white-space:nowrap}
-section.area{scroll-margin-top:80px}
-.area-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin:34px 0 4px}
-fieldset.tc{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:18px 20px 16px;margin:14px 0}
-fieldset.tc > legend{font-weight:800;font-size:1.08rem;padding:0 8px}
-fieldset.tc.is-fail{border-color:var(--fail);border-width:2px}
-.steps{margin:4px 0 8px}
-.steps ol{margin:4px 0 0;padding-left:22px}
-.exp{margin:6px 0 12px;padding:10px 12px;border-radius:10px;background:var(--surface2)}
-.devs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-fieldset.dev{border:1px dashed var(--line);border-radius:12px;padding:8px 12px 12px;margin:0}
-fieldset.dev legend{font-weight:800;padding:0 6px}
-.opts{display:flex;flex-wrap:wrap;gap:8px}
-.opt{position:relative}
+nav.areas a{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:14px;background:var(--bg);text-decoration:none;color:var(--ink);font-weight:500;font-size:.95rem}
+html[data-theme="dark"] nav.areas a{background:var(--fill)}
+nav.areas a:hover{color:var(--accent)}
+nav.areas a span{color:var(--muted);font-weight:500;white-space:nowrap;font-size:.86rem}
+section.area{scroll-margin-top:84px}
+.area-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin:44px 0 6px}
+.area-head h2{font-size:1.7rem}
+fieldset.tc{border:0;border-radius:20px;background:var(--surface);padding:20px 22px 18px;margin:12px 0;box-shadow:var(--shadow)}
+html[data-theme="dark"] fieldset.tc{border:1px solid var(--line)}
+fieldset.tc > legend{float:left;width:100%;font-weight:600;font-size:1.08rem;padding:0;margin-bottom:8px;letter-spacing:-.015em}
+fieldset.tc > legend + *{clear:both}
+fieldset.tc.is-fail{box-shadow:0 0 0 2px var(--fail)}
+.steps{margin:2px 0 8px;font-size:.96rem}
+.steps .lbl{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.steps ol{margin:4px 0 0;padding-left:20px}
+.exp{margin:6px 0 14px;padding:12px 14px;border-radius:14px;background:var(--bg);font-size:.96rem}
+html[data-theme="dark"] .exp{background:var(--fill)}
+.devs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+fieldset.dev{border:0;padding:0;margin:0;min-width:0}
+fieldset.dev legend{font-weight:600;font-size:.86rem;color:var(--muted);padding:0;margin-bottom:6px}
+.opts{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:12px;background:var(--fill);max-width:100%}
+.opt{position:relative;flex:1 1 auto}
 .opt input{position:absolute;opacity:0;width:1px;height:1px}
-.opt span{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);font-weight:700;cursor:pointer;background:var(--bg)}
-.opt input:focus-visible + span{outline:3px solid var(--focus);outline-offset:2px}
-.opt input[value=pass]:checked + span{background:var(--pass-bg);color:var(--pass);border-color:var(--pass)}
-.opt input[value=fail]:checked + span{background:var(--fail-bg);color:var(--fail);border-color:var(--fail)}
-.opt input[value=blocked]:checked + span{background:var(--blocked-bg);color:var(--blocked);border-color:var(--blocked)}
-.opt input[value=na]:checked + span{background:var(--na-bg);color:var(--na);border-color:var(--na)}
-.opt input[type=radio]:checked + span::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:8px}
-.cmt{margin-top:12px}
-.need{color:var(--fail);font-weight:700;font-size:.9rem}
-.rating{margin-top:16px;border:2px solid var(--brand);border-radius:16px;padding:16px 18px;background:var(--surface)}
-.rating legend{font-weight:800;padding:0 6px}
-.rate-opts .opt input:checked + span{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
-.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.sum{border-radius:12px;padding:12px 14px;background:var(--surface2)}
-.sum b{display:block;font-size:1.5rem;font-family:Georgia,serif}
-.pass-t{color:var(--pass)}.fail-t{color:var(--fail)}.blocked-t{color:var(--blocked)}
+.opt span{display:flex;align-items:center;justify-content:center;min-height:38px;padding:0 14px;border-radius:9px;font-weight:500;font-size:.9rem;color:var(--ink);cursor:pointer;white-space:nowrap;transition:background .15s,box-shadow .15s}
+.opt:hover span{color:var(--accent)}
+.opt input:focus-visible + span{outline:3px solid var(--focus);outline-offset:1px}
+.opt input:checked + span{background:var(--fill-on);box-shadow:0 1px 3px rgba(0,0,0,.14),0 3px 8px rgba(0,0,0,.06);font-weight:600}
+.opt input[value=pass]:checked + span{color:var(--pass)}
+.opt input[value=fail]:checked + span{color:var(--fail)}
+.opt input[value=blocked]:checked + span{color:var(--blocked)}
+.opt input[value=na]:checked + span{color:var(--na)}
+.rate-opts .opt input:checked + span{color:var(--accent)}
+.cmt{margin-top:14px}
+.need{color:var(--fail);font-weight:600;font-size:.86rem}
+.rating{margin-top:14px;border:0;border-radius:20px;padding:18px 20px;background:var(--surface);box-shadow:var(--shadow)}
+html[data-theme="dark"] .rating{border:1px solid var(--line)}
+.rating legend{float:left;width:100%;font-weight:600;padding:0;margin-bottom:10px}
+.rating legend + *{clear:both}
+.card .rating{box-shadow:none;background:var(--bg);padding:16px 18px}
+html[data-theme="dark"] .card .rating{background:var(--fill);border:0}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.sum{border-radius:16px;padding:14px 16px;background:var(--bg);font-size:.86rem;color:var(--muted)}
+html[data-theme="dark"] .sum{background:var(--fill)}
+.sum b{display:block;font-size:1.6rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin-top:2px}
+.pass-t{color:var(--pass)!important}.fail-t{color:var(--fail)!important}.blocked-t{color:var(--blocked)!important}
 .hidden{display:none!important}
-footer{padding:30px 0 60px;color:var(--muted);font-size:.9rem}
+footer{padding:30px 0 60px;color:var(--muted);font-size:.86rem}
 @media (max-width:720px){
-  .toolbar{position:static}
   body{font-size:16px}
+  header.hero{padding-top:34px}
+  .toolbar{position:static}
   .grid,.devs{grid-template-columns:1fr}
-  .card{padding:18px}
-  fieldset.tc{padding:14px 14px 12px}
-  .logins{grid-template-columns:1fr}
+  .card{padding:20px;border-radius:20px}
+  fieldset.tc{padding:16px 16px 14px;border-radius:18px}
+  .logins{grid-template-columns:1fr;gap:4px 0}
+  .logins .lbl{margin-top:8px}
+  .opts{display:flex}
+  .opt span{padding:0 10px}
 }
 @media print{
   .toolbar,.no-print,nav.areas{display:none!important}
   body{background:#fff;color:#000;font-size:12pt}
   .hidden{display:block!important}
-  fieldset.tc,.card,.rating{break-inside:avoid;background:#fff}
+  fieldset.tc,.card,.rating{break-inside:avoid;background:#fff;box-shadow:none;border:1px solid #ccc}
   .opt input:not(:checked) + span{display:none}
-  .opt span{border:1px solid #000}
 }
 </style>
+
 </head>
 <body>
 <a class="skip" href="#tests-start">Skip to the tests</a>
-<header class="top">
+<header class="hero">
   <div class="wrap">
-    <span class="badge">User acceptance testing</span>
-    <h1>JIXCYFOODS prototype: UAT form</h1>
-    <p>Test the prototype file <strong>jixcy-foods.html</strong> on a phone and on a computer, record each result here, then download your results file and send it back.</p>
+    <p class="kicker">JIXCYFOODS · User acceptance testing</p>
+    <h1>Prototype UAT form.</h1>
+    <p class="sub">Test <strong>jixcy-foods.html</strong> on a phone and on a computer, record each result here, then download your results file and send it back.</p>
   </div>
 </header>
 
@@ -127,6 +169,7 @@ footer{padding:30px 0 60px;color:var(--muted);font-size:.9rem}
         <option value="open">Not yet answered</option>
         <option value="issues">Failed or blocked</option>
       </select>
+      <button class="btn ghost icon-toggle" type="button" id="btn-theme" aria-pressed="false"></button>
       <button class="btn" type="button" id="btn-csv">Download results</button>
     </div>
   </div>
@@ -219,25 +262,25 @@ footer{padding:30px 0 60px;color:var(--muted);font-size:.9rem}
 /* ---------------- Test plan ----------------
    Each test: [id, title, steps[], expected, devices]  devices: "both" | "phone" | "desktop" */
 const AREAS = [
- { id: "H", name: "Home, themes and navigation", tests: [
-  ["H1", "Home page opens", ["Open jixcy-foods.html."], "The page loads within a few seconds. A green announcement bar about the festive Jix coin boost appears at the top, then the JIXCYFOODS logo, menu and hero headline. No blank screen.", "both"],
-  ["H2", "Home page sections", ["Scroll from top to bottom of the home page."], "In order: hero with a line of five oil bottles, Shop by category, The oil lineup, Why JIXCY tiles, The pantry, Skin and hair care, Loved most, founder quote, customer reviews, questions and answers, a final call to action and the footer. No placeholder or dummy text.", "both"],
-  ["H3", "Hero and product images", ["Look at the hero and at several product cards."], "Clean, realistic packs: each oil has its own bottle shape, and every label shows JIXCY and the exact product name. Nothing looks cut off or blurred.", "both"],
-  ["H4", "Product rows", ["On the home page, scroll sideways through The oil lineup, The pantry, and Skin and hair care."], "Each row scrolls smoothly and cards line up neatly. On a computer, the rows show four cards at a time.", "both"],
-  ["H5", "Light and dark mode", ["Press the moon icon in the header, browse a few pages, then press the sun icon.", "Reload the page while in dark mode."], "The whole site switches between light and dark, text stays easy to read, and the chosen mode is kept after reloading. There is no separate Themes button.", "both"],
-  ["H6", "Questions and answers", ["On the home page, open and close several questions in the questions and answers section."], "Each question expands to show its answer and collapses again.", "both"],
-  ["H7", "Category tiles", ["Press each of the four category tiles (Oils; Ghee, masala and honey; Grains and pulses; Skin and hair care)."], "The shop opens filtered to that category.", "both"],
-  ["H8", "Footer links", ["In the footer, open each Shop and Help link.", "Tap a phone number and the email address."], "Each link opens the right page. The phone number starts a call (on phone) and the email opens your mail app.", "both"],
-  ["H9", "Bottom dock on phone", ["On a phone, look at the bottom of the screen on every page."], "A dock with six medium icons: Home, Account, Orders, Cart (a four-wheeled trolley), Ask Jixcy-bot and Admin. The current section is highlighted. Every button works.", "phone"],
-  ["H10", "Desktop menu", ["On a computer, use the top menu: Home, Shop, Our story, Contact, Admin, and the account, bot and basket icons."], "Each opens the right page or panel, and the current page is highlighted.", "desktop"],
+ { id: "H", name: "Home, categories and navigation", tests: [
+  ["H1", "Home page opens", ["Open jixcy-foods.html."], "The page loads within a few seconds with a slim announcement bar about the festive Jixcoin boost, the JIXCYFOODS header and the headline. No blank screen.", "both"],
+  ["H2", "Short home page", ["Scroll from top to bottom of the home page."], "About three screens: the headline with a line of five oil bottles, four category tiles, Loved most, The JIXCY promise (five promises), links to Our story and Help, then the footer. No repeated product rows and no placeholder text.", "both"],
+  ["H3", "First screen and product images", ["On a computer, look at the first screen without scrolling. Then look at several product cards."], "The first screen shows the headline, the bottle line-up and all four category tiles. Each oil has its own bottle shape, and every label shows JIXCY and the exact product name.", "both"],
+  ["H4", "Category pages", ["Open Oils, Pantry, Grains and Pulses, and Skin and Hair Care from the header (computer) or the category tiles (phone)."], "Each opens its own page with a title, a short introduction, a picture of its products, the product cards, and a More to explore row linking to the other three categories.", "both"],
+  ["H5", "Light and dark mode", ["Press the moon icon in the header, browse a few pages, then press the sun icon.", "Reload the page while in dark mode."], "The whole site switches between a white and grey look with blue accents and a dark look. Text stays easy to read, and the chosen mode is kept after reloading.", "both"],
+  ["H6", "Questions and answers", ["Open Help. Open and close several questions."], "Each question expands to show its answer and collapses again.", "both"],
+  ["H7", "Category tiles", ["On the home page, press each of the four category tiles."], "Each tile opens that category page.", "both"],
+  ["H8", "Footer links", ["In the footer, open each link under Shop and Help.", "Tap a phone number and the email address."], "Shop links open the four category pages. Help links open Help and FAQs, Contact us, Our story and each policy page. The phone number starts a call (on phone) and the email opens your mail app.", "both"],
+  ["H9", "Bottom dock on phone", ["On a phone, look at the bottom of the screen on every page."], "A dock with six medium icons: Home, Account, Orders, Cart (a four-wheeled trolley), Ask Jixbot and Admin. The current section is highlighted. Every button works.", "phone"],
+  ["H10", "Desktop menu", ["On a computer, use the top menu: Shop, Oils, Pantry, Grains, Skin and Hair, Our story, Help, Admin, and the search, moon, Jixbot, account and basket icons."], "Each opens the right page or panel, and the current page is highlighted. On smaller laptops the four category links hide to keep the header tidy; they stay reachable from Shop and the home tiles.", "desktop"],
   ["H11", "Page not found", ["Change the end of the address to #/xyz and press Enter."], "A friendly 'Page not found' message appears with buttons back to the home page and the shop.", "both"],
   ["H12", "Keyboard use", ["On a computer, press Tab repeatedly from the top of the page."], "A 'Skip to content' link appears first. Every button and link can be reached and shows a clear focus outline.", "desktop"]
  ]},
  { id: "S", name: "Shop and search", tests: [
   ["S1", "Product listing", ["Open Shop."], "20 cards in four category sections. Single products (oils, ghee, honey, jaggery, hair oil) and grouped families (for example Handmade Soap with 11 fragrances) each show a realistic pack, rating, price and an Add or Choose button.", "both"],
   ["S2", "Search in the shop", ["In the shop search box, type ghee, then soap, then a word that matches nothing."], "Results update as you type. For no matches, a message appears with a Clear filters button that works.", "both"],
-  ["S3", "Header search", ["On a computer, type millet in the header search box and press Enter."], "The shop opens with matching results.", "desktop"],
-  ["S4", "Category filter chips", ["In the shop, press each category chip, then All products."], "The list filters to that category, and All products shows everything again.", "both"],
+  ["S3", "Header search", ["On a computer, press the magnifying glass in the header, then type millet."], "The shop opens with the search box ready, and results update as you type.", "desktop"],
+  ["S4", "Category filter in the shop", ["In Shop, press All, Oils, Pantry, Grains and Pulses, and Skin and Hair Care."], "The list filters to that category, and All shows everything again in four sections.", "both"],
   ["S5", "Sorting", ["Use the sort menu: Top rated, Price low to high, Price high to low, Name A to Z."], "The product order changes to match each choice.", "both"],
   ["S6", "Quick add", ["Press Add on a single product card, such as Groundnut Oil."], "A confirmation message appears and the basket count in the header (and dock on phone) goes up by one.", "both"],
   ["S7", "Wishlist when signed out", ["While signed out, press the heart on a product card."], "You are asked to sign in and taken to the sign-in page.", "both"],
@@ -268,7 +311,7 @@ const AREAS = [
   ["R4", "Create an account", ["Choose Create an account, enter a new number, enter OTP 1234, then your name and email."], "The account is created and you are signed in. The message mentions the welcome bonus on the first order.", "both"],
   ["R5", "Wrong OTP, resend and change number", ["Enter OTP 0000. Then press Resend OTP and Change number."], "Wrong OTP shows an error. Resend shows a confirmation. Change number returns to the number step.", "both"],
   ["R6", "Duplicate registration", ["Try to create an account with 98201 23456 (the demo customer)."], "A message says an account already exists and suggests signing in.", "both"],
-  ["R7", "Demo customer", ["On the sign-in page, press 'Use the demo customer account'."], "You are signed in as Ananya Desai with saved addresses, past orders, Jix coins and a wishlist.", "both"],
+  ["R7", "Demo customer", ["On the sign-in page, press 'Use the demo customer account'."], "You are signed in as Ananya Desai with saved addresses, past orders, Jixcoins and a wishlist.", "both"],
   ["R8", "Phone masking", ["Look at mobile numbers on the account page, addresses and checkout."], "Numbers are masked, for example 98XXX XX456.", "both"],
   ["R9", "Sign out", ["In Your account, press Sign out."], "You are signed out and returned to the home page.", "both"]
  ]},
@@ -282,17 +325,17 @@ const AREAS = [
   ["A7", "Remove an address", ["Press Remove, then confirm."], "A confirmation appears first. After confirming, the address disappears.", "both"],
   ["A8", "Add address during checkout", ["At checkout, press 'Add a new address' and save a valid Mumbai address."], "The new address is saved and selected for the order.", "both"]
  ]},
- { id: "O", name: "Coupons, bonuses and Jix coins", tests: [
+ { id: "O", name: "Coupons, bonuses and Jixcoins", tests: [
   ["O1", "Welcome bonus", ["Create a new account (R4) and go to checkout with any item."], "A ₹75 welcome bonus is applied automatically, shown as its own line.", "both"],
   ["O2", "Revisit bonus", ["As the demo customer (who has past orders), go to checkout."], "A ₹35 revisit bonus is applied automatically.", "both"],
   ["O3", "Coupon JIXCY20", ["At checkout, enter jixcy20 and press Apply. Try once with a small basket and once with a large one (over ₹1,500)."], "20% off the products total, never more than ₹300. Shown as its own line.", "both"],
   ["O4", "Other coupons", ["Try FRESH50, MUMBAI100, OLDCODE and a made-up code."], "FRESH50 gives ₹50 off; MUMBAI100 gives ₹100 off. OLDCODE says it is no longer active. A made-up code says it is not valid.", "both"],
   ["O5", "Remove coupon", ["After applying a coupon, press Remove."], "The coupon line disappears and totals go back.", "both"],
-  ["O6", "Discount order and delivery", ["Apply a coupon with the bonus and some Jix coins on an order below ₹500."], "Discounts apply in order: coupon, then bonus, then coins. Delivery is never reduced by any of them.", "both"],
+  ["O6", "Discount order and delivery", ["Apply a coupon with the bonus and some Jixcoins on an order below ₹500."], "Discounts apply in order: coupon, then bonus, then coins. Delivery is never reduced by any of them.", "both"],
   ["O7", "Coins below ₹500", ["As the demo customer, check out with a products total of ₹499 or less."], "A note says coins can be used on product totals above ₹499 and how much more to add.", "both"],
   ["O8", "Redeem coins", ["Raise the products total above ₹499. Use the slider, type a number, then press 'Use max'."], "The coins discount updates each time and shows how much it saves. Used coins never exceed your balance.", "both"],
-  ["O9", "Coins earned", ["Look at the order summary at checkout."], "It shows the Jix coins you will earn: one per rupee paid for products (delivery not included), and roughly what they are worth.", "both"],
-  ["O10", "Coins page", ["Open Your account, Jix coins."], "Shows the balance, its value, the rules (including the festive boost value of 8 paise) and a list of coin activity.", "both"]
+  ["O9", "Coins earned", ["Look at the order summary at checkout."], "It shows the Jixcoins you will earn: one per rupee paid for products (delivery not included), and roughly what they are worth.", "both"],
+  ["O10", "Coins page", ["Open Your account, Jixcoins."], "Shows the balance, its value, the rules (including the festive boost value of 8 paise) and a list of coin activity.", "both"]
  ]},
  { id: "D", name: "Delivery charges", tests: [
   ["D1", "Below ₹500, by weight", ["Put one 1 litre Groundnut Oil (₹410, about 0.92 kg) in the basket and check out."], "Delivery is ₹60 (1 kg).", "both"],
@@ -302,7 +345,7 @@ const AREAS = [
   ["D5", "Preparation time note", ["Read section 3 of checkout."], "It explains the order is prepared after you place it, dispatched within 48 hours, then courier transit, so you get the full shelf life.", "both"]
  ]},
  { id: "C", name: "Checkout and payments", tests: [
-  ["C1", "Checkout layout", ["Open checkout with items in the basket."], "Step bar, then four sections: Delivery address, Offers and Jix coins, Delivery and preparation, Payment. An order summary with the total to pay.", "both"],
+  ["C1", "Checkout layout", ["Open checkout with items in the basket."], "Step bar, then four sections: Delivery address, Offers and Jixcoins, Delivery and preparation, Payment. An order summary with the total to pay.", "both"],
   ["C2", "UPI payment", ["Choose UPI and press Pay. Enter 'abc', then name@okaxis."], "A payment window shows the amount. 'abc' is rejected. A valid ID shows 'Approve the payment request in your UPI app', then the order confirmation opens.", "both"],
   ["C3", "Card payment", ["Choose card. Try a short card number, then 4111 1111 1111 1111, 12/29, 123. Enter OTP 0000, then 1234."], "Card errors are clear. An OTP step appears. Wrong OTP is rejected; 1234 completes the payment and the order opens.", "both"],
   ["C4", "Net banking", ["Choose Net banking, pick a bank, press Pay."], "'Redirecting to your bank' appears, then the order is placed.", "both"],
@@ -315,33 +358,34 @@ const AREAS = [
  { id: "X", name: "Orders, cancellation and refunds", tests: [
   ["X1", "Orders list", ["As the demo customer, open Orders."], "Orders are listed newest first, each with status, total, payment method and a View order button.", "both"],
   ["X2", "Order tracker", ["Open an order."], "A 4-step tracker (Placed, Preparing, Dispatched, Delivered) with dates, including when dispatch is due.", "both"],
-  ["X3", "Cancel within 12 hours", ["Place a new order. In Orders, press Cancel order, read the hours left, and confirm."], "A confirmation appears. The order changes to Cancelled, and any Jix coins earned on it are removed from your balance.", "both"],
+  ["X3", "Cancel within 12 hours", ["Place a new order. In Orders, press Cancel order, read the hours left, and confirm."], "A confirmation appears. The order changes to Cancelled, and any Jixcoins earned on it are removed from your balance.", "both"],
   ["X4", "No cancel after 12 hours", ["Look at older orders, such as the delivered ones."], "No Cancel button appears on orders older than 12 hours.", "both"],
   ["X5", "Report a problem within 48 hours", ["As the demo customer, find order JX-1091 (delivered recently) and press 'Report a problem'. If the 48 hour window has closed, reset demo data in the back office and sign in as the demo customer again."], "A form opens with the hours left, a reason list, a details box, a photo upload and a note that refunds go to the original payment method only.", "both"],
   ["X6", "Photo is required", ["Submit the claim without a photo. Then try a photo over 1 MB, then a small photo."], "No photo: error. Too large: error. Small photo: the claim is submitted.", "both"],
   ["X7", "Claim status", ["Open the order after submitting the claim."], "A 'Refund claim' box shows status Requested and your reason.", "both"],
   ["X8", "No claim after 48 hours", ["Look at order JX-1092 (delivered long ago)."], "No 'Report a problem' option appears.", "both"],
-  ["X9", "Refund outcome", ["After the back office approves your claim (Z6), open the order and the Jix coins page."], "The claim shows Approved, the refund goes to the original payment method, coins earned on that order are reversed, and any coins you used on it are restored.", "both"]
+  ["X9", "Refund outcome", ["After the back office approves your claim (Z6), open the order and the Jixcoins page."], "The claim shows Approved, the refund goes to the original payment method, coins earned on that order are reversed, and any coins you used on it are restored.", "both"]
  ]},
  { id: "U", name: "Your account", tests: [
-  ["U1", "Account overview", ["Open Your account."], "A greeting, tiles for Jix coins, orders, default address and wishlist (each opens its page) and recent orders.", "both"],
+  ["U1", "Account overview", ["Open Your account."], "A greeting, tiles for Jixcoins, orders, default address and wishlist (each opens its page) and recent orders.", "both"],
   ["U2", "Edit personal details", ["Open Personal details. Enter an invalid email, then valid details, and save."], "Invalid email is rejected. Valid changes save and show across the site. The mobile number is shown masked and cannot be edited here.", "both"],
   ["U3", "Wishlist", ["Save two products with the heart, open Wishlist, remove one."], "Saved products appear and removal works.", "both"]
  ]},
- { id: "J", name: "Ask Jixcy-bot", tests: [
-  ["J1", "Open and close the bot", ["Open Ask Jixcy-bot (floating button on computer, dock button on phone). Close it with the X, and on computer also with Escape."], "A chat panel opens with a greeting and quick question buttons, and closes again.", "both"],
+ { id: "J", name: "Ask Jixbot", tests: [
+  ["J1", "Open and close the bot", ["Open Ask Jixbot (floating button on computer, dock button on phone). Close it with the X, and on computer also with Escape."], "A chat panel opens with a greeting and quick question buttons, and closes again.", "both"],
   ["J2", "Quick questions", ["Press each quick question button."], "Each gives a correct, relevant answer.", "both"],
   ["J3", "Delivery charges", ["Type: What is the delivery charge?"], "Answer: free above ₹499, otherwise ₹60 per kg rounded up, delivery always payable.", "both"],
   ["J4", "PIN check", ["Type 400064, then 110001."], "400064 is confirmed as Malad West. 110001 is reported as outside the delivery area.", "both"],
-  ["J5", "Policies and offers", ["Ask about cancelling, refunds, Jix coins, coupons, payment methods, preparation time and the founder."], "Each answer matches the rules in this form and on the site.", "both"],
+  ["J5", "Policies and offers", ["Ask about cancelling, refunds, Jixcoins, coupons, payment methods, preparation time and the founder."], "Each answer matches the rules in this form and on the site.", "both"],
   ["J6", "Product help", ["Ask the bot to suggest a product, for example 'suggest an oil for cooking'."], "It suggests a few products with prices, and each Add button puts that product in the basket.", "both"],
   ["J7", "Contact details", ["Ask: How can I contact you?"], "It gives the Malad West shop address, the phone numbers 7303466463 and 7021260518, and the opening hours.", "both"]
  ]},
- { id: "I", name: "Story, contact and policies", tests: [
-  ["I1", "Our story page", ["Open Our story."], "Company introduction, photos, four preparation steps, founder Jixcy Ramesh with biography and quote, and an Ask Jixcy-bot button.", "both"],
+ { id: "I", name: "Story, help, contact and policies", tests: [
+  ["I1", "Our story page", ["Open Our story."], "Company introduction, photos, four preparation steps, founder Jixcy Ramesh with biography and quote, customer reviews, and an Ask Jixbot button.", "both"],
   ["I2", "Contact details", ["Open Contact."], "Address: Shop no 1, Surbhi CHS, Jankalyan Nagar, Malad West, Mumbai 400064. Phones 73034 66463 and 70212 60518. Email, opening hours and a drawn map.", "both"],
   ["I3", "Contact form", ["Submit with a bad phone number and a 5-letter message. Then submit valid details."], "Errors are clear. Valid details show 'Thank you. We have received your message.' and the form clears.", "both"],
-  ["I4", "Policy pages", ["Open Shipping, Cancellation, Returns and refunds, Privacy and Terms from the footer."], "Each page opens with its text and a side menu to the other policies.", "both"]
+  ["I4", "Policy pages", ["Open Delivery and preparation, Cancellation, Returns and refunds, Privacy and Terms of sale from the Help page cards and from the footer."], "Each page opens with its text and a side menu to the other policies.", "both"],
+  ["I5", "Help page", ["Open Help from the header, the footer, or the link at the bottom of the home page."], "Topic cards for delivery, cancellation, refunds, privacy and terms, an Ask Jixbot card that opens the chat, the questions and answers, and a Talk to us panel with both phone numbers, the email and a Send us a message button.", "both"]
  ]},
  { id: "Z", name: "Back office (admin)", tests: [
   ["Z1", "Admin sign-in", ["Open Admin. Read the screen. Try a wrong password, then admin and jixcy2026."], "The demo login is shown with a 'Prototype only' note. Wrong password is rejected. Correct details open the Dashboard.", "both"],
@@ -359,7 +403,7 @@ const AREAS = [
   ["Z13", "Reports", ["Open Reports and switch between Weekly, Monthly and Yearly. Download the Sales CSV."], "Sales chart and table, orders by status, top products, payment method split, delivery by PIN area and repeat buyers. There are no stock or inventory reports anywhere.", "both"],
   ["Z14", "Coupons", ["Add coupon FREE100 (Percent, 100, cap 5000). Change a coupon value. Switch FRESH50 off and try it at checkout. Remove a coupon."], "Each change saves. A switched-off code is refused at checkout. Removed codes no longer work.", "both"],
   ["Z15", "Coins and offers", ["Change the revisit bonus to 40, the boosted coin value to 0.10, and switch the boost off and on. Save and check checkout."], "Checkout and the coins page use the new values.", "both"],
-  ["Z16", "Website text", ["Change the announcement text, home headline, a question and answer, and a policy paragraph. Untick 'Customer reviews'. Save and view the site."], "Every text change shows on the site. The reviews section is hidden. The layout does not change.", "both"],
+  ["Z16", "Website text", ["Change the announcement text, home headline, a question and answer, and a policy paragraph. Untick Customer reviews and Questions and answers. Save and view the site."], "Every text change shows on the site. Reviews disappear from Our story and questions disappear from Help. The layout does not change.", "both"],
   ["Z17", "Messages", ["Open Messages. Find the message you sent in I3. Add a note, set status Replied and save. Use the filter."], "Your message is listed. The note and status save. The filter shows only matching messages.", "both"],
   ["Z18", "Settings", ["Try changing the password with a wrong current password, then a short one, then correctly. Sign out and sign in with the new password. Finally press Reset demo data."], "Errors are clear. The new password works. Reset restores sample data and signs you out of the back office.", "both"]
  ]},
@@ -368,7 +412,7 @@ const AREAS = [
   ["Q2", "Phone layout", ["On a phone, visit every page."], "Nothing is cut off and there is no sideways scrolling. Buttons are easy to tap.", "phone"],
   ["Q3", "Data is kept", ["Place an order, add an address, then close and reopen the prototype in the same browser."], "Basket, account, orders and settings are still there.", "both"],
   ["Q4", "Speed", ["Move quickly between pages."], "Pages change instantly with no visible delay or flicker.", "both"],
-  ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "JIXCYFOODS branding everywhere, Jixcy-bot spelled with a hyphen, Jix coins for the rewards, founder Jixcy Ramesh, clear English, no mention of Telegram or stock levels.", "both"],
+  ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "JIXCYFOODS branding everywhere. The bot is Jixbot and the rewards are Jixcoins (one word each). The founder is Jixcy Ramesh. Clear English, and no mention of Telegram or stock levels.", "both"],
   ["Q6", "Screen reader and keyboard (optional)", ["If you use a screen reader or keyboard only, try the main shopping flow."], "Buttons and fields are announced with clear names, and the flow can be completed without a mouse.", "both"]
  ]}
 ];
@@ -613,6 +657,27 @@ $("#btn-clear").addEventListener("click", () => {
   restore(); updateProgress();
   $("#saved").textContent = "All answers cleared.";
 });
+
+
+/* ---------------- Light and dark mode ---------------- */
+const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+function paintThemeButton() {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  const b = $("#btn-theme");
+  b.innerHTML = (dark ? SUN : MOON) + `<span>${dark ? "Light mode" : "Dark mode"}</span>`;
+  b.setAttribute("aria-pressed", String(dark));
+  b.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", dark ? "#000000" : "#f5f5f7");
+}
+$("#btn-theme").addEventListener("click", () => {
+  const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("jixcy-uat-theme", next); } catch (e) {}
+  paintThemeButton();
+});
+paintThemeButton();
 
 /* ---------------- Start ---------------- */
 render(); load(); restore(); updateProgress();
