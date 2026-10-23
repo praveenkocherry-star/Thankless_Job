@@ -221,10 +221,10 @@ footer{padding:30px 0 60px;color:var(--muted);font-size:.9rem}
 const AREAS = [
  { id: "H", name: "Home, themes and navigation", tests: [
   ["H1", "Home page opens", ["Open jixcy-foods.html."], "The page loads within a few seconds. A green announcement bar about the festive Jix coin boost appears at the top, then the JIXCYFOODS logo, menu and hero headline. No blank screen.", "both"],
-  ["H2", "Home page sections", ["Scroll from top to bottom of the home page."], "In order: hero, four categories, trust badges, bestsellers, 'Made to order' steps, Jix coins band with an example, founder Jixcy Ramesh, customer reviews, questions and answers, a final call to action and the footer. No placeholder or dummy text.", "both"],
-  ["H3", "Themes sheet", ["Press the Themes button (on phone, the round colour button at the top)."], "A sheet opens with three colour icons: Forest, Copper and Ochre. Only the selected palette shows its name under the icon. There is a separate light or dark switch.", "both"],
-  ["H4", "Change palette", ["Open Themes and choose Copper, then Ochre, then Forest.", "Reload the page."], "Colours change across the whole site each time. After reloading, the last chosen palette is kept.", "both"],
-  ["H5", "Light and dark mode", ["Press the moon icon in the header, then the sun icon.", "Try dark mode with each palette."], "The site switches between light and dark. Text stays easy to read in every palette and mode.", "both"],
+  ["H2", "Home page sections", ["Scroll from top to bottom of the home page."], "In order: hero with a line of five oil bottles, Shop by category, The oil lineup, Why JIXCY tiles, The pantry, Skin and hair care, Loved most, founder quote, customer reviews, questions and answers, a final call to action and the footer. No placeholder or dummy text.", "both"],
+  ["H3", "Hero and product images", ["Look at the hero and at several product cards."], "Clean, realistic packs: each oil has its own bottle shape, and every label shows JIXCY and the exact product name. Nothing looks cut off or blurred.", "both"],
+  ["H4", "Product rows", ["On the home page, scroll sideways through The oil lineup, The pantry, and Skin and hair care."], "Each row scrolls smoothly and cards line up neatly. On a computer, the rows show four cards at a time.", "both"],
+  ["H5", "Light and dark mode", ["Press the moon icon in the header, browse a few pages, then press the sun icon.", "Reload the page while in dark mode."], "The whole site switches between light and dark, text stays easy to read, and the chosen mode is kept after reloading. There is no separate Themes button.", "both"],
   ["H6", "Questions and answers", ["On the home page, open and close several questions in the questions and answers section."], "Each question expands to show its answer and collapses again.", "both"],
   ["H7", "Category tiles", ["Press each of the four category tiles (Oils; Ghee, masala and honey; Grains and pulses; Skin and hair care)."], "The shop opens filtered to that category.", "both"],
   ["H8", "Footer links", ["In the footer, open each Shop and Help link.", "Tap a phone number and the email address."], "Each link opens the right page. The phone number starts a call (on phone) and the email opens your mail app.", "both"],
@@ -234,13 +234,14 @@ const AREAS = [
   ["H12", "Keyboard use", ["On a computer, press Tab repeatedly from the top of the page."], "A 'Skip to content' link appears first. Every button and link can be reached and shows a clear focus outline.", "desktop"]
  ]},
  { id: "S", name: "Shop and search", tests: [
-  ["S1", "Product listing", ["Open Shop."], "All products show with a clean pack image on a white background, rating, short description, 'from' price and an Add button. The page shows the number of products.", "both"],
+  ["S1", "Product listing", ["Open Shop."], "20 cards in four category sections. Single products (oils, ghee, honey, jaggery, hair oil) and grouped families (for example Handmade Soap with 11 fragrances) each show a realistic pack, rating, price and an Add or Choose button.", "both"],
   ["S2", "Search in the shop", ["In the shop search box, type ghee, then soap, then a word that matches nothing."], "Results update as you type. For no matches, a message appears with a Clear filters button that works.", "both"],
   ["S3", "Header search", ["On a computer, type millet in the header search box and press Enter."], "The shop opens with matching results.", "desktop"],
   ["S4", "Category filter chips", ["In the shop, press each category chip, then All products."], "The list filters to that category, and All products shows everything again.", "both"],
   ["S5", "Sorting", ["Use the sort menu: Top rated, Price low to high, Price high to low, Name A to Z."], "The product order changes to match each choice.", "both"],
-  ["S6", "Quick add", ["Press Add on any product card."], "A confirmation message appears and the basket count in the header (and dock on phone) goes up by one.", "both"],
-  ["S7", "Wishlist when signed out", ["While signed out, press the heart on a product card."], "You are asked to sign in and taken to the sign-in page.", "both"]
+  ["S6", "Quick add", ["Press Add on a single product card, such as Groundnut Oil."], "A confirmation message appears and the basket count in the header (and dock on phone) goes up by one.", "both"],
+  ["S7", "Wishlist when signed out", ["While signed out, press the heart on a product card."], "You are asked to sign in and taken to the sign-in page.", "both"],
+  ["S8", "Family cards", ["Find Handmade Soap, Face Wash, Spices and Masalas, Millets and Unpolished Dals in the shop. Press Choose on one."], "Each family shows several packs, colour dots for its varieties and the number of choices. Choose opens the product page for that family.", "both"]
  ]},
  { id: "P", name: "Product page", tests: [
   ["P1", "Product details", ["Open any product from the shop."], "Breadcrumb, name, rating, description, price with size and weight, size options, quantity control, Add to basket button and wishlist heart are all shown.", "both"],
@@ -249,7 +250,8 @@ const AREAS = [
   ["P4", "Typed quantity limits", ["Type 150 in the quantity box and move out of the box.", "Type 3."], "150 changes to 100 (the maximum). 3 is accepted.", "both"],
   ["P5", "Add to basket", ["Choose a size and quantity 3, then press Add to basket."], "You go to the basket and see the product with the chosen size and quantity 3.", "both"],
   ["P6", "Made-to-order and delivery notes", ["Read the notes under the quantity."], "A delivery note (free above ₹499, otherwise ₹60 per kg, Mumbai only) and a made-to-order note (dispatched within 48 hours, for full shelf life) are shown.", "both"],
-  ["P7", "Related products", ["Scroll to the bottom of a product page and open a suggested product."], "'You may also like' shows other products from the same category, and they open correctly.", "both"]
+  ["P7", "Related products", ["Scroll to the bottom of a product page and open a suggested product."], "'You may also like' shows other products from the same category, and they open correctly.", "both"],
+  ["P8", "Variety picker", ["Open Handmade Soap. Choose Lavender, then Charcoal, using the named buttons and the small pictures under the main image."], "The pack image, variety name, price and description change each time. The chosen variety is highlighted, and Add to basket adds that exact variety.", "both"]
  ]},
  { id: "B", name: "Basket", tests: [
   ["B1", "Empty basket", ["Remove everything from the basket, or open it when empty."], "A clear 'Your basket is empty' message with a Start shopping button.", "both"],
@@ -366,7 +368,7 @@ const AREAS = [
   ["Q2", "Phone layout", ["On a phone, visit every page."], "Nothing is cut off and there is no sideways scrolling. Buttons are easy to tap.", "phone"],
   ["Q3", "Data is kept", ["Place an order, add an address, then close and reopen the prototype in the same browser."], "Basket, account, orders and settings are still there.", "both"],
   ["Q4", "Speed", ["Move quickly between pages."], "Pages change instantly with no visible delay or flicker.", "both"],
-  ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "Consistent JIXCYFOODS branding, Jixcy-bot spelled with a hyphen, clear English, no mention of Telegram or stock levels.", "both"],
+  ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "JIXCYFOODS branding everywhere, Jixcy-bot spelled with a hyphen, Jix coins for the rewards, founder Jixcy Ramesh, clear English, no mention of Telegram or stock levels.", "both"],
   ["Q6", "Screen reader and keyboard (optional)", ["If you use a screen reader or keyboard only, try the main shopping flow."], "Buttons and fields are announced with clear names, and the flow can be completed without a mouse.", "both"]
  ]}
 ];

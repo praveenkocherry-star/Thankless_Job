@@ -1,21 +1,20 @@
 <!doctype html>
-<html lang="en-IN" data-palette="forest" data-theme="light">
+<html lang="en-IN" data-palette="jixcy" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>JIXCYFOODS · Wood Pressed Oils, Ghee and Millets</title>
 <meta name="description" content="Wood pressed oils, desi ghee, stone ground masalas, millets and pulses. Made to order in Malad West, Mumbai. Prototype for review.">
-<meta name="theme-color" content="#f6f2e8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f5a3f'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' font-weight='700' text-anchor='middle' fill='%23f6f2e8'%3EJ%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2314734a'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' font-weight='700' text-anchor='middle' fill='%23f6f2e8'%3EJ%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>
   /* Paint the saved palette and mode before the first frame, so there is no flash. */
   try {
     var t = JSON.parse(localStorage.getItem("jixcy-prototype-state") || "null");
-    if (t && t.theme && ["forest", "copper", "ochre"].indexOf(t.theme.palette) > -1) document.documentElement.dataset.palette = t.theme.palette;
-    if (t && t.theme && (t.theme.mode === "dark" || t.theme.mode === "light")) document.documentElement.dataset.theme = t.theme.mode;
+        if (t && t.theme && (t.theme.mode === "dark" || t.theme.mode === "light")) document.documentElement.dataset.theme = t.theme.mode;
   } catch (e) {}
 </script>
 <style>
@@ -910,6 +909,466 @@ h1[tabindex="-1"]:focus,main:focus{outline:none}
 }
 .auth > .auth-card:only-child{grid-column:1 / -1;justify-self:center;width:min(560px,100%)}
 
+/* ==========================================================================
+   JIXCY: refined interface layer.
+   One clean look with light and dark modes. Loaded last, so it sets the
+   final word on typography, spacing, controls and every page.
+   ========================================================================== */
+
+/* ---------- Tokens ---------- */
+html[data-palette="jixcy"][data-theme="light"] {
+  --bg:#ffffff; --surface:#ffffff; --surface2:#f5f5f7; --surface3:#e8e8ed; --ink:#1d1d1f; --muted:#6e6e73; --line:#e1e1e6;
+  --brand:#14734a; --brand-press:#0f603d; --on-brand:#ffffff; --accent:#b8740c; --accent-ink:#ffffff; --link:#0e6b43;
+  --glass:rgba(255,255,255,.72); --glass-line:rgba(0,0,0,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 28px rgba(0,0,0,.06); --shadow-lg:0 2px 6px rgba(0,0,0,.05),0 24px 60px rgba(0,0,0,.12);
+  --hero:linear-gradient(135deg,#0f5e3b 0%,#14734a 55%,#2b8c5e 100%);
+  --tile-dark:#0b0b0c; --tile-dark-ink:#f5f5f7; --stage:linear-gradient(180deg,#f7f7f9 0%,#eeeef2 100%);
+  --swatch-a:#14734a; --swatch-b:#b8740c; --swatch-c:#ffffff;
+  color-scheme:light;
+}
+html[data-palette="jixcy"][data-theme="dark"] {
+  --bg:#000000; --surface:#1c1c1e; --surface2:#141416; --surface3:#2c2c2e; --ink:#f5f5f7; --muted:#a1a1a6; --line:#2e2e32;
+  --brand:#34c27c; --brand-press:#2aa86a; --on-brand:#04140b; --accent:#ffb340; --accent-ink:#1d1300; --link:#4fd18f;
+  --glass:rgba(22,22,24,.72); --glass-line:rgba(255,255,255,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 28px rgba(0,0,0,.45); --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+  --hero:linear-gradient(135deg,#0b3a25 0%,#105a39 60%,#1f7a4f 100%);
+  --tile-dark:#161618; --tile-dark-ink:#f5f5f7; --stage:linear-gradient(180deg,#1c1c1e 0%,#141416 100%);
+  --swatch-a:#34c27c; --swatch-b:#ffb340; --swatch-c:#000000;
+  color-scheme:dark;
+}
+
+/* ---------- Base type ---------- */
+body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.47;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;background:var(--bg);color:var(--ink)}
+h1,h2,h3,h4,.h-xl,.h-lg,.h-md{font-family:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-weight:700;letter-spacing:-.025em;line-height:1.08;color:var(--ink)}
+.h-xl{font-size:clamp(2.6rem,6vw,4.8rem)}
+.h-lg{font-size:clamp(1.9rem,3.6vw,2.8rem)}
+.h-md{font-size:clamp(1.25rem,2vw,1.55rem);letter-spacing:-.02em}
+.lead{font-size:1.12rem;line-height:1.5;color:var(--muted);letter-spacing:-.01em}
+.muted{color:var(--muted)}
+.eyebrow{display:inline-block;font-size:.95rem;font-weight:600;letter-spacing:-.01em;text-transform:none;color:var(--accent)}
+.eyebrow::before{display:none!important}
+a{color:var(--link)}
+::selection{background:color-mix(in srgb,var(--brand) 25%,transparent)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 55%,transparent);outline-offset:2px;border-radius:10px}
+.wrap{width:min(1180px,100% - 44px)}
+.section{padding:72px 0}
+.section.tight{padding:40px 0}
+
+/* ---------- Buttons ---------- */
+.btn{font-family:inherit;font-weight:600;font-size:1rem;letter-spacing:-.01em;min-height:44px;padding:0 22px;border-radius:980px;border:1px solid transparent;box-shadow:none;transition:background-color .2s,transform .15s,opacity .2s;gap:8px}
+.btn:active{transform:scale(.97)}
+.btn-brand,.btn-accent{background:var(--brand);color:var(--on-brand);border-color:transparent;box-shadow:none}
+.btn-brand:hover,.btn-accent:hover{background:var(--brand-press)}
+.btn-ghost{background:transparent;color:var(--link);border-color:color-mix(in srgb,var(--brand) 55%,transparent)}
+.btn-ghost:hover{background:color-mix(in srgb,var(--brand) 8%,transparent)}
+.btn-soft{background:var(--surface2);color:var(--ink);border-color:transparent}
+.btn-soft:hover{background:var(--surface3)}
+.btn-danger{background:#d70015;color:#fff}
+.btn-sm{min-height:34px;padding:0 15px;font-size:.88rem}
+.btn-lg{min-height:52px;padding:0 30px;font-size:1.06rem}
+.btn[disabled]{opacity:.38;cursor:not-allowed;transform:none}
+.icon-btn{width:40px;height:40px;border-radius:50%;background:transparent;border:0;color:var(--ink);box-shadow:none}
+.icon-btn:hover{background:var(--surface2)}
+.icon-btn.on{color:#e0245e}
+.ax-link{display:inline-flex;align-items:center;gap:2px;font-weight:500;font-size:1.02rem;color:var(--link);text-decoration:none;min-height:44px}
+.ax-link:hover{text-decoration:underline}
+.ax-link .ico{width:16px;height:16px}
+
+/* ---------- Cards, inputs, chips ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:none}
+.card.pad{padding:28px}
+.input,.field input,.field select,.field textarea,select,input[type=search],input[type=text],input[type=email],input[type=tel],input[type=number],textarea{font-family:inherit;font-size:1rem;color:var(--ink);background:var(--surface2);border:1px solid transparent;border-radius:12px;min-height:46px;box-shadow:none;transition:border-color .2s,background-color .2s,box-shadow .2s}
+.input:focus,.field input:focus,.field select:focus,.field textarea:focus,select:focus,input:focus,textarea:focus{outline:none;background:var(--surface);border-color:var(--brand);box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 18%,transparent)}
+.field label,.label{font-size:.88rem;font-weight:600;color:var(--ink);letter-spacing:-.005em}
+.notice{border-radius:14px;background:var(--surface2);border:0;color:var(--ink)}
+.notice.warn{background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.notice.bad{background:color-mix(in srgb,#ff3b30 12%,var(--surface))}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{font-family:inherit;font-weight:500;font-size:.92rem;min-height:36px;padding:0 16px;border-radius:980px;background:transparent;border:0;color:var(--ink);box-shadow:none}
+.chip:hover{background:var(--surface2)}
+.chip.on{background:var(--ink);color:var(--bg)}
+.ax-seg{display:inline-flex;padding:4px;border-radius:980px;background:var(--surface2);margin:18px 0 8px;max-width:100%;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+.ax-seg::-webkit-scrollbar{display:none}
+.ax-seg .chip{white-space:nowrap}
+.ax-seg .chip.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12),0 3px 10px rgba(0,0,0,.06)}
+html[data-theme="dark"] .ax-seg .chip.on{background:var(--surface3)}
+.tag{background:var(--surface);color:var(--accent);border-radius:980px;font-weight:600;font-size:.74rem;letter-spacing:0;text-transform:none;padding:4px 10px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.stars{color:var(--ink);font-weight:600;font-size:.88rem}
+.stars .ico{color:#ff9f0a;fill:#ff9f0a}
+.crumbs{font-size:.84rem;color:var(--muted);margin-bottom:18px}
+.crumbs a{color:var(--muted);text-decoration:none}
+.crumbs a:hover{color:var(--ink)}
+
+/* ---------- Announcement and header ---------- */
+.announce{background:var(--surface2);color:var(--ink);font-size:.86rem;font-weight:500;min-height:40px;padding:6px 16px;gap:14px;border:0}
+.announce .btn{min-height:28px!important;padding:0 12px;font-size:.8rem;background:transparent;color:var(--link);border:0}
+.announce .btn:hover{text-decoration:underline;background:transparent}
+.topbar{position:sticky;top:0;z-index:60;background:var(--glass);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--glass-line);box-shadow:none}
+.topbar-inner{min-height:56px;gap:14px}
+.logo{gap:10px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border-radius:9px;background:var(--brand);color:var(--on-brand);font-family:inherit;font-size:1rem;font-weight:800;box-shadow:none}
+.logo-word{font-family:inherit;font-size:1.02rem;font-weight:800;letter-spacing:.06em;color:var(--ink)}
+.logo-word small{display:none}
+.nav{gap:2px}
+.nav a{font-size:.88rem;font-weight:500;color:var(--ink);opacity:.8;padding:8px 12px;border-radius:980px;background:transparent!important}
+.nav a:hover,.nav a.on{opacity:1;background:var(--surface2)!important}
+.nav a.on{font-weight:600}
+.nav .admin-link{color:var(--ink)}
+.top-search{background:var(--surface2);border:0;border-radius:980px;min-height:36px;padding:0 14px}
+.top-search input{background:transparent!important;border:0!important;box-shadow:none!important;min-height:34px;font-size:.88rem}
+.actions{gap:4px}
+.actions .btn-ghost{border-color:transparent;color:var(--ink);font-weight:500;font-size:.88rem}
+.actions .icon-btn.on{color:var(--ink)}
+.badge-count{background:var(--brand);color:var(--on-brand);border:2px solid var(--bg);font-weight:700}
+
+/* ---------- Product cards ---------- */
+.product-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.pcard{position:relative;background:var(--surface2);border:0;border-radius:24px;overflow:hidden;box-shadow:none;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.pcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.pcard .pimg{display:grid;place-items:center;aspect-ratio:1/1;background:var(--stage);padding:16px;position:relative;border-radius:0}
+.pcard .pimg svg,.pcard .pimg img{width:86%;height:86%;object-fit:contain;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.pcard:hover .pimg svg,.pcard:hover .pimg img{transform:scale(1.04)}
+.pcard .tag{position:absolute;left:14px;top:14px;z-index:2}
+.pcard .wish{position:absolute;right:12px;top:12px;z-index:3;background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.1);width:36px;height:36px}
+.pcard .pbody{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1;background:var(--surface2)}
+.pcard h3{font-size:1.06rem;font-weight:600;letter-spacing:-.015em;line-height:1.25}
+.pcard h3 a{color:var(--ink);text-decoration:none}
+.pcard .short{font-size:.88rem;color:var(--muted);line-height:1.4;margin:0}
+.pmeta{display:flex;gap:10px;align-items:center;font-size:.8rem;color:var(--muted)}
+.pmeta .stars{font-size:.8rem}
+.pfoot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px;gap:8px}
+.price{font-size:1.06rem;font-weight:600;letter-spacing:-.01em;color:var(--ink);font-family:inherit}
+.price small{display:block;font-size:.72rem;font-weight:500;color:var(--muted);letter-spacing:0}
+.pstack{position:relative;width:100%;height:100%;display:block}
+.pstack > span{position:absolute;bottom:4%;width:56%;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.pstack > span svg{width:100%!important;height:auto!important}
+.pstack.n1 > span{left:22%}
+.pstack.n2 > span:nth-child(1){left:6%;transform:rotate(-5deg)}
+.pstack.n2 > span:nth-child(2){left:38%;transform:rotate(4deg)}
+.pstack.n3 > span:nth-child(1){left:0;transform:rotate(-7deg) scale(.9);z-index:1}
+.pstack.n3 > span:nth-child(2){left:22%;z-index:3}
+.pstack.n3 > span:nth-child(3){left:44%;transform:rotate(7deg) scale(.9);z-index:2}
+.pcard:hover .pstack.n3 > span:nth-child(1){transform:rotate(-10deg) scale(.9) translateX(-4%)}
+.pcard:hover .pstack.n3 > span:nth-child(3){transform:rotate(10deg) scale(.9) translateX(4%)}
+.swatches{display:flex;gap:5px;align-items:center;margin-top:2px}
+.swatches i{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.swatches em{font-style:normal;font-size:.74rem;color:var(--muted);margin-left:2px}
+
+/* ---------- Home ---------- */
+.ax-hero{position:relative;text-align:center;padding:72px 0 0;background:linear-gradient(180deg,var(--surface2) 0%,var(--bg) 100%);overflow:hidden}
+.ax-hero-in{max-width:880px}
+.ax-kicker{font-size:1.05rem;font-weight:600;color:var(--accent);margin:0 0 10px}
+.ax-display{font-size:clamp(2.8rem,7vw,5.4rem);line-height:1.02;letter-spacing:-.035em;font-weight:800}
+.ax-display em{font-style:normal;background:linear-gradient(90deg,var(--brand),#7cc576 55%,var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ax-sub{font-size:clamp(1.05rem,1.6vw,1.3rem);line-height:1.45;color:var(--muted);max-width:680px;margin:18px auto 0;letter-spacing:-.012em}
+.ax-cta{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:28px}
+.ax-lineup{display:flex;justify-content:center;align-items:flex-end;gap:0;margin:34px auto 0;max-width:820px;height:clamp(220px,32vw,360px);position:relative}
+.ax-lineup > span{display:block;height:100%;flex:0 0 auto;margin:0 -2.2%;filter:drop-shadow(0 22px 26px rgba(0,0,0,.14))}
+.ax-lineup > span svg{height:100%;width:auto}
+.ax-lineup .ax-l0,.ax-lineup .ax-l4{height:74%}
+.ax-lineup .ax-l1,.ax-lineup .ax-l3{height:88%}
+.ax-lineup .ax-l2{height:100%;z-index:2}
+.ax-facts{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:30px 0 10px;margin:0 auto;text-align:left}
+.ax-facts li{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-radius:18px;background:var(--surface);border:1px solid var(--line);font-size:.86rem;color:var(--muted)}
+.ax-facts li .ico{width:22px;height:22px;color:var(--brand);flex-shrink:0;margin-top:2px}
+.ax-facts strong{display:block;color:var(--ink);font-size:.95rem;font-weight:600}
+.ax-section{padding:64px 0 0}
+.ax-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.ax-h1{font-size:clamp(2.4rem,5vw,3.8rem);font-weight:800;letter-spacing:-.035em}
+.ax-h2{font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;max-width:880px}
+.ax-h2 span,.ax-h3 span{color:var(--muted);font-weight:600}
+.ax-h3{font-size:clamp(1.4rem,2.4vw,1.9rem);font-weight:700;letter-spacing:-.025em}
+.ax-page-head{padding:56px 0 6px}
+.ax-page-head .ax-sub{margin:12px 0 0;text-align:left}
+.ax-cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ax-cat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:18px 16px 22px;border-radius:24px;background:var(--surface2);text-decoration:none;color:var(--ink);transition:transform .3s,box-shadow .3s}
+.ax-cat:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.ax-cat-art{display:flex;align-items:flex-end;justify-content:center;height:130px;width:100%;margin-bottom:8px}
+.ax-cat-art > span{width:34%;margin:0 -4%}
+.ax-cat-art > span:nth-child(2){width:42%;z-index:2}
+.ax-cat-art svg{width:100%;height:auto}
+.ax-cat strong{font-size:1.02rem;font-weight:600}
+.ax-cat span{font-size:.84rem;color:var(--muted)}
+.ax-rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 60px)/4);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 18px;scrollbar-width:thin}
+.ax-rail > .pcard{scroll-snap-align:start}
+.ax-bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.ax-tile{border-radius:26px;padding:28px;background:var(--surface2);display:flex;flex-direction:column;gap:8px;min-height:220px}
+.ax-tile p{color:var(--muted);margin:0;font-size:.98rem;line-height:1.45}
+.ax-tile h3{font-size:clamp(1.5rem,2.6vw,2.1rem);line-height:1.1;letter-spacing:-.03em}
+.ax-tile-kicker{font-size:.86rem;font-weight:600;color:var(--accent)}
+.ax-big{font-size:clamp(2.6rem,4.4vw,3.6rem)!important;font-weight:800;letter-spacing:-.04em;color:var(--ink)!important;line-height:1;margin:6px 0 4px!important}
+.ax-span2{grid-column:span 2}
+.ax-tile-dark{background:var(--tile-dark);color:var(--tile-dark-ink)}
+.ax-tile-dark h3{color:#fff}
+.ax-tile-dark p{color:#a1a1a6}
+.ax-tile-gold{background:linear-gradient(145deg,#fff4dc,#ffe2a8)}
+.ax-tile-gold .ax-big,.ax-tile-gold p{color:#3b2a06!important}
+.ax-tile-gold .ax-tile-kicker{color:#8a5a00}
+html[data-theme="dark"] .ax-tile-gold{background:linear-gradient(145deg,#3a2a08,#5c4210)}
+html[data-theme="dark"] .ax-tile-gold .ax-big,html[data-theme="dark"] .ax-tile-gold p{color:#ffe6b0!important}
+html[data-theme="dark"] .ax-tile-gold .ax-tile-kicker{color:#ffb340}
+.ax-steps{list-style:none;display:flex;gap:10px;flex-wrap:wrap;padding:0;margin:auto 0 0}
+.ax-steps li{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;border-radius:980px;background:rgba(255,255,255,.08);font-size:.88rem;color:#f5f5f7}
+.ax-steps b{width:24px;height:24px;border-radius:50%;background:#34c27c;color:#04140b;display:grid;place-items:center;font-size:.8rem}
+.ax-founder{display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;padding:48px;border-radius:30px;background:var(--tile-dark);color:#f5f5f7}
+.ax-founder-mark{width:120px;height:120px;border-radius:50%;background:var(--hero);display:grid;place-items:center;font-size:2.4rem;font-weight:800;color:#fff;letter-spacing:.02em}
+.ax-quote{font-size:clamp(1.4rem,2.6vw,2.1rem);font-weight:600;letter-spacing:-.025em;line-height:1.25;margin:10px 0 16px;color:#fff}
+.ax-founder-name{font-weight:600;color:#fff;margin:0}
+.ax-founder-name span{display:block;color:#a1a1a6;font-weight:500;font-size:.92rem}
+.ax-link-light{color:#4fd18f}
+.ax-reviews{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ax-reviews figure{margin:0;border-radius:22px;overflow:hidden;background:var(--surface2);aspect-ratio:3/4}
+.ax-reviews img{width:100%;height:100%;object-fit:cover}
+.faq-wrap{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:40px;align-items:start}
+.ax-faq{background:transparent;border:0;padding:0}
+.accordion details{border-bottom:1px solid var(--line);padding:4px 0}
+.accordion summary{font-weight:600;font-size:1.04rem;padding:18px 0;min-height:44px;letter-spacing:-.012em}
+.accordion details p{color:var(--muted);margin:0 0 18px;line-height:1.55}
+.ax-final{text-align:center;padding:72px 24px;border-radius:30px;background:var(--surface2);margin-bottom:24px}
+.ax-final p{color:var(--muted);font-size:1.1rem;margin:12px 0 0}
+
+/* ---------- Shop ---------- */
+.ax-shop-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:22px}
+.ax-shop-bar .search-box{flex:1;min-width:240px;position:relative}
+.ax-shop-bar .search-box .ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.ax-shop-bar .search-box input{padding-left:42px;border-radius:980px;width:100%}
+.ax-shop-bar select{width:auto;border-radius:980px;padding:0 16px}
+.results-count{font-size:.88rem;color:var(--muted);margin:10px 0 6px}
+.ax-shop-sec{padding:28px 0 8px}
+.ax-shop-sec .ax-head{margin-bottom:16px}
+
+/* ---------- Product page ---------- */
+.ax-pd-wrap{padding-top:22px}
+.pd{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:start}
+.pd-gallery{position:sticky;top:84px}
+.pd-stage{border-radius:30px;background:var(--stage);aspect-ratio:1/1;display:grid;place-items:center;padding:6%;border:0;box-shadow:none}
+.pd-stage svg,.pd-stage img{width:92%;height:92%;object-fit:contain}
+.ax-thumbs{display:flex;gap:10px;margin-top:14px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin}
+.ax-thumbs a{flex:0 0 74px;height:74px;border-radius:16px;background:var(--surface2);display:grid;place-items:center;padding:6px;border:2px solid transparent;transition:border-color .2s}
+.ax-thumbs a.on{border-color:var(--brand)}
+.ax-thumbs svg{width:100%;height:100%}
+.pd-info h1{font-size:clamp(2rem,3.4vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin-top:6px}
+.ax-pd-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ax-badge{font-size:.84rem;font-weight:600;color:var(--accent)}
+.ax-variant{font-size:1.2rem;font-weight:500;color:var(--muted);margin:4px 0 0;letter-spacing:-.015em}
+.ax-desc{margin-top:14px}
+.pd-price{font-family:inherit;font-size:1.7rem;font-weight:700;letter-spacing:-.02em;margin-top:18px;color:var(--ink)}
+.pd-price span{font-size:.92rem;font-weight:500;color:var(--muted);margin-left:8px;letter-spacing:0}
+.ax-opt{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
+.ax-opt .label{display:block;margin-bottom:12px;font-size:1rem}
+.ax-opt .label .muted{font-weight:500;margin-left:6px}
+.ax-swatches{display:flex;flex-wrap:wrap;gap:8px}
+.ax-swatch{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px 6px 8px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-size:.9rem;font-weight:500;transition:border-color .2s,box-shadow .2s}
+.ax-swatch:hover{border-color:var(--muted)}
+.ax-swatch.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+.ax-swatch i{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+.sizes{display:flex;flex-wrap:wrap;gap:8px}
+.size{min-width:96px;min-height:58px;padding:8px 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;display:flex;flex-direction:column;justify-content:center;gap:2px;box-shadow:none;transition:border-color .2s,box-shadow .2s}
+.size b{font-weight:600;font-size:.98rem}
+.size span{font-size:.84rem;color:var(--muted)}
+.size:hover{border-color:var(--muted)}
+.size.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+.buy{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.buy .btn-lg{flex:1;min-width:220px}
+.qty{background:var(--surface2);border:0;border-radius:980px;padding:4px;min-height:44px}
+.qty button{width:38px;height:38px;border-radius:50%;background:transparent;border:0;color:var(--ink)}
+.qty button:hover:not([disabled]){background:var(--surface)}
+.qty input{background:transparent!important;border:0!important;box-shadow:none!important;width:52px;text-align:center;font-weight:600;min-height:38px}
+.qty-hint{font-size:.8rem;color:var(--muted);margin-top:10px}
+.ax-info{list-style:none;padding:0;margin:26px 0 0;border-radius:20px;background:var(--surface2);overflow:hidden}
+.ax-info li{display:flex;gap:14px;padding:16px 18px;border-bottom:1px solid var(--line);align-items:flex-start}
+.ax-info li:last-child{border-bottom:0}
+.ax-info .ico{width:22px;height:22px;color:var(--brand);flex-shrink:0;margin-top:2px}
+.ax-info strong{display:block;font-size:.95rem;font-weight:600}
+.ax-info span{font-size:.88rem;color:var(--muted)}
+.ax-more{margin-top:18px;border-top:1px solid var(--line)}
+.ax-more summary{display:flex;justify-content:space-between;align-items:center;font-weight:600;padding:16px 0;min-height:44px;cursor:pointer;list-style:none}
+.ax-more summary::-webkit-details-marker{display:none}
+.ax-more ul{margin:0 0 10px;padding-left:20px;color:var(--muted);display:grid;gap:6px}
+
+/* ---------- Basket, checkout, orders, account ---------- */
+.line{border-bottom:1px solid var(--line)}
+.line .thumb{background:var(--stage);border-radius:16px;border:0}
+.summary-line{font-size:.96rem}
+.summary-line.total{font-family:inherit;font-weight:700;letter-spacing:-.02em}
+.summary-line.good{color:var(--brand)}
+.checkout-block{border-radius:22px}
+.checkout-block h2{font-family:inherit;font-weight:700;letter-spacing:-.02em}
+.checkout-block h2 .num{background:var(--ink);color:var(--bg);font-family:inherit}
+.step-bar span{border-radius:980px;font-weight:500}
+.step-bar span.on{background:var(--ink);color:var(--bg)}
+.addr,.pay{border-radius:16px;border:1px solid var(--line);background:var(--surface);box-shadow:none}
+.addr.on,.pay.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+.label-chip{border-radius:980px;font-weight:600;letter-spacing:.02em}
+.pay .gw{border-radius:980px;background:var(--surface2);color:var(--muted)}
+.coin-box{border-radius:16px;background:var(--surface2);border:0}
+.sticky-side{border-radius:22px}
+.order-card,.addr-card{border-radius:20px}
+.kpi{border-radius:20px;background:var(--surface2);border:0}
+.kpi strong{font-family:inherit;font-weight:800;letter-spacing:-.03em}
+.acct-nav{border-radius:22px}
+.acct-nav a.on{background:var(--surface2);color:var(--ink);font-weight:600}
+.avatar{background:var(--brand);color:var(--on-brand);font-family:inherit}
+.track .st .dot{font-family:inherit}
+.big-num{font-family:inherit;font-weight:800;letter-spacing:-.035em}
+.ledger-row .pos{color:var(--brand)}
+.pill{font-weight:600;letter-spacing:0}
+.empty{border-radius:26px;background:var(--surface2);border:0}
+.empty .big{background:var(--surface);color:var(--muted)}
+.bands{gap:14px}
+.band{border-radius:18px;background:var(--surface2);border:0}
+.band .icon-btn{background:var(--surface);color:var(--brand)}
+.story-img{border-radius:26px;border:0}
+.map-card{border-radius:26px}
+.policy-nav a.on{background:var(--surface2)}
+
+/* ---------- Modals and toasts ---------- */
+.scrim{background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.modal{border-radius:26px;background:var(--surface);border:0;box-shadow:var(--shadow-lg)}
+.modal-head h2{font-family:inherit;font-weight:700;letter-spacing:-.02em}
+.toast{border-radius:16px;background:rgba(29,29,31,.92);color:#f5f5f7;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);font-weight:500}
+html[data-theme="dark"] .toast{background:rgba(58,58,60,.92)}
+
+/* ---------- Jixcy-bot ---------- */
+.bot-fab{background:var(--ink);color:var(--bg);border:0;box-shadow:var(--shadow-lg);font-weight:600;min-height:52px;padding:0 20px 0 10px}
+.bot-fab .orb{background:var(--brand);color:var(--on-brand)}
+.bot-panel{border-radius:26px;background:var(--glass);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);border:1px solid var(--glass-line);box-shadow:var(--shadow-lg)}
+.bot-head{border-bottom:1px solid var(--glass-line);background:transparent}
+.bot-head strong{font-family:inherit;font-weight:700}
+.bot-head .orb{background:var(--brand);color:var(--on-brand)}
+.bot-body .msg{border-radius:20px;font-size:.95rem;line-height:1.4;box-shadow:none;border:0}
+.bot-body .msg.bot{background:var(--surface3);color:var(--ink);border-bottom-left-radius:6px}
+.bot-body .msg.me{background:var(--brand);color:var(--on-brand);border-bottom-right-radius:6px}
+.bot-quick button{border-radius:980px;background:var(--surface);border:1px solid var(--line);color:var(--ink);font-weight:500}
+.bot-foot{border-top:1px solid var(--glass-line);background:transparent}
+.bot-foot input{border-radius:980px}
+.bot-foot .btn{width:40px;min-height:40px;padding:0;border-radius:50%}
+.msg-actions button,.msg-actions .chip{border-radius:980px;background:var(--surface);border:1px solid var(--line);color:var(--link);font-weight:600}
+
+/* ---------- Phone tab bar and mini basket ---------- */
+.dock{background:var(--glass);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--glass-line);box-shadow:none;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.dock a,.dock button{color:var(--muted);font-weight:500;font-size:.66rem;letter-spacing:0;min-height:52px;gap:2px;border-radius:12px}
+.dock a.on,.dock button.on{color:var(--brand)}
+.dock-ico{width:auto;height:30px;border-radius:0;background:transparent!important}
+.dock a.on .dock-ico,.dock button.on .dock-ico{background:transparent!important;color:var(--brand)}
+.dock-ico .ico{width:25px;height:25px}
+.dock .admin-dock{color:var(--muted)}
+.dock .admin-dock.on{color:var(--brand)}
+.mini-cart{background:var(--ink);color:var(--bg);border:0;border-radius:18px;box-shadow:var(--shadow-lg);bottom:78px}
+.mini-cart *{color:inherit}
+
+/* ---------- Footer ---------- */
+.footer{background:var(--surface2);border-top:0;color:var(--muted);font-size:.84rem}
+.footer h4{font-family:inherit;font-size:.84rem;font-weight:600;color:var(--ink);letter-spacing:0;text-transform:none}
+.footer a{color:var(--muted);text-decoration:none}
+.footer a:hover{color:var(--ink);text-decoration:underline}
+.footer .logo-word{font-size:.95rem}
+.footer-bottom{border-top:1px solid var(--line);font-size:.78rem}
+
+/* ---------- Back office ---------- */
+.admin-tabs{background:var(--surface2);border:0;padding:4px}
+.admin-tabs a{font-weight:500;color:var(--muted);font-size:.88rem;padding:9px 15px}
+.admin-tabs a.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+html[data-theme="dark"] .admin-tabs a.on{background:var(--surface3)}
+.tbl th{background:var(--surface2);text-transform:none;letter-spacing:0;font-size:.8rem;font-weight:600}
+.table-wrap{border-radius:18px;border:1px solid var(--line)}
+.bar{background:var(--brand)}
+.htrack i{background:var(--brand)}
+.seg-tabs{background:var(--surface2)}
+.seg-tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+html[data-theme="dark"] .seg-tabs button.on{background:var(--surface3)}
+.demo-creds{border-radius:16px}
+.prod-thumb{background:var(--stage);border:0}
+
+/* ---------- Motion ---------- */
+@media (prefers-reduced-motion:no-preference){
+  #app > section{animation:axIn .5s cubic-bezier(.2,.8,.2,1) both}
+  #app > section:nth-child(2){animation-delay:.04s}
+  #app > section:nth-child(3){animation-delay:.08s}
+}
+@keyframes axIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .pcard,.pcard .pimg svg,.ax-cat,.pstack > span{transition:none}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1100px){
+  .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ax-rail{grid-auto-columns:calc((100% - 40px)/3)}
+  .ax-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:980px){
+  .pd{grid-template-columns:1fr;gap:26px}
+  .pd-gallery{position:static}
+  .ax-bento{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ax-cats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ax-reviews{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .faq-wrap{grid-template-columns:1fr;gap:20px}
+}
+@media (max-width:760px){
+  body{font-size:16px}
+  .wrap{width:calc(100% - 32px)}
+  .ax-hero{padding-top:40px}
+  .ax-display{font-size:clamp(2.4rem,11vw,3.2rem)}
+  .ax-lineup{height:210px;margin-top:22px}
+  .ax-facts{grid-template-columns:1fr 1fr;gap:8px;padding-top:20px}
+  .ax-facts li{padding:12px;font-size:.78rem;gap:8px}
+  .ax-facts strong{font-size:.86rem}
+  .ax-section{padding-top:44px}
+  .ax-head{margin-bottom:14px}
+  .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .ax-rail{grid-auto-columns:64%;gap:12px;margin:0 -16px;padding:4px 16px 16px;scroll-padding:16px}
+  .pcard{border-radius:20px}
+  .pcard .pbody{padding:12px 13px 14px}
+  .pcard h3{font-size:.95rem}
+  .pcard .short{display:none}
+  .pmeta{font-size:.74rem}
+  .pfoot{flex-wrap:wrap}
+  .pfoot .btn-sm{min-height:34px;padding:0 12px}
+  .price{font-size:.98rem}
+  .ax-cats{gap:10px}
+  .ax-cat{padding:14px 10px 16px;border-radius:20px}
+  .ax-cat-art{height:96px}
+  .ax-bento{grid-template-columns:1fr;gap:12px}
+  .ax-span2{grid-column:auto}
+  .ax-tile{padding:22px;min-height:0;border-radius:22px}
+  .ax-founder{grid-template-columns:1fr;padding:28px;gap:18px;text-align:left}
+  .ax-founder-mark{width:72px;height:72px;font-size:1.5rem}
+  .ax-final{padding:44px 18px;border-radius:24px}
+  .ax-page-head{padding-top:30px}
+  .ax-shop-bar select{flex:1}
+  .pd-stage{border-radius:24px}
+  .pd-info h1{font-size:2rem}
+  .buy .btn-lg{min-width:0;flex:1 1 100%;order:3}
+  .size{min-width:84px}
+  .topbar-inner{min-height:52px}
+  .announce{font-size:.78rem;flex-wrap:wrap;justify-content:center;text-align:center}
+}
+@media (max-width:380px){
+  .product-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .ax-facts{grid-template-columns:1fr}
+}
+
+/* ---------- Refinements after review ---------- */
+.ax-lineup > span{margin:0 -6.5%}
+.ax-h3 span{display:block;font-size:1rem;font-weight:500;letter-spacing:-.01em;margin-top:6px}
+@media (max-width:760px){
+  .announce{flex-wrap:nowrap;justify-content:space-between;text-align:left;font-size:.74rem;min-height:36px;padding:4px 12px;gap:8px}
+  .announce span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .announce .btn{flex-shrink:0;padding:0 4px}
+  .ax-lineup{height:190px;max-width:100%}
+  .ax-lineup .ax-l0,.ax-lineup .ax-l4{display:none}
+  .ax-lineup > span{margin:0 -9%}
+  .dock button .dock-ico + *{line-height:1.1}
+}
+@media (max-width:760px){
+  .buy{flex-wrap:wrap}
+  .buy .qty{flex:1 1 auto;justify-content:space-between}
+  .buy > .icon-btn{flex:0 0 44px;width:44px;height:44px;background:var(--surface2)}
+}
+.admin-grid{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+@media (max-width:980px){ .admin-grid{grid-template-columns:1fr} }
+
 </style>
 </head>
 <body>
@@ -1079,6 +1538,20 @@ const DEMO_CUSTOMER = {
 
 const DEMO_ADMIN = { username: "admin", password: "jixcy2026" };
 
+/* Product families: similar products shown as one card with a variety picker.
+   Each member keeps its own id, price and sizes, so baskets and orders are unchanged. */
+const FAMILIES = [
+  { id: "soap", name: "Handmade Soap", cat: "care", pick: "Fragrance", short: "Cold processed bars, eleven fragrances.", members: [["soap-seabuckthorn", "Sea Buckthorn"], ["soap-sandal", "Sandal and Saffron"], ["soap-hydra", "Hydra"], ["soap-lavender", "Lavender"], ["soap-rose-rice", "Rose and Rice"], ["soap-neem", "Neem"], ["soap-turmeric", "Turmeric"], ["soap-shea", "Shea Butter"], ["soap-multani", "Multani Mitti"], ["soap-rose-almond", "Rose Rice Almond"], ["soap-charcoal", "Charcoal"]] },
+  { id: "face-wash", name: "Face Wash", cat: "care", pick: "Formula", short: "Gentle, herbal, for every skin type.", members: [["face-wash-hydra", "Hydra"], ["face-wash-kesar", "Kesar Sandal"], ["face-wash-cucumber", "Cucumber"], ["face-wash-seabuckthorn", "Sea Buckthorn"]] },
+  { id: "shampoo", name: "Herbal Shampoo", cat: "care", pick: "Formula", short: "Sulphate free, made with whole herbs.", members: [["shampoo-beetroot", "Beetroot Hibiscus and Rosehip"], ["shampoo-antidandruff", "Anti Dandruff"], ["shampoo-amla", "Amla Reetha and Shikakai"]] },
+  { id: "body-wash", name: "Body Wash", cat: "care", pick: "Formula", short: "Soft lather with natural oils.", members: [["bodywash-saffron", "Saffron Sandalwood"], ["bodywash-hydra", "Hydra"], ["bodywash-seabuckthorn", "Sea Buckthorn"]] },
+  { id: "spices", name: "Spices and Masalas", cat: "essentials", pick: "Spice", short: "Stone ground in small batches.", members: [["turmeric-powder", "Turmeric"], ["chilli-powder", "Chilli"], ["dania-powder", "Dania (coriander)"], ["sambar-masala", "Sambar Masala"], ["garam-masala", "Garam Masala"]] },
+  { id: "rice", name: "Heritage Rice", cat: "grains", pick: "Variety", short: "Unpolished red and black rice, and poha.", members: [["red-rice", "Red Rice"], ["black-rice", "Black Rice"], ["red-rice-poha", "Red Rice Poha"]] },
+  { id: "flour", name: "Stone-ground Flour", cat: "grains", pick: "Flour", short: "Ragi and multigrain, milled slowly.", members: [["ragi-flour", "Ragi Millet"], ["multigrain-atta", "Multigrain Atta"]] },
+  { id: "millets", name: "Millets", cat: "grains", pick: "Millet", short: "Four ancient grains, unpolished.", members: [["kodo-millet", "Kodo"], ["little-millet", "Little"], ["barnyard-millet", "Barnyard"], ["foxtail-millet", "Foxtail"]] },
+  { id: "dals", name: "Unpolished Dals", cat: "grains", pick: "Dal", short: "Hand pounded, never polished.", members: [["toor-dal", "Toor"], ["moong-dal", "Moong"], ["urad-dal", "Urad"]] }
+];
+
 </script>
 <script>
 /* ---- icons.js ---- */
@@ -1172,81 +1645,338 @@ function coinBadge(size) {
 }
 
 /* ---------- Product art: drawn packs on a clean white background ---------- */
-function labelSize(label) {
-  const n = Math.min(String(label).length, 13);
-  if (n <= 7) return 12;
-  if (n <= 9) return 10.5;
-  if (n <= 11) return 9;
-  return 7.5;
-}
-function packArt(p, title) {
-  const a = p.art || { type: "bottle", color: "#d9a441", lid: "#1f5a3f", label: p.name };
-  const label = (a.label || p.name).toUpperCase();
-  const lab = (x, y, w, h, col) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${col || "#fffdf7"}" stroke="rgba(0,0,0,.08)"/>`;
-  const txt = (x, y, s, t, w, extra) => `<text x="${x}" y="${y}" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="${s}" fill="#1d1d1b" ${extra || ""}>${t}</text>`;
-  const brand = (y) => txt(100, y, 9, "JIXCY", 0, 'letter-spacing="3" fill="#7a5417"');
-  const shadow = `<ellipse cx="100" cy="190" rx="62" ry="7" fill="rgba(20,30,24,.14)"/>`;
-  const fit = (t) => (t.length > 13 ? t.slice(0, 13) : t);
-  let body = "";
-  if (a.type === "bottle") {
-    const liq = a.clear ? `fill="${a.color}" fill-opacity=".35" stroke="${a.color}" stroke-opacity=".5"` : `fill="${a.color}"`;
-    body = `
-      <rect x="86" y="36" width="28" height="26" rx="5" fill="#eef1ee" stroke="rgba(0,0,0,.08)"/>
-      <rect x="80" y="20" width="40" height="20" rx="6" fill="${a.lid}"/>
-      <path d="M60 66 Q60 58 70 58 L130 58 Q140 58 140 66 L140 178 Q140 186 132 186 L68 186 Q60 186 60 178 Z" ${liq}/>
-      <path d="M68 70 Q68 66 74 66" stroke="#fff" stroke-opacity=".6" stroke-width="5" fill="none" stroke-linecap="round"/>
-      ${lab(62, 102, 76, 62, "#fffdf7")}
-      ${brand(118)}
-      ${txt(100, 138, labelSize(label), fit(label))}
-      ${txt(100, 153, 7, "WOOD PRESSED")}`;
-  } else if (a.type === "jar") {
-    body = `
-      <rect x="56" y="46" width="88" height="24" rx="8" fill="${a.lid}"/>
-      <rect x="50" y="68" width="100" height="116" rx="28" fill="${a.color}" fill-opacity=".92"/>
-      <path d="M62 84 Q62 78 70 78" stroke="#fff" stroke-opacity=".55" stroke-width="5" fill="none" stroke-linecap="round"/>
-      ${lab(62, 98, 76, 62, "#fffdf7")}
-      ${brand(114)}
-      ${txt(100, 134, labelSize(label), fit(label))}
-      ${txt(100, 149, 7, "HAND MADE")}`;
-  } else if (a.type === "pouch") {
-    body = `
-      <path d="M44 56 L156 56 L162 176 Q162 186 152 186 L48 186 Q38 186 38 176 Z" fill="${a.color}"/>
-      <rect x="44" y="40" width="112" height="22" rx="7" fill="${a.lid}" fill-opacity=".92"/>
-      <path d="M48 66 Q100 60 152 66" stroke="#fff" stroke-opacity=".35" stroke-width="2" fill="none"/>
-      <path d="M52 66 L52 180" stroke="#fff" stroke-opacity=".18" stroke-width="4"/>
-      ${lab(56, 92, 88, 64, "#fffdf7")}
-      ${brand(110)}
-      ${txt(100, 130, labelSize(label), fit(label))}
-      ${txt(100, 145, 7, "STONE GROUND")}`;
-  } else if (a.type === "pump") {
-    body = `
-      <rect x="94" y="20" width="12" height="26" rx="3" fill="${a.lid}"/>
-      <rect x="92" y="16" width="34" height="10" rx="5" fill="${a.lid}"/>
-      <rect x="62" y="44" width="76" height="142" rx="24" fill="${a.color}" fill-opacity=".92"/>
-      <path d="M70 62 Q70 56 78 56" stroke="#fff" stroke-opacity=".55" stroke-width="5" fill="none" stroke-linecap="round"/>
-      ${lab(68, 96, 64, 62, "#fffdf7")}
-      ${brand(112)}
-      ${txt(100, 130, labelSize(label) - 1, fit(label))}
-      ${txt(100, 145, 6.5, "HERBAL CARE")}`;
-  } else if (a.type === "soap") {
-    body = `
-      <rect x="34" y="78" width="132" height="62" rx="20" fill="${a.color}"/>
-      <path d="M42 96 Q100 88 158 96" stroke="#fff" stroke-opacity=".45" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <rect x="34" y="104" width="132" height="34" fill="#fffdf7" fill-opacity=".92"/>
-      ${txt(100, 124, labelSize(label), fit(label))}
-      ${txt(100, 134, 6.5, "HAND MADE  100 G")}
-      ${txt(100, 96, 7, "JIXCY", 0, 'letter-spacing="3" fill="#7a5417"')}`;
-  }
-  return `<svg viewBox="0 0 200 200" role="img" aria-label="${title || p.name}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="200" height="200" fill="#ffffff"/>${shadow}${body}</svg>`;
-}
-
-/* Photo or drawn pack for a product, with an optional uploaded photo from the admin panel. */
+/* packArt now lives in packs.js. */
 function productVisual(p, catalogEntry) {
   const photo = (catalogEntry && catalogEntry.photo) || null;
   if (photo) return `<img src="${photo}" alt="${p.name}, JIXCY pack" loading="lazy">`;
   if (p.img && typeof IMG !== "undefined" && IMG[p.img]) return `<img src="${IMG[p.img]}" alt="${p.name}, JIXCY pack" loading="lazy">`;
   return packArt(p);
+}
+
+</script>
+<script>
+/* ---- packs.js ---- */
+/* ==========================================================================
+   PRODUCT PACKS: realistic illustrated packaging, drawn as SVG.
+   Every pack carries the JIXCY brand and the exact product name on its label.
+   Each oil has its own bottle shape; other ranges have jars, pouches, bags,
+   tubes, bottles, pumps and soap cartons.
+   ========================================================================== */
+let PACK_SEQ = 0;
+const PACK_FONT = "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif";
+
+/* [shape, label name, label sub-line, options] */
+const PACK_SPEC = {
+  "groundnut-oil": ["tall", "Groundnut", "Wood Pressed Oil"],
+  "coconut-oil": ["squat", "Coconut", "Virgin Cold Pressed", { clear: true }],
+  "sesame-oil": ["slim", "Sesame", "Wood Pressed Oil"],
+  "mustard-oil": ["square", "Mustard", "Wood Pressed Oil"],
+  "almond-oil": ["dropper", "Almond", "Cold Pressed Oil", { glass: "#7a3f0c" }],
+  "castor-oil": ["flask", "Castor", "Cold Pressed Oil"],
+  "neem-oil": ["tall", "Neem", "Cold Pressed Oil", { glass: "#24502a" }],
+  "hair-oil": ["apothecary", "Herbal Hair Oil", "Curry Leaf and Amla", { glass: "#1e4a33" }],
+  "desi-ghee": ["jar", "Desi Cow Ghee", "Bilona Method"],
+  "wild-honey": ["honey", "Wild Honey", "Raw and Unheated"],
+  "jaggery-powder": ["kraft", "Jaggery Powder", "Organic", { grain: "powder" }],
+  "turmeric-powder": ["standup", "Turmeric", "Organic Powder"],
+  "chilli-powder": ["standup", "Chilli", "Organic Powder"],
+  "dania-powder": ["standup", "Dania", "Coriander Powder"],
+  "sambar-masala": ["standup", "Sambar Masala", "Stone Ground"],
+  "garam-masala": ["standup", "Garam Masala", "Stone Ground"],
+  "red-rice": ["kraft", "Red Rice", "Unpolished", { grain: "rice" }],
+  "red-rice-poha": ["kraft", "Red Rice Poha", "Hand Pounded", { grain: "flake" }],
+  "black-rice": ["kraft", "Black Rice", "Unpolished", { grain: "rice" }],
+  "ragi-flour": ["bag", "Ragi Flour", "Stone Ground Millet"],
+  "multigrain-atta": ["bag", "Multigrain Atta", "Stone Ground"],
+  "kodo-millet": ["kraft", "Kodo Millet", "Unpolished", { grain: "seed" }],
+  "little-millet": ["kraft", "Little Millet", "Unpolished", { grain: "seed" }],
+  "barnyard-millet": ["kraft", "Barnyard Millet", "Unpolished", { grain: "seed" }],
+  "foxtail-millet": ["kraft", "Foxtail Millet", "Unpolished", { grain: "seed" }],
+  "toor-dal": ["kraft", "Toor Dal", "Unpolished", { grain: "dal" }],
+  "moong-dal": ["kraft", "Moong Dal", "Unpolished", { grain: "dal" }],
+  "urad-dal": ["kraft", "Urad Dal", "Unpolished", { grain: "dal" }],
+  "face-wash-hydra": ["tube", "Hydra", "Face Wash"],
+  "face-wash-kesar": ["tube", "Kesar Sandal", "Face Wash"],
+  "face-wash-cucumber": ["tube", "Cucumber", "Face Wash"],
+  "face-wash-seabuckthorn": ["tube", "Sea Buckthorn", "Face Wash"],
+  "shampoo-beetroot": ["flip", "Beetroot Hibiscus", "Herbal Shampoo"],
+  "shampoo-antidandruff": ["flip", "Anti Dandruff", "Herbal Shampoo"],
+  "shampoo-amla": ["flip", "Amla Reetha", "Herbal Shampoo"],
+  "bodywash-saffron": ["pump", "Saffron Sandalwood", "Body Wash"],
+  "bodywash-hydra": ["pump", "Hydra", "Body Wash"],
+  "bodywash-seabuckthorn": ["pump", "Sea Buckthorn", "Body Wash"],
+  "soap-seabuckthorn": ["bar", "Sea Buckthorn", "Handmade Soap"],
+  "soap-sandal": ["bar", "Sandal Saffron", "Handmade Soap"],
+  "soap-hydra": ["bar", "Hydra", "Handmade Soap"],
+  "soap-lavender": ["bar", "Lavender", "Handmade Soap"],
+  "soap-rose-rice": ["bar", "Rose and Rice", "Handmade Soap"],
+  "soap-neem": ["bar", "Neem", "Handmade Soap"],
+  "soap-turmeric": ["bar", "Turmeric", "Handmade Soap"],
+  "soap-shea": ["bar", "Shea Butter", "Handmade Soap"],
+  "soap-multani": ["bar", "Multani Mitti", "Handmade Soap"],
+  "soap-rose-almond": ["bar", "Rose Almond", "Handmade Soap"],
+  "soap-charcoal": ["bar", "Charcoal", "Handmade Soap"]
+};
+const PACK_TYPE_FALLBACK = { bottle: "tall", jar: "jar", pouch: "standup", pump: "pump", soap: "bar" };
+
+/* ---------- Colour helpers ---------- */
+function pkRgb(h) {
+  h = String(h || "#888888").replace("#", "");
+  if (h.length === 3) h = h.split("").map(c => c + c).join("");
+  const n = parseInt(h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function pkMix(h, t, w) {
+  const a = pkRgb(h), b = pkRgb(t);
+  return "#" + a.map((v, i) => Math.round(v + (b[i] - v) * w).toString(16).padStart(2, "0")).join("");
+}
+const pkDark = (h, w) => pkMix(h, "#000000", w);
+const pkLight = (h, w) => pkMix(h, "#ffffff", w);
+function pkLum(h) { const [r, g, b] = pkRgb(h); return (0.299 * r + 0.587 * g + 0.114 * b) / 255; }
+const pkEsc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* Text that always fits its width: long words are compressed, never cut. */
+function pkText(x, y, maxW, size, str, attrs) {
+  const est = str.length * size * 0.64;
+  const fit = est > maxW ? ` textLength="${maxW.toFixed(1)}" lengthAdjust="spacingAndGlyphs"` : "";
+  return `<text x="${x}" y="${y}" text-anchor="middle" font-family="${PACK_FONT}" font-size="${size}"${fit} ${attrs || ""}>${pkEsc(str)}</text>`;
+}
+function pkLines(name, w, size) {
+  const words = name.split(" ");
+  if (words.length < 2 || name.length * size * 0.64 <= w - 6) return [name];
+  let best = [name, ""], diff = 1e9;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(" "), b = words.slice(i).join(" ");
+    const d = Math.abs(a.length - b.length);
+    if (d < diff) { diff = d; best = [a, b]; }
+  }
+  return best;
+}
+
+/* Paper label with brand, name and sub-line. */
+function pkLabel(P, x, y, w, h, name, sub, o) {
+  o = o || {};
+  const ink = o.ink || "#1d1d1f", brandC = o.brand || "#16774a", subC = o.subInk || "#6e6e73";
+  const cx = x + w / 2;
+  const nameUpper = name.toUpperCase();
+  let size = Math.min(14, h * 0.2, w * 0.2);
+  let lines = pkLines(nameUpper, w, size);
+  if (lines.length === 2) size = Math.min(size, h * 0.16);
+  const brandSize = Math.max(5.5, Math.min(8.5, h * 0.12));
+  const subSize = Math.max(4.8, Math.min(7, h * 0.1));
+  const brandY = y + h * 0.2 + brandSize * 0.35;
+  const ruleY = brandY + h * 0.07;
+  const nameY0 = lines.length === 2 ? y + h * 0.5 : y + h * 0.6;
+  const subY = y + h - h * 0.1;
+  const bg = o.bg === "none" ? "" : `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.rx == null ? 4 : o.rx}" fill="${o.bg || `url(#${P}p)`}" stroke="rgba(0,0,0,.10)" stroke-width=".6"/>`;
+  return `${bg}
+    ${pkText(cx, brandY, w * 0.62, brandSize, "JIXCY", `font-weight="800" letter-spacing="${(brandSize * 0.32).toFixed(1)}" fill="${brandC}"`)}
+    <rect x="${cx - w * 0.16}" y="${ruleY}" width="${w * 0.32}" height=".7" fill="${brandC}" opacity=".55"/>
+    ${lines.map((ln, i) => pkText(cx, nameY0 + i * size * 1.1, w - 10, size, ln, `font-weight="800" letter-spacing=".2" fill="${ink}"`)).join("")}
+    ${pkText(cx, subY, w - 10, subSize, sub.toUpperCase(), `font-weight="600" letter-spacing=".6" fill="${subC}"`)}`;
+}
+
+function pkDefs(P, c, cap) {
+  return `<defs>
+    <linearGradient id="${P}g" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset=".1" stop-color="#fff" stop-opacity=".18"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".82" stop-color="#000" stop-opacity=".05"/><stop offset="1" stop-color="#000" stop-opacity=".26"/></linearGradient>
+    <linearGradient id="${P}l" x1="0" x2="1"><stop offset="0" stop-color="${pkDark(c, .3)}"/><stop offset=".32" stop-color="${c}"/><stop offset=".58" stop-color="${pkLight(c, .22)}"/><stop offset="1" stop-color="${pkDark(c, .38)}"/></linearGradient>
+    <linearGradient id="${P}m" x1="0" x2="1"><stop offset="0" stop-color="${pkDark(c, .22)}"/><stop offset=".3" stop-color="${pkLight(c, .1)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${pkDark(c, .3)}"/></linearGradient>
+    <linearGradient id="${P}p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffefb"/><stop offset="1" stop-color="#f2ede2"/></linearGradient>
+    <linearGradient id="${P}c" x1="0" x2="1"><stop offset="0" stop-color="${pkDark(cap, .35)}"/><stop offset=".42" stop-color="${pkLight(cap, .28)}"/><stop offset=".6" stop-color="${cap}"/><stop offset="1" stop-color="${pkDark(cap, .45)}"/></linearGradient>
+    <linearGradient id="${P}w" x1="0" x2="1"><stop offset="0" stop-color="#8a5a2e"/><stop offset=".4" stop-color="#c79461"/><stop offset=".7" stop-color="#a8723f"/><stop offset="1" stop-color="#6e4520"/></linearGradient>
+    <linearGradient id="${P}k" x1="0" x2="1"><stop offset="0" stop-color="#b98d5e"/><stop offset=".45" stop-color="#d9b588"/><stop offset="1" stop-color="#a77b4e"/></linearGradient>
+    <linearGradient id="${P}au" x1="0" x2="1"><stop offset="0" stop-color="#9c7a2b"/><stop offset=".4" stop-color="#f1d98a"/><stop offset=".62" stop-color="#c9a447"/><stop offset="1" stop-color="#7d5f1d"/></linearGradient>
+    <radialGradient id="${P}s" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  </defs>`;
+}
+const pkShadow = (P, rx, cy) => `<ellipse cx="100" cy="${cy || 184}" rx="${rx}" ry="7" fill="url(#${P}s)"/>`;
+const pkSheen = (x, y, h, w) => `<rect x="${x}" y="${y}" width="${w || 4}" height="${h}" rx="2" fill="#fff" opacity=".55"/>`;
+
+/* Glass container: clip the body, fill liquid, then lay glass shading and an outline on top. */
+function pkGlass(P, d, fillTop, o) {
+  o = o || {};
+  const tint = o.glass ? `<rect x="0" y="0" width="200" height="200" fill="${o.glass}" fill-opacity=".72"/>` : `<rect x="0" y="0" width="200" height="200" fill="#ffffff" fill-opacity=".35"/>`;
+  const liquidOpacity = o.glass ? .55 : (o.clear ? .92 : 1);
+  return `<clipPath id="${P}x"><path d="${d}"/></clipPath>
+    <g clip-path="url(#${P}x)">
+      ${tint}
+      <rect x="0" y="${fillTop}" width="200" height="${200 - fillTop}" fill="url(#${P}l)" opacity="${liquidOpacity}"/>
+      <rect x="0" y="${fillTop}" width="200" height="2" fill="#fff" opacity=".5"/>
+      <rect x="0" y="0" width="200" height="200" fill="url(#${P}g)"/>
+    </g>
+    <path d="${d}" fill="none" stroke="rgba(0,0,0,.22)" stroke-width="1.1"/>`;
+}
+function pkScrewCap(P, x, y, w, h) {
+  let ridges = "";
+  for (let i = 1; i < 7; i++) ridges += `<rect x="${x + i * w / 7 - .4}" y="${y + 2}" width=".8" height="${h - 4}" fill="#000" opacity=".16"/>`;
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="url(#${P}c)"/>${ridges}<rect x="${x + 1}" y="${y}" width="${w - 2}" height="2" rx="1" fill="#fff" opacity=".35"/>`;
+}
+
+/* ---------- Shapes ---------- */
+const PK_SHAPES = {
+  tall(P, s) {
+    const d = "M91 32 L109 32 L109 60 C109 70 134 74 136 92 L136 172 Q136 182 126 182 L74 182 Q64 182 64 172 L64 92 C66 74 91 70 91 60 Z";
+    return pkShadow(P, 46) + pkGlass(P, d, 84, s.o) + pkScrewCap(P, 87, 16, 26, 18) + `<rect x="89" y="33" width="22" height="4" rx="1.5" fill="${pkDark(s.cap, .25)}"/>` +
+      pkLabel(P, 70, 106, 60, 58, s.name, s.sub) + pkSheen(70, 92, 76);
+  },
+  squat(P, s) {
+    const d = "M80 64 L120 64 L120 72 C120 79 146 81 148 97 L148 170 Q148 182 136 182 L64 182 Q52 182 52 170 L52 97 C54 81 80 79 80 72 Z";
+    return pkShadow(P, 56) + pkGlass(P, d, 92, s.o) + `<rect x="74" y="44" width="52" height="22" rx="5" fill="url(#${P}w)"/><rect x="74" y="44" width="52" height="3" rx="1.5" fill="#fff" opacity=".25"/>` +
+      pkLabel(P, 62, 108, 76, 56, s.name, s.sub) + pkSheen(58, 100, 66, 5);
+  },
+  slim(P, s) {
+    const d = "M94 30 L106 30 L106 66 C106 74 124 77 125 90 L125 174 Q125 182 117 182 L83 182 Q75 182 75 174 L75 90 C76 77 94 74 94 66 Z";
+    return pkShadow(P, 34) + pkGlass(P, d, 80, s.o) + pkScrewCap(P, 91, 12, 18, 20) + `<rect x="93" y="31" width="14" height="3" fill="#000" opacity=".35"/>` +
+      pkLabel(P, 79, 104, 42, 62, s.name, s.sub, { rx: 3 }) + pkSheen(79, 92, 78, 3);
+  },
+  square(P, s) {
+    const d = "M90 42 L110 42 L110 58 L128 70 Q134 74 134 80 L134 176 Q134 182 128 182 L72 182 Q66 182 66 176 L66 80 Q66 74 72 70 L90 58 Z";
+    return pkShadow(P, 44) + pkGlass(P, d, 78, s.o) + pkScrewCap(P, 86, 26, 28, 18) +
+      pkLabel(P, 72, 100, 56, 64, s.name, s.sub) + pkSheen(70, 84, 88, 3.5) + `<rect x="128.5" y="82" width="2" height="90" fill="#000" opacity=".08"/>`;
+  },
+  dropper(P, s) {
+    const d = "M86 94 L114 94 L114 103 C114 107 132 109 132 121 L132 174 Q132 182 124 182 L76 182 Q68 182 68 174 L68 121 C68 109 86 107 86 103 Z";
+    return pkShadow(P, 38) + pkGlass(P, d, 114, s.o) +
+      `<rect x="84" y="80" width="32" height="16" rx="3" fill="#1d1d1f"/><rect x="85" y="81" width="30" height="2" fill="#fff" opacity=".25"/>
+       <path d="M90 80 L90 54 Q90 40 100 40 Q110 40 110 54 L110 80 Z" fill="#2b2b2e"/><rect x="93" y="46" width="3" height="28" rx="1.5" fill="#fff" opacity=".22"/>` +
+      pkLabel(P, 74, 126, 52, 44, s.name, s.sub) + pkSheen(72, 118, 52, 3);
+  },
+  flask(P, s) {
+    const d = "M91 54 L109 54 L109 98.5 A43 43 0 1 1 91 98.5 Z";
+    return pkShadow(P, 42) + pkGlass(P, d, 112, s.o) +
+      `<rect x="91.5" y="38" width="17" height="18" rx="2.5" fill="#b8875a"/><rect x="91.5" y="38" width="17" height="3" rx="1.5" fill="#fff" opacity=".3"/>
+       <rect x="89" y="54" width="22" height="3" rx="1.5" fill="${pkDark(s.cap, .2)}"/>` +
+      pkLabel(P, 72, 128, 56, 36, s.name, s.sub) + `<path d="M70 120 Q66 140 72 160" stroke="#fff" stroke-width="3.5" fill="none" opacity=".5" stroke-linecap="round"/>`;
+  },
+  apothecary(P, s) {
+    const d = "M88 72 L112 72 L112 80 Q112 84 118 86 L128 90 Q136 93 136 102 L136 174 Q136 182 128 182 L72 182 Q64 182 64 174 L64 102 Q64 93 72 90 L82 86 Q88 84 88 80 Z";
+    return pkShadow(P, 46) + pkGlass(P, d, 98, s.o) +
+      `<rect x="84" y="58" width="32" height="16" rx="3" fill="url(#${P}au)"/>
+       <path d="M90 58 L90 36 Q90 24 100 24 Q110 24 110 36 L110 58 Z" fill="#26262a"/><rect x="93" y="30" width="3" height="24" rx="1.5" fill="#fff" opacity=".2"/>` +
+      pkLabel(P, 70, 110, 60, 60, s.name, s.sub) + pkSheen(69, 102, 70, 3.5);
+  },
+  jar(P, s) {
+    const d = "M58 88 Q58 80 66 80 L134 80 Q142 80 142 88 L142 172 Q142 182 132 182 L68 182 Q58 182 58 172 Z";
+    let lid = `<rect x="54" y="58" width="92" height="25" rx="6" fill="url(#${P}au)"/>`;
+    for (let i = 1; i < 16; i++) lid += `<rect x="${54 + i * 92 / 16}" y="61" width=".7" height="19" fill="#000" opacity=".13"/>`;
+    return pkShadow(P, 50) + pkGlass(P, d, 92, s.o) + lid + `<rect x="56" y="58" width="88" height="3" rx="1.5" fill="#fff" opacity=".35"/>` +
+      pkLabel(P, 64, 108, 72, 58, s.name, s.sub) + pkSheen(62, 96, 76, 4.5);
+  },
+  honey(P, s) {
+    const d = "M72 86 L128 86 L144 106 L144 172 Q144 182 134 182 L66 182 Q56 182 56 172 L56 106 Z";
+    return pkShadow(P, 50) + pkGlass(P, d, 96, s.o) +
+      `<rect x="68" y="64" width="64" height="24" rx="5" fill="url(#${P}w)"/><rect x="68" y="64" width="64" height="3" rx="1.5" fill="#fff" opacity=".25"/>
+       <rect x="64" y="86" width="72" height="5" rx="2" fill="${pkDark(s.c, .35)}" opacity=".5"/>` +
+      pkLabel(P, 66, 112, 68, 54, s.name, s.sub) + pkSheen(60, 108, 60, 4);
+  },
+  standup(P, s) {
+    const c = s.c;
+    const d = "M58 44 L142 44 L145 168 Q145 182 131 182 L69 182 Q55 182 55 168 Z";
+    return pkShadow(P, 52) +
+      `<path d="${d}" fill="url(#${P}m)"/><path d="${d}" fill="url(#${P}g)" opacity=".7"/>
+       <rect x="58" y="36" width="84" height="12" rx="2" fill="${pkDark(c, .25)}"/>
+       <path d="M58 36 L62 40 L58 44 Z M142 36 L138 40 L142 44 Z" fill="#fff" opacity=".9"/>
+       <rect x="60" y="54" width="80" height="1.4" fill="#000" opacity=".2"/>
+       <rect x="66" y="66" width="68" height="62" rx="6" fill="url(#${P}p)"/>
+       <rect x="80" y="138" width="40" height="32" rx="9" fill="${pkLight(c, .12)}" stroke="#fff" stroke-opacity=".7"/>
+       <circle cx="92" cy="152" r="1.4" fill="${pkDark(c, .3)}"/><circle cx="104" cy="158" r="1.2" fill="${pkDark(c, .3)}"/><circle cx="110" cy="148" r="1" fill="${pkDark(c, .3)}"/>
+       <path d="M83 142 L95 142" stroke="#fff" stroke-width="2" opacity=".6" stroke-linecap="round"/>` +
+      pkLabel(P, 66, 66, 68, 62, s.name, s.sub, { bg: "none" }) + `<path d="${d}" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1"/>`;
+  },
+  kraft(P, s) {
+    const c = s.c;
+    const d = "M60 46 L140 46 L143 170 Q143 182 131 182 L69 182 Q57 182 57 170 Z";
+    const grain = s.o.grain || "seed";
+    let pat;
+    if (grain === "rice") pat = `<pattern id="${P}r" width="9" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-20)"><ellipse cx="3" cy="2.5" rx="3.2" ry="1.4" fill="${c}"/><ellipse cx="7.5" cy="6" rx="3" ry="1.3" fill="${pkLight(c, .15)}"/></pattern>`;
+    else if (grain === "dal") pat = `<pattern id="${P}r" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r="2.3" fill="${c}"/><circle cx="6" cy="6" r="2.1" fill="${pkLight(c, .2)}"/></pattern>`;
+    else if (grain === "flake") pat = `<pattern id="${P}r" width="10" height="8" patternUnits="userSpaceOnUse"><path d="M1 3 L6 1 L8 4 L3 6 Z" fill="${c}"/><path d="M5 7 L9 5.5 L10 8 Z" fill="${pkLight(c, .2)}"/></pattern>`;
+    else if (grain === "powder") pat = `<pattern id="${P}r" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="${c}"/><circle cx="1.5" cy="1.5" r=".8" fill="${pkLight(c, .25)}"/><circle cx="4" cy="3.6" r=".7" fill="${pkDark(c, .2)}"/></pattern>`;
+    else pat = `<pattern id="${P}r" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.4" fill="${c}"/><circle cx="4" cy="4" r="1.3" fill="${pkLight(c, .2)}"/></pattern>`;
+    let crimp = "";
+    for (let i = 0; i < 20; i++) crimp += `<rect x="${60 + i * 4}" y="36" width="2" height="12" fill="#000" opacity=".08"/>`;
+    return `<defs>${pat}</defs>` + pkShadow(P, 52) +
+      `<path d="${d}" fill="url(#${P}k)"/>
+       <rect x="60" y="36" width="80" height="12" rx="2" fill="#b48a5c"/>${crimp}
+       <rect x="54" y="40" width="92" height="3.5" rx="1.7" fill="#d4af37"/>
+       <rect x="66" y="58" width="68" height="56" rx="5" fill="url(#${P}p)"/>
+       <rect x="72" y="122" width="56" height="48" rx="12" fill="${pkLight(c, .35)}"/>
+       <rect x="72" y="122" width="56" height="48" rx="12" fill="url(#${P}r)"/>
+       <rect x="72" y="122" width="56" height="48" rx="12" fill="url(#${P}g)" opacity=".8" stroke="#fff" stroke-opacity=".7"/>
+       <path d="${d}" fill="url(#${P}g)" opacity=".45"/>` +
+      pkLabel(P, 66, 58, 68, 56, s.name, s.sub, { bg: "none" }) + `<path d="${d}" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1"/>`;
+  },
+  bag(P, s) {
+    const c = s.c;
+    return pkShadow(P, 48) +
+      `<path d="M62 56 L138 56 L138 182 L62 182 Z" fill="#f4ede0"/>
+       <path d="M62 56 L70 40 L130 40 L138 56 Z" fill="#e7dcc8"/><path d="M70 40 L130 40 L126 32 L74 32 Z" fill="#efe6d4"/>
+       <rect x="62" y="56" width="76" height="126" fill="url(#${P}g)" opacity=".7"/>
+       <rect x="62" y="150" width="76" height="32" fill="${c}"/><rect x="62" y="150" width="76" height="32" fill="url(#${P}g)" opacity=".6"/>
+       <path d="M76 166 Q84 156 92 166 T108 166 T124 166" stroke="#fff" stroke-width="1.5" fill="none" opacity=".7"/>
+       <path d="M62 56 L62 182 L138 182 L138 56" fill="none" stroke="rgba(0,0,0,.18)"/>` +
+      pkLabel(P, 68, 70, 64, 70, s.name, s.sub, { bg: "none" });
+  },
+  tube(P, s) {
+    const c = s.c, dark = pkLum(c) < .45;
+    const d = "M66 34 L134 34 L131 46 Q124 120 119 158 L81 158 Q76 120 69 46 Z";
+    let crimp = "";
+    for (let i = 0; i < 17; i++) crimp += `<rect x="${65 + i * 4.2}" y="27" width="1.4" height="9" fill="#000" opacity=".1"/>`;
+    return pkShadow(P, 30) +
+      `<rect x="64" y="26" width="72" height="11" rx="1.5" fill="${pkLight(c, .25)}"/>${crimp}
+       <path d="${d}" fill="url(#${P}m)"/><path d="${d}" fill="url(#${P}g)"/>
+       <rect x="80" y="156" width="40" height="27" rx="5" fill="url(#${P}c)"/><rect x="82" y="157" width="36" height="2" fill="#fff" opacity=".3"/>
+       <path d="${d}" fill="none" stroke="rgba(0,0,0,.18)"/>` +
+      pkLabel(P, 76, 64, 48, 66, s.name, s.sub, { bg: "none", ink: dark ? "#ffffff" : "#1d1d1f", subInk: dark ? "rgba(255,255,255,.85)" : "#3a3a3c", brand: dark ? "#ffffff" : "#0f5a37" }) +
+      `<rect x="74" y="44" width="3.5" height="100" rx="1.7" fill="#fff" opacity=".45"/>`;
+  },
+  flip(P, s) {
+    const c = s.c;
+    const d = "M72 50 Q72 42 80 42 L120 42 Q128 42 128 50 L136 166 Q137 182 121 182 L79 182 Q63 182 64 166 Z";
+    return pkShadow(P, 42) +
+      `<rect x="78" y="22" width="44" height="22" rx="7" fill="url(#${P}c)"/><rect x="80" y="30" width="40" height="1.2" fill="#000" opacity=".25"/>
+       <path d="${d}" fill="url(#${P}m)"/><path d="${d}" fill="url(#${P}g)"/>
+       <path d="${d}" fill="none" stroke="rgba(0,0,0,.18)"/>` +
+      pkLabel(P, 74, 86, 52, 70, s.name, s.sub, { rx: 8 }) + pkSheen(73, 56, 110, 3.5);
+  },
+  pump(P, s) {
+    const d = "M68 72 Q68 64 76 64 L124 64 Q132 64 132 72 L134 172 Q134 182 124 182 L76 182 Q66 182 66 172 Z";
+    return pkShadow(P, 42) + pkGlass(P, d, 84, Object.assign({ clear: true }, s.o)) +
+      `<rect x="86" y="52" width="28" height="13" rx="3" fill="url(#${P}c)"/>
+       <rect x="96" y="36" width="8" height="18" fill="${pkDark(s.cap, .2)}"/>
+       <rect x="86" y="26" width="34" height="11" rx="3" fill="url(#${P}c)"/><rect x="117" y="28" width="22" height="5" rx="2" fill="url(#${P}c)"/>` +
+      pkLabel(P, 74, 98, 52, 62, s.name, s.sub) + pkSheen(71, 80, 92, 3.5);
+  },
+  bar(P, s) {
+    const c = s.c, dark = pkLum(c) < .4;
+    return pkShadow(P, 62, 185) +
+      `<path d="M58 60 L72 46 L156 46 L142 60 Z" fill="${pkLight(c, .35)}"/>
+       <path d="M142 60 L156 46 L156 122 L142 136 Z" fill="${pkDark(c, .3)}"/>
+       <rect x="58" y="60" width="84" height="76" fill="url(#${P}m)"/>
+       <rect x="66" y="66" width="68" height="62" rx="4" fill="url(#${P}p)"/>
+       <path d="M58 60 L142 60 L142 136 L58 136 Z" fill="none" stroke="rgba(0,0,0,.15)"/>
+       <rect x="40" y="140" width="120" height="42" rx="18" fill="${dark ? pkLight(c, .1) : pkLight(c, .15)}"/>
+       <rect x="40" y="140" width="120" height="42" rx="18" fill="url(#${P}g)"/>
+       <rect x="46" y="143" width="108" height="10" rx="5" fill="#fff" opacity=".28"/>
+       ${pkText(100, 168, 60, 11, "JIXCY", `font-weight="800" letter-spacing="3" fill="${pkDark(c, .35)}" opacity=".5"`)}` +
+      pkLabel(P, 66, 66, 68, 62, s.name, s.sub, { bg: "none" });
+  }
+};
+
+/* Public: returns the SVG for a product's pack. */
+function packArt(p, title) {
+  const spec = PACK_SPEC[p.id];
+  const a = p.art || {};
+  const shape = spec ? spec[0] : (PACK_TYPE_FALLBACK[a.type] || "tall");
+  const name = spec ? spec[1] : (a.label || p.name);
+  const sub = spec ? spec[2] : (typeof catLabel === "function" ? catLabel(p.cat) : "");
+  const o = Object.assign({}, (spec && spec[3]) || {}, a.clear ? { clear: true } : {});
+  const c = a.color || "#d9a441";
+  const cap = a.lid || "#1f5a3f";
+  const P = "pk" + (++PACK_SEQ) + "_";
+  const draw = PK_SHAPES[shape] || PK_SHAPES.tall;
+  const label = title || (p.name + ", JIXCY pack");
+  return `<svg viewBox="0 0 200 200" role="img" aria-label="${pkEsc(label)}" xmlns="http://www.w3.org/2000/svg" class="pack-svg">${pkDefs(P, c, cap)}${draw(P, { c, cap, name, sub, o })}</svg>`;
 }
 
 </script>
@@ -1326,7 +2056,7 @@ function freshState() {
 
 /* Saved-data version. Bump it whenever the shape of the saved state changes:
    older saved data is then replaced with fresh sample data instead of crashing the page. */
-const STATE_VERSION = 4;
+const STATE_VERSION = 5;
 
 function loadState() {
   let loaded = null;
@@ -1394,6 +2124,25 @@ function productPrice(p, si) { return p.sizes[si] ? p.sizes[si].p : p.sizes[0].p
 function minPrice(p) { return Math.min(...p.sizes.map(s => s.p)); }
 function productsIn(cat) { return S.catalog.filter(p => p.cat === cat && p.visible); }
 function visibleProducts() { return S.catalog.filter(p => p.visible); }
+/* ---------- Product families ---------- */
+function familyOf(pid) { return FAMILIES.find(f => f.members.some(m => m[0] === pid)) || null; }
+function familyMembers(f) { return f.members.map(m => getProduct(m[0])).filter(p => p && p.visible); }
+function variantName(p) { const f = familyOf(p.id); const m = f ? f.members.find(x => x[0] === p.id) : null; return m ? m[1] : ""; }
+/* Turns a list of products into shop entries: one per standalone product, one per family. */
+function toEntries(list) {
+  const out = []; const seen = new Set();
+  list.forEach(p => {
+    const f = familyOf(p.id);
+    if (!f) { out.push({ kind: "p", p, cat: p.cat, name: p.name, min: minPrice(p), rating: p.rating }); return; }
+    if (seen.has(f.id)) return;
+    seen.add(f.id);
+    const members = familyMembers(f);
+    if (!members.length) return;
+    const matched = list.filter(x => familyOf(x.id) === f);
+    out.push({ kind: "f", f, members, lead: matched[0] || members[0], cat: f.cat, name: f.name, min: Math.min(...members.map(minPrice)), rating: Math.max(...members.map(m => m.rating)) });
+  });
+  return out;
+}
 function catLabel(id) { const c = CATEGORIES.find(x => x.id === id); return c ? c.label : ""; }
 function sizeWeight(p, si) { return p.sizes[si] ? p.sizes[si].g : 0; }
 
@@ -1755,10 +2504,10 @@ function currentHash() { return location.hash || "#/"; }
 /* ---------- Theme ---------- */
 function applyTheme() {
   const root = document.documentElement;
-  root.dataset.palette = S.theme.palette;
+  root.dataset.palette = "jixcy";
   root.dataset.theme = S.theme.mode;
   const meta = $('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", S.theme.mode === "dark" ? "#0b1611" : "#f6f2e8");
+  if (meta) meta.setAttribute("content", S.theme.mode === "dark" ? "#000000" : "#ffffff");
 }
 function setPalette(id) { S.theme.palette = id; saveState(); applyTheme(); renderChrome(); }
 function toggleMode() { S.theme.mode = S.theme.mode === "dark" ? "light" : "dark"; saveState(); applyTheme(); renderChrome(); }
@@ -1767,6 +2516,7 @@ function toggleMode() { S.theme.mode = S.theme.mode === "dark" ? "light" : "dark
 function toast(msg, type) {
   const box = $("#toasts");
   if (!box) return;
+  while (box.children.length >= 1) box.firstChild.remove();
   const el = document.createElement("div");
   el.className = "toast" + (type === "bad" ? " bad" : "");
   el.setAttribute("role", type === "bad" ? "alert" : "status");
@@ -1810,10 +2560,15 @@ ACTIONS.confirmYes = () => { const fn = window.__confirmYes; closeModal(); if (f
 ACTIONS.closeModal = () => closeModal();
 
 /* ---------- Shared small components ---------- */
+function plural(word, n) {
+  if (n === 1) return word;
+  if (/y$/.test(word) && !/[aeiou]y$/.test(word)) return word.slice(0, -1) + "ies";
+  if (/a$/.test(word)) return word + "s";
+  return word + "s";
+}
 function productCard(p) {
-  const cat = p.cat;
-  const fromPrice = minPrice(p);
   const wished = currentUser() && currentUser().wishlist.includes(p.id);
+  const n = p.sizes.length;
   return `
   <article class="pcard">
     <a class="pimg" href="#/product/${p.id}" aria-label="View ${esc(p.name)}">
@@ -1822,16 +2577,37 @@ function productCard(p) {
     </a>
     <button class="icon-btn wish ${wished ? "on" : ""}" data-act="toggleWish" data-pid="${p.id}" aria-pressed="${!!wished}" aria-label="${wished ? "Remove" : "Save"} ${esc(p.name)} ${wished ? "from" : "to"} wishlist">${icon("heart", "sm")}</button>
     <div class="pbody">
-      <div class="stars" aria-label="Rated ${p.rating} out of 5">${icon("star")} ${p.rating} <span class="muted" style="font-weight:700">(${p.reviews})</span></div>
       <h3><a href="#/product/${p.id}">${esc(p.name)}</a></h3>
       <p class="short">${esc(p.short || "")}</p>
+      <div class="pmeta"><span class="stars" aria-label="Rated ${p.rating} out of 5">${icon("star")} ${p.rating}</span><span>${n} ${plural("size", n)}</span></div>
       <div class="pfoot">
-        <div class="price"><small>from</small>${inr(fromPrice)}</div>
-        <button class="btn btn-brand btn-sm" data-act="quickAdd" data-pid="${p.id}" aria-label="Add ${esc(p.name)} to basket">${icon("cart", "sm")} Add</button>
+        <div class="price"><small>From</small>${inr(minPrice(p))}</div>
+        <button class="btn btn-brand btn-sm" data-act="quickAdd" data-pid="${p.id}" aria-label="Add ${esc(p.name)} to basket">${icon("plus", "sm")} Add</button>
       </div>
     </div>
   </article>`;
 }
+function familyCard(e) {
+  const f = e.f, ms = e.members, show = ms.slice(0, 3);
+  const pick = plural(f.pick.toLowerCase(), ms.length);
+  return `
+  <article class="pcard pfam">
+    <a class="pimg" href="#/product/${e.lead.id}" aria-label="${esc(f.name)}: choose from ${ms.length} ${pick}">
+      <span class="tag">${ms.length} ${pick}</span>
+      <span class="pstack n${show.length}" aria-hidden="true">${show.map(p => `<span>${packArt(p)}</span>`).join("")}</span>
+    </a>
+    <div class="pbody">
+      <h3><a href="#/product/${e.lead.id}">${esc(f.name)}</a></h3>
+      <p class="short">${esc(f.short)}</p>
+      <div class="swatches" aria-hidden="true">${ms.slice(0, 8).map(p => `<i style="background:${(p.art || {}).color || "#ccc"}"></i>`).join("")}${ms.length > 8 ? `<em>+${ms.length - 8}</em>` : ""}</div>
+      <div class="pfoot">
+        <div class="price"><small>From</small>${inr(e.min)}</div>
+        <a class="btn btn-soft btn-sm" href="#/product/${e.lead.id}" aria-label="Choose ${esc(f.name)}">Choose</a>
+      </div>
+    </div>
+  </article>`;
+}
+function entryCard(e) { return e.kind === "f" ? familyCard(e) : productCard(e.p); }
 
 function trustBand() {
   return `<div class="bands">
@@ -1864,7 +2640,7 @@ function renderChrome() {
     <div class="wrap topbar-inner">
       <a href="#/" class="logo" aria-label="JIXCYFOODS home">
         <span class="logo-mark" aria-hidden="true">J</span>
-        <span class="logo-word">JIXCYFOODS<small>WOOD PRESSED · MUMBAI</small></span>
+        <span class="logo-word">JIXCYFOODS</span>
       </a>
       <nav class="nav" aria-label="Main">
         <a href="#/" class="${hash === "#/" || hash === "#" ? "on" : ""}">Home</a>
@@ -1879,7 +2655,6 @@ function renderChrome() {
         <input id="top-q" type="search" name="q" placeholder="Search oils, ghee, millets, soaps" autocomplete="off">
       </form>
       <div class="actions">
-        ${themeButtonHtml()}
         ${modeButtonHtml()}
         <button class="icon-btn hide-m" data-act="toggleBot" aria-label="Ask Jixcy-bot">${icon("sparkles", "sm")}</button>
         ${user
@@ -2284,134 +3059,134 @@ function announceHtml() {
 /* ---------- HOME ---------- */
 function pageHome() {
   const cfg = S.config;
-  const cats = CATEGORIES.map(c => {
-    const deco = productsIn(c.id)[0];
-    return `<a href="#/shop?cat=${c.id}" class="card cat-tile" style="background:${c.tint}">
-      <span class="cat-ico">${icon(c.icon)}</span>
-      <div><h3>${esc(c.label)}</h3><p>${esc(c.blurb)}</p><span class="go">Explore ${icon("arrowRight", "sm")}</span></div>
-      ${deco ? `<span class="deco" aria-hidden="true">${packArt(deco)}</span>` : ""}
-    </a>`;
+  const entries = toEntries(visibleProducts());
+  const heroPacks = ["sesame-oil", "groundnut-oil", "coconut-oil", "mustard-oil", "almond-oil"].map(getProduct).filter(p => p && p.visible);
+  const repOf = (e) => e.kind === "f" ? e.members[0] : e.p;
+  const catTiles = CATEGORIES.map(c => {
+    const items = entries.filter(e => e.cat === c.id);
+    const reps = items.slice(0, 3).map(repOf);
+    return `<a class="ax-cat" href="#/shop?cat=${c.id}">
+      <span class="ax-cat-art" aria-hidden="true">${reps.map(p => `<span>${packArt(p)}</span>`).join("")}</span>
+      <strong>${esc(c.label)}</strong><span>${items.length} ${plural("choice", items.length)}</span></a>`;
   }).join("");
-  const best = pickBest().map(productCard).join("");
+  const rail = (list) => `<div class="ax-rail">${list.map(entryCard).join("")}</div>`;
+  const oils = entries.filter(e => e.cat === "oils");
+  const pantry = entries.filter(e => e.cat === "essentials" || e.cat === "grains");
+  const care = entries.filter(e => e.cat === "care");
+  const best = toEntries(pickBest());
   const faqs = FAQS.map((f, i) => `<details ${i === 0 ? "open" : ""}><summary>${esc(f[0])}${icon("chevronDown")}</summary><p>${esc(f[1])}</p></details>`).join("");
   const reviews = TESTIMONIALS_IMG.map(t => `<figure><img src="${t.src}" alt="${esc(t.alt)}" loading="lazy"></figure>`).join("");
+  const coinNow = coinValueNow();
   return `
-  <section class="hero wrap" aria-labelledby="hero-title">
-    <div class="hero-grid">
-      <div>
-        <span class="eyebrow">Wood pressed · Malad West, Mumbai</span>
-        <h1 id="hero-title" class="h-xl" style="margin-top:18px">${cfg.heroTitle}</h1>
-        <p class="lead hero-lead">${esc(cfg.heroLead)}</p>
-        <div class="hero-cta">
-          <a class="btn btn-brand" href="#/shop">Shop the collection ${icon("arrowRight", "sm")}</a>
-          <a class="btn btn-ghost" href="#/story">How we make it</a>
-        </div>
-        <div class="hero-facts">
-          <span class="fact">${icon("clock", "sm")} Dispatched in 48 hours</span>
-          <span class="fact">${icon("thermometer", "sm")} Cold pressed</span>
-          <span class="fact">${icon("truck", "sm")} Free delivery above ₹499</span>
-        </div>
+  <section class="ax-hero" aria-labelledby="hero-title">
+    <div class="wrap ax-hero-in">
+      <p class="ax-kicker">Wood pressed in Malad West, Mumbai</p>
+      <h1 id="hero-title" class="ax-display">${cfg.heroTitle}</h1>
+      <p class="ax-sub">${esc(cfg.heroLead)}</p>
+      <div class="ax-cta">
+        <a class="btn btn-brand btn-lg" href="#/shop">Shop the collection</a>
+        <a class="ax-link" href="#/story">How we make it ${icon("chevronRight", "sm")}</a>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="stage">
-          <div class="pack">${packArt(getProduct("groundnut-oil"))}</div>
-          <div class="pack">${packArt(getProduct("desi-ghee"))}</div>
-          <div class="pack">${packArt(getProduct("coconut-oil"))}</div>
-        </div>
-        <div class="float-card">
-          <span class="ring">${icon("hand")}</span>
-          <div><strong>Made after you order</strong><span>Prepared fresh, then dispatched within 48 hours to keep the full shelf life.</span></div>
-        </div>
-      </div>
+    </div>
+    <div class="ax-lineup" aria-hidden="true">${heroPacks.map((p, i) => `<span class="ax-l${i}">${packArt(p)}</span>`).join("")}</div>
+    <ul class="wrap ax-facts" aria-label="Highlights">
+      <li>${icon("clock", "sm")}<span><strong>Made to order</strong> Dispatched within ${cfg.prepHours} hours</span></li>
+      <li>${icon("truck", "sm")}<span><strong>Free delivery</strong> On products above ${inr(cfg.freeDeliveryAbove)}</span></li>
+      <li>${icon("thermometer", "sm")}<span><strong>Cold pressed</strong> Never heated or refined</span></li>
+      <li>${icon("sparkles", "sm")}<span><strong>Jix coins</strong> 1 coin for every ₹1</span></li>
+    </ul>
+  </section>
+
+  <section class="wrap ax-section" aria-labelledby="cats-title">
+    <div class="ax-head"><h2 id="cats-title" class="ax-h2">Shop by category.</h2><a class="ax-link" href="#/shop">See everything ${icon("chevronRight", "sm")}</a></div>
+    <div class="ax-cats">${catTiles}</div>
+  </section>
+
+  <section class="wrap ax-section" aria-labelledby="oils-title">
+    <div class="ax-head"><h2 id="oils-title" class="ax-h2">The oil lineup. <span>Seven seeds, one slow press.</span></h2><a class="ax-link" href="#/shop?cat=oils">All oils ${icon("chevronRight", "sm")}</a></div>
+    ${rail(oils)}
+  </section>
+
+  <section class="wrap ax-section" aria-labelledby="why-title">
+    <div class="ax-head"><h2 id="why-title" class="ax-h2">Why JIXCY. <span>Freshness is our first ingredient.</span></h2></div>
+    <div class="ax-bento">
+      <article class="ax-tile ax-tile-dark ax-span2">
+        <span class="ax-tile-kicker">Made to order</span>
+        <h3>Pressed after you order. Not before.</h3>
+        <p>We prepare every order only after you place it and dispatch within ${cfg.prepHours} hours, so nothing sits in a warehouse and you get the full shelf life.</p>
+        <ol class="ax-steps"><li><b>1</b>You order</li><li><b>2</b>We press and pack</li><li><b>3</b>Courier delivers</li></ol>
+      </article>
+      <article class="ax-tile">
+        <span class="ax-tile-kicker">Delivery</span>
+        <p class="ax-big">Free</p>
+        <p>On product totals above ${inr(cfg.freeDeliveryAbove)}. Below that, ${inr(cfg.deliveryPerKg)} per kg. Mumbai, Greater Mumbai and Navi Mumbai.</p>
+      </article>
+      <article class="ax-tile ax-tile-gold">
+        <span class="ax-tile-kicker">Jix coins</span>
+        <p class="ax-big">${inr(coinNow)}</p>
+        <p>Value of every Jix coin${cfg.coinBoostOn ? " during the " + esc(cfg.coinBoostLabel.toLowerCase()) : ""}. Earn 1 coin for each ₹1 you pay for products.</p>
+      </article>
+      <article class="ax-tile">
+        <span class="ax-tile-kicker">Change of plans</span>
+        <p class="ax-big">${cfg.cancelHours} h</p>
+        <p>Cancel any order within ${cfg.cancelHours} hours of placing it, from your Orders page.</p>
+      </article>
+      <article class="ax-tile">
+        <span class="ax-tile-kicker">Our promise</span>
+        <p class="ax-big">${cfg.refundHours} h</p>
+        <p>Damaged or not right? Claim within ${cfg.refundHours} hours of delivery. Refunds go back to your original payment method.</p>
+      </article>
     </div>
   </section>
 
-  <section class="wrap section tight" aria-labelledby="cats-title">
-    <div class="section-head"><div><span class="eyebrow">The collection</span><h2 id="cats-title" class="h-lg" style="margin-top:14px">Four kitchens, one promise</h2><p class="lead">Everything is pressed, ground or blended by hand, in small lots.</p></div></div>
-    <div class="cat-grid">${cats}</div>
+  <section class="wrap ax-section" aria-labelledby="pantry-title">
+    <div class="ax-head"><h2 id="pantry-title" class="ax-h2">The pantry. <span>Ghee, honey, masalas, rice, millets and dals.</span></h2><a class="ax-link" href="#/shop?cat=grains">Grains and pulses ${icon("chevronRight", "sm")}</a></div>
+    ${rail(pantry)}
   </section>
 
-  ${trustBand().replace('<div class="bands">', '<div class="bands wrap" style="margin-top:34px">')}
+  <section class="wrap ax-section" aria-labelledby="care-title">
+    <div class="ax-head"><h2 id="care-title" class="ax-h2">Skin and hair care. <span>Made with the same oils.</span></h2><a class="ax-link" href="#/shop?cat=care">All care ${icon("chevronRight", "sm")}</a></div>
+    ${rail(care)}
+  </section>
 
   ${cfg.showBestsellers ? `
-  <section class="wrap section" aria-labelledby="best-title">
-    <div class="section-head">
-      <div><span class="eyebrow">Loved most</span><h2 id="best-title" class="h-lg" style="margin-top:14px">Bestsellers</h2></div>
-      <a class="btn btn-ghost" href="#/shop">See all products ${icon("arrowRight", "sm")}</a>
-    </div>
-    <div class="product-grid">${best}</div>
+  <section class="wrap ax-section" aria-labelledby="best-title">
+    <div class="ax-head"><h2 id="best-title" class="ax-h2">Loved most. <span>Our customers' everyday favourites.</span></h2></div>
+    <div class="product-grid">${best.map(entryCard).join("")}</div>
   </section>` : ""}
 
-  <section class="wrap section" aria-labelledby="build-title">
-    <div class="section-head"><div><span class="eyebrow">Made to order</span><h2 id="build-title" class="h-lg" style="margin-top:14px">Freshness is our first ingredient</h2><p class="lead">Oils, ghee and millets lose their character on a shelf. So we make each order only after you place it.</p></div></div>
-    <div class="build-steps">
-      <div class="card build-step"><div class="n">01</div><h3>You place the order</h3><p>Choose your size and quantity. Your order is confirmed straight away, and you can cancel it for 12 hours.</p></div>
-      <div class="card build-step"><div class="n">02</div><h3>We prepare it within 48 hours</h3><p>Our team presses, grinds or packs your items only now, so nothing has been sitting in a warehouse.</p></div>
-      <div class="card build-step"><div class="n">03</div><h3>The courier delivers it fresh</h3><p>After dispatch, the courier takes its usual transit time. You get the full shelf life from your delivery day.</p></div>
-    </div>
-  </section>
-
-  <section class="wrap section" aria-labelledby="coins-title">
-    <div class="coin-band">
-      <div class="coin-card">
-        <span class="eyebrow" style="color:#fff">Jix coins</span>
-        <h2 id="coins-title" style="margin-top:14px">Every rupee you spend earns you a coin</h2>
-        <p>Earn one Jix coin for each rupee you pay for products. Redeem your coins on your next order above ${inr(cfg.coinRedeemAbove)}. Coins can be used alongside coupons and bonuses.</p>
-        <div class="coin-row">
-          <div class="coin-chip">1 : ₹1<strong>1 coin per ₹1</strong></div>
-          <div class="coin-chip">${inr(cfg.coinValue)} a coin<strong>Standard value</strong></div>
-          ${cfg.coinBoostOn ? `<div class="coin-chip">${inr(cfg.coinBoostValue)} a coin<strong>${esc(cfg.coinBoostLabel)}</strong></div>` : ""}
-        </div>
-      </div>
-      <div class="coin-math">
-        <span class="eyebrow">Example</span>
-        <h3 class="h-md" style="margin-top:10px">Spend ₹500 on products</h3>
-        <ul>
-          <li><span>You pay for products</span><span>₹500</span></li>
-          <li><span>Jix coins earned</span><span>500 coins</span></li>
-          <li><span>Worth at standard value</span><span>${inr(500 * cfg.coinValue)}</span></li>
-          ${cfg.coinBoostOn ? `<li><span>Worth during the festive boost</span><span>${inr(500 * cfg.coinBoostValue)}</span></li>` : ""}
-        </ul>
-        <p class="muted small" style="margin-top:16px">Coin values can rise during special offers, at no cost to you. Delivery is not included in the coins you earn.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap section" aria-labelledby="founder-title">
-    <div class="card founder">
-      <div class="portrait">
-        <div class="monogram" aria-hidden="true">JR</div>
-        <span class="sig">${esc(BRAND.founder)}</span>
-      </div>
-      <div class="copy">
-        <span class="eyebrow">From the founder</span>
-        <h2 id="founder-title" class="h-lg" style="margin-top:14px">${esc(BRAND.founder)}</h2>
-        <p class="muted" style="margin-top:10px">${esc(BRAND.founderRole)}</p>
-        <p class="quote">“${esc(cfg.founderQuote)}”</p>
-        <div class="row" style="margin-top:26px"><a class="btn btn-ghost" href="#/story">Read the full story ${icon("arrowRight", "sm")}</a></div>
+  <section class="wrap ax-section" aria-labelledby="founder-title">
+    <div class="ax-founder">
+      <div class="ax-founder-mark" aria-hidden="true">JR</div>
+      <div>
+        <span class="ax-tile-kicker">From the founder</span>
+        <blockquote class="ax-quote">“${esc(cfg.founderQuote)}”</blockquote>
+        <p id="founder-title" class="ax-founder-name">${esc(BRAND.founder)} <span>${esc(BRAND.founderRole)}</span></p>
+        <a class="ax-link ax-link-light" href="#/story">Read our story ${icon("chevronRight", "sm")}</a>
       </div>
     </div>
   </section>
 
   ${cfg.showReviews ? `
-  <section class="wrap section" aria-labelledby="reviews-title">
-    <div class="section-head"><div><span class="eyebrow">Kind words</span><h2 id="reviews-title" class="h-lg" style="margin-top:14px">What our customers say</h2><p class="lead">Taken from WhatsApp messages and Google reviews, shared with permission.</p></div></div>
-    <div class="reviews">${reviews}</div>
+  <section class="wrap ax-section" aria-labelledby="reviews-title">
+    <div class="ax-head"><h2 id="reviews-title" class="ax-h2">Kind words. <span>From WhatsApp messages and Google reviews.</span></h2></div>
+    <div class="reviews ax-reviews">${reviews}</div>
   </section>` : ""}
 
   ${cfg.showFaq ? `
-  <section class="wrap section" aria-labelledby="faq-title">
+  <section class="wrap ax-section" aria-labelledby="faq-title">
     <div class="faq-wrap">
-      <div><span class="eyebrow">Good to know</span><h2 id="faq-title" class="h-lg" style="margin-top:14px">Questions, answered</h2><p class="lead">Delivery, preparation, cancellations, refunds and Jix coins in plain words. Still curious? Ask Jixcy-bot.</p>
-        <div class="row" style="margin-top:22px"><button class="btn btn-brand" data-act="toggleBot">${icon("sparkles", "sm")} Ask Jixcy-bot</button></div></div>
-      <div class="card pad accordion">${faqs}</div>
+      <div><h2 id="faq-title" class="ax-h2">Questions, answered.</h2><p class="ax-sub" style="margin:14px 0 22px">Delivery, preparation, cancellations, refunds and Jix coins in plain words.</p>
+        <button class="btn btn-soft" data-act="toggleBot">${icon("sparkles", "sm")} Ask Jixcy-bot</button></div>
+      <div class="accordion ax-faq">${faqs}</div>
     </div>
   </section>` : ""}
 
-  <section class="wrap section">
-    <div class="cta-band">
-      <div><h2 class="h-lg">Start with a bottle of our signature hair oil</h2><p>Made at home with curry leaves, amla and sesame. Delivered within Mumbai after you order.</p></div>
-      <div class="row"><a class="btn btn-brand" href="#/product/hair-oil">Shop hair oil ${icon("arrowRight", "sm")}</a><a class="btn btn-ghost" href="#/contact">Talk to us</a></div>
+  <section class="wrap ax-section">
+    <div class="ax-final">
+      <h2 class="ax-h2">Taste the difference a slow press makes.</h2>
+      <p>Start with our bestselling groundnut oil, pressed fresh for your order.</p>
+      <div class="ax-cta"><a class="btn btn-brand btn-lg" href="#/product/groundnut-oil">Shop groundnut oil</a><a class="ax-link" href="#/contact">Talk to us ${icon("chevronRight", "sm")}</a></div>
     </div>
   </section>`;
 }
@@ -2434,35 +3209,45 @@ function shopFiltered() {
   if (shopState.cat !== "all") list = list.filter(p => p.cat === shopState.cat);
   if (shopState.q) {
     const q = shopState.q.toLowerCase();
-    list = list.filter(p => (p.name + " " + p.short + " " + p.desc + " " + catLabel(p.cat)).toLowerCase().includes(q));
+    list = list.filter(p => { const f = familyOf(p.id); return (p.name + " " + p.short + " " + p.desc + " " + catLabel(p.cat) + " " + (f ? f.name : "")).toLowerCase().includes(q); });
   }
-  const sorted = [...list];
-  if (shopState.sort === "low") sorted.sort((a, b) => minPrice(a) - minPrice(b));
-  if (shopState.sort === "high") sorted.sort((a, b) => minPrice(b) - minPrice(a));
-  if (shopState.sort === "rating") sorted.sort((a, b) => b.rating - a.rating);
-  if (shopState.sort === "name") sorted.sort((a, b) => a.name.localeCompare(b.name));
-  return sorted;
+  return list;
 }
-
+function shopEntries() {
+  const entries = toEntries(shopFiltered());
+  if (shopState.sort === "low") entries.sort((a, b) => a.min - b.min);
+  if (shopState.sort === "high") entries.sort((a, b) => b.min - a.min);
+  if (shopState.sort === "rating") entries.sort((a, b) => b.rating - a.rating);
+  if (shopState.sort === "name") entries.sort((a, b) => a.name.localeCompare(b.name));
+  return entries;
+}
 function shopGridHtml() {
-  const list = shopFiltered();
-  if (!list.length) return `<div class="empty card"><div class="big">${icon("search")}</div><h2 class="h-md">No products match</h2><p class="lead" style="margin:10px auto 22px">Try another word, or clear the filters.</p><button class="btn btn-brand" data-act="shopReset">Clear filters</button></div>`;
-  return `<p class="results-count" aria-live="polite">${list.length} product${list.length === 1 ? "" : "s"}${shopState.cat !== "all" ? " in " + esc(catLabel(shopState.cat)) : ""}${shopState.q ? " matching “" + esc(shopState.q) + "”" : ""}</p><div class="product-grid">${list.map(productCard).join("")}</div>`;
+  const entries = shopEntries();
+  if (!entries.length) return `<div class="empty card"><div class="big">${icon("search")}</div><h2 class="h-md">No products match</h2><p class="lead" style="margin:10px auto 22px">Try another word, or clear the filters.</p><button class="btn btn-brand" data-act="shopReset">Clear filters</button></div>`;
+  const count = `<p class="results-count" aria-live="polite">${entries.length} ${plural("item", entries.length)}${shopState.cat !== "all" ? " in " + esc(catLabel(shopState.cat)) : ""}${shopState.q ? " matching “" + esc(shopState.q) + "”" : ""}</p>`;
+  if (shopState.cat === "all" && !shopState.q && shopState.sort === "featured") {
+    return count + CATEGORIES.map(c => {
+      const items = entries.filter(e => e.cat === c.id);
+      if (!items.length) return "";
+      return `<section class="ax-shop-sec" id="sec-${c.id}" aria-labelledby="sh-${c.id}">
+        <div class="ax-head"><h2 id="sh-${c.id}" class="ax-h3">${esc(c.label)} <span>${esc(c.blurb)}</span></h2></div>
+        <div class="product-grid">${items.map(entryCard).join("")}</div></section>`;
+    }).join("");
+  }
+  return count + `<div class="product-grid">${entries.map(entryCard).join("")}</div>`;
 }
 
 function pageShop(params) {
   if (params.has("q")) shopState.q = params.get("q") || "";
   if (params.has("cat")) shopState.cat = params.get("cat") || "all";
-  if (!params.has("cat") && !params.has("q") && location.hash === "#/shop") { /* keep current filters */ }
-  const chips = [["all", "All products"], ...CATEGORIES.map(c => [c.id, c.label])].map(([id, label]) => `<button class="chip ${shopState.cat === id ? "on" : ""}" data-act="setCat" data-id="${id}" aria-pressed="${shopState.cat === id}">${id !== "all" ? icon(CATEGORIES.find(c => c.id === id).icon, "sm") : ""} ${esc(label)}</button>`).join("");
+  const chips = [["all", "All"], ...CATEGORIES.map(c => [c.id, c.label])].map(([id, label]) => `<button class="chip ${shopState.cat === id ? "on" : ""}" data-act="setCat" data-id="${id}" aria-pressed="${shopState.cat === id}">${esc(label)}</button>`).join("");
   return `
-  <section class="wrap page-head">
-    <span class="eyebrow">The shop</span>
-    <h1 class="h-lg" style="margin-top:14px">Everything from the kitchen</h1>
-    <p class="lead">${visibleProducts().length} products, in the sizes we press and pack. Every order is prepared after you place it.</p>
+  <section class="wrap ax-page-head">
+    <h1 class="ax-h1">Shop.</h1>
+    <p class="ax-sub">Every product is pressed, ground or packed after you order. Choose a size, a variety, and we do the rest.</p>
   </section>
   <section class="wrap">
-    <div class="toolbar">
+    <div class="ax-shop-bar">
       <div class="search-box">${icon("search", "sm")}<label class="sr" for="shop-q">Search the shop</label>
         <input id="shop-q" class="input" type="search" value="${esc(shopState.q)}" placeholder="Search oils, ghee, millets, soaps" data-input="shopSearch" autocomplete="off"></div>
       <label class="sr" for="shop-sort">Sort products</label>
@@ -2474,10 +3259,10 @@ function pageShop(params) {
         <option value="name" ${shopState.sort === "name" ? "selected" : ""}>Name A to Z</option>
       </select>
     </div>
-    <div class="chips" role="group" aria-label="Filter by category">${chips}</div>
+    <div class="chips ax-seg" role="group" aria-label="Filter by category">${chips}</div>
     <div id="shop-grid">${shopGridHtml()}</div>
   </section>
-  <section class="wrap section tight">${trustBand()}</section>`;
+  <section class="wrap ax-section">${trustBand()}</section>`;
 }
 
 INPUTS.shopSearch = (el) => {
@@ -2543,55 +3328,71 @@ function pageProduct(p) {
   if (pdp.pid !== p.id) { pdp.pid = p.id; pdp.si = 0; pdp.qty = 1; }
   if (pdp.si >= p.sizes.length) pdp.si = 0;
   const size = p.sizes[pdp.si];
-  const cat = CATEGORIES.find(c => c.id === p.cat);
-  const related = productsIn(p.cat).filter(x => x.id !== p.id).slice(0, 4);
+  const cat = CATEGORIES.find(c => c.id === p.cat) || CATEGORIES[0];
+  const fam = familyOf(p.id);
+  const members = fam ? familyMembers(fam) : [];
+  const title = fam ? fam.name : p.name;
+  const vname = fam ? variantName(p) : "";
   const user = currentUser();
   const wished = user && user.wishlist.includes(p.id);
   const entry = S.catalog.find(c => c.id === p.id);
+  const related = toEntries(productsIn(p.cat)).filter(e => !(e.kind === "p" && e.p.id === p.id) && !(e.kind === "f" && fam && e.f.id === fam.id)).slice(0, 4);
+  const cfg = S.config;
+  const weight = size.g >= 1000 ? (size.g / 1000).toFixed(2) + " kg" : size.g + " g";
   return `
-  <section class="wrap section" style="padding-top:26px">
-    ${crumbs([{ label: "Home", href: "#/" }, { label: "Shop", href: "#/shop" }, { label: cat.label, href: "#/shop?cat=" + cat.id }, { label: p.name }])}
+  <section class="wrap ax-pd-wrap">
+    ${crumbs([{ label: "Home", href: "#/" }, { label: "Shop", href: "#/shop" }, { label: cat.label, href: "#/shop?cat=" + cat.id }, { label: fam ? fam.name + ", " + vname : p.name }])}
     <div class="pd">
       <div class="pd-gallery">
         <div class="pd-stage">${productVisual(p, entry)}</div>
+        ${fam && members.length > 1 ? `<nav class="ax-thumbs" aria-label="${esc(fam.name)} ${esc(plural(fam.pick.toLowerCase(), 2))}">${members.map(m => `<a href="#/product/${m.id}" class="${m.id === p.id ? "on" : ""}" ${m.id === p.id ? 'aria-current="true"' : ""} aria-label="${esc(variantName(m))}">${packArt(m)}</a>`).join("")}</nav>` : ""}
       </div>
       <div class="pd-info">
-        <div class="row" style="gap:10px">${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ""}<span class="stars">${icon("star")} ${p.rating} <span class="muted" style="font-weight:700">· ${p.reviews} reviews</span></span></div>
-        <h1>${esc(p.name)}</h1>
-        <p class="lead" style="margin-top:14px">${esc(p.desc)}</p>
-        <div class="pd-price" aria-live="polite">${inr(size.p)} <span class="muted small" style="font-family:Manrope;font-weight:700">${size.l} · about ${size.g >= 1000 ? (size.g / 1000).toFixed(2) + " kg" : size.g + " g"}</span></div>
+        <div class="ax-pd-top">${p.tag ? `<span class="ax-badge">${esc(p.tag)}</span>` : ""}<span class="stars">${icon("star")} ${p.rating} <span class="muted">· ${p.reviews} reviews</span></span></div>
+        <h1>${esc(title)}</h1>
+        ${fam ? `<p class="ax-variant">${esc(vname)}</p>` : ""}
+        <p class="lead ax-desc">${esc(p.desc)}</p>
+        <div class="pd-price" aria-live="polite">${inr(size.p)} <span>${esc(size.l)} · about ${weight}</span></div>
 
-        <div class="label" style="margin-top:22px" id="size-label">Choose a size</div>
-        <div class="sizes" role="radiogroup" aria-labelledby="size-label">
-          ${p.sizes.map((s, i) => `<button type="button" class="size ${i === pdp.si ? "on" : ""}" role="radio" aria-checked="${i === pdp.si}" data-act="selectSize" data-si="${i}"><b>${esc(s.l)}</b><span>${inr(s.p)}</span></button>`).join("")}
+        ${fam ? `
+        <div class="ax-opt">
+          <div class="label" id="var-label">${esc(fam.pick)} <span class="muted">${esc(vname)}</span></div>
+          <div class="ax-swatches" aria-labelledby="var-label">${members.map(m => `<a class="ax-swatch ${m.id === p.id ? "on" : ""}" href="#/product/${m.id}" ${m.id === p.id ? 'aria-current="true"' : ""}><i style="background:${(m.art || {}).color || "#ccc"}" aria-hidden="true"></i><span>${esc(variantName(m))}</span></a>`).join("")}</div>
+        </div>` : ""}
+
+        <div class="ax-opt">
+          <div class="label" id="size-label">Size</div>
+          <div class="sizes" role="radiogroup" aria-labelledby="size-label">
+            ${p.sizes.map((s, i) => `<button type="button" class="size ${i === pdp.si ? "on" : ""}" role="radio" aria-checked="${i === pdp.si}" data-act="selectSize" data-si="${i}"><b>${esc(s.l)}</b><span>${inr(s.p)}</span></button>`).join("")}
+          </div>
         </div>
 
-        <div class="label" id="qty-label">Quantity</div>
-        <div class="buy" style="margin-top:10px" aria-labelledby="qty-label">
-          ${qtyControl("pdp", pdp.qty)}
-          <button type="button" class="btn btn-brand" data-act="pdpAdd" ${pdp.qty < 1 ? "disabled" : ""}>${icon("cart", "sm")} Add to basket · ${inr(size.p * Math.max(pdp.qty, 1))}</button>
-          <button type="button" class="icon-btn ${wished ? "on" : ""}" data-act="toggleWish" data-pid="${p.id}" aria-pressed="${!!wished}" aria-label="${wished ? "Remove from" : "Save to"} wishlist">${icon("heart", "sm")}</button>
-        </div>
-        <p class="qty-hint">Choose 0 to 100 units. Set the quantity to 0 to leave this out.</p>
-
-        <div class="notice" style="margin-top:20px">${icon("truck")}<div>${S.config.freeDeliveryAbove < 0 ? "" : `Free delivery on product totals above ${inr(S.config.freeDeliveryAbove)}. Below that, ${inr(S.config.deliveryPerKg)} per kg, calculated at checkout. We deliver within Mumbai.`}</div></div>
-        <div class="notice warn" style="margin-top:10px">${icon("clock")}<div>Made to order. Dispatched within ${S.config.prepHours} hours of your order, so this bottle keeps its full shelf life.</div></div>
-
-        <div class="feature-row">
-          <div class="feature">${icon("thermometer")}<strong>Pressed slowly</strong><span>No heat, no solvents.</span></div>
-          <div class="feature">${icon("leaf")}<strong>Nothing added</strong><span>No chemicals or preservatives.</span></div>
-          <div class="feature">${icon("hand")}<strong>Small batch</strong><span>Filled and packed by hand.</span></div>
+        <div class="ax-opt">
+          <div class="label" id="qty-label">Quantity</div>
+          <div class="buy" aria-labelledby="qty-label">
+            ${qtyControl("pdp", pdp.qty)}
+            <button type="button" class="btn btn-brand btn-lg" data-act="pdpAdd" ${pdp.qty < 1 ? "disabled" : ""}>${icon("cart", "sm")} Add to basket · ${inr(size.p * Math.max(pdp.qty, 1))}</button>
+            <button type="button" class="icon-btn ${wished ? "on" : ""}" data-act="toggleWish" data-pid="${p.id}" aria-pressed="${!!wished}" aria-label="${wished ? "Remove from" : "Save to"} wishlist">${icon("heart", "sm")}</button>
+          </div>
+          <p class="qty-hint">Choose 0 to 100 units. Set the quantity to 0 to leave this out.</p>
         </div>
 
-        ${p.ing && p.ing.length ? `<div class="card pad" style="margin-top:26px"><h3 class="h-md" style="margin-bottom:12px">What is inside</h3><ul style="margin:0;padding-left:20px;color:var(--muted);display:grid;gap:6px">${p.ing.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        <ul class="ax-info">
+          <li>${icon("clock", "sm")}<div><strong>Made to order</strong><span>Dispatched within ${cfg.prepHours} hours of your order, so it keeps its full shelf life.</span></div></li>
+          <li>${icon("truck", "sm")}<div><strong>Delivery in Mumbai</strong><span>Free on product totals above ${inr(cfg.freeDeliveryAbove)}. Below that, ${inr(cfg.deliveryPerKg)} per kg, calculated at checkout.</span></div></li>
+          <li>${icon("sparkles", "sm")}<div><strong>Earn Jix coins</strong><span>About ${Math.floor(size.p * cfg.coinPerRupee)} coins on this size.</span></div></li>
+          <li>${icon("shieldCheck", "sm")}<div><strong>Easy cancellations and refunds</strong><span>Cancel within ${cfg.cancelHours} hours. Report a problem within ${cfg.refundHours} hours of delivery.</span></div></li>
+        </ul>
+
+        ${p.ing && p.ing.length ? `<details class="ax-more" open><summary>What is inside ${icon("chevronDown", "sm")}</summary><ul>${p.ing.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>` : ""}
       </div>
     </div>
   </section>
 
   ${related.length ? `
-  <section class="wrap section tight">
-    <div class="section-head"><div><span class="eyebrow">More from ${esc(cat.label.toLowerCase())}</span><h2 class="h-md" style="margin-top:12px">You may also like</h2></div><a class="btn btn-ghost" href="#/shop?cat=${cat.id}">See all ${esc(cat.label.toLowerCase())}</a></div>
-    <div class="product-grid">${related.map(productCard).join("")}</div>
+  <section class="wrap ax-section">
+    <div class="ax-head"><h2 class="ax-h3">You may also like</h2><a class="ax-link" href="#/shop?cat=${cat.id}">All ${esc(cat.label.toLowerCase())} ${icon("chevronRight", "sm")}</a></div>
+    <div class="product-grid">${related.map(entryCard).join("")}</div>
   </section>` : ""}`;
 }
 
