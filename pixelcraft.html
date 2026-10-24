@@ -310,6 +310,116 @@ label.pbtn{cursor:pointer}
 .preview.isvideo .dl{bottom:64px}
 @media (max-width:899px){.cview.chatopen .vpill{height:38px;min-width:76px;padding:0 16px}.cview.chatopen .livecap{display:none}.cview.chatopen .dot{width:7px;height:7px}}
 @media (min-width:900px){.cview.kb .vslot{display:flex}}
+/* ================= v2: smoothness, colour, setup, recorder ================= */
+html{touch-action:manipulation}
+button,label,a,.tile{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+/* lighter rendering on phones: no live blur on small, frequently drawn elements */
+.badge,.kind,.dl,.vb,.vx{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.badge,.kind{background:rgba(10,10,14,.62);color:#fff;border-color:rgba(255,255,255,.18)}
+[data-mode="light"] .badge,[data-mode="light"] .kind{background:rgba(255,255,255,.86);color:var(--text);border-color:var(--line2)}
+.dl{background:var(--surface);border-color:var(--line3)}
+@keyframes wave{0%,100%{opacity:.3;transform:translateY(0) scale(.85)}35%{opacity:1;transform:translateY(-5px) scale(1.12)}}
+.tile,.ver,.row,.pbtn,.tbtn,.ibtn,.chip,.fab,.vpill{will-change:transform}
+
+/* one persistent voice dock for every screen */
+.vdock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;max-width:min(72vw,520px);transition:bottom .35s cubic-bezier(.2,.8,.2,1),opacity .25s}
+.vdock[hidden]{display:none!important}
+.vdock>*{pointer-events:auto}
+.livecap{pointer-events:none!important}
+.vpill{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--line2);min-width:104px}
+.vpill .dots{display:flex;gap:7px;align-items:center}
+.vpill .mic,.vpill .recsq{display:none}
+.vpill.off .dots{display:none}.vpill.off .mic{display:grid;place-items:center;color:var(--accent)}
+.vpill.off{min-width:68px;box-shadow:var(--shadow-s)}
+.vpill.listen{box-shadow:var(--shadow-s),0 0 0 4px var(--glow);border-color:transparent}
+.vpill.rec .dots{display:none}.vpill.rec .recsq{display:block;width:16px;height:16px;border-radius:4px;background:var(--danger)}
+.vpill.rec{box-shadow:0 0 0 4px rgba(255,80,80,.3)}
+body[data-view="container"] .vdock{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+body[data-view="container"] .cview{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+body.chatopen .cview{padding-bottom:0}
+@media (max-width:899px){
+  body.chatopen .vdock{bottom:calc((100dvh - 96px) * .5 + 6px)}
+  body.chatopen .vpill{height:40px;min-width:80px;padding:0 16px}
+  body.chatopen .dot{width:7px;height:7px}
+  body.chatopen .livecap{display:none}
+  body.kb .vdock{opacity:0;pointer-events:none}
+  .chat{flex:0 0 calc((100dvh - 96px) * .5)}
+}
+@media (min-width:900px){body.chatopen .vdock{left:calc(50% - 200px)}}
+.vslot{display:none!important}
+
+/* colour: restrained, but present on every screen */
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line2) 10%,color-mix(in srgb,var(--accent) 70%,transparent) 42%,color-mix(in srgb,var(--accent2) 70%,transparent) 58%,var(--line2) 90%,transparent)}
+.tbtn{color:var(--accent)}
+.tbtn:active,.tbtn.on{color:var(--onsel)}
+.ibtn#menuBtn{color:var(--accent)}
+.ibtn.mode .moon{color:var(--accent2)}.ibtn.mode .sun{color:var(--warn)}
+.vtitle h1{background:linear-gradient(90deg,var(--text),var(--text) 60%,var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cap .mini svg.i,.cname .mini{color:var(--accent)}
+.cap .mini:last-child svg.i,.cname .mini:last-of-type{color:var(--faint)}
+.badge{color:#fff}.badge svg.i{color:var(--accent2)}
+.kind svg.i{color:var(--accent)}
+.card h2{color:var(--accent)}
+.sech .ric,.row .ric{background:color-mix(in srgb,var(--accent) 14%,var(--surface2))}
+.tile{box-shadow:var(--shadow-s),0 0 0 0 var(--glow)}
+.tile.empty::after{border-color:color-mix(in srgb,var(--accent) 45%,var(--line2))}
+.chip.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.stat.ok{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.note b,.folder b{color:var(--text)}
+.ver.cur{box-shadow:0 0 0 2px var(--accent),0 0 14px var(--glow)}
+.emptyhome .big{background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--accent)}
+.pempty .big{background:color-mix(in srgb,var(--accent) 12%,var(--surface2))}
+.qn{color:var(--accent)}
+
+/* first-run setup card (white) and progress bar */
+.setup{position:fixed;inset:0;z-index:85;display:grid;place-items:center;padding:20px;background:var(--scrim);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fadein .35s ease}
+.scard{width:100%;max-width:440px;background:#FFFFFF;color:#121216;border-radius:28px;padding:28px 24px 22px;box-shadow:0 30px 80px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:14px;text-align:center;animation:rise .45s cubic-bezier(.2,.8,.2,1)}
+.scard h2{margin:0;font-size:1.3rem;font-weight:700;letter-spacing:-.01em}
+.scard p{margin:0;font-size:.95rem;line-height:1.55;color:#3A3A44}
+.scard .small{font-size:.82rem;color:#6A6A76}
+.sbadge{width:60px;height:60px;margin:0 auto;border-radius:20px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#7B83F7,#A88EFA);box-shadow:0 10px 24px rgba(123,131,247,.45)}
+.sbadge svg.i{width:28px;height:28px}
+.sfacts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sfacts div{border-radius:16px;background:#F3F3F8;padding:12px 10px;display:flex;flex-direction:column;gap:2px}
+.sfacts b{font-size:1rem;color:#121216}.sfacts span{font-size:.75rem;color:#6A6A76}
+.scard .pbtn.big{min-height:56px;font-size:1.02rem;border-radius:18px}
+.scard .pbtn.prime{background:linear-gradient(135deg,#6E76F2,#9B7BF7);color:#fff}
+.setupbar{flex:none;display:flex;align-items:center;gap:14px;margin:10px 18px 0;padding:12px 14px;border-radius:20px;background:var(--surface);border:1px solid var(--line2);box-shadow:var(--shadow-s);animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+.setupbar[hidden]{display:none!important}
+.sbring{position:relative;width:52px;height:52px;flex:none}
+.sring{width:52px;height:52px;transform:rotate(-90deg)}
+.sring .bgc{stroke:var(--line2)}.sring .fgc{stroke:url(#rg);transition:stroke-dashoffset .4s ease}
+.sbp{position:absolute;inset:0;display:grid;place-items:center;font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.sbtx{flex:1;display:flex;flex-direction:column;gap:4px;font-size:.84rem}
+.sbtx b{font-weight:600;font-size:.9rem}
+.sbtx span{color:var(--muted);line-height:1.4}
+.sbbtns{display:flex;gap:8px;margin-top:4px}
+.sbbtns .chip{height:32px}
+.setupbar #sbretry{display:none}
+.setupbar[data-state="fail"] #sbretry{display:inline-flex;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.setupbar[data-state="done"] .sbbtns,.setupbar[data-state="done"] #sbmore{display:none}
+.setupbar[data-state="done"] .sbp::after{content:"✓";font-size:1.1rem;color:var(--ok)}
+
+/* camera recorder */
+.recl{position:fixed;inset:0;z-index:75;background:#000;display:block;animation:fadein .25s ease}
+.recbg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.recpv{position:absolute;object-fit:cover;background:#111}
+.recpv.full{inset:0;width:100%;height:100%}
+.recpv.pip{right:16px;bottom:120px;width:min(34vw,240px);aspect-ratio:3/4;border-radius:20px;border:2px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.recpv.mirror{transform:scaleX(-1)}
+.prompter{position:absolute;left:16px;right:16px;top:calc(60px + env(safe-area-inset-top,0px));height:30vh;overflow:hidden;border-radius:18px;background:rgba(0,0,0,.45);padding:14px 18px;-webkit-mask-image:linear-gradient(transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(transparent,#000 18%,#000 82%,transparent)}
+.ptext{color:#fff;font-size:1.45rem;line-height:1.5;font-weight:600;text-align:center;will-change:transform}
+.rectop{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-weight:600;font-variant-numeric:tabular-nums}
+.recdot{width:10px;height:10px;border-radius:50%;background:#FF4D4D;animation:think 1.2s ease-in-out infinite}
+.countdown{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:7rem;font-weight:700;pointer-events:none;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+.countdown.pulse{animation:cd .9s ease-out}
+@keyframes cd{from{transform:scale(1.4);opacity:0}30%{opacity:1}to{transform:scale(.9);opacity:.2}}
+.recbar{position:absolute;left:0;right:0;bottom:calc(28px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:center;padding:0 28px}
+.recbar .ibtn{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)}
+.recstop{width:76px;height:76px;border-radius:50%;border:4px solid #fff;display:grid;place-items:center;background:transparent}
+.recstop span{width:30px;height:30px;border-radius:8px;background:#FF4D4D}
+.recstop:active{transform:scale(.94)}
+.noanim>*{animation:none!important}
 </style>
 </head>
 <body>
@@ -332,9 +442,15 @@ label.pbtn{cursor:pointer}
     </div>
   </header>
   <div class="rule"></div>
+  <div class="setupbar" id="setupbar" hidden role="status" aria-live="polite">
+    <div class="sbring"><svg viewBox="0 0 48 48" class="sring" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke-width="4" class="bgc"/><circle id="sbr" cx="24" cy="24" r="20" fill="none" stroke-width="4" stroke-linecap="round" class="fgc" stroke-dasharray="125.66" stroke-dashoffset="125.66"/></svg><span class="sbp" id="sbp">0%</span></div>
+    <div class="sbtx"><b id="sbt">Importing critical components for initial app setup</b><span id="sbmore" hidden>Downloading in progress. Meanwhile, you can explore the Menu and add an API key to enhance your experience.</span>
+      <div class="sbbtns"><button class="chip" id="sbmenu">Menu</button><button class="chip" id="sbkeys">API keys</button><button class="chip" id="sbretry">Retry</button></div></div>
+  </div>
   <main id="main" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column"></main>
 </div>
 <div id="layer"></div>
+<div class="vdock" id="vdock" hidden><p class="livecap" id="livecap" aria-live="polite"></p><button class="vpill off" id="vpill" data-act="voice" data-st="off" aria-label="Voice is off. Tap to start listening"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="mic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span class="recsq"></span></button></div>
 <div class="start" id="start" role="button" tabindex="0" aria-label="Tap anywhere to start">
   <div class="box">
     <div class="orb" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
@@ -455,17 +571,32 @@ const G={base:'https://generativelanguage.googleapis.com/',rr:0,models:null,list
 };
 async function testKey(k){k.st='checking';saveS();try{const r=await fetch(G.base+'v1beta/models?pageSize=1',{headers:{'x-goog-api-key':k.key}});k.st=r.ok?'active':'inactive'}catch(e){k.st='unknown'}saveS();if(typeof onKeysChanged==='function')onKeysChanged()}
 
+/* ---------- workers: heavy work runs off the screen thread ---------- */
+function makeWorker(fn){const src='('+fn.toString()+')()';return new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})),{type:'module'})}
+function workerRPC(fn){let w=null,seq=0;const cb=new Map();const ensure=()=>{if(w)return w;w=makeWorker(fn);
+    w.onmessage=e=>{const m=e.data;if(m&&m.event){(rpc.onEvent||(()=>{}))(m);return}const c=cb.get(m.id);if(!c)return;cb.delete(m.id);m.error?c.rej(mkErr(m.error)):c.res(m.result)};
+    w.onerror=e=>{for(const c of cb.values())c.rej(mkErr('Background worker failed'));cb.clear();w=null};return w};
+  const rpc={call(type,payload={},transfer=[]){return new Promise((res,rej)=>{const id=++seq;cb.set(id,{res,rej});try{ensure().postMessage({id,type,...payload},transfer)}catch(e){cb.delete(id);rej(e)}})},
+    get started(){return !!w},kill(){if(w){w.terminate();w=null}}};return rpc}
+
+/* ---------- background queue: low priority, pauses the moment the user interacts ---------- */
+const Bg={last:Date.now(),tasks:[],running:false,
+  touch(){this.last=Date.now()},
+  free(){return (typeof Gen!=='undefined'&&Gen.running)||(Date.now()-this.last>9000&&!(typeof Voice!=='undefined'&&Voice.speaking)&&!(typeof Brain!=='undefined'&&Brain.busy)&&!document.hidden)},
+  add(name,fn){if(this.tasks.some(t=>t.name===name))return;this.tasks.push({name,fn});this.pump()},
+  async pump(){if(this.running)return;this.running=true;try{while(this.tasks.length){if(!this.free()){await sleep(1200);continue}const t=this.tasks.shift();try{await t.fn()}catch(e){}await sleep(800)}}finally{this.running=false}}};
+['pointerdown','keydown','touchstart','wheel'].forEach(ev=>addEventListener(ev,()=>Bg.touch(),{capture:true,passive:true}));
+
 /* ============================================================
-   Engines: asset library, music, fonts, image, video, export
+   Engines: library, music and sound effects, fonts, image, video, export
    ============================================================ */
 
-/* ---------- asset library: open web images saved for reuse, 500 MB limit, least used removed first ---------- */
+/* ---------- asset library: free web images saved for reuse, 500 MB, least used removed first ---------- */
 const Lib={LIMIT:500*1048576,
   async get(id){const a=await DB.get('assets',id);if(a){a.lastUsed=Date.now();a.uses=(a.uses||0)+1;DB.put('assets',a).catch(()=>{})}return a},
   async put(a){a.lastUsed=Date.now();a.size=a.blob.size;await DB.put('assets',a);this.prune().catch(()=>{})},
   async prune(){const all=await DB.all('assets');let tot=all.reduce((s,a)=>s+(a.size||0),0);if(tot<=this.LIMIT)return;
     all.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));for(const a of all){if(tot<=this.LIMIT)break;await DB.del('assets',a.id);tot-=a.size||0}},
-  async total(){const all=await DB.all('assets');return {count:all.length,size:all.reduce((s,a)=>s+(a.size||0),0)}},
   async searchImages(q,n=6){q=String(q||'').trim();if(!q)return [];const lq=q.toLowerCase();
     const all=await DB.all('assets');const out=all.filter(a=>a.kind==='image'&&(a.query||'').toLowerCase()===lq).slice(0,n);
     if(out.length>=Math.min(n,3))return out.map(this.info);
@@ -482,26 +613,30 @@ const Lib={LIMIT:500*1048576,
   info(a){return {asset_id:a.id,title:a.title,licence:a.licence,author:a.author,source:a.source}}
 };
 
-/* ---------- built-in music, generated on the device (free to reuse) ---------- */
+/* ---------- built-in music and sound effects, generated on the device ---------- */
 const MUSIC={
   calm:{bpm:72,prog:[[60,64,67,71],[57,60,64,67],[53,57,60,64],[55,59,62,65]],pad:'sine',arp:[0,2,1,3,2,1,0,-1],pluck:'triangle',drums:false,wet:.45},
   upbeat:{bpm:118,prog:[[60,64,67],[67,71,74],[69,72,76],[65,69,72]],pad:'triangle',arp:[0,1,2,1,0,1,2,3],pluck:'square',drums:'pop',wet:.2},
   cinematic:{bpm:60,prog:[[50,57,62,65],[46,53,58,62],[48,55,60,64],[45,52,57,61]],pad:'sawtooth',arp:[-1,-1,0,-1,-1,-1,2,-1],pluck:'sine',drums:'boom',wet:.6},
   festive:{bpm:112,prog:[[62,66,69],[67,71,74],[64,67,71],[69,73,76]],pad:'triangle',arp:[0,2,1,2,0,2,1,3],pluck:'sine',drums:'clap',wet:.3},
   romantic:{bpm:78,prog:[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]],pad:'sine',arp:[0,1,2,3,2,1,0,1],pluck:'sine',drums:false,wet:.5},
-  corporate:{bpm:100,prog:[[60,64,67,72],[57,60,64,69],[65,69,72,77],[67,71,74,79]],pad:'triangle',arp:[0,2,1,3,0,2,1,3],pluck:'triangle',drums:'soft',wet:.25}
+  corporate:{bpm:100,prog:[[60,64,67,72],[57,60,64,69],[65,69,72,77],[67,71,74,79]],pad:'triangle',arp:[0,2,1,3,0,2,1,3],pluck:'triangle',drums:'soft',wet:.25},
+  inspiring:{bpm:90,prog:[[60,67,72,76],[55,62,67,71],[57,64,69,72],[53,60,65,69]],pad:'triangle',arp:[0,1,2,3,2,3,1,2],pluck:'sine',drums:'soft',wet:.4},
+  playful:{bpm:126,prog:[[60,64,67],[62,65,69],[64,67,71],[65,69,72]],pad:'square',arp:[0,2,1,2,0,2,1,2],pluck:'triangle',drums:'pop',wet:.15}
 };
 const musicCache=new Map();
+function impulse(ctx,sec){const sr=ctx.sampleRate,L=Math.floor(sr*sec),ir=ctx.createBuffer(2,L,sr);for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<L;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/L,2.6)}return ir}
 async function musicBuffer(style,secs){style=MUSIC[style]?style:'calm';secs=Math.ceil(clamp(secs,3,900));const key=style+':'+secs;if(musicCache.has(key))return musicCache.get(key);
   const P=MUSIC[style],sr=44100,ctx=new OfflineAudioContext(2,Math.ceil((secs+1.5)*sr),sr);const mtof=n=>440*Math.pow(2,(n-69)/12);
   const master=ctx.createGain();master.gain.value=.55;const comp=ctx.createDynamicsCompressor();master.connect(comp);comp.connect(ctx.destination);
-  const conv=ctx.createConvolver();const L=Math.floor(sr*2.4),ir=ctx.createBuffer(2,L,sr);for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<L;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/L,2.6)}conv.buffer=ir;const wet=ctx.createGain();wet.gain.value=P.wet;master.connect(conv);conv.connect(wet);wet.connect(comp);
+  const conv=ctx.createConvolver();conv.buffer=impulse(ctx,2.4);const wet=ctx.createGain();wet.gain.value=P.wet;master.connect(conv);conv.connect(wet);wet.connect(comp);
   const tone=(type,f,t,d,v,a=.02,r=.3,cut=0)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=f;let node=o;if(cut){const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=cut;o.connect(fl);node=fl}node.connect(g);g.connect(master);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.setValueAtTime(v,Math.max(t+a,t+d-r));g.gain.linearRampToValueAtTime(0,t+d);o.start(t);o.stop(t+d+.05)};
-  const noise=(t,d,v,hp)=>{const b=ctx.createBuffer(1,Math.ceil(sr*d),sr),ch=b.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;const s=ctx.createBufferSource();s.buffer=b;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp;const g=ctx.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f);f.connect(g);g.connect(master);s.start(t)};
+  const nbuf=ctx.createBuffer(1,sr,sr),nd=nbuf.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
+  const noise=(t,d,v,hp)=>{const s=ctx.createBufferSource();s.buffer=nbuf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp;const g=ctx.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.05)};
   const kick=(t,v=.9)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(42,t+.18);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g);g.connect(master);o.start(t);o.stop(t+.4)};
   const beat=60/P.bpm,bar=beat*4;let t=0,i=0;
   while(t<secs){const ch=P.prog[i%P.prog.length];
-    ch.forEach(n=>tone(P.pad,mtof(n),t,bar+.1,.05,.6,.6,P.pad==='sawtooth'?900:0));
+    ch.forEach(n=>tone(P.pad,mtof(n),t,bar+.1,.05,.6,.6,P.pad==='sawtooth'||P.pad==='square'?900:0));
     tone('sine',mtof(ch[0]-12),t,bar,.16,.05,.4);
     P.arp.forEach((ix,k)=>{if(ix<0)return;const st=t+k*bar/P.arp.length;tone(P.pluck,mtof(ch[ix%ch.length]+12*(ix>=ch.length?1:0)+12),st,bar/P.arp.length*1.6,P.pluck==='square'?.035:.07,.005,bar/P.arp.length,P.pluck==='square'?2400:0)});
     if(P.drums)for(let b=0;b<4;b++){const bt=t+b*beat;
@@ -510,81 +645,257 @@ async function musicBuffer(style,secs){style=MUSIC[style]?style:'calm';secs=Math
     t+=bar;i++}
   master.gain.setValueAtTime(.55,Math.max(0,secs-2.5));master.gain.linearRampToValueAtTime(0,secs+.8);
   const buf=await ctx.startRendering();musicCache.set(key,buf);return buf}
+const SFX=['whoosh','swoosh','pop','click','chime','ding','sparkle','applause','drum_roll','heartbeat','magic','boom','camera_shutter'];
+async function sfxBuffer(kind){const key='sfx:'+kind;if(musicCache.has(key))return musicCache.get(key);const sr=44100,len={applause:2.6,drum_roll:1.8,heartbeat:1.6,magic:1.6,chime:2.2,ding:1.8,sparkle:1.4,boom:2,whoosh:1,swoosh:.7}[kind]||.5;
+  const ctx=new OfflineAudioContext(2,Math.ceil(sr*len),sr),out=ctx.createGain();out.gain.value=.9;out.connect(ctx.destination);
+  const nb=ctx.createBuffer(1,Math.ceil(sr*len),sr),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
+  const nz=(t,d,f0,f1,v,type='bandpass',q=1)=>{const s=ctx.createBufferSource();s.buffer=nb;const f=ctx.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+d);const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+d*.35);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(out);s.start(t);s.stop(t+d)};
+  const tn=(t,d,f0,f1,v,type='sine')=>{const o=ctx.createOscillator();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+d);const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(out);o.start(t);o.stop(t+d)};
+  switch(kind){
+    case 'whoosh':nz(0,1,300,3000,.8,'bandpass',.7);break;case 'swoosh':nz(0,.7,2500,400,.7,'bandpass',.9);break;
+    case 'pop':tn(0,.12,900,180,.9);break;case 'click':tn(0,.04,2200,1200,.6,'square');break;
+    case 'chime':[880,1318.5,1760].forEach((f,i)=>tn(i*.12,2,f,f,.35));break;case 'ding':tn(0,1.8,1568,1568,.5);tn(0,1.2,3136,3136,.12);break;
+    case 'sparkle':for(let i=0;i<9;i++)tn(i*.12,.5,2000+Math.random()*3000,2500+Math.random()*3000,.18);break;
+    case 'applause':for(let i=0;i<120;i++)nz(Math.random()*2.2,.08,1800+Math.random()*2500,1500,.35,'bandpass',1.5);break;
+    case 'drum_roll':for(let t=0;t<1.6;t+=.045)nz(t,.08,900,600,.25+t*.25,'bandpass',.8);tn(1.6,.2,140,50,.9);break;
+    case 'heartbeat':[0,.28,.8,1.08].forEach((t,i)=>tn(t,.18,i%2?70:85,40,.9));break;
+    case 'magic':for(let i=0;i<14;i++)tn(i*.09,.6,600*Math.pow(1.12,i),700*Math.pow(1.12,i),.15,'triangle');break;
+    case 'boom':tn(0,1.8,120,30,1);nz(0,1.2,800,80,.6,'lowpass');break;
+    case 'camera_shutter':nz(0,.06,4000,2000,.8,'highpass');nz(.08,.08,3000,1500,.6,'highpass');break;
+    default:tn(0,.2,600,300,.6)}
+  const b=await ctx.startRendering();musicCache.set(key,b);return b}
 
 /* ---------- fonts for text and word art ---------- */
-const FONTS={sans:'Inter',modern:'Poppins',bold:'Montserrat',serif:'Playfair Display',display:'Bebas Neue',fun:'Lobster',script:'Great Vibes',hand:'Pacifico',condensed:'Oswald',malayalam:'Noto Sans Malayalam',hindi:'Noto Sans Devanagari',tamil:'Noto Sans Tamil'};
+const FONTS={sans:'Inter',modern:'Poppins',bold:'Montserrat',serif:'Playfair Display',display:'Bebas Neue',fun:'Lobster',script:'Great Vibes',hand:'Pacifico',condensed:'Oswald',rounded:'Nunito',typewriter:'Courier Prime',malayalam:'Noto Sans Malayalam',hindi:'Noto Sans Devanagari',tamil:'Noto Sans Tamil'};
 const ONE_WEIGHT=new Set(['Bebas Neue','Lobster','Great Vibes','Pacifico']);
 let fontsLink=null;
-async function ensureFonts(){if(!fontsLink){fontsLink=new Promise(r=>{const l=document.createElement('link');l.rel='stylesheet';
+function ensureFonts(){if(!fontsLink)fontsLink=new Promise(r=>{const l=document.createElement('link');l.rel='stylesheet';
   l.href='https://fonts.googleapis.com/css2?'+[...new Set(Object.values(FONTS))].filter(f=>f!=='Inter'&&f!=='Great Vibes').map(f=>'family='+f.replace(/ /g,'+')+(ONE_WEIGHT.has(f)?'':':wght@400;700')).join('&')+'&display=swap';
-  l.onload=r;l.onerror=r;setTimeout(r,5000);document.head.appendChild(l)})}await fontsLink}
+  l.onload=r;l.onerror=r;setTimeout(r,6000);document.head.appendChild(l)});return fontsLink}
 function fontFor(name,text){text=String(text||'');if(/[ഀ-ൿ]/.test(text))return FONTS.malayalam;if(/[ऀ-ॿ]/.test(text))return FONTS.hindi;if(/[஀-௿]/.test(text))return FONTS.tamil;return FONTS[name]||(Object.values(FONTS).includes(name)?name:'Inter')}
 async function loadLayerFonts(layers){const ls=(layers||[]).filter(l=>l&&l.kind==='text');if(!ls.length)return;await ensureFonts();
-  await Promise.all(ls.map(l=>{const f=fontFor(l.font,l.text);const w=ONE_WEIGHT.has(f)?400:(l.weight||700);return document.fonts.load(`${w} 48px "${f}"`,l.text||'A').catch(()=>{})}))}
+  await Promise.race([Promise.all(ls.map(l=>{const f=fontFor(l.font,l.text);const w=ONE_WEIGHT.has(f)?400:(l.weight||700);return document.fonts.load(`${w} 48px "${f}"`,l.text||'A').catch(()=>{})})),sleep(4000)])}
+
+/* ---------- pixel effects, GIF and MP3 encoding: all in a background worker ---------- */
+function fxWorkerMain(){
+  const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+  function rng(seed){let a=seed>>>0||1;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  function hex(c,d){c=String(c||d||'#000').replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');const n=parseInt(c,16)||0;return [n>>16&255,n>>8&255,n&255]}
+  function lumArr(d,n){const L=new Float32Array(n);for(let i=0,j=0;j<n;i+=4,j++)L[j]=.299*d[i]+.587*d[i+1]+.114*d[i+2];return L}
+  function sobel(L,w,h){const E=new Float32Array(w*h);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;
+      const gx=-L[i-w-1]-2*L[i-1]-L[i+w-1]+L[i-w+1]+2*L[i+1]+L[i+w+1],gy=-L[i-w-1]-2*L[i-w]-L[i-w+1]+L[i+w-1]+2*L[i+w]+L[i+w+1];E[i]=Math.sqrt(gx*gx+gy*gy)}return E}
+  function blurred(img,px){const oc=new OffscreenCanvas(img.width,img.height),x=oc.getContext('2d');x.putImageData(img,0,0);const oc2=new OffscreenCanvas(img.width,img.height),y=oc2.getContext('2d');y.filter=`blur(${px}px)`;y.drawImage(oc,0,0);return y.getImageData(0,0,img.width,img.height)}
+  function conv3(img,k,bias=0){const {width:w,height:h,data:s}=img,o=new ImageData(w,h),d=o.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;for(let c=0;c<3;c++){let v=0,n=0;for(let ky=-1;ky<=1;ky++)for(let kx=-1;kx<=1;kx++){const yy=clamp(y+ky,0,h-1),xx=clamp(x+kx,0,w-1);v+=s[(yy*w+xx)*4+c]*k[n++]}d[i+c]=clamp(v+bias,0,255)}d[i+3]=s[i+3]}return o}
+  function apply(img,fx){const {width:w,height:h}=img,n=w*h,a=clamp(+fx.amount||60,0,100)/100;let d=img.data;
+    switch(fx.type){
+      case 'posterize':{const lv=clamp(Math.round(+fx.levels||(2+Math.round((1-a)*8))),2,16),st=255/(lv-1);for(let i=0;i<d.length;i+=4)for(let c=0;c<3;c++)d[i+c]=Math.round(d[i+c]/st)*st;return img}
+      case 'cartoon':{const sm=blurred(img,Math.max(1,Math.round(Math.min(w,h)/400)));const s=sm.data,L=lumArr(d,n),E=sobel(L,w,h);const st=255/5;
+        for(let i=0,j=0;j<n;i+=4,j++){let r=Math.round(s[i]/st)*st,g=Math.round(s[i+1]/st)*st,b=Math.round(s[i+2]/st)*st;const m=(r+g+b)/3;r=clamp(m+(r-m)*1.35,0,255);g=clamp(m+(g-m)*1.35,0,255);b=clamp(m+(b-m)*1.35,0,255);
+          const e=E[j]>90*(1.2-a)?Math.min(1,(E[j]-60)/120):0;d[i]=r*(1-e);d[i+1]=g*(1-e);d[i+2]=b*(1-e)}return img}
+      case 'sketch':{const L=lumArr(d,n);const inv=new ImageData(w,h);for(let i=0,j=0;j<n;i+=4,j++){const v=255-L[j];inv.data[i]=inv.data[i+1]=inv.data[i+2]=v;inv.data[i+3]=255}
+        const b=blurred(inv,Math.max(2,Math.round(Math.min(w,h)/120))).data;const col=fx.colors&&fx.colors.length?hex(fx.colors[0]):null;
+        for(let i=0,j=0;j<n;i+=4,j++){let v=clamp(L[j]*255/(256-b[i]),0,255);v=255-Math.pow((255-v)/255,.8)*255;if(col){d[i]=col[0]+(v/255)*(255-col[0]);d[i+1]=col[1]+(v/255)*(255-col[1]);d[i+2]=col[2]+(v/255)*(255-col[2])}else{d[i]=v*(1-a*.0)+0;d[i+1]=v;d[i+2]=v*.97}}return img}
+      case 'duotone':{const c1=hex(fx.colors&&fx.colors[0],'#1B1464'),c2=hex(fx.colors&&fx.colors[1],'#FFB347');for(let i=0;i<d.length;i+=4){const t=(.299*d[i]+.587*d[i+1]+.114*d[i+2])/255;for(let c=0;c<3;c++)d[i+c]=c1[c]+(c2[c]-c1[c])*t}return img}
+      case 'pixelate':{const s=Math.max(2,Math.round(+fx.size||Math.max(w,h)/(20+80*(1-a))));for(let y=0;y<h;y+=s)for(let x=0;x<w;x+=s){let r=0,g=0,b=0,k=0;for(let yy=y;yy<Math.min(h,y+s);yy++)for(let xx=x;xx<Math.min(w,x+s);xx++){const i=(yy*w+xx)*4;r+=d[i];g+=d[i+1];b+=d[i+2];k++}r/=k;g/=k;b/=k;for(let yy=y;yy<Math.min(h,y+s);yy++)for(let xx=x;xx<Math.min(w,x+s);xx++){const i=(yy*w+xx)*4;d[i]=r;d[i+1]=g;d[i+2]=b}}return img}
+      case 'glitch':{const R=rng(+fx.seed||7),src=new Uint8ClampedArray(d),dx=Math.round(w*.012*(.5+a));for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;d[i]=src[(y*w+clamp(x+dx,0,w-1))*4];d[i+2]=src[(y*w+clamp(x-dx,0,w-1))*4+2]+2}
+        const sl=Math.round(6+a*14);for(let k=0;k<sl;k++){const y0=Math.floor(R()*h),hh=Math.max(2,Math.floor(R()*h*.04)),off=Math.round((R()-.5)*w*.12*a);for(let y=y0;y<Math.min(h,y0+hh);y++){const row=d.slice(y*w*4,(y+1)*w*4);for(let x=0;x<w;x++){const xs=clamp(x-off,0,w-1);d.set(row.subarray(xs*4,xs*4+3),(y*w+x)*4)}}}return img}
+      case 'grain':{const R=rng(+fx.seed||3),k=60*a;for(let i=0;i<d.length;i+=4){const v=(R()-.5)*k;d[i]=clamp(d[i]+v,0,255);d[i+1]=clamp(d[i+1]+v,0,255);d[i+2]=clamp(d[i+2]+v,0,255)}return img}
+      case 'sharpen':{const s=.5+a*1.5;return conv3(img,[0,-s,0,-s,1+4*s,-s,0,-s,0])}
+      case 'emboss':return conv3(img,[-2,-1,0,-1,1,1,0,1,2],0);
+      case 'invert':for(let i=0;i<d.length;i+=4){d[i]=255-d[i];d[i+1]=255-d[i+1];d[i+2]=255-d[i+2]}return img;
+      case 'threshold':{const t=255*(1-a*.9)*.6+40;for(let i=0;i<d.length;i+=4){const v=(.299*d[i]+.587*d[i+1]+.114*d[i+2])>t?255:0;d[i]=d[i+1]=d[i+2]=v}return img}
+      case 'halftone':{const s=Math.max(4,Math.round(Math.min(w,h)/(60+60*(1-a)))),src=new Uint8ClampedArray(d);for(let i=0;i<d.length;i+=4){d[i]=d[i+1]=d[i+2]=250}
+        for(let y=0;y<h;y+=s)for(let x=0;x<w;x+=s){const i=(Math.min(h-1,y+s/2|0)*w+Math.min(w-1,x+s/2|0))*4;const lum=(.299*src[i]+.587*src[i+1]+.114*src[i+2])/255,r=(1-lum)*s*.7;
+          for(let yy=y;yy<Math.min(h,y+s);yy++)for(let xx=x;xx<Math.min(w,x+s);xx++){const dx=xx-x-s/2,dy=yy-y-s/2;if(dx*dx+dy*dy<=r*r){const k=(yy*w+xx)*4;d[k]=src[i]*.5;d[k+1]=src[i+1]*.5;d[k+2]=src[i+2]*.5}}}return img}
+      case 'oil':{const r=Math.max(2,Math.round(Math.min(w,h)/300*(1+a*2))),lv=20,src=new Uint8ClampedArray(d);for(let y=0;y<h;y+=1)for(let x=0;x<w;x++){const cnt=new Uint16Array(lv),sr=new Float32Array(lv),sg=new Float32Array(lv),sb=new Float32Array(lv);
+          for(let yy=Math.max(0,y-r);yy<=Math.min(h-1,y+r);yy+=2)for(let xx=Math.max(0,x-r);xx<=Math.min(w-1,x+r);xx+=2){const i=(yy*w+xx)*4,l=Math.min(lv-1,((src[i]+src[i+1]+src[i+2])/3*lv/256)|0);cnt[l]++;sr[l]+=src[i];sg[l]+=src[i+1];sb[l]+=src[i+2]}
+          let m=0;for(let l=1;l<lv;l++)if(cnt[l]>cnt[m])m=l;const i=(y*w+x)*4;d[i]=sr[m]/cnt[m];d[i+1]=sg[m]/cnt[m];d[i+2]=sb[m]/cnt[m]}return img}
+      case 'cutout_mask':{const m=fx.mask;for(let j=0;j<n;j++)d[j*4+3]=m[j];return img}
+    }return img}
+  /* GIF encoder: median-cut palette per frame and LZW compression */
+  function palette(d){const samp=[];const step=Math.max(1,Math.floor(d.length/4/12000));for(let i=0;i<d.length;i+=4*step)samp.push([d[i],d[i+1],d[i+2]]);let boxes=[samp];
+    while(boxes.length<256){let bi=-1,bc=0,br=-1;boxes.forEach((b,i)=>{if(b.length<2)return;for(let c=0;c<3;c++){let mn=255,mx=0;for(const p of b){if(p[c]<mn)mn=p[c];if(p[c]>mx)mx=p[c]}if(mx-mn>br){br=mx-mn;bi=i;bc=c}}});if(bi<0||br<=0)break;
+      const b=boxes[bi].sort((p,q)=>p[bc]-q[bc]);const mid=b.length>>1;boxes.splice(bi,1,b.slice(0,mid),b.slice(mid))}
+    const pal=boxes.map(b=>{let r=0,g=0,bl=0;for(const p of b){r+=p[0];g+=p[1];bl+=p[2]}return [r/b.length|0,g/b.length|0,bl/b.length|0]});while(pal.length<256)pal.push([0,0,0]);return pal}
+  function indices(d,pal){const cache=new Int16Array(32768).fill(-1),out=new Uint8Array(d.length/4);for(let i=0,j=0;i<d.length;i+=4,j++){const k=(d[i]>>3)<<10|(d[i+1]>>3)<<5|(d[i+2]>>3);let v=cache[k];
+      if(v<0){let best=0,bd=1e9;for(let p=0;p<256;p++){const a=pal[p],dr=a[0]-d[i],dg=a[1]-d[i+1],db=a[2]-d[i+2],dd=dr*dr+dg*dg+db*db;if(dd<bd){bd=dd;best=p}}v=cache[k]=best}out[j]=v}return out}
+  function lzw(px,minSize){const clear=1<<minSize,eoi=clear+1;let nBits=minSize+1,maxcode=(1<<nBits)-1,free=clear+2,clearFlg=false;const dict=new Map(),out=[];let acc=0,accBits=0;
+    const output=code=>{acc|=code<<accBits;accBits+=nBits;while(accBits>=8){out.push(acc&255);acc>>>=8;accBits-=8}
+      if(free>maxcode||clearFlg){if(clearFlg){nBits=minSize+1;maxcode=(1<<nBits)-1;clearFlg=false}else{nBits++;maxcode=nBits===12?4096:(1<<nBits)-1}}};
+    output(clear);let ent=px[0];for(let i=1;i<px.length;i++){const c=px[i],key=(ent<<8)|c,v=dict.get(key);if(v!==undefined){ent=v;continue}
+      output(ent);ent=c;if(free<4096)dict.set(key,free++);else{dict.clear();free=clear+2;clearFlg=true;output(clear)}}
+    output(ent);output(eoi);if(accBits>0)out.push(acc&255);return out}
+  let gif=null;
+  function gifStart(w,h){const o=[];const b=v=>o.push(v&255),s=v=>{b(v);b(v>>8)},str=t=>{for(const ch of t)b(ch.charCodeAt(0))};str('GIF89a');s(w);s(h);b(0x70);b(0);b(0);b(0x21);b(0xFF);b(11);str('NETSCAPE2.0');b(3);b(1);s(0);b(0);gif={o,w,h}}
+  function gifFrame(d,delay){const {o,w,h}=gif;const b=v=>o.push(v&255),s=v=>{b(v);b(v>>8)};const pal=palette(d),idx=indices(d,pal);
+    b(0x21);b(0xF9);b(4);b(0);s(Math.round((delay||0)/10));b(0);b(0);b(0x2C);s(0);s(0);s(w);s(h);b(0x87);for(const p of pal){b(p[0]);b(p[1]);b(p[2])}
+    b(8);const data=lzw(idx,8);for(let i=0;i<data.length;i+=255){const ch=data.slice(i,i+255);b(ch.length);for(const v of ch)o.push(v)}b(0)}
+  let lame=null;
+  self.onmessage=async e=>{const m=e.data,reply=(result,tr=[])=>self.postMessage({id:m.id,result},tr);
+    try{switch(m.type){
+      case 'warm':reply(true);break;
+      case 'effects':{const oc=new OffscreenCanvas(m.bitmap.width,m.bitmap.height),x=oc.getContext('2d',{willReadFrequently:true});x.drawImage(m.bitmap,0,0);let img=x.getImageData(0,0,oc.width,oc.height);for(const fx of m.effects)img=apply(img,fx);x.putImageData(img,0,0);const bm=oc.transferToImageBitmap();reply(bm,[bm]);break}
+      case 'gif_start':gifStart(m.w,m.h);reply(true);break;
+      case 'gif_frame':gifFrame(new Uint8ClampedArray(m.data),m.delay);reply(true);break;
+      case 'gif_end':{gif.o.push(0x3B);const u=new Uint8Array(gif.o);gif=null;reply(u.buffer,[u.buffer]);break}
+      case 'mp3':{if(!lame){let mod=null;for(const u of['https://cdn.jsdelivr.net/npm/@breezystack/lamejs@1.2.7/+esm','https://esm.sh/@breezystack/lamejs@1.2.7']){try{mod=await import(u);break}catch(er){}}if(!mod)throw new Error('MP3 encoder unavailable');lame=mod.Mp3Encoder||(mod.default&&mod.default.Mp3Encoder)}
+        const L=new Float32Array(m.left),R=m.right?new Float32Array(m.right):null,enc=new lame(R?2:1,m.sr,160),out=[],block=1152;
+        const cv=a=>{const r=new Int16Array(a.length);for(let i=0;i<a.length;i++){const s=a[i]<-1?-1:a[i]>1?1:a[i];r[i]=s<0?s*32768:s*32767}return r};
+        for(let i=0;i<L.length;i+=block){const l=cv(L.subarray(i,i+block)),dd=R?enc.encodeBuffer(l,cv(R.subarray(i,i+block))):enc.encodeBuffer(l);if(dd.length)out.push(new Uint8Array(dd))}
+        const f=enc.flush();if(f.length)out.push(new Uint8Array(f));let len=0;out.forEach(a=>len+=a.length);const u=new Uint8Array(len);let o=0;out.forEach(a=>{u.set(a,o);o+=a.length});reply(u.buffer,[u.buffer]);break}
+    }}catch(err){self.postMessage({id:m.id,error:String(err&&err.message||err)})}}
+}
+const FX=workerRPC(fxWorkerMain);
+async function applyEffects(src,effects){effects=(effects||[]).filter(f=>f&&f.type);if(!effects.length)return src;const w=src.width||src.videoWidth,h=src.height||src.videoHeight;
+  const k=Math.min(1,2400/Math.max(w,h));let bm=await createImageBitmap(src,{resizeWidth:Math.round(w*k),resizeHeight:Math.round(h*k)});
+  try{return await FX.call('effects',{bitmap:bm,effects},[bm])}catch(e){return src}}
+
+/* ---------- background removal: a small model downloaded once, run in a worker ---------- */
+function segWorkerMain(){let model=null,proc=null,T=null;
+  async function load(){if(model)return;let lib=null;for(const u of['https://cdn.jsdelivr.net/npm/@huggingface/transformers@3','https://esm.sh/@huggingface/transformers@3']){try{lib=await import(u);break}catch(e){}}
+    if(!lib)throw new Error('Background removal component could not load');T=lib;const pc=p=>{if(p&&p.status==='progress')self.postMessage({event:'progress',p:p.progress})};
+    model=await lib.AutoModel.from_pretrained('Xenova/modnet',{dtype:'fp32',progress_callback:pc});proc=await lib.AutoProcessor.from_pretrained('Xenova/modnet',{progress_callback:pc})}
+  self.onmessage=async e=>{const m=e.data;try{await load();if(m.type==='warm'){self.postMessage({id:m.id,result:true});return}
+      const img=await T.RawImage.fromBlob(m.blob);const {pixel_values}=await proc(img);const {output}=await model({input:pixel_values});
+      const mask=await T.RawImage.fromTensor(output[0].mul(255).to('uint8')).resize(img.width,img.height);self.postMessage({id:m.id,result:{w:img.width,h:img.height,mask:mask.data.buffer}},[mask.data.buffer])}
+    catch(err){self.postMessage({id:m.id,error:String(err&&err.message||err)})}}}
+const SEG=workerRPC(segWorkerMain);
+async function cutout(blob){const r=await SEG.call('cut',{blob});const b=await createImageBitmap(blob);const ok=await FX.call('effects',{bitmap:b,effects:[{type:'cutout_mask',mask:new Uint8Array(r.mask)}]},[b]);return ok}
+
+/* ---------- colour grading presets ---------- */
+const PRESETS={warm:{warmth:30,saturation:10},cool:{warmth:-30,saturation:-5},vintage:{sepia:35,contrast:-8,saturation:-20,vignette:35,grain:18},cinematic:{contrast:18,saturation:-12,vignette:30,tint:'teal_orange'},
+  teal_orange:{contrast:10,tint:'teal_orange'},black_white:{grayscale:100,contrast:18},film_bw:{grayscale:100,contrast:25,grain:25,vignette:25},vivid:{saturation:40,contrast:12},faded:{contrast:-22,brightness:6,saturation:-18},
+  moody:{brightness:-10,contrast:22,saturation:-22,vignette:40},golden_hour:{warmth:45,brightness:5,saturation:15},dreamy:{brightness:8,contrast:-12,saturation:10,blur:0,glow:30},noir:{grayscale:100,contrast:40,brightness:-8,vignette:50}};
+function adj(a){if(!a)return null;return a.preset&&PRESETS[a.preset]?{...PRESETS[a.preset],...a}:a}
 
 /* ---------- image engine ---------- */
 function curVersionIndex(c){if(!c||!c.versions.length)return -1;const i=c.sel&&c.sel.t==='v'?c.versions.findIndex(v=>v.id===c.sel.id):-1;return i<0?c.versions.length-1:i}
 function versionId(c,v){if(!c||!c.versions.length)return null;const i=v==null||v===''?curVersionIndex(c):clamp(Math.round(num(v,c.versions.length))-1,0,c.versions.length-1);return c.versions[i].id}
+async function sourceBlob(src,c){const t=src.type;
+  if(t==='upload'||t==='version'){const id=t==='version'?versionId(c,src.version):src.media_id;const m=await DB.get('media',id);if(!m)throw mkErr('That '+(t==='version'?'version':'file')+' was not found.');return {blob:m.blob}}
+  if(t==='asset'){const a=await Lib.get(src.asset_id);if(!a)throw mkErr('That library image was not found.');return {blob:a.blob,credit:a}}
+  if(t==='web'){const r=await Lib.searchImages(src.query,3);if(!r.length)throw mkErr('No free image was found online for "'+src.query+'".');const a=await Lib.get(r[clamp(num(src.pick,1),1,r.length)-1].asset_id);return {blob:a.blob,credit:a}}
+  if(t==='ai')return {blob:await aiImageBlob(src.prompt||'',src.aspect_ratio)};
+  throw mkErr('Unknown source type '+t)}
 async function resolveSource(src,c){src=src||{type:'color',color:'#101014'};const t=src.type||'color';
   if(t==='color')return {fill:(x,W,H)=>{x.fillStyle=src.color||'#101014';x.fillRect(0,0,W,H)}};
   if(t==='gradient')return {fill:(x,W,H)=>{const cs=(src.colors&&src.colors.length?src.colors:['#2A2E6E','#FF8A7A']);const a=(num(src.angle,180)-90)*Math.PI/180,r=Math.hypot(W,H)/2,cx=W/2,cy=H/2;
     const g=src.radial?x.createRadialGradient(cx,cy,0,cx,cy,r):x.createLinearGradient(cx-Math.cos(a)*r,cy-Math.sin(a)*r,cx+Math.cos(a)*r,cy+Math.sin(a)*r);cs.forEach((col,i)=>g.addColorStop(cs.length>1?i/(cs.length-1):0,col));x.fillStyle=g;x.fillRect(0,0,W,H)}};
-  let blob=null,credit=null;
-  if(t==='upload'||t==='version'){const id=t==='version'?versionId(c,src.version):src.media_id;const m=await DB.get('media',id);if(!m)throw mkErr('That '+(t==='version'?'version':'file')+' was not found.');blob=m.blob}
-  else if(t==='asset'){const a=await Lib.get(src.asset_id);if(!a)throw mkErr('That library image was not found.');blob=a.blob;credit=a}
-  else if(t==='web'){const r=await Lib.searchImages(src.query,3);if(!r.length)throw mkErr('No free image was found online for "'+src.query+'".');const a=await Lib.get(r[clamp(num(src.pick,1),1,r.length)-1].asset_id);blob=a.blob;credit=a}
-  else if(t==='ai'){blob=await aiImageBlob(src.prompt||'',src.aspect_ratio)}
-  else throw mkErr('Unknown source type '+t);
-  if((blob.type||'').startsWith('video/')){const cv=await videoFrame(blob,num(src.time,.5));return {img:cv,w:cv.width,h:cv.height,credit}}
-  const b=await createImageBitmap(blob);return {img:b,w:b.width,h:b.height,credit}}
-function filterStr(a){if(!a)return 'none';const f=[],p=k=>num(a[k],0);
+  if(t==='collage'){const parts=[];for(const s of (src.sources||[]).slice(0,9)){try{parts.push(await resolveSource(s,c))}catch(e){}}if(!parts.length)throw mkErr('No pictures for the collage.');
+    const gapP=clamp(num(src.gap,2),0,10)/100,rad=clamp(num(src.radius,4),0,30)/100,bg=src.color||'#FFFFFF',lay=src.layout||'grid';
+    return {fill:(x,W,H)=>{x.fillStyle=bg;x.fillRect(0,0,W,H);const g=Math.min(W,H)*gapP,n=parts.length;let cells=[];
+      if(lay==='row')cells=parts.map((_,i)=>[i/n,0,1/n,1]);else if(lay==='column')cells=parts.map((_,i)=>[0,i/n,1,1/n]);
+      else if(lay==='mosaic'&&n>=3){cells=[[0,0,.6,1]];const rest=n-1;for(let i=0;i<rest;i++)cells.push([.6,i/rest,.4,1/rest])}
+      else{const cols=Math.ceil(Math.sqrt(n)),rows=Math.ceil(n/cols);cells=parts.map((_,i)=>[(i%cols)/cols,Math.floor(i/cols)/rows,1/cols,1/rows])}
+      cells.forEach((cc,i)=>{const X=cc[0]*W+g/2+(cc[0]===0?g/2:0),Y=cc[1]*H+g/2+(cc[1]===0?g/2:0),Wd=cc[2]*W-g-(cc[0]===0?g/2:0)-(cc[0]+cc[2]>=.999?g/2:0)+g,Hd=cc[3]*H-g-(cc[1]===0?g/2:0)-(cc[1]+cc[3]>=.999?g/2:0)+g;
+        const w2=Wd-g,h2=Hd-g;x.save();rr(x,X,Y,w2,h2,Math.min(w2,h2)*rad);x.clip();drawImg(x,parts[i],X,Y,w2,h2,'cover');x.restore()})}}}
+  const {blob,credit}=await sourceBlob(src,c);let img;
+  if((blob.type||'').startsWith('video/'))img=await videoFrame(blob,num(src.freeze_at,num(src.time,.5)));
+  else if(src.cutout){try{img=await cutout(blob)}catch(e){throw mkErr('Background removal is not available right now. '+e.message)}}
+  else img=await createImageBitmap(blob);
+  if(src.effects&&src.effects.length)img=await applyEffects(img,src.effects);
+  return {img,w:img.width,h:img.height,credit,bg:src.cutout?(src.background||null):null}}
+function filterStr(a){a=adj(a);if(!a)return 'none';const f=[],p=k=>num(a[k],0);
   if(p('brightness'))f.push(`brightness(${Math.max(0,1+p('brightness')/100)})`);if(p('contrast'))f.push(`contrast(${Math.max(0,1+p('contrast')/100)})`);
   if(p('saturation'))f.push(`saturate(${Math.max(0,1+p('saturation')/100)})`);if(p('hue'))f.push(`hue-rotate(${p('hue')}deg)`);
   if(p('blur'))f.push(`blur(${clamp(p('blur'),0,40)}px)`);if(p('grayscale'))f.push(`grayscale(${clamp(p('grayscale'),0,100)/100})`);if(p('sepia'))f.push(`sepia(${clamp(p('sepia'),0,100)/100})`);
   return f.join(' ')||'none'}
-function postFX(x,a,W,H){if(!a)return;const w=num(a.warmth,0);if(w){x.save();x.globalCompositeOperation='soft-light';x.fillStyle=w>0?`rgba(255,140,40,${clamp(w,0,100)/160})`:`rgba(40,120,255,${clamp(-w,0,100)/160})`;x.fillRect(0,0,W,H);x.restore()}
-  const v=num(a.vignette,0);if(v){const g=x.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.hypot(W,H)/2);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,`rgba(0,0,0,${clamp(v,0,100)/105})`);x.save();x.fillStyle=g;x.fillRect(0,0,W,H);x.restore()}}
+let noiseTile=null;function getNoise(){if(noiseTile)return noiseTile;noiseTile=canvas(256,256);const x=noiseTile.getContext('2d'),d=x.createImageData(256,256);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}x.putImageData(d,0,0);return noiseTile}
+function postFX(x,a0,W,H,t=0){const a=adj(a0);if(!a)return;const w=num(a.warmth,0);
+  if(w){x.save();x.globalCompositeOperation='soft-light';x.fillStyle=w>0?`rgba(255,140,40,${clamp(w,0,100)/160})`:`rgba(40,120,255,${clamp(-w,0,100)/160})`;x.fillRect(0,0,W,H);x.restore()}
+  if(a.tint==='teal_orange'){x.save();x.globalCompositeOperation='soft-light';const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(0,150,170,.35)');g.addColorStop(1,'rgba(255,140,60,.3)');x.fillStyle=g;x.fillRect(0,0,W,H);x.restore()}
+  const gl=num(a.glow,0);if(gl){x.save();x.globalCompositeOperation='screen';x.globalAlpha=gl/250;x.filter='blur('+Math.round(Math.min(W,H)/60)+'px)';x.drawImage(x.canvas,0,0);x.restore()}
+  const v=num(a.vignette,0);if(v){const g=x.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.hypot(W,H)/2);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,`rgba(0,0,0,${clamp(v,0,100)/105})`);x.save();x.fillStyle=g;x.fillRect(0,0,W,H);x.restore()}
+  const gr=num(a.grain,0);if(gr){const n=getNoise();x.save();x.globalCompositeOperation='overlay';x.globalAlpha=clamp(gr,0,100)/220;const ox=(t*997)%256|0,oy=(t*613)%256|0;const p=x.createPattern(n,'repeat');x.translate(-ox,-oy);x.fillStyle=p;x.fillRect(0,0,W+256,H+256);x.restore()}}
+const blurCache=new WeakMap();
+function cheapBlur(img){let c=blurCache.get(img);if(c&&!(img instanceof HTMLVideoElement))return c;const w=img.videoWidth||img.width,h=img.videoHeight||img.height,k=40/Math.max(w,h);c=c||canvas(Math.max(2,Math.round(w*k)),Math.max(2,Math.round(h*k)));c.getContext('2d').drawImage(img,0,0,c.width,c.height);if(!(img instanceof HTMLVideoElement))blurCache.set(img,c);return c}
 function drawImg(x,res,X,Y,W,H,fit='cover',crop=null,zoom=1,px=0,py=0){
   if(res.fill){x.save();x.beginPath();x.rect(X,Y,W,H);x.clip();x.translate(X,Y);res.fill(x,W,H);x.restore();return}
   const iw=res.w||res.img.videoWidth||res.img.width,ih=res.h||res.img.videoHeight||res.img.height;if(!iw||!ih)return;
   let sx=0,sy=0,sw=iw,sh=ih;if(crop){sx=iw*clamp(num(crop.x,0),0,99)/100;sy=ih*clamp(num(crop.y,0),0,99)/100;sw=Math.min(iw-sx,iw*clamp(num(crop.w,100),1,100)/100);sh=Math.min(ih-sy,ih*clamp(num(crop.h,100),1,100)/100)}
-  if(fit==='contain'){const sc=Math.max(W/sw,H/sh);x.save();x.beginPath();x.rect(X,Y,W,H);x.clip();const f=x.filter;x.filter=(f&&f!=='none'?f+' ':'')+'blur(28px) brightness(.55)';x.drawImage(res.img,sx,sy,sw,sh,X+(W-sw*sc)/2,Y+(H-sh*sc)/2,sw*sc,sh*sc);x.filter=f;x.restore()}
+  x.save();x.beginPath();x.rect(X,Y,W,H);x.clip();
+  if(res.bg){x.fillStyle=res.bg;x.fillRect(X,Y,W,H)}
+  else if(fit==='contain'){const sc=Math.max(W/sw,H/sh),b=cheapBlur(res.img);x.save();x.globalAlpha=.55;x.imageSmoothingQuality='high';x.drawImage(b,X+(W-sw*sc)/2,Y+(H-sh*sc)/2,sw*sc,sh*sc);x.restore()}
   const s=(fit==='contain'?Math.min(W/sw,H/sh):Math.max(W/sw,H/sh))*zoom,dw=sw*s,dh=sh*s;
-  x.save();x.beginPath();x.rect(X,Y,W,H);x.clip();x.drawImage(res.img,sx,sy,sw,sh,X+(W-dw)/2+px*W,Y+(H-dh)/2+py*H,dw,dh);x.restore()}
+  x.drawImage(res.img,sx,sy,sw,sh,X+(W-dw)/2+px*W,Y+(H-dh)/2+py*H,dw,dh);x.restore()}
 function rr(x,X,Y,W,H,r){r=Math.max(0,Math.min(r,W/2,H/2));x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+W,Y,X+W,Y+H,r);x.arcTo(X+W,Y+H,X,Y+H,r);x.arcTo(X,Y+H,X,Y,r);x.arcTo(X,Y,X+W,Y,r);x.closePath()}
 function wrapLines(x,text,maxW){const out=[];for(const para of String(text).split('\n')){const words=para.split(/\s+/);let line='';for(const w of words){const t=line?line+' '+w:w;if(x.measureText(t).width>maxW&&line){out.push(line);line=w}else line=t}out.push(line)}return out}
-async function prepareLayers(layers,c){const out=[];for(const L of (layers||[])){if(!L||!L.kind)continue;const l={...L};if(l.kind==='image'){try{l._res=await resolveSource(l.source||{type:'web',query:l.query||'icon'},c)}catch(e){continue}}out.push(l)}await loadLayerFonts(out);return out}
-/* anim: {lt, dur} in seconds for video, null for still images */
+function seeded(seed){let a=seed>>>0||1;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+/* layers: preload images and video clips used as layers */
+async function prepareLayers(layers,c,av){const out=[];for(const L of (layers||[])){if(!L||!L.kind)continue;const l={...L};
+    if(l.kind==='image'){try{l._res=await resolveSource(l.source||{type:'web',query:l.query||'icon'},c)}catch(e){continue}}
+    else if(l.kind==='video'){if(!av)continue;try{const s=l.source||{};const id=s.type==='version'?versionId(c,s.version):s.media_id;const m=await DB.get('media',id);if(!m||!/^video\//.test(m.type))continue;
+        const v=document.createElement('video');v.playsInline=true;v.preload='auto';v.src=URL.createObjectURL(m.blob);await once(v,'loadedmetadata');l._v=v;l._vs=clamp(num(s.start,0),0,1e6);av.cleanup.push(()=>URL.revokeObjectURL(v.src));
+        try{const node=av.ac.createMediaElementSource(v);l._g=av.ac.createGain();l._g.gain.value=0;node.connect(l._g);l._g.connect(av.dest)}catch(e){}}catch(e){continue}}
+    else if(l.kind==='particles'){const R=seeded(num(l.seed,11)+1),n=Math.round(clamp(num(l.density,40),5,100)*(l.effect==='fireworks'?.3:1.6));l._p=Array.from({length:n},()=>[R(),R(),R(),R(),R()])}
+    out.push(l)}await loadLayerFonts(out);return out}
+/* anim: {lt, dur} for video; null for a still image */
 function drawLayer(x,L,W,H,anim){
-  let alpha=1,dy=0,scale=1,chars=null;
-  if(anim){const st=num(L.start,0),en=L.end!=null?num(L.end,anim.dur):anim.dur;if(anim.lt<st||anim.lt>en)return;const p=clamp((anim.lt-st)/.6,0,1),q=clamp((en-anim.lt)/.4,0,1);
-    const ap=L.appear||'fade';if(ap==='fade')alpha=Math.min(p,q);else if(ap==='slide_up'){alpha=Math.min(p,q);dy=(1-ease(p))*.06}else if(ap==='pop'){scale=.6+.4*ease(p);alpha=Math.min(1,p*2,q)}else if(ap==='type'){chars=Math.floor(String(L.text||'').length*clamp((anim.lt-st)/Math.max(.5,String(L.text||'').length*.05),0,1));alpha=q}else alpha=q}
-  const cx=W*clamp(num(L.x,50),-20,120)/100,cy=H*clamp(num(L.y,50),-20,120)/100+dy*H;
+  let alpha=1,dy=0,dx=0,scale=1,chars=null;const lt=anim?anim.lt:1.5,dur=anim?anim.dur:3;
+  if(anim){const st=num(L.start,0),en=L.end!=null?num(L.end,dur):dur;if(lt<st||lt>en)return;const p=clamp((lt-st)/.6,0,1),q=clamp((en-lt)/.4,0,1);
+    const ap=L.appear||(L.kind==='particles'||L.kind==='light_leak'||L.kind==='frame'||L.kind==='video'?'none':'fade');
+    if(ap==='fade')alpha=Math.min(p,q);else if(ap==='slide_up'){alpha=Math.min(p,q);dy=(1-ease(p))*.06}else if(ap==='slide_left'){alpha=Math.min(p,q);dx=(1-ease(p))*.12}
+    else if(ap==='pop'){scale=.6+.4*ease(p);alpha=Math.min(1,p*2,q)}else if(ap==='zoom'){scale=1.6-.6*ease(p);alpha=Math.min(p,q)}
+    else if(ap==='bounce'){const b=clamp((lt-st)/.8,0,1);scale=b<1?1+Math.sin(b*Math.PI*2.5)*.18*(1-b):1;alpha=Math.min(1,p*2,q)}
+    else if(ap==='type'){chars=Math.floor(String(L.text||'').length*clamp((lt-st)/Math.max(.5,String(L.text||'').length*.05),0,1));alpha=q}
+    else alpha=q}
+  if(L.kind==='particles')return drawParticles(x,L,W,H,lt,alpha);
+  if(L.kind==='light_leak')return drawLeak(x,L,W,H,lt,alpha);
+  if(L.kind==='frame')return drawFrame(x,L,W,H);
+  const cx=W*clamp(num(L.x,50),-20,120)/100+dx*W,cy=H*clamp(num(L.y,50),-20,120)/100+dy*H;
   x.save();x.globalAlpha=clamp(num(L.opacity,100),0,100)/100*alpha;x.translate(cx,cy);if(L.rotation)x.rotate(num(L.rotation)*Math.PI/180);if(scale!==1)x.scale(scale,scale);
-  const lw=W*clamp(num(L.w,L.kind==='text'?86:30),1,200)/100,lh=H*clamp(num(L.h,L.kind==='image'?30:(num(L.w,30)*W/H)),1,200)/100;
-  if(L.kind==='text')drawText(x,L,W,H,chars);
-  else if(L.kind==='sticker'){const sz=H*clamp(num(L.size,12),1,80)/100;x.font=`${sz}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText(String(L.emoji||'✨'),0,0)}
-  else if(L.kind==='image'&&L._res){const r=Math.min(lw,lh)*clamp(num(L.radius,8),0,50)/100;x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=Math.min(lw,lh)*.06;rr(x,-lw/2,-lh/2,lw,lh,r);x.fillStyle='#000';x.fill();x.restore();x.save();rr(x,-lw/2,-lh/2,lw,lh,r);x.clip();drawImg(x,L._res,-lw/2,-lh/2,lw,lh,L.fit||'cover');x.restore();
-    if(L.border){x.lineWidth=Math.min(lw,lh)*.02;x.strokeStyle=L.border===true?'#fff':L.border;rr(x,-lw/2,-lh/2,lw,lh,r);x.stroke()}}
+  const lw=W*clamp(num(L.w,L.kind==='text'?86:30),1,200)/100,lh=L.kind==='video'&&L.h==null&&L._v?lw*(L._v.videoHeight||9)/(L._v.videoWidth||16):H*clamp(num(L.h,L.kind==='image'?30:(num(L.w,30)*W/H)),1,200)/100;
+  if(L.kind==='text')drawText(x,L,W,H,chars,lt);
+  else if(L.kind==='sticker'){const sz=H*clamp(num(L.size,12),1,80)/100;x.font=`${sz}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign='center';x.textBaseline='middle';if(anim&&L.wiggle!==false)x.rotate(Math.sin(lt*3)*.08);x.fillText(String(L.emoji||'✨'),0,0)}
+  else if((L.kind==='image'&&L._res)||(L.kind==='video'&&L._v)){const circle=L.shape==='circle',r=circle?Math.min(lw,lh)/2:Math.min(lw,lh)*clamp(num(L.radius,10),0,50)/100;
+    const path=()=>{if(circle){x.beginPath();x.ellipse(0,0,lw/2,lh/2,0,0,Math.PI*2)}else rr(x,-lw/2,-lh/2,lw,lh,r)};
+    x.save();x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=Math.min(lw,lh)*.08;path();x.fillStyle='#000';x.fill();x.restore();
+    x.save();path();x.clip();const res=L._v?{img:L._v,w:L._v.videoWidth,h:L._v.videoHeight}:L._res;drawImg(x,res,-lw/2,-lh/2,lw,lh,L.fit||'cover');x.restore();
+    const bc=L.border===false?null:(L.border&&L.border!==true?L.border:(L.kind==='video'?'#FFFFFF':null));if(bc){x.lineWidth=Math.max(2,Math.min(lw,lh)*.025);x.strokeStyle=bc;path();x.stroke()}}
   else if(L.kind==='shape')drawShape(x,L,lw,lh);
   x.restore()}
+function drawParticles(x,L,W,H,t,alpha){const P=L._p||[],e=L.effect||'confetti',cols=L.colors&&L.colors.length?L.colors:['#FF6FB5','#FFD36E','#7B83F7','#4ADE80','#38E8FF'];const S=Math.min(W,H)*clamp(num(L.size,2),.3,10)/100;
+  x.save();x.globalAlpha=alpha*clamp(num(L.opacity,100),0,100)/100;
+  P.forEach((p,i)=>{const c=cols[i%cols.length];
+    if(e==='confetti'){const sp=.08+p[2]*.12,y=((p[1]+t*sp)%1.1)-.05,xx=p[0]+Math.sin(t*2+p[3]*6)*.02;x.save();x.translate(xx*W,y*H);x.rotate(t*(2+p[4]*4)+p[3]*6);x.fillStyle=c;x.fillRect(-S/2,-S/4,S,S/2*(.5+Math.abs(Math.sin(t*3+p[4]*5))));x.restore()}
+    else if(e==='snow'){const y=((p[1]+t*(.03+p[2]*.05))%1.05),xx=p[0]+Math.sin(t+p[3]*6)*.03;x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.arc(xx*W,y*H,S*(.25+p[4]*.4),0,7);x.fill()}
+    else if(e==='hearts'||e==='bubbles'){const y=1.05-((p[1]+t*(.05+p[2]*.07))%1.1),xx=p[0]+Math.sin(t*1.5+p[3]*6)*.03;if(e==='hearts'){x.save();x.translate(xx*W,y*H);x.scale(S/20*(1+p[4]),S/20*(1+p[4]));x.fillStyle=c;x.beginPath();x.moveTo(0,6);x.bezierCurveTo(-11,-1,-7,-11,0,-4);x.bezierCurveTo(7,-11,11,-1,0,6);x.fill();x.restore()}
+      else{x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=Math.max(1,S*.08);x.beginPath();x.arc(xx*W,y*H,S*(.4+p[4]*.8),0,7);x.stroke()}}
+    else if(e==='sparkles'||e==='stars'){const tw=.5+.5*Math.sin(t*(2+p[2]*4)+p[3]*10);if(tw<.1)return;const r=S*(.3+p[4]*.6)*tw;x.save();x.translate(p[0]*W,p[1]*H);x.fillStyle=e==='stars'?'#FFFFFF':c;x.shadowColor=c;x.shadowBlur=r*2;x.beginPath();for(let k=0;k<8;k++){const a=k*Math.PI/4,rad=k%2?r*.25:r;x.lineTo(Math.cos(a)*rad,Math.sin(a)*rad)}x.fill();x.restore()}
+    else if(e==='fireworks'){const per=2.2,tt=((t+p[0]*per)%per)/per,cx=(.15+p[1]*.7)*W,cy=(.15+p[2]*.45)*H;if(tt<.15)return;const k=(tt-.15)/.85;x.fillStyle=c;for(let j=0;j<18;j++){const a=j*Math.PI/9,d=k*Math.min(W,H)*.16;x.globalAlpha=alpha*(1-k);x.beginPath();x.arc(cx+Math.cos(a)*d,cy+Math.sin(a)*d+k*k*H*.03,S*.25,0,7);x.fill()}x.globalAlpha=alpha}
+  });x.restore()}
+function drawLeak(x,L,W,H,t,alpha){x.save();x.globalCompositeOperation='screen';x.globalAlpha=alpha*clamp(num(L.opacity,70),0,100)/100;const cols=L.colors&&L.colors.length?L.colors:['rgba(255,150,60,.9)','rgba(255,60,120,.7)'];
+  for(let i=0;i<2;i++){const cx=W*(.5+.45*Math.sin(t*.35+i*2)),cy=H*(.4+.35*Math.cos(t*.27+i*3)),r=Math.max(W,H)*(.45+.1*Math.sin(t*.5+i));const g=x.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,cols[i%cols.length]);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,W,H)}x.restore()}
+function drawFrame(x,L,W,H){const st=L.style||'simple',col=L.color||'#FFFFFF',t=Math.min(W,H)*clamp(num(L.thickness,3),.3,15)/100;x.save();
+  if(st==='polaroid'){x.fillStyle=col;x.beginPath();x.rect(0,0,W,H);x.rect(t,t,W-2*t,H-t*4.5);x.fill('evenodd')}
+  else if(st==='film'){x.fillStyle='#111';x.fillRect(0,0,W,t*1.6);x.fillRect(0,H-t*1.6,W,t*1.6);x.fillStyle='#EEE';for(let px=t*.4;px<W;px+=t*1.1){rr(x,px,t*.45,t*.6,t*.7,t*.12);x.fill();rr(x,px,H-t*1.15,t*.6,t*.7,t*.12);x.fill()}}
+  else if(st==='gold'){const g=x.createLinearGradient(0,0,W,H);['#8C6A1F','#F5D77A','#B8892E','#FFE9A6','#8C6A1F'].forEach((c2,i,a)=>g.addColorStop(i/(a.length-1),c2));x.strokeStyle=g;x.lineWidth=t;x.strokeRect(t/2,t/2,W-t,H-t);x.lineWidth=t*.15;x.strokeRect(t*1.4,t*1.4,W-t*2.8,H-t*2.8)}
+  else if(st==='double'){x.strokeStyle=col;x.lineWidth=t*.35;x.strokeRect(t*.6,t*.6,W-t*1.2,H-t*1.2);x.strokeRect(t*1.5,t*1.5,W-t*3,H-t*3)}
+  else if(st==='neon'){x.strokeStyle=col;x.shadowColor=col;x.shadowBlur=t*2;x.lineWidth=t*.4;rr(x,t,t,W-2*t,H-2*t,t*2);x.stroke();x.stroke()}
+  else if(st==='rounded'){x.fillStyle=col;x.beginPath();x.rect(0,0,W,H);rr(x,t,t,W-2*t,H-2*t,Math.min(W,H)*.06);x.fill('evenodd')}
+  else{x.strokeStyle=col;x.lineWidth=t;x.strokeRect(t/2,t/2,W-t,H-t)}
+  x.restore()}
 function drawShape(x,L,w,h){const col=L.color||'#FFFFFF';x.fillStyle=col;x.strokeStyle=L.stroke||col;x.lineWidth=Math.max(2,Math.min(w,h)*.04);const sh=L.shape||'rect';
-  const path=()=>{x.beginPath();
-    if(sh==='circle'){x.ellipse(0,0,w/2,h/2,0,0,Math.PI*2)}
-    else if(sh==='star'){for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?.42:1;x.lineTo(Math.cos(a)*w/2*r,Math.sin(a)*h/2*r)}x.closePath()}
-    else if(sh==='heart'){x.moveTo(0,h*.32);x.bezierCurveTo(-w*.55,-h*.05,-w*.35,-h*.55,0,-h*.22);x.bezierCurveTo(w*.35,-h*.55,w*.55,-h*.05,0,h*.32);x.closePath()}
-    else if(sh==='badge'){for(let i=0;i<32;i++){const a=i*Math.PI/16,r=i%2?.9:1;x.lineTo(Math.cos(a)*w/2*r,Math.sin(a)*h/2*r)}x.closePath()}
-    else if(sh==='ribbon'){x.moveTo(-w/2,-h/2);x.lineTo(w/2,-h/2);x.lineTo(w/2-h*.35,0);x.lineTo(w/2,h/2);x.lineTo(-w/2,h/2);x.lineTo(-w/2+h*.35,0);x.closePath()}
-    else if(sh==='arrow'){x.moveTo(-w/2,-h*.18);x.lineTo(w*.15,-h*.18);x.lineTo(w*.15,-h/2);x.lineTo(w/2,0);x.lineTo(w*.15,h/2);x.lineTo(w*.15,h*.18);x.lineTo(-w/2,h*.18);x.closePath()}
-    else if(sh==='line'){x.moveTo(-w/2,0);x.lineTo(w/2,0)}
-    else rr(x,-w/2,-h/2,w,h,Math.min(w,h)*clamp(num(L.radius,10),0,50)/100)};
-  path();if(sh==='line'){x.lineWidth=Math.max(2,h);x.stroke()}else if(L.outline_only)x.stroke();else{x.fill();if(L.stroke)x.stroke()}}
-function drawText(x,L,W,H,chars){const text=chars==null?String(L.text||''):String(L.text||'').slice(0,chars);if(!text)return;
+  x.beginPath();
+  if(sh==='circle')x.ellipse(0,0,w/2,h/2,0,0,Math.PI*2);
+  else if(sh==='star'){for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?.42:1;x.lineTo(Math.cos(a)*w/2*r,Math.sin(a)*h/2*r)}x.closePath()}
+  else if(sh==='heart'){x.moveTo(0,h*.32);x.bezierCurveTo(-w*.55,-h*.05,-w*.35,-h*.55,0,-h*.22);x.bezierCurveTo(w*.35,-h*.55,w*.55,-h*.05,0,h*.32);x.closePath()}
+  else if(sh==='badge'){for(let i=0;i<32;i++){const a=i*Math.PI/16,r=i%2?.9:1;x.lineTo(Math.cos(a)*w/2*r,Math.sin(a)*h/2*r)}x.closePath()}
+  else if(sh==='ribbon'){x.moveTo(-w/2,-h/2);x.lineTo(w/2,-h/2);x.lineTo(w/2-h*.35,0);x.lineTo(w/2,h/2);x.lineTo(-w/2,h/2);x.lineTo(-w/2+h*.35,0);x.closePath()}
+  else if(sh==='arrow'){x.moveTo(-w/2,-h*.18);x.lineTo(w*.15,-h*.18);x.lineTo(w*.15,-h/2);x.lineTo(w/2,0);x.lineTo(w*.15,h/2);x.lineTo(w*.15,h*.18);x.lineTo(-w/2,h*.18);x.closePath()}
+  else if(sh==='speech_bubble'){rr(x,-w/2,-h/2,w,h*.8,Math.min(w,h)*.18);x.moveTo(-w*.15,h*.3);x.lineTo(-w*.28,h/2);x.lineTo(0,h*.3)}
+  else if(sh==='line'){x.moveTo(-w/2,0);x.lineTo(w/2,0)}
+  else rr(x,-w/2,-h/2,w,h,Math.min(w,h)*clamp(num(L.radius,10),0,50)/100);
+  if(sh==='line'){x.lineWidth=Math.max(2,h);x.stroke()}else if(L.outline_only)x.stroke();else{x.fill();if(L.stroke)x.stroke()}}
+function drawText(x,L,W,H,chars,lt){const full=String(L.text||''),text=chars==null?full:full.slice(0,chars);if(!text)return;
   const size=H*clamp(num(L.size,7),1,45)/100,fam=fontFor(L.font,L.text),weight=ONE_WEIGHT.has(fam)?400:(L.weight||700);
   x.font=`${weight} ${size}px "${fam}",Inter,sans-serif`;const align=L.align||'center';x.textAlign=align;x.textBaseline='middle';
   const maxW=W*clamp(num(L.w,86),10,100)/100,lines=wrapLines(x,text,maxW),lh=size*1.2,top=-(lines.length-1)*lh/2,col=L.color||'#FFFFFF',cs=L.colors||[],style=L.style||'shadow';
   const widest=Math.max(...lines.map(l=>x.measureText(l).width));const ax=align==='left'?-maxW/2:align==='right'?maxW/2:0;
   if(style==='banner'){const bw=widest+size*1.1,bh=lines.length*lh+size*.5,bx=align==='left'?ax-size*.55:align==='right'?ax-bw+size*.55:-bw/2;x.save();x.shadowColor='rgba(0,0,0,.3)';x.shadowBlur=size*.4;rr(x,bx,top-lh/2-size*.25,bw,bh,size*.4);x.fillStyle=cs[0]||'rgba(0,0,0,.55)';x.fill();x.restore()}
+  if(style==='karaoke'&&lt!=null){const words=full.split(/\s+/),st=num(L.start,0),per=Math.max(.2,(num(L.end,st+words.length*.45)-st)/words.length),on=Math.floor((lt-st)/per);
+    x.save();x.shadowColor='rgba(0,0,0,.6)';x.shadowBlur=size*.25;let line=0,cur='',idx=0;const ls=wrapLines(x,full,maxW);
+    ls.forEach((ln,li)=>{const y=top+li*lh,ws=ln.split(' ');let xx=ax-(align==='center'?x.measureText(ln).width/2:0);x.textAlign='left';ws.forEach(w=>{x.fillStyle=idx<=on?(cs[0]||'#FFD36E'):col;x.fillText(w,xx,y);xx+=x.measureText(w+' ').width;idx++})});x.restore();return}
   lines.forEach((ln,i)=>{const y=top+i*lh;x.save();
     if(style==='shadow'){x.shadowColor='rgba(0,0,0,.55)';x.shadowBlur=size*.28;x.shadowOffsetY=size*.05;x.fillStyle=col;x.fillText(ln,ax,y)}
     else if(style==='outline'){x.lineJoin='round';x.lineWidth=size*.12;x.strokeStyle=cs[0]||'#000';x.strokeText(ln,ax,y);x.fillStyle=col;x.fillText(ln,ax,y)}
@@ -592,162 +903,222 @@ function drawText(x,L,W,H,chars){const text=chars==null?String(L.text||''):Strin
     else if(style==='neon'){const g=cs[0]||'#38E8FF';x.shadowColor=g;x.shadowBlur=size*.9;x.lineWidth=size*.06;x.strokeStyle=g;x.strokeText(ln,ax,y);x.shadowBlur=size*.4;x.fillStyle='#FFFFFF';x.fillText(ln,ax,y)}
     else if(style==='gradient'){const w=x.measureText(ln).width,sx=align==='left'?ax:align==='right'?ax-w:-w/2;const g=x.createLinearGradient(sx,0,sx+w,0);const gc=cs.length>1?cs:['#FFD36E','#FF6FB5'];gc.forEach((c2,k)=>g.addColorStop(k/(gc.length-1),c2));x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=size*.2;x.fillStyle=g;x.fillText(ln,ax,y)}
     else if(style==='3d'){const d=Math.max(2,size*.06);x.fillStyle=cs[0]||'rgba(0,0,0,.6)';for(let k=Math.ceil(d);k>0;k--)x.fillText(ln,ax+k,y+k);x.fillStyle=col;x.fillText(ln,ax,y)}
+    else if(style==='comic'){x.lineJoin='round';x.lineWidth=size*.16;x.strokeStyle='#000';x.fillStyle='#000';x.fillText(ln,ax+size*.06,y+size*.06);x.strokeText(ln,ax,y);x.fillStyle=col;x.fillText(ln,ax,y)}
     else {x.fillStyle=col;x.fillText(ln,ax,y)}
     x.restore()})}
 async function renderImagePlan(plan,c){
   const base=await resolveSource(plan.base,c);let W=Math.round(num(plan.width,0)),H=Math.round(num(plan.height,0));
   const rot=((Math.round(num(plan.rotate,0)/90)*90)%360+360)%360,swap=rot===90||rot===270;
   if(!W||!H){if(base.img){W=base.w;H=base.h;if(plan.crop){W=Math.round(W*clamp(num(plan.crop.w,100),1,100)/100);H=Math.round(H*clamp(num(plan.crop.h,100),1,100)/100)}if(swap)[W,H]=[H,W]}else{W=1080;H=1080}}
-  const k=Math.min(1,4096/Math.max(W,H));W=Math.max(16,Math.round(W*k));H=Math.max(16,Math.round(H*k));
-  const cv=canvas(W,H),x=cv.getContext('2d');const layers=await prepareLayers(plan.layers,c);
+  const k=Math.min(1,3600/Math.max(W,H));W=Math.max(16,Math.round(W*k));H=Math.max(16,Math.round(H*k));
+  let cv=canvas(W,H),x=cv.getContext('2d');const layers=await prepareLayers(plan.layers,c);
   x.save();x.filter=filterStr(plan.adjust);
   if(rot||plan.flip){x.translate(W/2,H/2);if(rot)x.rotate(rot*Math.PI/180);if(plan.flip==='horizontal'||plan.flip==='both')x.scale(-1,1);if(plan.flip==='vertical'||plan.flip==='both')x.scale(1,-1);const bw=swap?H:W,bh=swap?W:H;drawImg(x,base,-bw/2,-bh/2,bw,bh,plan.fit||'cover',plan.crop)}
   else drawImg(x,base,0,0,W,H,plan.fit||'cover',plan.crop);
-  x.restore();postFX(x,plan.adjust,W,H);
+  x.restore();
+  if(plan.effects&&plan.effects.length){const bm=await applyEffects(cv,plan.effects);cv=canvas(W,H);x=cv.getContext('2d');x.drawImage(bm,0,0,W,H)}
+  postFX(x,plan.adjust,W,H);
   for(const L of layers)drawLayer(x,L,W,H,null);
   return {cv,credit:base.credit}}
 
-/* ---------- AI image (used only when the built-in tools cannot do it) ---------- */
+/* ---------- AI image, only when built-in tools cannot do it ---------- */
 async function aiImageBlob(prompt,aspect,inputBlob,signal){const parts=[{text:prompt}];if(inputBlob)parts.push({inline_data:{mime_type:inputBlob.type||'image/png',data:await b64(inputBlob)}});
   const mk=withAspect=>({contents:[{parts}],generationConfig:{responseModalities:['TEXT','IMAGE'],...(withAspect&&aspect?{imageConfig:{aspectRatio:aspect}}:{})}});
   let res;try{res=await G.gen('image',mk(true),{signal})}catch(e){if(e.status===400&&aspect)res=await G.gen('image',mk(false),{signal});else throw e}
   const p=((res.json.candidates&&res.json.candidates[0]&&res.json.candidates[0].content&&res.json.candidates[0].content.parts)||[]).find(p=>p.inlineData||p.inline_data);
   if(!p)throw mkErr('The AI image model did not return an image.');const d=p.inlineData||p.inline_data;return b64ToBlob(d.data,d.mimeType||d.mime_type||'image/png')}
 
-/* ---------- video engine: draws scenes on a canvas and records them with sound ---------- */
+/* ---------- video engine ---------- */
 function pickMime(pref){const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1,opus','video/mp4'],webm=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
   const list=pref==='webm'?[...webm,...mp4]:[...mp4,...webm];return list.find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||''}
-const frameTick=fps=>new Promise(r=>document.hidden?setTimeout(r,1000/fps):requestAnimationFrame(()=>r()));
-async function prepareScenes(plan,c,ac,dest){const scenes=[];
+let lastFrame=0;
+const frameTick=fps=>new Promise(r=>{const gap=1000/fps-2;const step=()=>{const now=performance.now();if(now-lastFrame>=gap){lastFrame=now;r()}else if(document.hidden)setTimeout(step,Math.max(4,gap-(now-lastFrame)));else requestAnimationFrame(step)};if(document.hidden)setTimeout(step,4);else requestAnimationFrame(step)});
+async function reverseFrames(v,start,end,maxW=540){const fps=15,len=Math.min(8,end-start),s=Math.min(1,maxW/Math.max(v.videoWidth,v.videoHeight)),w=Math.round(v.videoWidth*s),h=Math.round(v.videoHeight*s),frames=[];
+  const c=canvas(w,h),x=c.getContext('2d');for(let t=start;t<start+len;t+=1/fps){v.currentTime=t;await once(v,'seeked',3000);x.drawImage(v,0,0,w,h);frames.push(await createImageBitmap(c))}return {frames:frames.reverse(),fps,w,h}}
+async function prepareScenes(plan,c,av){const scenes=[];
   for(const sc of (plan.scenes||[])){const s={...sc,src:sc.source||{type:'color',color:'#000'}};const t=s.src.type;
-    if(t==='upload'||t==='version'){const id=t==='version'?versionId(c,s.src.version):s.src.media_id;const m=await DB.get('media',id);if(!m)throw mkErr('A file used in the video was not found.');
-      if(m.type.startsWith('video/')){const v=document.createElement('video');v.playsInline=true;v.preload='auto';v.src=URL.createObjectURL(m.blob);await once(v,'loadedmetadata');
-        const d=isFinite(v.duration)?v.duration:num((c.media.find(x=>x.id===id)||c.versions.find(x=>x.id===id)||{}).duration,30);
-        s.video=v;s.start=clamp(num(s.src.start,0),0,Math.max(0,d-.1));s.end=s.src.end!=null?clamp(num(s.src.end,d),s.start+.1,d):d;s.speed=clamp(num(sc.speed,1),.25,4);s.dur=sc.duration?num(sc.duration,4):(s.end-s.start)/s.speed;
-        try{const node=ac.createMediaElementSource(v);s.gain=ac.createGain();s.gain.gain.value=0;node.connect(s.gain);s.gain.connect(dest)}catch(e){}}
-      else if(m.type.startsWith('image/')){const b=await createImageBitmap(m.blob);s.res={img:b,w:b.width,h:b.height};s.dur=num(sc.duration,4)}
+    if((t==='upload'||t==='version')&&s.src.freeze_at==null){const id=t==='version'?versionId(c,s.src.version):s.src.media_id;const m=await DB.get('media',id);if(!m)throw mkErr('A file used in the video was not found.');
+      if(m.type.startsWith('video/')){const v=document.createElement('video');v.playsInline=true;v.preload='auto';v.src=URL.createObjectURL(m.blob);await once(v,'loadedmetadata');av.cleanup.push(()=>URL.revokeObjectURL(v.src));
+        const meta=c.media.find(x=>x.id===id)||c.versions.find(x=>x.id===id)||{};const d=isFinite(v.duration)?v.duration:num(meta.duration,30);
+        s.start=clamp(num(s.src.start,0),0,Math.max(0,d-.1));s.end=s.src.end!=null?clamp(num(s.src.end,d),s.start+.1,d):d;s.speed=clamp(num(sc.speed,1),.25,4);s.speedEnd=sc.speed_end!=null?clamp(num(sc.speed_end,1),.25,4):s.speed;
+        s.dur=sc.duration?num(sc.duration,4):(s.end-s.start)/((s.speed+s.speedEnd)/2);
+        if(sc.reverse){s.rev=await reverseFrames(v,s.start,s.end);s.dur=s.rev.frames.length/s.rev.fps}
+        else{s.video=v;try{const node=av.ac.createMediaElementSource(v);s.gain=av.ac.createGain();s.gain.gain.value=0;node.connect(s.gain);s.gain.connect(av.dest)}catch(e){}}}
+      else if(m.type.startsWith('image/')){let b=await createImageBitmap(m.blob);if(sc.effects)b=await applyEffects(b,sc.effects);s.res={img:b,w:b.width,h:b.height};s.dur=num(sc.duration,4)}
       else continue}
-    else{s.res=await resolveSource(s.src,c);s.dur=num(sc.duration,4)}
-    s.dur=clamp(s.dur,.3,900);s.layers=await prepareLayers(sc.layers,c);scenes.push(s)}
+    else{const src={...s.src};if(sc.effects&&!src.effects)src.effects=sc.effects;s.res=await resolveSource(src,c);s.dur=num(sc.duration,4)}
+    s.dur=clamp(s.dur,.3,900);s.layers=await prepareLayers(sc.layers,c,av);scenes.push(s)}
   if(!scenes.length)throw mkErr('The video plan has no scenes.');return scenes}
-function drawScene(x,s,lt,W,H){x.save();x.fillStyle='#000';x.fillRect(0,0,W,H);x.filter=filterStr(s.adjust);const p=clamp(lt/s.dur,0,1),m=s.motion||(s.video?'none':'zoom_in');
+function drawScene(x,s,lt,W,H){x.save();x.fillStyle='#000';x.fillRect(0,0,W,H);x.filter=filterStr(s.adjust);const p=clamp(lt/s.dur,0,1),m=s.motion||(s.video||s.rev?'none':'zoom_in');
   let z=1,px=0,py=0;if(m==='zoom_in')z=1+.14*p;else if(m==='zoom_out')z=1.14-.14*p;else if(m==='pan_left'){z=1.14;px=.06-.12*p}else if(m==='pan_right'){z=1.14;px=-.06+.12*p}else if(m==='pan_up'){z=1.14;py=.06-.12*p}else if(m==='pan_down'){z=1.14;py=-.06+.12*p}
-  if(s.video)drawImg(x,{img:s.video,w:s.video.videoWidth,h:s.video.videoHeight},0,0,W,H,s.fit||'cover',s.crop,z,px,py);else drawImg(x,s.res,0,0,W,H,s.fit||'cover',s.crop,z,px,py);
-  x.restore();postFX(x,s.adjust,W,H);for(const L of s.layers)drawLayer(x,L,W,H,{lt,dur:s.dur})}
+  else if(m==='shake'){px=Math.sin(lt*40)*.006;py=Math.cos(lt*33)*.006;z=1.04}else if(m==='ken_burns'){z=1.05+.12*p;px=-.03+.06*p;py=.02-.04*p}
+  if(s.video)drawImg(x,{img:s.video,w:s.video.videoWidth,h:s.video.videoHeight},0,0,W,H,s.fit||'cover',s.crop,z,px,py);
+  else if(s.rev){const f=s.rev.frames[Math.min(s.rev.frames.length-1,Math.floor(lt*s.rev.fps))];if(f)drawImg(x,{img:f,w:s.rev.w,h:s.rev.h},0,0,W,H,s.fit||'cover',s.crop,z,px,py)}
+  else drawImg(x,s.res,0,0,W,H,s.fit||'cover',s.crop,z,px,py);
+  x.restore();postFX(x,s.adjust,W,H,lt);
+  for(const L of s.layers){if(L._v){const st=num(L.start,0);if(lt>=st&&L._v.paused&&!L._done){L._v.currentTime=L._vs;L._v.muted=false;if(L._g)L._g.gain.value=clamp(num(L.volume,100),0,100)/100;else L._v.muted=true;L._v.play().catch(()=>{L._v.muted=true;L._v.play().catch(()=>{})})}}drawLayer(x,L,W,H,{lt,dur:s.dur})}}
+function drawTransition(x,snap,p,W,H,tt){const e=ease(p);x.save();
+  switch(tt){
+    case 'slide':case 'slide_left':x.drawImage(snap,-W*e,0);break;case 'slide_right':x.drawImage(snap,W*e,0);break;case 'slide_up':x.drawImage(snap,0,-H*e);break;case 'slide_down':x.drawImage(snap,0,H*e);break;
+    case 'push':x.drawImage(snap,-W*e,0);break;
+    case 'wipe_left':x.beginPath();x.rect(0,0,W*(1-e),H);x.clip();x.drawImage(snap,0,0);break;case 'wipe_right':x.beginPath();x.rect(W*e,0,W,H);x.clip();x.drawImage(snap,0,0);break;
+    case 'circle':x.beginPath();x.rect(0,0,W,H);x.arc(W/2,H/2,Math.hypot(W,H)/2*e,0,7,true);x.clip();x.drawImage(snap,0,0);break;
+    case 'zoom':{x.globalAlpha=1-e;const z=1+e*.3;x.drawImage(snap,(W-W*z)/2,(H-H*z)/2,W*z,H*z);break}
+    case 'spin':{x.globalAlpha=1-e;x.translate(W/2,H/2);x.rotate(e*Math.PI*.5);const z=1-e*.5;x.scale(z,z);x.drawImage(snap,-W/2,-H/2);break}
+    case 'blur':x.globalAlpha=1-e;x.filter='blur('+Math.round(e*20)+'px)';x.drawImage(snap,0,0);break;
+    case 'glitch':{x.globalAlpha=1-e;for(let i=0;i<8;i++){const y=Math.random()*H,h=H*.06;x.drawImage(snap,0,y,W,h,(Math.random()-.5)*W*.1,y,W,h)}x.globalAlpha=(1-e)*.6;x.drawImage(snap,0,0);break}
+    case 'flash':x.globalAlpha=1-e;x.drawImage(snap,0,0);x.globalAlpha=Math.max(0,1-Math.abs(p-.35)*3);x.fillStyle='#FFF';x.fillRect(0,0,W,H);break;
+    case 'dip_black':if(p<.5){x.drawImage(snap,0,0);x.globalAlpha=p*2}else x.globalAlpha=(1-p)*2;x.fillStyle='#000';x.fillRect(0,0,W,H);break;
+    default:x.globalAlpha=1-e;x.drawImage(snap,0,0)}
+  x.restore()}
+async function voiceoverBuffer(text){if(typeof Voice==='undefined'||!Voice.ready)throw mkErr('The natural voice is not ready yet.');const parts=(String(text).match(/[^.!?।]+[.!?।]*\s*/g)||[text]).map(s=>s.trim()).filter(Boolean);const bufs=[];
+  for(const p of parts)bufs.push(await Voice.synthRaw(p));const sr=bufs[0].sr,gap=Math.round(sr*.25),len=bufs.reduce((a,b)=>a+b.audio.length+gap,0),out=new AudioBuffer({length:len,sampleRate:sr,numberOfChannels:1}),d=out.getChannelData(0);let o=0;for(const b of bufs){d.set(b.audio,o);o+=b.audio.length+gap}return out}
 async function renderVideoPlan(plan,c,opt={}){
   if(!window.MediaRecorder)throw mkErr('This browser cannot record video.');
   let W=Math.round(num(plan.width,1080)),H=Math.round(num(plan.height,1920));const fps=clamp(num(plan.fps,30),12,60);
   const lim=(navigator.deviceMemory&&navigator.deviceMemory<=4)?1280:1920,k=Math.min(1,lim/Math.max(W,H));W=Math.max(16,Math.round(W*k/2)*2);H=Math.max(16,Math.round(H*k/2)*2);
-  const cv=canvas(W,H),x=cv.getContext('2d',{alpha:false});const ac=new AudioContext(),dest=ac.createMediaStreamDestination();
-  const cleanup=[];try{
-  const scenes=await prepareScenes(plan,c,ac,dest);scenes.forEach(s=>{if(s.video)cleanup.push(()=>URL.revokeObjectURL(s.video.src))});
+  const cv=canvas(W,H),x=cv.getContext('2d',{alpha:false});const ac=new AudioContext(),dest=ac.createMediaStreamDestination(),av={ac,dest,cleanup:[]};
+  try{
+  const scenes=await prepareScenes(plan,c,av);if(opt.signal&&opt.signal.aborted)throw mkErr('cancelled','cancel');
   const total=scenes.reduce((a,s)=>a+s.dur,0),au=plan.audio||{},tracks=(au.tracks||[]);const origT=tracks.find(t=>t.source==='original');
   const origOn=!au.mute_original,origVol=clamp(num(origT&&origT.volume,100),0,100)/100;
   const bufs=[];for(const tr of tracks){if(tr.source==='original')continue;let buf=null;
-    if(tr.source==='music')buf=await musicBuffer(tr.style||'calm',total+1);
-    else if(tr.media_id){const m=await DB.get('media',tr.media_id);if(m)try{buf=await ac.decodeAudioData(await m.blob.arrayBuffer())}catch(e){}}
+    try{if(tr.source==='music')buf=await musicBuffer(tr.style||'calm',total+1);
+      else if(tr.source==='sfx')buf=await sfxBuffer(tr.effect||'whoosh');
+      else if(tr.source==='voiceover')buf=await voiceoverBuffer(tr.text||'');
+      else if(tr.media_id){const m=await DB.get('media',tr.media_id);if(m)buf=await ac.decodeAudioData(await m.blob.arrayBuffer())}}catch(e){if(tr.source==='voiceover')throw e}
     if(buf)bufs.push({tr,buf})}
-  const vs=cv.captureStream(fps),ms=new MediaStream([...vs.getVideoTracks(),...dest.stream.getAudioTracks()]);cleanup.push(()=>ms.getTracks().forEach(t=>t.stop()));
+  /* quieter music while someone speaks: voice-over, or original sound of video scenes */
+  const speech=[];let tt=0;for(const s of scenes){if((s.video&&origOn)||s.layers.some(l=>l._v))speech.push([tt,tt+s.dur]);tt+=s.dur}
+  bufs.filter(b=>b.tr.source==='voiceover').forEach(b=>{const st=num(b.tr.start,0);speech.push([st,st+b.buf.duration])});
+  const vs=cv.captureStream(fps),ms=new MediaStream([...vs.getVideoTracks(),...dest.stream.getAudioTracks()]);av.cleanup.push(()=>ms.getTracks().forEach(t=>t.stop()));
   const mt=pickMime(opt.mime),rec=new MediaRecorder(ms,{...(mt?{mimeType:mt}:{}),videoBitsPerSecond:Math.round(clamp(W*H*fps*.14,1.5e6,16e6)),audioBitsPerSecond:160000});const chunks=[];rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
   if(ac.state==='suspended')await ac.resume().catch(()=>{});
   drawScene(x,scenes[0],0,W,H);
-  const t0=ac.currentTime+.1;for(const {tr,buf} of bufs){const src=ac.createBufferSource();src.buffer=buf;src.loop=tr.loop!==false&&buf.duration<total;const g=ac.createGain(),vol=clamp(num(tr.volume,60),0,100)/100,st=t0+clamp(num(tr.start,0),0,total),fi=Math.max(.05,num(tr.fade_in,1)),fo=Math.max(.05,num(tr.fade_out,2));
-    g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(vol,st+fi);g.gain.setValueAtTime(vol,Math.max(st+fi,t0+total-fo));g.gain.linearRampToValueAtTime(0,t0+total);src.connect(g);g.connect(dest);src.start(st);src.stop(t0+total+.2)}
+  const t0=ac.currentTime+.1;
+  for(const {tr,buf} of bufs){const src=ac.createBufferSource();src.buffer=buf;const isBed=tr.source==='music'||tr.source==='upload';src.loop=isBed&&tr.loop!==false&&buf.duration<total;const g=ac.createGain();
+    const vol=clamp(num(tr.volume,tr.source==='music'?55:tr.source==='sfx'?80:100),0,100)/100,st=t0+clamp(num(tr.start,0),0,total),end=isBed?t0+total:Math.min(t0+total,st+buf.duration),fi=Math.max(.02,num(tr.fade_in,isBed?1:.02)),fo=Math.max(.02,num(tr.fade_out,isBed?2:.05));
+    g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(vol,st+fi);
+    if(isBed&&tr.duck!==false&&tr.source==='music')for(const [a,b] of speech){const A=t0+a,B=t0+b;if(B<=st+fi||A>=end-fo)continue;g.gain.setValueAtTime(vol,Math.max(st+fi,A-.3));g.gain.linearRampToValueAtTime(vol*.28,Math.max(st+fi,A));g.gain.setValueAtTime(vol*.28,Math.max(A,B-.01));g.gain.linearRampToValueAtTime(vol,Math.min(end-fo,B+.4))}
+    g.gain.setValueAtTime(g.gain.value===0?vol:vol,Math.max(st+fi,end-fo));g.gain.linearRampToValueAtTime(0,end);src.connect(g);g.connect(dest);src.start(st);src.stop(end+.2)}
   rec.start(1000);const snap=canvas(W,H),sx=snap.getContext('2d');let elapsed=0;
   for(let i=0;i<scenes.length;i++){const s=scenes[i];if(opt.signal&&opt.signal.aborted)break;
     if(s.video){s.video.currentTime=s.start;await once(s.video,'seeked',4000);s.video.playbackRate=s.speed;s.video.muted=false;if(s.gain)s.gain.gain.value=origOn?origVol:0;else s.video.muted=true;try{await s.video.play()}catch(e){s.video.muted=true;await s.video.play().catch(()=>{})}}
-    const sStart=performance.now(),tdur=Math.min(.7,s.dur/2),tt=s.transition||'fade';
+    const sStart=performance.now(),tdur=Math.min(.7,s.dur/2),tt2=s.transition||'fade';
     for(;;){const lt=(performance.now()-sStart)/1000;if(lt>=s.dur||(opt.signal&&opt.signal.aborted))break;
-      drawScene(x,s,lt,W,H);
-      if(i>0&&tt!=='cut'&&lt<tdur){const p=ease(lt/tdur);x.save();if(tt==='slide')x.drawImage(snap,-W*p,0);else if(tt==='zoom'){x.globalAlpha=1-p;const z=1+p*.25;x.drawImage(snap,(W-W*z)/2,(H-H*z)/2,W*z,H*z)}else{x.globalAlpha=1-p;x.drawImage(snap,0,0)}x.restore()}
+      if(s.video&&s.speedEnd!==s.speed)s.video.playbackRate=s.speed+(s.speedEnd-s.speed)*clamp(lt/s.dur,0,1);
+      drawScene(x,s,lt,W,H);if(i>0&&tt2!=='cut'&&lt<tdur)drawTransition(x,snap,lt/tdur,W,H,tt2);
       if(opt.onProgress)opt.onProgress(clamp((elapsed+lt)/total*100,0,99));await frameTick(fps)}
-    if(s.video){s.video.pause();if(s.gain)s.gain.gain.value=0}sx.drawImage(cv,0,0);elapsed+=s.dur}
+    if(s.video){s.video.pause();if(s.gain)s.gain.gain.value=0}s.layers.forEach(l=>{if(l._v){l._v.pause();l._done=true;if(l._g)l._g.gain.value=0}});sx.drawImage(cv,0,0);elapsed+=s.dur}
   const stopped=once(rec,'stop',10000);rec.stop();await stopped;
   if(opt.signal&&opt.signal.aborted)throw mkErr('cancelled','cancel');
   const type=(rec.mimeType||mt||'video/webm').split(';')[0];if(opt.onProgress)opt.onProgress(100);
   return {blob:new Blob(chunks,{type}),mime:type,duration:total,w:W,h:H}}
-  finally{cleanup.forEach(f=>{try{f()}catch(e){}});ac.close().catch(()=>{})}}
+  finally{av.cleanup.forEach(f=>{try{f()}catch(e){}});ac.close().catch(()=>{})}}
 
-/* ---------- export: image formats, GIF, MP3 ---------- */
+/* ---------- export ---------- */
 async function convertImage(blob,type){const b=await createImageBitmap(blob);const cv=canvas(b.width,b.height),x=cv.getContext('2d');if(type==='image/jpeg'){x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height)}x.drawImage(b,0,0);return toBlob(cv,type,.92)}
-let gifLib=null,mp3Lib=null;
-async function gifFrom(blob,onProgress){gifLib=gifLib||await import('https://cdn.jsdelivr.net/npm/gifenc@1.0.3/+esm');const {GIFEncoder,quantize,applyPalette}=gifLib;const enc=GIFEncoder();
-  const add=(cv,delay)=>{const d=cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;const pal=quantize(d,256);enc.writeFrame(applyPalette(d,pal),cv.width,cv.height,{palette:pal,delay})};
-  if((blob.type||'').startsWith('image/')){const b=await createImageBitmap(blob);const s=Math.min(1,1080/Math.max(b.width,b.height));const cv=canvas(Math.round(b.width*s),Math.round(b.height*s));cv.getContext('2d').drawImage(b,0,0,cv.width,cv.height);add(cv,0)}
-  else{const v=document.createElement('video');v.muted=true;v.playsInline=true;v.src=URL.createObjectURL(blob);await once(v,'loadeddata');let d=v.duration;if(!isFinite(d)){v.currentTime=1e7;await once(v,'seeked');d=v.currentTime}
-    const fps=10,len=Math.min(d,15),s=Math.min(1,480/Math.max(v.videoWidth,v.videoHeight)),cv=canvas(Math.round(v.videoWidth*s),Math.round(v.videoHeight*s)),x=cv.getContext('2d');
-    for(let t=0;t<len;t+=1/fps){v.currentTime=t;await once(v,'seeked',3000);x.drawImage(v,0,0,cv.width,cv.height);add(cv,100);if(onProgress)onProgress(t/len*100)}URL.revokeObjectURL(v.src)}
-  enc.finish();return new Blob([enc.bytes()],{type:'image/gif'})}
-async function mp3From(blob,onProgress){mp3Lib=mp3Lib||await import('https://cdn.jsdelivr.net/npm/@breezystack/lamejs@1.2.7/+esm');const Enc=mp3Lib.Mp3Encoder||(mp3Lib.default&&mp3Lib.default.Mp3Encoder);
-  const ac=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(2,44100,44100);let buf;try{buf=await ac.decodeAudioData(await blob.arrayBuffer())}catch(e){throw mkErr('This file has no sound track that can be read.')}
-  const ch=buf.numberOfChannels>1?2:1,enc=new Enc(ch,buf.sampleRate,160),L=buf.getChannelData(0),R=ch>1?buf.getChannelData(1):null,out=[],block=1152;
-  const conv=a=>{const r=new Int16Array(a.length);for(let i=0;i<a.length;i++){const s=Math.max(-1,Math.min(1,a[i]));r[i]=s<0?s*32768:s*32767}return r};
-  for(let i=0;i<L.length;i+=block){const l=conv(L.subarray(i,i+block));const d=R?enc.encodeBuffer(l,conv(R.subarray(i,i+block))):enc.encodeBuffer(l);if(d.length)out.push(new Uint8Array(d));if(onProgress&&i%(block*200)===0){onProgress(i/L.length*100);await sleep(0)}}
-  const e=enc.flush();if(e.length)out.push(new Uint8Array(e));return new Blob(out,{type:'audio/mpeg'})}
-function saveFile(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000)}
+async function gifFrom(blob,onProgress){const frames=[];let w,h;
+  if((blob.type||'').startsWith('image/')){const b=await createImageBitmap(blob);const s=Math.min(1,1080/Math.max(b.width,b.height));w=Math.round(b.width*s);h=Math.round(b.height*s);const cv=canvas(w,h),x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(b,0,0,w,h);
+    await FX.call('gif_start',{w,h});const d=x.getImageData(0,0,w,h).data.buffer;await FX.call('gif_frame',{data:d,delay:0},[d])}
+  else{const v=document.createElement('video');v.muted=true;v.playsInline=true;v.src=URL.createObjectURL(blob);await once(v,'loadeddata');let dd=v.duration;if(!isFinite(dd)){v.currentTime=1e7;await once(v,'seeked');dd=v.currentTime}
+    const fps=10,len=Math.min(dd,15),s=Math.min(1,480/Math.max(v.videoWidth,v.videoHeight));w=Math.round(v.videoWidth*s);h=Math.round(v.videoHeight*s);const cv=canvas(w,h),x=cv.getContext('2d',{willReadFrequently:true});
+    await FX.call('gif_start',{w,h});for(let t=0;t<len;t+=1/fps){v.currentTime=t;await once(v,'seeked',3000);x.drawImage(v,0,0,w,h);const d=x.getImageData(0,0,w,h).data.buffer;await FX.call('gif_frame',{data:d,delay:100},[d]);if(onProgress)onProgress(t/len*100)}URL.revokeObjectURL(v.src)}
+  const bytes=await FX.call('gif_end');return new Blob([bytes],{type:'image/gif'})}
+async function decodeAudio(blob){const ac=new OfflineAudioContext(2,44100,44100);try{return await ac.decodeAudioData(await blob.arrayBuffer())}catch(e){throw mkErr('This file has no sound track that can be read.')}}
+function wavFrom(buf){const ch=Math.min(2,buf.numberOfChannels),sr=buf.sampleRate,n=buf.length,o=new DataView(new ArrayBuffer(44+n*ch*2));const ws=(p,s)=>{for(let i=0;i<s.length;i++)o.setUint8(p+i,s.charCodeAt(i))};
+  ws(0,'RIFF');o.setUint32(4,36+n*ch*2,true);ws(8,'WAVE');ws(12,'fmt ');o.setUint32(16,16,true);o.setUint16(20,1,true);o.setUint16(22,ch,true);o.setUint32(24,sr,true);o.setUint32(28,sr*ch*2,true);o.setUint16(32,ch*2,true);o.setUint16(34,16,true);ws(36,'data');o.setUint32(40,n*ch*2,true);
+  const cs=[...Array(ch)].map((_,i)=>buf.getChannelData(i));let p=44;for(let i=0;i<n;i++)for(let c=0;c<ch;c++){const s=Math.max(-1,Math.min(1,cs[c][i]));o.setInt16(p,s<0?s*32768:s*32767,true);p+=2}return new Blob([o.buffer],{type:'audio/wav'})}
+async function mp3From(blob){const buf=await decodeAudio(blob);const L=buf.getChannelData(0).slice(),R=buf.numberOfChannels>1?buf.getChannelData(1).slice():null;
+  try{const bytes=await FX.call('mp3',{left:L.buffer,right:R&&R.buffer,sr:buf.sampleRate},R?[L.buffer,R.buffer]:[L.buffer]);return {blob:new Blob([bytes],{type:'audio/mpeg'}),ext:'mp3'}}
+  catch(e){return {blob:wavFrom(buf),ext:'wav'}}}
+function saveFile(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000)}
 
 /* ============================================================
-   Voice: speaking, hearing, interruption, session and timeouts
+   Voice: natural female voice in a worker, steady listening, interruption, session
    ============================================================ */
 let wakeLock=null;
-async function wakeOn(){try{if('wakeLock' in navigator&&!wakeLock){wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>{wakeLock=null})}}catch(e){}}
-function wakeOffIfIdle(){if(!Session.active&&!Gen.running&&wakeLock){try{wakeLock.release()}catch(e){}wakeLock=null}}
+async function wakeOn(){try{if('wakeLock' in navigator&&!wakeLock&&!document.hidden){wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>{wakeLock=null})}}catch(e){}}
+function wakeOffIfIdle(){if(!Session.active&&!Gen.running&&!Rec.active&&wakeLock){try{wakeLock.release()}catch(e){}wakeLock=null}}
 const curLang=()=>{const c=nav.v==='container'?byId(nav.id):null;return (c&&c.lang)||S.lang||'en-IN'};
 
-/* ---------- speaking: natural voice engine downloaded in the background, device voice as fallback ---------- */
-function pickDeviceVoice(lang){const vs=('speechSynthesis' in window)?speechSynthesis.getVoices():[];const pre=String(lang||'en').slice(0,2).toLowerCase();
-  const same=vs.filter(v=>String(v.lang).toLowerCase().startsWith(pre));const pool=same.length?same:vs;
-  const male=/male|man\b|david|daniel|alex|guy|james|rishi|ravi|hemant|prabhat|george|arthur|fred/i,female=/female|woman|samantha|zira|karen|victoria|susan|aria|neerja|veena|heera|kalpana|swara|libby|sonia|serena|moira|tessa/i;
-  const want=S.voice==='male'?male:female;const exact=pool.find(v=>String(v.lang).toLowerCase()===String(lang).toLowerCase()&&want.test(v.name));
-  return exact||pool.find(v=>want.test(v.name)&&/natural|neural|google|online/i.test(v.name))||pool.find(v=>want.test(v.name))||pool.find(v=>String(v.lang).toLowerCase()===String(lang).toLowerCase())||pool[0]||null}
-const Voice={kok:null,loading:null,slow:0,ac:null,cur:null,queue:[],speaking:false,gen:0,done:null,
-  status(){return this.kok?'natural':this.loading?'downloading':'device'},
-  preload(){if(this.loading)return this.loading;this.loading=(async()=>{try{const m=await import('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/+esm');
-      this.kok=await m.KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{dtype:'q8',device:'wasm'});LS.set('spc.voiceReady',1)}catch(e){this.kok=null;this.failed=true}
-    finally{if(typeof onVoiceStatus==='function')onVoiceStatus()}})();return this.loading},
+/* ---------- the voice engine worker (downloaded once, then loaded from the browser cache) ---------- */
+function voiceWorkerMain(){let tts=null;const files={};
+  const report=p=>{if(!p)return;if(p.file&&(p.status==='progress'||p.status==='download'||p.status==='done')){const f=files[p.file]=files[p.file]||{loaded:0,total:0};if(p.total)f.total=p.total;if(p.loaded!=null)f.loaded=p.loaded;if(p.status==='done'&&f.total)f.loaded=f.total;
+      let L=0,T=0;for(const k in files){L+=files[k].loaded;T+=files[k].total}self.postMessage({event:'progress',loaded:L,total:T})}};
+  async function load(voice){if(tts)return;let mod=null,err=null;
+    for(const u of['https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js','https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/+esm','https://esm.sh/kokoro-js@1.2.1']){try{mod=await import(u);if(mod&&mod.KokoroTTS)break}catch(e){err=e}}
+    if(!mod||!mod.KokoroTTS)throw new Error('Voice engine library could not load: '+(err&&err.message||''));
+    self.postMessage({event:'stage',stage:'model'});
+    tts=await mod.KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{dtype:'q8',device:'wasm',progress_callback:report});
+    await tts.generate('Ready.',{voice:voice||'af_heart'})}
+  self.onmessage=async e=>{const m=e.data;try{
+      if(m.type==='load'){await load(m.voice);self.postMessage({id:m.id,result:true});return}
+      if(m.type==='speak'){await load(m.voice);const a=await tts.generate(m.text,{voice:m.voice||'af_heart',speed:m.speed||1});const d=a.audio instanceof Float32Array?a.audio:new Float32Array(a.audio);self.postMessage({id:m.id,result:{audio:d,sr:a.sampling_rate||24000}},[d.buffer]);return}
+    }catch(err){self.postMessage({id:m.id,error:String(err&&err.message||err)})}}}
+const VW=workerRPC(voiceWorkerMain);
+const EXPECTED_BYTES=96*1048576;
+const Voice={ready:false,failed:false,loading:null,progress:0,ac:null,cur:null,queue:[],speaking:false,gen:0,done:Promise.resolve(),listeners:new Set(),
+  voiceId(){return S.voice==='male'?'am_michael':'af_heart'},
+  status(){return this.ready?'natural':this.failed?'device':'downloading'},
+  emit(){this.listeners.forEach(f=>{try{f()}catch(e){}})},
+  load(){if(this.loading)return this.loading;this.failed=false;
+    VW.onEvent=m=>{if(m.event==='progress'){this.progress=clamp(m.loaded/Math.max(m.total,EXPECTED_BYTES),0,.99);this.emit()}};
+    this.loading=VW.call('load',{voice:this.voiceId()}).then(()=>{this.ready=true;this.progress=1;LS.set('spc.voiceReady',1);this.emit()},e=>{this.failed=true;this.loading=null;VW.kill();this.emit();throw e});return this.loading},
+  unlock(){try{this.ac=this.ac||new AudioContext();if(this.ac.state==='suspended')this.ac.resume()}catch(e){}},
   clean(t){return String(t||'').replace(/\[(.*?)\]\((.*?)\)/g,'$1').replace(/[*_#`>~|]/g,'').replace(/\s+/g,' ').trim()},
-  say(text,opt={}){if(S.voiceOff)return Promise.resolve();text=this.clean(text);if(!text)return Promise.resolve();this.queue.push({text,lang:opt.lang||curLang()});
-    if(this.speaking)return this.done;this.speaking=true;setPill();Ear.pause();BargeIn.arm(()=>this.stop(true));const g=this.gen;
+  async synthRaw(text){return VW.call('speak',{text,voice:this.voiceId()})},
+  say(text,opt={}){if(S.voiceOff&&!opt.force)return Promise.resolve();text=this.clean(text);if(!text)return Promise.resolve();this.queue.push({text,lang:opt.lang||curLang()});
+    if(this.speaking)return this.done;this.speaking=true;setPill();Ear.pause();if(text.length>90)BargeIn.arm(()=>this.stop(true));const g=this.gen;
     this.done=(async()=>{while(this.queue.length&&g===this.gen){const it=this.queue.shift();await this.one(it,g)}if(g===this.gen){this.speaking=false;BargeIn.disarm();setPill();if(Session.active)Ear.resume()}})();return this.done},
   stop(barge){this.queue=[];this.gen++;this.speaking=false;try{speechSynthesis.cancel()}catch(e){}if(this.cur){try{this.cur.stop()}catch(e){}this.cur=null}BargeIn.disarm();setPill();if(Session.active)Ear.resume();if(barge)Session.touch()},
   async one({text,lang},g){const parts=(text.match(/[^.!?।]+[.!?।]*\s*/g)||[text]).map(s=>s.trim()).filter(Boolean);
-    if(this.kok&&/^en/i.test(lang)&&this.slow<2){try{let next=this.synth(parts[0]);for(let i=0;i<parts.length;i++){const t0=performance.now();const a=await next;if(g!==this.gen)return;if(i===0&&performance.now()-t0>4500)this.slow++;if(i+1<parts.length)next=this.synth(parts[i+1]);await this.play(a,g);if(g!==this.gen)return}return}catch(e){this.slow++}}
+    const english=/^en/i.test(lang);
+    if(english&&!this.ready&&!this.failed&&this.loading){const t0=Date.now();while(!this.ready&&!this.failed&&Date.now()-t0<20000&&g===this.gen)await sleep(150)}
+    if(english&&this.ready){try{let next=this.synthRaw(parts[0]);for(let i=0;i<parts.length;i++){const a=await next;if(g!==this.gen)return;if(i+1<parts.length)next=this.synthRaw(parts[i+1]);await this.play(a,g);if(g!==this.gen)return}return}catch(e){}}
     for(const p of parts){if(g!==this.gen)return;await this.device(p,lang,g)}},
-  synth(s){return this.kok.generate(s,{voice:S.voice==='male'?'am_michael':'af_heart'})},
-  play(raw,g){return new Promise(res=>{if(g!==this.gen)return res();this.ac=this.ac||new AudioContext();const d=raw.audio||raw.data;const b=this.ac.createBuffer(1,d.length,raw.sampling_rate||24000);b.copyToChannel(d,0);
-    const s=this.ac.createBufferSource();s.buffer=b;s.connect(this.ac.destination);s.onended=()=>{if(this.cur===s)this.cur=null;res()};this.cur=s;if(this.ac.state==='suspended')this.ac.resume();s.start()})},
+  play(a,g){return new Promise(res=>{if(g!==this.gen)return res();this.unlock();const b=this.ac.createBuffer(1,a.audio.length,a.sr);b.copyToChannel(a.audio,0);
+    const s=this.ac.createBufferSource();s.buffer=b;s.connect(this.ac.destination);s.onended=()=>{if(this.cur===s)this.cur=null;res()};this.cur=s;s.start()})},
   device(text,lang,g){return new Promise(res=>{if(!('speechSynthesis' in window)||g!==this.gen)return res();const u=new SpeechSynthesisUtterance(text);u.lang=lang||'en-IN';u.rate=1;const v=pickDeviceVoice(u.lang);if(v)u.voice=v;
     let done=false;const fin=()=>{if(!done){done=true;clearTimeout(t);res()}};u.onend=fin;u.onerror=fin;const t=setTimeout(fin,text.length*120+7000);try{speechSynthesis.speak(u)}catch(e){fin()}})}
 };
+/* only used for other languages, or if the natural voice cannot load; prefers clearly female voices */
+function pickDeviceVoice(lang){const vs=('speechSynthesis' in window)?speechSynthesis.getVoices():[];const pre=String(lang||'en').slice(0,2).toLowerCase();
+  const same=vs.filter(v=>String(v.lang).toLowerCase().replace('_','-').startsWith(pre));const pool=same.length?same:vs;
+  const male=/\bmale\b|\bman\b|david|daniel|alex\b|guy|james|rishi|ravi|hemant|prabhat|george|arthur|fred|mark|aaron|thomas|-x-.*?(gbb|ahp|end|enc)|#male/i,female=/female|woman|samantha|zira|karen|victoria|susan|aria|neerja|veena|heera|kalpana|swara|libby|sonia|serena|moira|tessa|kajal|lekha|-x-.*?(gba|ena|enb|ene)|#female/i;
+  const want=S.voice==='male'?male:female,avoid=S.voice==='male'?female:male;const exact=String(lang).toLowerCase();
+  return pool.find(v=>String(v.lang).toLowerCase()===exact&&want.test(v.name))||pool.find(v=>want.test(v.name))||pool.find(v=>String(v.lang).toLowerCase()===exact&&!avoid.test(v.name))||pool.find(v=>!avoid.test(v.name))||pool[0]||null}
 
-/* ---------- interruption: while the app speaks, a light sound check listens for the user ---------- */
+/* ---------- interruption: a light sound check while the app speaks a longer reply ---------- */
 const BargeIn={stream:null,timer:null,armed:false,cb:null,ac:null,src:null,
-  async arm(cb){this.armed=true;this.cb=cb;if(!Session.active||!navigator.mediaDevices)return;
+  async arm(cb){this.armed=true;this.cb=cb;if(!Session.active||Rec.active||!navigator.mediaDevices)return;
     try{const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});if(!this.armed){st.getTracks().forEach(t=>t.stop());return}this.stream=st;
       this.ac=this.ac||new AudioContext();if(this.ac.state==='suspended')await this.ac.resume().catch(()=>{});const src=this.ac.createMediaStreamSource(st),an=this.ac.createAnalyser();an.fftSize=1024;src.connect(an);this.src=src;
       const buf=new Float32Array(an.fftSize);let base=0,n=0,over=0;const t0=performance.now();
-      this.timer=setInterval(()=>{an.getFloatTimeDomainData(buf);let s=0;for(let i=0;i<buf.length;i++)s+=buf[i]*buf[i];const rms=Math.sqrt(s/buf.length);
-        if(performance.now()-t0<450){base+=rms;n++;return}const b=base/Math.max(1,n);if(rms>Math.max(b*3.4,.05)){over+=50;if(over>=260)this.fire()}else over=Math.max(0,over-25)},50)}catch(e){}},
+      this.timer=setInterval(()=>{an.getFloatTimeDomainData(buf);let s=0;for(let i=0;i<buf.length;i+=2)s+=buf[i]*buf[i];const rms=Math.sqrt(s/(buf.length/2));
+        if(performance.now()-t0<450){base+=rms;n++;return}const b=base/Math.max(1,n);if(rms>Math.max(b*3.4,.05)){over+=60;if(over>=300)this.fire()}else over=Math.max(0,over-30)},60)}catch(e){}},
   fire(){const cb=this.cb;this.disarm();if(cb)cb()},
   disarm(){this.armed=false;clearInterval(this.timer);this.timer=null;try{if(this.src)this.src.disconnect()}catch(e){}this.src=null;if(this.stream){this.stream.getTracks().forEach(t=>t.stop());this.stream=null}}
 };
 
-/* ---------- hearing: the browser's built-in recognition first ---------- */
+/* ---------- hearing: built-in recognition with gentle restarts ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const Ear={rec:null,want:false,paused:false,lang:'en-IN',supported:!!SR,low:0,fails:0,
+const Ear={rec:null,want:false,paused:false,lang:'en-IN',supported:!!SR,low:0,fails:0,quick:0,startedAt:0,timer:null,
   start(){this.want=true;this.paused=false;this.lang=curLang();if(this.supported)this.go();else AIEar.loop()},
-  go(){if(this.rec||!this.want||this.paused||document.hidden||!this.supported)return;const r=new SR();r.lang=this.lang;r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
-    r.onresult=e=>{this.fails=0;for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i],tx=(res[0]&&res[0].transcript||'').trim();if(!tx)continue;if(res.isFinal)heard(tx,res[0].confidence);else interim(tx)}};
-    r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){this.want=false;Session.denied()}else if(e.error==='network'||e.error==='language-not-supported'){this.fails++;if(this.fails>3&&G.active().length){this.supported=false;AIEar.loop()}}};
-    r.onend=()=>{if(this.rec===r)this.rec=null;if(this.want&&!this.paused&&!document.hidden)setTimeout(()=>this.go(),300)};
-    try{r.start();this.rec=r}catch(e){this.rec=null}},
-  pause(){this.paused=true;if(this.rec){const r=this.rec;this.rec=null;try{r.abort()}catch(e){}}AIEar.pause=true},
-  resume(){this.paused=false;AIEar.pause=false;if(this.want){if(this.supported)this.go();else AIEar.loop()}},
+  go(){clearTimeout(this.timer);if(this.rec||!this.want||this.paused||document.hidden||!this.supported)return;let r;try{r=new SR()}catch(e){this.supported=false;return}
+    r.lang=this.lang;r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+    r.onresult=e=>{this.fails=0;this.quick=0;for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i],tx=(res[0]&&res[0].transcript||'').trim();if(!tx)continue;if(res.isFinal)heard(tx,res[0].confidence);else interim(tx)}};
+    r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){this.want=false;Session.denied()}else if(e.error==='network'||e.error==='language-not-supported'||e.error==='audio-capture'){this.fails++;if(this.fails>4&&G.active().length&&e.error!=='audio-capture'){this.supported=false;AIEar.loop()}}};
+    r.onend=()=>{if(this.rec===r)this.rec=null;if(!this.want||this.paused||document.hidden)return;const ran=Date.now()-this.startedAt;this.quick=ran<1500?this.quick+1:0;
+      const delay=this.fails>2?3000:this.quick>4?2500:this.quick>1?900:200;this.timer=setTimeout(()=>this.go(),delay)};
+    try{r.start();this.rec=r;this.startedAt=Date.now()}catch(e){this.rec=null;this.timer=setTimeout(()=>this.go(),1000)}},
+  pause(){this.paused=true;clearTimeout(this.timer);if(this.rec){const r=this.rec;this.rec=null;try{r.abort()}catch(e){}}AIEar.pause=true},
+  resume(){this.paused=false;AIEar.pause=false;if(this.want){if(this.supported)this.timer=setTimeout(()=>this.go(),150);else AIEar.loop()}},
   stop(){this.want=false;this.pause();this.paused=false},
-  setLang(l){if(!l||l===this.lang)return;this.lang=l;if(this.rec){const r=this.rec;this.rec=null;try{r.abort()}catch(e){}setTimeout(()=>this.go(),300)}}
+  setLang(l){if(!l||l===this.lang)return;this.lang=l;if(this.rec){const r=this.rec;this.rec=null;try{r.abort()}catch(e){}this.timer=setTimeout(()=>this.go(),300)}}
 };
 
-/* ---------- hearing through the AI: used when built-in recognition is missing or keeps mishearing ---------- */
+/* ---------- hearing through the AI: when built-in recognition is missing or keeps mishearing ---------- */
 const AIEar={running:false,pause:false,
   async capture(maxMs=30000){if(!navigator.mediaDevices||!window.MediaRecorder)return null;const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
     try{const ac=new AudioContext(),src=ac.createMediaStreamSource(st),an=ac.createAnalyser();an.fftSize=1024;src.connect(an);const buf=new Float32Array(an.fftSize);
@@ -755,23 +1126,23 @@ const AIEar={running:false,pause:false,
       let base=0;for(let i=0;i<8;i++){await sleep(40);base+=lvl()}base/=8;const thr=Math.max(base*3,.02);
       const mt=['audio/webm;codecs=opus','audio/webm','audio/mp4'].find(m=>MediaRecorder.isTypeSupported(m))||'';const rec=new MediaRecorder(st,mt?{mimeType:mt}:{});const ch=[];rec.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
       rec.start(250);const t0=Date.now();let spoke=false,quiet=0;
-      while(Date.now()-t0<maxMs&&!this.pause&&Session.active){await sleep(60);const v=lvl();if(v>thr){spoke=true;quiet=0;Session.touch()}else if(spoke){quiet+=60;if(quiet>1300)break}else if(Date.now()-t0>15000)break}
+      while(Date.now()-t0<maxMs&&!this.pause&&Session.active){await sleep(80);const v=lvl();if(v>thr){spoke=true;quiet=0;Session.touch()}else if(spoke){quiet+=80;if(quiet>1300)break}else if(Date.now()-t0>15000)break}
       const done=once(rec,'stop',4000);rec.stop();await done;ac.close().catch(()=>{});return spoke?new Blob(ch,{type:(rec.mimeType||mt||'audio/webm').split(';')[0]}):null}
     finally{st.getTracks().forEach(t=>t.stop())}},
   async transcribe(blob){const data=await b64(blob);const body={contents:[{parts:[{text:'Transcribe exactly what the speaker says, in the original language and script. Reply only as JSON: {"text":"...","language":"BCP-47 code such as en-IN, ml-IN, hi-IN, ta-IN"}. If nothing is said, text is empty.'},{inline_data:{mime_type:G.mime(blob.type),data}}]}],generationConfig:{responseMimeType:'application/json',temperature:0}};
     const {json}=await G.gen('text',body);try{return JSON.parse(G.text(json).replace(/^```(json)?|```$/g,''))}catch(e){return {text:G.text(json),language:''}}},
-  async once(){try{const b=await this.capture();if(!b)return null;setPill('think');const r=await this.transcribe(b);return r}catch(e){return null}},
-  async loop(){if(this.running||!G.active().length)return;this.running=true;try{while(Session.active&&!Ear.supported){if(this.pause||Voice.speaking||document.hidden){await sleep(300);continue}
+  async once(){try{const b=await this.capture();if(!b)return null;setPill('think');return await this.transcribe(b)}catch(e){return null}},
+  async loop(){if(this.running||!G.active().length)return;this.running=true;try{while(Session.active&&!Ear.supported){if(this.pause||Voice.speaking||document.hidden||Rec.active){await sleep(300);continue}
       const r=await this.once();if(r&&r.text){if(r.language)setLanguage(r.language,true);heard(r.text,1,true)}else await sleep(200)}}finally{this.running=false}}
 };
 
-/* ---------- session: continuous conversation with the silence ladder (2 min, 1 min, 30 s, 15 s) ---------- */
+/* ---------- session: continuous conversation and the silence ladder (2 min, 1 min, 30 s, 15 s) ---------- */
 const Session={active:false,last:Date.now(),stage:0,timer:null,isDenied:false,
   start(){if(S.voiceOff)return;this.active=true;this.isDenied=false;this.touch();Ear.start();wakeOn();clearInterval(this.timer);this.timer=setInterval(()=>this.tick(),1000);setPill()},
   stop(){this.active=false;Ear.stop();BargeIn.disarm();clearInterval(this.timer);setPill();wakeOffIfIdle()},
   touch(){this.last=Date.now();this.stage=0},
   denied(){this.isDenied=true;this.stop();toast('Microphone access was blocked. Allow the microphone for this site, then tap the microphone.')},
-  tick(){if(!this.active)return;if(Gen.running||Brain.busy){this.last=Date.now();this.stage=0;return}if(Voice.speaking)return;
+  tick(){if(!this.active)return;if(Gen.running||Brain.busy||Rec.active){this.last=Date.now();this.stage=0;return}if(Voice.speaking)return;
     const idle=(Date.now()-this.last)/1000,marks=[120,180,210,225];if(idle<marks[this.stage])return;
     if(this.stage<3){this.stage++;Voice.say(this.stage===3?'Are you still there? I will stop listening soon if I do not hear you.':'Are you still there?')}
     else{this.stage=0;const t=this.last;Voice.say('It seems you are not available, hence closing now. Tap the microphone when you want to talk again.').then(()=>{if(this.last===t)this.stop()})}}
@@ -782,24 +1153,29 @@ const Session={active:false,last:Date.now(),stage:0,timer:null,isDenied:false,
    ============================================================ */
 const T={O:'OBJECT',S:'STRING',N:'NUMBER',B:'BOOLEAN',A:'ARRAY'};
 const SRC={type:T.O,description:'Where the picture comes from.',properties:{
-  type:{type:T.S,enum:['color','gradient','upload','version','web','asset','ai'],description:'color or gradient: drawn by the app. upload: a file the user uploaded (media_id). version: a saved result (version number, 1 = first; omit for the current one). web: a free image from open libraries (query). asset: a library image (asset_id). ai: AI image model (prompt), only if built-in tools cannot do it.'},
+  type:{type:T.S,enum:['color','gradient','upload','version','web','asset','ai','collage'],description:'color or gradient: drawn by the app. upload: a file the user uploaded (media_id). version: a saved result (version number, 1 = first; omit for the current one). web: a free image from open libraries (query). asset: a library image (asset_id). ai: AI image model (prompt), only if built-in tools cannot do it. collage: several pictures (sources) in a layout.'},
+  sources:{type:T.A,items:{type:T.O,properties:{type:{type:T.S},media_id:{type:T.S},version:{type:T.N},query:{type:T.S},asset_id:{type:T.S},color:{type:T.S},colors:{type:T.A,items:{type:T.S}}}},description:'Collage pictures.'},layout:{type:T.S,enum:['grid','row','column','mosaic']},gap:{type:T.N},
+  cutout:{type:T.B,description:'Remove the background of the picture (people work best). Use background for the new background colour.'},background:{type:T.S},freeze_at:{type:T.N,description:'Use one still frame of a video at this second.'},
+  effects:{type:T.A,items:{type:T.O,properties:{type:{type:T.S},amount:{type:T.N},colors:{type:T.A,items:{type:T.S}}}}},
   color:{type:T.S},colors:{type:T.A,items:{type:T.S}},angle:{type:T.N},radial:{type:T.B},media_id:{type:T.S},version:{type:T.N},query:{type:T.S},pick:{type:T.N},asset_id:{type:T.S},prompt:{type:T.S},aspect_ratio:{type:T.S},
   time:{type:T.N,description:'For a video used as a still: second to take the frame from.'},start:{type:T.N,description:'Video clip start second.'},end:{type:T.N,description:'Video clip end second.'}},required:['type']};
-const ADJ={type:T.O,description:'Colour adjustments from -100 to 100 (blur 0-40, grayscale and sepia 0-100, hue in degrees, warmth negative is cooler, vignette 0-100).',properties:{brightness:{type:T.N},contrast:{type:T.N},saturation:{type:T.N},warmth:{type:T.N},hue:{type:T.N},blur:{type:T.N},grayscale:{type:T.N},sepia:{type:T.N},vignette:{type:T.N}}};
+const EFFECTS={type:T.A,description:'Picture effects applied in order.',items:{type:T.O,properties:{type:{type:T.S,enum:['cartoon','sketch','posterize','duotone','pixelate','glitch','grain','sharpen','emboss','invert','threshold','halftone','oil']},amount:{type:T.N,description:'0 to 100'},colors:{type:T.A,items:{type:T.S},description:'Duotone or coloured sketch colours.'}},required:['type']}};
+const ADJ={type:T.O,description:'Colour adjustments from -100 to 100 (blur 0-40, grayscale and sepia 0-100, hue in degrees, warmth negative is cooler, vignette, grain and glow 0-100), or a preset look.',properties:{preset:{type:T.S,enum:Object.keys(PRESETS)},grain:{type:T.N},glow:{type:T.N},brightness:{type:T.N},contrast:{type:T.N},saturation:{type:T.N},warmth:{type:T.N},hue:{type:T.N},blur:{type:T.N},grayscale:{type:T.N},sepia:{type:T.N},vignette:{type:T.N}}};
 const LAYER={type:T.O,description:'Something drawn on top. Positions x and y are the centre in percent of width and height. Sizes in percent.',properties:{
-  kind:{type:T.S,enum:['text','image','shape','sticker']},text:{type:T.S},font:{type:T.S,enum:['sans','modern','bold','serif','display','fun','script','hand','condensed']},
-  style:{type:T.S,enum:['plain','shadow','outline','glow','neon','gradient','3d','banner'],description:'Word art style for text.'},color:{type:T.S},colors:{type:T.A,items:{type:T.S},description:'Outline, glow, banner or gradient colours.'},
+  kind:{type:T.S,enum:['text','image','video','shape','sticker','particles','light_leak','frame'],description:'video: a clip shown as a picture-in-picture window (video scenes only). particles: confetti, snow and similar. frame: a border around the whole picture.'},text:{type:T.S},font:{type:T.S,enum:['sans','modern','bold','serif','display','fun','script','hand','condensed','rounded','typewriter']},
+  style:{type:T.S,description:'Text word art: plain, shadow, outline, glow, neon, gradient, 3d, banner, comic, karaoke (video, highlights word by word). Frame: simple, rounded, polaroid, film, gold, double, neon.'},
+  effect:{type:T.S,enum:['confetti','snow','sparkles','stars','hearts','bubbles','fireworks'],description:'Particles effect.'},density:{type:T.N},thickness:{type:T.N},volume:{type:T.N,description:'Picture-in-picture clip volume 0-100.'},color:{type:T.S},colors:{type:T.A,items:{type:T.S},description:'Outline, glow, banner or gradient colours.'},
   size:{type:T.N,description:'Text height or sticker size in percent of image height.'},weight:{type:T.N},align:{type:T.S,enum:['left','center','right']},
   x:{type:T.N},y:{type:T.N},w:{type:T.N},h:{type:T.N},rotation:{type:T.N},opacity:{type:T.N},radius:{type:T.N},border:{type:T.S},
-  shape:{type:T.S,enum:['rect','circle','star','heart','badge','ribbon','arrow','line']},outline_only:{type:T.B},stroke:{type:T.S},emoji:{type:T.S},source:SRC,
-  appear:{type:T.S,enum:['none','fade','slide_up','pop','type'],description:'Video only: how it appears.'},start:{type:T.N,description:'Video only: second within the scene it appears.'},end:{type:T.N}},required:['kind']};
+  shape:{type:T.S,enum:['rect','circle','star','heart','badge','ribbon','arrow','speech_bubble','line'],description:'For image or video layers, circle makes a round window.'},outline_only:{type:T.B},stroke:{type:T.S},emoji:{type:T.S},source:SRC,
+  appear:{type:T.S,enum:['none','fade','slide_up','slide_left','pop','zoom','bounce','type'],description:'Video only: how it appears.'},start:{type:T.N,description:'Video only: second within the scene it appears.'},end:{type:T.N}},required:['kind']};
 const TOOLS=[
  {name:'update_requirement',description:'Rewrite the Recorded User Requirement for the open container: a complete third-person summary of everything the user asked for and decided, losing no detail. Call it whenever new requirement details are given.',parameters:{type:T.O,properties:{sections:{type:T.A,items:{type:T.O,properties:{heading:{type:T.S},text:{type:T.S}},required:['heading','text']}},status:{type:T.S}},required:['sections']}},
- {name:'make_image',description:'Create or edit an image with the built-in image tools (background, crop, rotate, flip, colour adjustments, text and word art, shapes, stickers, image layers). Saves a new version.',parameters:{type:T.O,properties:{width:{type:T.N},height:{type:T.N},base:SRC,fit:{type:T.S,enum:['cover','contain']},crop:{type:T.O,properties:{x:{type:T.N},y:{type:T.N},w:{type:T.N},h:{type:T.N}},description:'Percent of the source.'},rotate:{type:T.N},flip:{type:T.S,enum:['horizontal','vertical','both']},adjust:ADJ,layers:{type:T.A,items:LAYER},keep_previous:{type:T.B,description:'True if the user wants to keep the version being replaced.'},summary:{type:T.S,description:'One short line describing the result.'}},required:['base','keep_previous','summary']}},
+ {name:'make_image',description:'Create or edit an image with the built-in image tools: backgrounds, collages, background removal, crop, rotate, flip, colour adjustments and preset looks, effects (cartoon, sketch, posterize, duotone, pixel art, glitch, grain, halftone, oil paint), text and word art, shapes, stickers, particles, frames, picture layers. Saves a new version.',parameters:{type:T.O,properties:{width:{type:T.N},height:{type:T.N},base:SRC,fit:{type:T.S,enum:['cover','contain']},crop:{type:T.O,properties:{x:{type:T.N},y:{type:T.N},w:{type:T.N},h:{type:T.N}},description:'Percent of the source.'},rotate:{type:T.N},flip:{type:T.S,enum:['horizontal','vertical','both']},adjust:ADJ,effects:EFFECTS,layers:{type:T.A,items:LAYER},keep_previous:{type:T.B,description:'True if the user wants to keep the version being replaced.'},summary:{type:T.S,description:'One short line describing the result.'}},required:['base','keep_previous','summary']}},
  {name:'ai_image',description:'Create or edit an image with the AI image model. Use only when built-in tools cannot do it, for example a realistic scene that must be invented, or removing an object. May not be available on free keys.',parameters:{type:T.O,properties:{prompt:{type:T.S},aspect_ratio:{type:T.S,enum:['1:1','3:4','4:3','9:16','16:9']},edit_current:{type:T.B},keep_previous:{type:T.B},summary:{type:T.S}},required:['prompt','keep_previous','summary']}},
- {name:'make_video',description:'Create or edit a video with the built-in video tools: scenes from uploaded clips (trim with start and end, speed), photos, web images, colours or saved versions; motion, transitions, colour, text and word art, stickers; original sound, uploaded audio or built-in music. To cut out a section, use two scenes from the same clip. Runs in the background and saves a new version.',parameters:{type:T.O,properties:{width:{type:T.N},height:{type:T.N},fps:{type:T.N},
-   scenes:{type:T.A,items:{type:T.O,properties:{source:SRC,duration:{type:T.N},speed:{type:T.N},fit:{type:T.S,enum:['cover','contain']},motion:{type:T.S,enum:['none','zoom_in','zoom_out','pan_left','pan_right','pan_up','pan_down']},transition:{type:T.S,enum:['fade','slide','zoom','cut']},adjust:ADJ,layers:{type:T.A,items:LAYER}},required:['source']}},
-   audio:{type:T.O,properties:{mute_original:{type:T.B},tracks:{type:T.A,items:{type:T.O,properties:{source:{type:T.S,enum:['original','upload','music']},media_id:{type:T.S},style:{type:T.S,enum:Object.keys(MUSIC)},volume:{type:T.N},start:{type:T.N},fade_in:{type:T.N},fade_out:{type:T.N},loop:{type:T.B}},required:['source']}}}},
+ {name:'make_video',description:'Create or edit a video with the built-in video tools: scenes from uploaded clips (trim with start and end, speed, speed ramps, reverse, freeze frame), photos, web images, collages, colours or saved versions; motion, transitions, colour looks, effects, animated text and word art, karaoke captions, stickers, particles, light leaks, frames, picture-in-picture clips such as a camera recording; original sound, uploaded audio, built-in music with automatic lowering under speech, natural-voice voice-over, and sound effects. To cut out a section, use two scenes from the same clip. Runs in the background and saves a new version.',parameters:{type:T.O,properties:{width:{type:T.N},height:{type:T.N},fps:{type:T.N},
+   scenes:{type:T.A,items:{type:T.O,properties:{source:SRC,duration:{type:T.N},speed:{type:T.N},speed_end:{type:T.N,description:'Speed ramp: speed at the end of the scene.'},reverse:{type:T.B,description:'Play the clip backwards (up to 8 seconds).'},fit:{type:T.S,enum:['cover','contain']},motion:{type:T.S,enum:['none','zoom_in','zoom_out','pan_left','pan_right','pan_up','pan_down','ken_burns','shake']},transition:{type:T.S,enum:['fade','dissolve','slide_left','slide_right','slide_up','slide_down','push','wipe_left','wipe_right','circle','zoom','spin','blur','glitch','flash','dip_black','cut'],description:'Transition into this scene from the previous one.'},adjust:ADJ,effects:EFFECTS,layers:{type:T.A,items:LAYER}},required:['source']}},
+   audio:{type:T.O,properties:{mute_original:{type:T.B},tracks:{type:T.A,items:{type:T.O,properties:{source:{type:T.S,enum:['original','upload','music','voiceover','sfx'],description:'voiceover: the natural female voice reads text. sfx: a built-in sound effect at a second.'},media_id:{type:T.S},style:{type:T.S,enum:Object.keys(MUSIC)},text:{type:T.S},effect:{type:T.S,enum:SFX},volume:{type:T.N},start:{type:T.N},fade_in:{type:T.N},fade_out:{type:T.N},loop:{type:T.B},duck:{type:T.B,description:'Music gets quieter while someone speaks (default true).'}},required:['source']}}}},
    keep_previous:{type:T.B},summary:{type:T.S}},required:['scenes','keep_previous','summary']}},
  {name:'look_at_media',description:'Watch, look at or listen to uploaded files or saved versions to understand them. Several files are processed in parallel across the saved keys.',parameters:{type:T.O,properties:{media_ids:{type:T.A,items:{type:T.S}},question:{type:T.S}},required:['media_ids']}},
  {name:'look_at_link',description:'Watch a YouTube link the user added, to understand it. The video cannot be downloaded or reused as footage.',parameters:{type:T.O,properties:{url:{type:T.S},question:{type:T.S}},required:['url']}},
@@ -808,10 +1184,12 @@ const TOOLS=[
  {name:'highlight',description:'Make a button glow so the user can find and tap it. Browsers need a tap to open the file picker, to download, and to choose the backup folder.',parameters:{type:T.O,properties:{control:{type:T.S,enum:['upload','link','download','backup','messages','requirement','new']}},required:['control']}},
  {name:'app_action',description:'Navigate or change app settings.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['go_home','open_menu','open_keys','open_voice','open_backup','open_about','go_back','dark_mode','light_mode','voice_female','voice_male','stop_listening','disable_voice_mode','cancel_generation','open_messages','close_messages','open_requirement']}},required:['action']}},
  {name:'container_action',description:'Manage containers and versions. Confirm with the user before deleting.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['create','open','rename','delete','undo_delete','show_version','delete_version','delete_upload']},name:{type:T.S},new_name:{type:T.S},version:{type:T.N},media_id:{type:T.S}},required:['action']}},
+ {name:'camera_record',description:'Record the user with the front or back camera, optionally while a saved version or uploaded video plays (for a reaction or commentary), optionally showing a script as a teleprompter. Opens the recorder; the user says "stop recording" or taps stop. The recording is then saved as an upload, and you are told its media_id so you can place it, for example as a picture-in-picture window in a corner.',parameters:{type:T.O,properties:{camera:{type:T.S,enum:['front','back']},script:{type:T.S},play:{type:T.O,properties:{type:{type:T.S,enum:['version','upload']},version:{type:T.N},media_id:{type:T.S},start:{type:T.N}}},countdown:{type:T.B}},required:['camera']}},
+ {name:'transcribe',description:'Get the spoken words of an uploaded video or audio with start and end seconds, for captions.',parameters:{type:T.O,properties:{media_id:{type:T.S}},required:['media_id']}},
  {name:'set_language',description:'Switch listening and speaking to the language the user is using, for example ml-IN for Malayalam, hi-IN for Hindi, en-IN for English.',parameters:{type:T.O,properties:{code:{type:T.S}},required:['code']}},
  {name:'interrupted_job',description:'Continue or drop the generation that was interrupted last time.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['continue','drop']}},required:['action']}}
 ];
-const ABOUT_FACTS=`Spoken PixelCraft is a voice-first app for creating and editing images and videos. Containers hold each project; the plus button or voice creates one; tiles sort by last edit; pencil renames, bin deletes. Deleted containers can be brought back by voice until the next day's first use. Inside a container: upload button (photos, videos, audio), YouTube link button (for understanding only, cannot be downloaded), Recorded User Requirement button (summary with play aloud), messages button (typed chat), large preview, download button on the preview, strip of saved versions and uploads below the preview. Before a new version replaces the current one, the app asks whether to keep the previous. Downloads: PNG, JPEG, WebP, GIF for images; MP4, WebM, MP3, GIF for videos; saved to the Downloads folder; the folder button opens a file picker. Menu: API keys (create a free Google key in Google AI Studio, save several keys from different projects; they work together and share the work), Voice (female or male), Disable voice mode (typing only), Backup (choose a folder once; a folder named Spoken_PixelCraft_backup is created; a backup is saved when leaving a container after changes; restore adds containers marked Restored, restoring again replaces them), About. Light and dark switch top right. Voice: always listening while the app is open; the user can interrupt; after 2 minutes of silence the app asks if the user is there, then after 1 minute, then 30 seconds, then closes after 15 more seconds; tap the microphone to start again. During a generation, keep the app on screen; questions and cancel work; new requests are queued. Daily cleanup runs silently on the first use of each day. The asset library keeps fetched images up to 500 MB. Everything stays in this browser and the backup folder; backups include the keys.`;
+const ABOUT_FACTS=`Spoken PixelCraft is a voice-first app for creating and editing images and videos. Containers hold each project; the plus button or voice creates one; tiles sort by last edit; pencil renames, bin deletes. Deleted containers can be brought back by voice until the next day's first use. Inside a container: upload button (photos, videos, audio), YouTube link button (for understanding only, cannot be downloaded), Recorded User Requirement button (summary with play aloud), messages button (typed chat), large preview, download button on the preview, strip of saved versions and uploads below the preview. Before a new version replaces the current one, the app asks whether to keep the previous. Downloads: PNG, JPEG, WebP, GIF for images; MP4, WebM, MP3, GIF for videos; saved to the Downloads folder; the folder button opens a file picker. Menu: API keys (create a free Google key in Google AI Studio, save several keys from different projects; they work together and share the work), Voice (female or male), Disable voice mode (typing only), Backup (choose a folder once; a folder named Spoken_PixelCraft_backup is created; a backup is saved when leaving a container after changes; restore adds containers marked Restored, restoring again replaces them), About. Light and dark switch top right. First run downloads critical components once (about 120 MB: natural voice engine and creation components); background removal downloads later in the background. Camera recording: front or back camera, teleprompter script, recording while a video plays, say stop recording or tap stop. Voice: always listening while the app is open; the user can interrupt; after 2 minutes of silence the app asks if the user is there, then after 1 minute, then 30 seconds, then closes after 15 more seconds; tap the microphone to start again. During a generation, keep the app on screen; questions and cancel work; new requests are queued. Daily cleanup runs silently on the first use of each day. The asset library keeps fetched images up to 500 MB. Everything stays in this browser and the backup folder; backups include the keys.`;
 function brainState(){const c=nav.v==='container'?byId(nav.id):null;const st={screen:nav.v,containers:liveCS().slice(0,40).map(x=>({name:(x.restored?'(Restored) ':'')+x.name,versions:x.versions.length,uploads:x.media.length})),recently_deleted:CS.filter(x=>x.deleted).map(x=>x.name),keys_saved:G.active().length,language:curLang(),voice_mode:S.voiceOff?'off (typing only)':'on',generation:Gen.running?{container:(byId(Gen.running.cid)||{}).name,summary:Gen.running.summary,percent:Gen.running.p,queued:Gen.queue.length}:null,interrupted_last_time:LS.get('spc.pending')};
   if(c)st.open_container={name:c.name,uploads:c.media.map(m=>({media_id:m.id,type:m.type,name:m.name,width:m.w,height:m.h,seconds:m.duration?Math.round(m.duration):undefined,description:m.desc?m.desc.slice(0,600):undefined})),youtube_links:c.links,
     versions:c.versions.map((v,i)=>({version:i+1,kind:v.kind,summary:v.summary,width:v.w,height:v.h,seconds:v.duration?Math.round(v.duration):undefined,kept:!!v.kept})),showing:c.sel?(c.sel.t==='v'?'version '+(c.versions.findIndex(v=>v.id===c.sel.id)+1):'upload '+c.sel.id):null,requirement:c.req,status:c.reqStatus};
@@ -830,10 +1208,13 @@ How to talk:
 9. Confirm before deleting anything. Never invent file ids; use the ids in the state below.
 10. If there is no open container and the user wants to create something, first call container_action create with a short fitting name.
 11. While a generation runs, answer questions, cancel if asked, and new generation requests are queued automatically.
+14. For a reaction or commentary video, call camera_record with play set; when told the recording's media_id, ask (if not given) which corner and size, then build make_video with the played video as the scene and the recording as a video layer (picture-in-picture, rounded or circle, with a white border).
+15. For a caricature, use ai_image with edit_current. The cartoon effect is a free built-in alternative. Any image or web picture can become a video with motion, text and music.
+16. Messages that start with [app] are notes from the app itself, not the user.
 12. Messages that start with [typed] came from the messages panel.
 13. Do not ask about details the user already gave. Keep a calm, confident, encouraging tone.
 
-What the app can do with its built-in tools: images with gradients, colours, uploaded photos, web images, crop, rotate, flip, brightness, contrast, saturation, warmth, hue, blur, black and white, sepia, vignette, text with word art (shadow, outline, glow, neon, gradient, 3d, banner) in fonts (sans, modern, bold, serif, display, fun, script, hand, condensed; Malayalam, Hindi and Tamil text supported), shapes (rectangle, circle, star, heart, badge, ribbon, arrow, line), emoji stickers, picture layers. Videos from clips, photos and colours: trim, cut, join, speed, slideshows with motion, fade, slide and zoom transitions, colour effects, animated text and stickers, original sound, uploaded audio, or built-in music (${Object.keys(MUSIC).join(', ')}). Export images as PNG, JPEG, WebP, GIF; videos as MP4 or WebM where the browser supports it, MP3 for sound only, GIF for short clips.
+What the app can do with its built-in tools: images from gradients, colours, uploaded photos, free web images and collages; background removal; crop, rotate, flip; colour adjustments and looks (${Object.keys(PRESETS).join(', ')}); effects (cartoon, sketch, posterize, duotone, pixel art, glitch, grain, sharpen, emboss, halftone, oil paint); text and word art (shadow, outline, glow, neon, gradient, 3d, banner, comic) in many fonts, including Malayalam, Hindi and Tamil; shapes, emoji stickers, particles (confetti, snow, sparkles, stars, hearts, bubbles, fireworks), light leaks, frames (simple, rounded, polaroid, film, gold, double, neon), picture layers. Videos from clips, photos, web images and colours: trim, cut, join, speed and speed ramps, reverse, freeze frames, slideshows with motion, many transitions, colour looks, animated text and karaoke captions, picture-in-picture, camera recording with teleprompter, original sound, uploaded audio, built-in music (${Object.keys(MUSIC).join(', ')}) that lowers under speech, natural-voice voice-over, sound effects (${SFX.join(', ')}). Export images as PNG, JPEG, WebP, GIF; videos as MP4 or WebM where the browser supports it, MP3 for sound only, GIF for short clips.
 
 About the app (answer questions from this): ${ABOUT_FACTS}
 
@@ -887,6 +1268,8 @@ async function runTool(name,a){const c=nav.v==='container'?byId(nav.id):null;a=a
     case 'app_action':return appAction(a.action);
     case 'container_action':return await containerAction(a);
     case 'set_language':setLanguage(a.code);return {ok:true,language:a.code};
+    case 'camera_record':if(!c)return {error:'No container open'};Rec.open(c,a);return {status:'recorder_open',note:'Tell the user briefly that recording starts after the countdown and to say stop recording when done.'};
+    case 'transcribe':{const m=await DB.get('media',a.media_id);if(!m)return {error:'not found'};const {json}=await G.gen('text',async k=>({contents:[{parts:[{text:'Transcribe the speech. Reply only as JSON array: [{"start":seconds,"end":seconds,"text":"..."}], short segments of up to 8 words.'},await G.part(m.blob,k,m.name,m.id)]}],generationConfig:{responseMimeType:'application/json',temperature:0}}));let segs=[];try{segs=JSON.parse(G.text(json))}catch(e){}return {segments:segs.slice(0,400)}}
     case 'interrupted_job':{const p=LS.get('spc.pending');if(!p)return {error:'Nothing was interrupted'};if(a.action==='drop'){LS.del('spc.pending');return {ok:true}}
       const pc=byId(p.cid);if(!pc)return {error:'That container no longer exists'};if(nav.id!==pc.id)go('container',{id:pc.id});LS.del('spc.pending');return genTool(p.tool,pc,p.args)}
   }return {error:'Unknown tool'}}catch(e){return {error:e.message}}}
@@ -894,7 +1277,7 @@ function appAction(x){switch(x){
   case 'go_home':goHome();break;case 'open_menu':go('menu');break;case 'open_keys':go('keys');break;case 'open_voice':go('voice');break;case 'open_backup':go('backup');break;case 'open_about':go('about');break;case 'go_back':history.back();break;
   case 'dark_mode':setMode('dark');break;case 'light_mode':setMode('light');break;case 'voice_female':S.voice='female';saveS();break;case 'voice_male':S.voice='male';saveS();break;
   case 'stop_listening':setTimeout(()=>Session.stop(),1800);break;case 'disable_voice_mode':setTimeout(()=>setVoiceOff(true),1800);break;
-  case 'cancel_generation':Gen.cancel();break;case 'open_messages':if(nav.v==='container'){nav.chat=true;history.replaceState(nav,'');render()}break;case 'close_messages':if(nav.v==='container'){nav.chat=false;history.replaceState(nav,'');render()}break;
+  case 'cancel_generation':Gen.cancel();break;case 'open_messages':toggleChat(true);break;case 'close_messages':toggleChat(false);break;
   case 'open_requirement':if(nav.v==='container')openRequirement();break}return {ok:true}}
 function findC(name,list){name=String(name||'').toLowerCase().replace(/^\(restored\)\s*/,'').trim();if(!name)return null;list=list||liveCS();
   return list.find(c=>c.name.toLowerCase()===name)||list.find(c=>c.name.toLowerCase().includes(name)||name.includes(c.name.toLowerCase()))||
@@ -935,7 +1318,7 @@ function localIntent(t){const s=t.toLowerCase().replace(/[.!?,]/g,'').trim();con
 const Brain={busy:false,pending:[],homeAI:LS.get('spc.homeAI',[])||[]};
 function historyFor(c){return c?(c.ai=c.ai||[]):Brain.homeAI}
 function trimHist(h,max=26){if(h.length<=max)return h;let i=h.length-max;while(i<h.length&&!(h[i].role==='user'&&h[i].parts&&h[i].parts.some(p=>p.text)))i++;return h.slice(i)}
-async function heard(text,conf,viaAI){if(!Session.active)return;Session.touch();interim('');
+async function heard(text,conf,viaAI){if(!Session.active)return;Session.touch();interim('');if(Rec.active){if(/\bstop (the )?recording\b/i.test(text))Rec.stop();return}
   if(!viaAI&&conf>0&&conf<.45&&G.active().length){Ear.low++;if(Ear.low>=2){Ear.low=0;Ear.pause();await Voice.say('Sorry, I did not catch that clearly. Please say it once more.');Ear.pause();setPill('listen');const r=await AIEar.once();Ear.resume();if(r&&r.text){if(r.language)setLanguage(r.language,true);return heard(r.text,1,true)}return}}else Ear.low=0;
   showCaption(text);await handleText(text,'voice')}
 function interim(t){const el=$('#livecap');if(el&&t)el.textContent=t}
@@ -1042,10 +1425,10 @@ $('#modeBtn').onclick=()=>setMode(S.mode==='dark'?'light':'dark');
 /* ---------- voice pill: four dots while listening, mic when stopped ---------- */
 let pillOverride=null;
 function pillState(){if(S.voiceOff)return 'none';if(!Session.active)return 'off';if(Voice.speaking)return 'speak';if(pillOverride)return pillOverride;if(Brain.busy)return 'think';return 'listen'}
-function pillHTML(){const st=pillState();if(st==='none')return '';const label={off:'Voice is off. Tap to start listening',listen:'Listening. Tap to stop voice',think:'Thinking. Tap to stop voice',speak:'Speaking. Tap to stop voice'}[st];
-  return `<button class="vpill ${st}" data-act="voice" aria-label="${label}" title="${label}">${st==='off'?`<span class="mic">${I('mic')}</span>`:'<span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>'}</button>`}
-function setPill(o){if(o!==undefined)pillOverride=o==='listen'?null:o;if(o===undefined&&!Brain.busy)pillOverride=null;$$('.vholder').forEach(h=>{const st=pillState();const b=h.querySelector('.vpill');if(st==='none'){h.innerHTML='';return}if(!b||!b.classList.contains(st)){h.innerHTML=pillHTML()}})}
-function vdock(float){return `<div class="vdock ${float?'float':''}"><p class="livecap" id="livecap" aria-live="polite"></p><div class="vholder">${pillHTML()}</div></div>`}
+const PILL_LABEL={off:'Voice is off. Tap to start listening',listen:'Listening. Tap to stop voice',think:'Thinking. Tap to stop voice',speak:'Speaking. Tap to stop voice',rec:'Recording. Tap to stop recording'};
+function setPill(o){if(o!==undefined)pillOverride=o==='listen'?null:o;if(o===undefined&&!Brain.busy)pillOverride=null;const b=$('#vpill'),d=$('#vdock');if(!b||!d)return;const st=Rec.active?'rec':pillState();d.hidden=st==='none';
+  if(b.dataset.st!==st){b.dataset.st=st;b.className='vpill '+st;b.setAttribute('aria-label',PILL_LABEL[st]||'');b.title=PILL_LABEL[st]||''}}
+function vdock(){return ''}
 
 /* ---------- toast ---------- */
 let tt=null;function toast(t){let el=$('.toast');if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=t;clearTimeout(tt);tt=setTimeout(()=>el.remove(),4200)}
@@ -1060,7 +1443,8 @@ $('#menuBtn').onclick=()=>{if(nav.v!=='menu')go('menu')};
 
 /* ---------- render ---------- */
 const main=$('#main');
-function render(){$('#menuBtn').classList.toggle('on',['menu','keys','voice','backup','about'].includes(nav.v));
+let lastKey='';
+function render(){const key=nav.v+'|'+(nav.id||'');main.classList.toggle('noanim',key===lastKey);lastKey=key;document.body.dataset.view=nav.v;document.body.classList.toggle('chatopen',nav.v==='container'&&!!nav.chat);if(!(nav.v==='container'&&nav.chat))document.body.classList.remove('kb');$('#menuBtn').classList.toggle('on',['menu','keys','voice','backup','about'].includes(nav.v));
   if(nav.v==='container'&&byId(nav.id))return renderContainer();if(nav.v==='menu')return renderMenu();if(nav.v==='keys')return renderKeys();if(nav.v==='voice')return renderVoice();if(nav.v==='backup')return renderBackup();if(nav.v==='about')return renderAbout();
   nav={v:'home'};renderHome()}
 const vtitle=t=>`<div class="vtitle"><button class="ibtn" data-act="back" aria-label="Back">${I('back')}</button><h1>${esc(t)}</h1></div>`;
@@ -1069,7 +1453,7 @@ function renderHome(){const cs=liveCS();
       return `<div class="cell"><button class="tile ${c.thumb?'':'empty'}" data-open="${c.id}" aria-label="Open ${esc(full)}${c.thumb?'':', empty'}">${c.thumb?`<img class="art" src="${c.thumb}" alt="">`:''}${c.kind?`<span class="badge">${I(c.kind)}</span>`:''}</button>
         <div class="cap"><button class="mini" data-ren="${c.id}" aria-label="Rename ${esc(full)}">${I('pen')}</button><span class="t">${nm}</span><button class="mini" data-del="${c.id}" aria-label="Delete ${esc(full)}">${I('trash')}</button></div></div>`}).join('')}</div>`
     :`<div class="emptyhome"><div class="big">${I('spark')}</div><h2>Welcome</h2><p>Tap the plus button, or just say "create a new container".</p>${G.active().length?'':'<button class="pbtn" data-go="keys">'+I('key')+' Add a free API key first</button>'}</div>`}</section>
-  <button class="fab" data-act="new" aria-label="New container" title="New">${I('plus')}</button>${vdock(true)}`}
+  <button class="fab" data-act="new" aria-label="New container" title="New">${I('plus')}</button>`}
 
 async function currentItem(c){if(!c)return null;let sel=c.sel;
   if(!sel||(sel.t==='v'&&!c.versions.some(v=>v.id===sel.id))||(sel.t==='m'&&!c.media.some(m=>m.id===sel.id)))sel=c.versions.length?{t:'v',id:c.versions[c.versions.length-1].id}:(c.media.length?{t:'m',id:c.media[c.media.length-1].id}:null);
@@ -1084,7 +1468,7 @@ async function previewInner(c){const it=await currentItem(c);const g=Gen.running
   const label=it.sel.t==='v'?`Version ${c.versions.findIndex(v=>v.id===it.sel.id)+1}`:'Upload';
   return `${media}<span class="kind">${I(it.kind)}${label}</span><button class="dl" data-act="download" aria-label="Download" title="Download">${I('down')}</button>${G2?ringHTML(g):''}`}
 function ringHTML(p){const C=2*Math.PI*56;return `<div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Creating"><div class="ring"><span class="spin"></span><svg viewBox="0 0 132 132"><circle class="bgc" cx="66" cy="66" r="56" fill="none" stroke-width="6"/><circle class="fgc" id="fgc" cx="66" cy="66" r="56" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p/100)}"/></svg><span class="pct" id="pct">${p}%</span></div>${Gen.queue.length?`<p class="qn">${Gen.queue.length} waiting</p>`:''}</div>`}
-function updateRing(){const j=Gen.running;if(!j)return;const f=$('#fgc'),p=$('#pct'),C=2*Math.PI*56;if(f){f.style.strokeDashoffset=C*(1-j.p/100);p.textContent=j.p+'%';f.closest('.prog').setAttribute('aria-valuenow',j.p)}}
+let ringT=0;function updateRing(){const j=Gen.running;if(!j)return;const now=performance.now();if(now-ringT<200&&j.p<100)return;ringT=now;const f=$('#fgc'),p=$('#pct'),C=2*Math.PI*56;if(f){f.style.strokeDashoffset=C*(1-j.p/100);p.textContent=j.p+'%';f.closest('.prog').setAttribute('aria-valuenow',j.p)}}
 function stripHTML(c){const items=[...c.versions.map((v,i)=>({t:'v',id:v.id,label:'Version '+(i+1),kind:v.kind})),...c.media.map(m=>({t:'m',id:m.id,label:'Upload '+(m.name||''),kind:(m.type||'').split('/')[0]}))];
   if(c.versions.length<2&&!c.media.length)return '';const cur=c.sel&&c.sel.id;
   return `<div class="strip" aria-label="Saved versions and uploads">${items.map(it=>`<div class="ver ${it.id===cur?'cur':''}" data-thumb="${it.id}"><button class="vsel" data-pick="${it.t}:${it.id}" aria-label="Show ${esc(it.label)}"></button>${it.t==='m'?`<span class="vb">${I(it.kind==='audio'?'audio':'upload')}</span>`:''}<button class="vx" data-vdel="${it.t}:${it.id}" aria-label="Delete ${esc(it.label)}">${I('x')}</button></div>`).join('')}</div>`}
@@ -1100,7 +1484,7 @@ async function renderContainer(){const c=byId(nav.id);const chatOpen=!!nav.chat;
       <button class="tbtn" data-act="req" title="Recorded user requirement" aria-label="Recorded user requirement">${I('doc')}</button>
       <button class="tbtn ${chatOpen?'on':''}" data-act="chat" title="Messages" aria-label="${chatOpen?'Close messages':'Open messages'}" aria-pressed="${chatOpen}">${I('chat')}</button></div>
     <div class="stage"><div class="preview" id="preview">${await previewInner(c)}</div><div id="stripbox">${stripHTML(c)}</div></div>
-    <div class="vslot">${vdock(false)}</div>${chatOpen?chatHTML(c):''}</section>`;
+    ${chatOpen?chatHTML(c):''}</section>`;
   if(nav.v!=='container'||nav.id!==c.id)return;const pv=$('#preview');pv.classList.toggle('isvideo',!!pv.querySelector('video'));
   $('#upIn').onchange=e=>{const fs=[...e.target.files];e.target.value='';uploadFiles(c,fs)};fillStripThumbs(c);const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight}
 async function renderPreviewOnly(){if(nav.v!=='container')return;const c=byId(nav.id);const pv=$('#preview');if(!c||!pv)return;pv.innerHTML=await previewInner(c);pv.classList.toggle('isvideo',!!pv.querySelector('video'))}
@@ -1108,27 +1492,31 @@ async function renderAfterChange(c){if(nav.v==='container'&&nav.id===c.id){await
 function chatHTML(c){const ms=c.chat.length?c.chat:[{me:false,t:'Type a request or a command, or paste a video or image script here. I will read it and reply.'}];
   return `<div class="chat" role="region" aria-label="Messages"><div class="grab"></div><div class="msgs" id="msgs" aria-live="polite">${ms.map(m=>`<div class="msg ${m.me?'me':'app'}"><span class="who">${m.me?'You':'Spoken PixelCraft'}</span><div class="b">${esc(m.t)}</div></div>`).join('')}</div>
     <div class="compose"><textarea id="ta" rows="1" placeholder="Type or paste here" aria-label="Message"></textarea><button class="send" data-act="send" aria-label="Send">${I('send')}</button></div></div>`}
+function toggleChat(open){if(nav.v!=='container')return;const c=byId(nav.id),cv=$('#cview');nav.chat=open;history.replaceState(nav,'');if(!c||!cv)return render();
+  document.body.classList.toggle('chatopen',open);cv.classList.toggle('chatopen',open);const btn=cv.querySelector('[data-act=chat]');if(btn){btn.classList.toggle('on',open);btn.setAttribute('aria-pressed',open);btn.setAttribute('aria-label',open?'Close messages':'Open messages')}
+  const ex=cv.querySelector('.chat');if(open&&!ex){cv.insertAdjacentHTML('beforeend',chatHTML(c));const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight;if(matchMedia('(min-width:900px)').matches)setTimeout(()=>{const ta=$('#ta');if(ta)ta.focus()},80)}
+  else if(!open&&ex){ex.remove();cv.classList.remove('kb');document.body.classList.remove('kb')}}
 function renderChatOnly(){if(nav.v!=='container'||!nav.chat)return;const c=byId(nav.id),m=$('#msgs');if(!m||!c)return;m.innerHTML=c.chat.map(x=>`<div class="msg ${x.me?'me':'app'}"><span class="who">${x.me?'You':'Spoken PixelCraft'}</span><div class="b">${esc(x.t)}</div></div>`).join('');m.scrollTop=m.scrollHeight}
 
 const row=(to,ic,t,s)=>`<button class="row" data-go="${to}"><span class="ric">${I(ic)}</span><span class="rtx"><span class="rt">${t}</span><span class="rsub">${esc(s)}</span></span>${I('chev','chev')}</button>`;
 function renderMenu(){const n=S.keys.length;
   main.innerHTML=`<section class="view">${vtitle('Menu')}<div class="list">
     ${row('keys','key','API keys',n?`${n} key${n>1?'s':''} saved`:'Add a free Google key')}
-    ${row('voice','voice','Voice',(S.voice==='female'?'Female voice':'Male voice')+' · '+({natural:'natural voice ready',downloading:'natural voice downloading',device:'device voice'}[Voice.status()]))}
+    ${row('voice','voice','Voice',(S.voice==='female'?'Female voice':'Male voice')+' · '+({natural:'natural voice ready',downloading:'natural voice preparing',device:'device voice'}[Voice.status()]))}
     <button class="row" data-act="voiceoff" aria-pressed="${S.voiceOff}"><span class="ric">${I('mute')}</span><span class="rtx"><span class="rt">Disable voice mode</span><span class="rsub">${S.voiceOff?'Voice is off. Type in the messages panel.':'Voice is on'}</span></span><span class="switch ${S.voiceOff?'on':''}" aria-hidden="true"></span></button>
     ${row('backup','backup','Backup',Backup.mode?('Set up'+(Backup.needPerm?', needs permission':'')):'Not set up')}
-    ${row('about','info','About','How Spoken PixelCraft works')}</div></section>${vdock(true)}`}
+    ${row('about','info','About','How Spoken PixelCraft works')}</div></section>`}
 function renderKeys(){
   main.innerHTML=`<section class="view">${vtitle('API keys')}<div class="list">
     <div class="card"><p class="note">A free Google key lets Spoken PixelCraft understand you. Create keys in several Google projects and save them all: they work together, share the work, and take over when one runs out of its free limit.</p>
       <div class="btnrow"><a class="pbtn" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${I('ext')} Create free key</a><button class="pbtn prime" data-act="addkey">${I('plus')} Save key</button></div>
       <div id="keybox" hidden><input class="field" id="keyin" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key here" aria-label="Paste your key"><button class="pbtn prime" data-act="savekey">Save</button></div></div>
-    <div class="card"><h2>Saved keys</h2>${S.keys.length?`<ul class="keys">${S.keys.map((k,i)=>`<li class="key"><span class="kn">Key ${i+1}</span><span class="stat ${k.st==='active'?'ok':k.st==='inactive'?'bad':'chk'}">${k.st==='active'?'Active':k.st==='inactive'?'Inactive':k.st==='unknown'?'Not checked':'Checking'}</span><button class="mini big" data-kcopy="${i}" aria-label="Copy key ${i+1}">${I('copy')}</button><button class="mini big" data-kdel="${i}" aria-label="Delete key ${i+1}">${I('trash')}</button></li>`).join('')}</ul>`:'<p class="note">No keys saved yet.</p>'}</div></div></section>${vdock(true)}`}
-function renderVoice(){const st=Voice.status();
+    <div class="card"><h2>Saved keys</h2>${S.keys.length?`<ul class="keys">${S.keys.map((k,i)=>`<li class="key"><span class="kn">Key ${i+1}</span><span class="stat ${k.st==='active'?'ok':k.st==='inactive'?'bad':'chk'}">${k.st==='active'?'Active':k.st==='inactive'?'Inactive':k.st==='unknown'?'Not checked':'Checking'}</span><button class="mini big" data-kcopy="${i}" aria-label="Copy key ${i+1}">${I('copy')}</button><button class="mini big" data-kdel="${i}" aria-label="Delete key ${i+1}">${I('trash')}</button></li>`).join('')}</ul>`:'<p class="note">No keys saved yet.</p>'}</div></div></section>`}
+function renderVoice(){const st=Voice.status(),pct=Math.round(Voice.progress*100);
   main.innerHTML=`<section class="view">${vtitle('Voice')}<div class="list"><div class="card"><h2>Speaking voice</h2>
     <div class="seg" role="group" aria-label="Speaking voice"><button data-vc="female" aria-pressed="${S.voice==='female'}">Female</button><button data-vc="male" aria-pressed="${S.voice==='male'}">Male</button></div>
-    <p class="note">${st==='natural'?'The natural voice is downloaded and ready on this device.':st==='downloading'?'The natural voice is downloading quietly in the background. Until then, the device voice is used.':'The device voice is in use. The natural English voice will download in the background when possible.'} Other languages use the device's own voice.</p></div>
-    <div class="card"><h2>Listening language</h2><p class="note">Currently ${esc(curLang())}. Just speak your language; the app detects it and switches. Each container remembers its language.</p></div></div></section>${vdock(true)}`}
+    <p class="note" id="vstat">${st==='natural'?'The natural voice is ready on this device.':st==='downloading'?'The natural voice is being prepared ('+pct+' percent).':'The natural voice could not load, so the device voice is used for now.'} English uses the natural voice; other languages use the device's own voice.</p></div>
+    <div class="card"><h2>Listening language</h2><p class="note">Currently ${esc(curLang())}. Just speak your language; the app detects it and switches. Each container remembers its language.</p></div></div></section>`}
 async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()}catch(e){}if(nav.v!=='backup')return;
   const groups=[];for(const e of list){const g=groups.find(x=>Math.abs(x.t-e.t)<60000);if(g)g.names.push(e.name);else groups.push({t:e.t,names:[e.name]})}
   main.innerHTML=`<section class="view">${vtitle('Backup')}<div class="list">
@@ -1137,7 +1525,7 @@ async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()
       ${b.needPerm?`<button class="pbtn prime" data-act="allowbk">${I('shield')} Allow backups again</button>`:''}
       <div class="btnrow">${b.mode==='device'?`<button class="pbtn" data-act="expbk">${I('down')} Save backup file</button><label class="pbtn" tabindex="0" role="button">${I('upload')} Open backup file<input type="file" id="impbk" accept=".spcbackup" hidden></label>`:`<button class="pbtn" data-act="setbk">${I('folder')} Change location</button><button class="pbtn" data-act="offbk">${I('x')} Turn off</button>`}</div>`
       :`<p class="note">Choose a folder on this device once. Spoken PixelCraft creates a folder named ${BK_FOLDER} inside it, and keeps your work safe there automatically.</p><button class="pbtn prime" data-act="setbk">${I('folder')} Set up backup</button>`}</div>
-    ${b.mode?`<div class="card"><h2>Backups</h2>${groups.length?groups.slice(0,60).map(g=>`<div class="bk"><span class="bt"><b>${fmtDate(g.t)}, ${fmtTime(g.t)}</b><span>${esc([...new Set(g.names)].join(', '))}</span></span><button class="mini big" data-rest="${g.t+59999}" aria-label="Restore to ${fmtDate(g.t)} ${fmtTime(g.t)}">${I('restore')}</button></div>`).join(''):'<p class="note">No backups yet.</p>'}</div>`:''}</div></section>${vdock(true)}`;
+    ${b.mode?`<div class="card"><h2>Backups</h2>${groups.length?groups.slice(0,60).map(g=>`<div class="bk"><span class="bt"><b>${fmtDate(g.t)}, ${fmtTime(g.t)}</b><span>${esc([...new Set(g.names)].join(', '))}</span></span><button class="mini big" data-rest="${g.t+59999}" aria-label="Restore to ${fmtDate(g.t)} ${fmtTime(g.t)}">${I('restore')}</button></div>`).join(''):'<p class="note">No backups yet.</p>'}</div>`:''}</div></section>`;
   const ib=$('#impbk');if(ib)ib.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await Backup.importFile(f);toast('Backup file opened.');renderBackup()}catch(er){toast('That file could not be read.')}}}
 const ABOUT=[
  ['spark','What Spoken PixelCraft is','<p>A voice-first studio for creating and editing images and videos. You speak in plain words. The app asks questions until it understands exactly what you want, explains the choices, and then creates it with its own built-in tools.</p>'],
@@ -1149,15 +1537,17 @@ const ABOUT=[
  ['down','Downloading','<p>Choose a file name and one or more formats: PNG, JPEG, WebP or GIF for images; MP4, WebM, MP3 or GIF for videos. Files are saved to your device\'s Downloads folder. The folder button opens a file picker there, where your browser allows it.</p>'],
  ['backup','Backup and restore','<p>Choose a folder once. A folder named Spoken_PixelCraft_backup is created, and your work is backed up silently whenever you leave a container after changes. Restore adds the backed-up containers marked (Restored); restoring the same backup again replaces them. Phone browsers that cannot write to folders keep backups inside the browser; save a backup file from time to time.</p>'],
  ['trash','Deleted containers','<p>A deleted container disappears at once, but you can say <q>undo</q> or <q>bring it back</q> until the first use of the next day, when it is removed for good. Backups taken earlier still hold a copy.</p>'],
+ ['down','First-run setup','<p>On the very first run, the app downloads its critical components once: the natural voice engine and the creation components, about 120 MB. Tap Download when ready, preferably on Wi-Fi. While it downloads you can explore the Menu and add API keys. Next time everything opens straight from your device. Background removal, about 25 MB, downloads later, quietly, when the app is idle or busy creating.</p>'],
+ ['video','Camera recording','<p>Say, for example, <q>record me with the front camera while version two plays, and put me in the bottom right corner</q>. The app counts down, shows your script as a teleprompter if you give one, and records. Say <q>stop recording</q> or tap the stop button. While recording, everything else you say is recorded, not treated as a command. On some phones the browser cannot listen and record at the same moment; then simply tap stop.</p>'],
  ['clock','During a generation','<p>A ring shows the progress. Videos are created in real time, so a one-minute video takes about a minute. Keep the app on screen; locking the phone or switching apps may pause the work. You can ask questions or say <q>cancel</q>; new requests wait in a queue.</p>'],
  ['link','YouTube links','<p>Links are used for understanding only. The app can watch a video and create something in a similar style, but YouTube videos cannot be downloaded or reused as footage. Use clips you own, uploaded from your device.</p>'],
  ['lib','Library and daily cleanup','<p>Free images found online are saved in the app\'s library for reuse, up to 500 MB; the least used are removed first. Built-in music is created on the device and is free to use. Once a day, on first use, the app quietly clears deleted containers and leftovers.</p>'],
  ['screen','Phone and desktop','<p>The same app works on phones, tablets and computers. Larger screens show more containers, a bigger preview, and the messages panel at the side.</p>'],
  ['shield','Privacy','<p>Your work stays in this browser and in your chosen backup folder. Requests are sent to Google only with your own keys. Backups include your keys, so keep that folder private.</p>']];
 let openSec=0;
-function renderAbout(){main.innerHTML=`<section class="view">${vtitle('About')}<div class="acc">${ABOUT.map((s,i)=>`<div class="sec ${i===openSec?'open':''}"><button class="sech" data-sec="${i}" aria-expanded="${i===openSec}"><span class="ric">${I(s[0])}</span><span class="tx">${s[1]}</span>${I('chev','chev')}</button><div class="secb"><div><div class="in">${s[2]}</div></div></div></div>`).join('')}</div></section>${vdock(true)}`}
+function renderAbout(){main.innerHTML=`<section class="view">${vtitle('About')}<div class="acc">${ABOUT.map((s,i)=>`<div class="sec ${i===openSec?'open':''}"><button class="sech" data-sec="${i}" aria-expanded="${i===openSec}"><span class="ric">${I(s[0])}</span><span class="tx">${s[1]}</span>${I('chev','chev')}</button><div class="secb"><div><div class="in">${s[2]}</div></div></div></div>`).join('')}</div></section>`}
 function onKeysChanged(){if(nav.v==='keys')renderKeys();else if(nav.v==='home'&&!liveCS().length)renderHome()}
-function onVoiceStatus(){if(nav.v==='voice')renderVoice()}
+let vsT=0;function onVoiceStatus(){if(nav.v==='voice'&&Date.now()-vsT>800){vsT=Date.now();renderVoice()}}
 
 /* ---------- sheets and dialogs ---------- */
 const layer=$('#layer');
@@ -1183,7 +1573,7 @@ async function uploadFiles(c,files){if(!files.length)return;let n=0;
     const meta=await probe(f);const id=await addMedia(c.id,f,{name:f.name});c.media.push({id,type:f.type,name:f.name,size:f.size,w:meta.w,h:meta.h,duration:meta.duration});c.sel={t:'m',id};n++;
     if(!c.thumb&&k!=='audio')c.thumb=await makeThumb(f);if(!c.kind)c.kind=k==='audio'?null:k}
   if(!n)return;await saveC(c);renderAfterChange(c);const msg=n>1?`${n} files added.`:'Added.';toast(msg+(n&&files.some(f=>f.size>500*1048576)?' Large files are edited directly from your device storage.':''));
-  if(Session.active&&!S.voiceOff&&!Brain.busy)Voice.say(n>1?`I have your ${n} files. What would you like to do with them?`:'Got it. What would you like to do with it?')}
+  if(Session.active&&!S.voiceOff&&!Brain.busy&&!Rec.active)Voice.say(n>1?`I have your ${n} files. What would you like to do with them?`:'Got it. What would you like to do with it?')}
 async function deleteVersion(c,i){const v=c.versions[i];if(!v)return;c.versions.splice(i,1);await delMedia(v.id);if(c.sel&&c.sel.id===v.id)c.sel=null;await refreshThumb(c);await saveC(c);renderAfterChange(c)}
 async function deleteUpload(c,id){const i=c.media.findIndex(m=>m.id===id);if(i<0)return;c.media.splice(i,1);await delMedia(id);if(c.sel&&c.sel.id===id)c.sel=null;await refreshThumb(c);await saveC(c);renderAfterChange(c)}
 async function refreshThumb(c){const it=await currentItem(c);if(!it){c.thumb=null;c.kind=null;return}if(it.kind==='audio')return;const m=await DB.get('media',it.sel.id);if(m){c.thumb=await makeThumb(m.blob);c.kind=it.kind}}
@@ -1206,7 +1596,7 @@ async function doDownload(){const c=byId(nav.id);const it=await currentItem(c);i
   for(const f of fmts){try{msg('Preparing '+f+'…');
       if(ext[f]){const out=blob.type===ext[f][0]?blob:await convertImage(blob,ext[f][0]);saveFile(out,name+'.'+ext[f][1])}
       else if(f==='GIF')saveFile(await gifFrom(blob,p=>msg('Preparing GIF… '+Math.round(p)+'%')),name+'.gif');
-      else if(f==='MP3')saveFile(await mp3From(blob,p=>msg('Preparing MP3… '+Math.round(p)+'%')),name+'.mp3');
+      else if(f==='MP3'){const r=await mp3From(blob);saveFile(r.blob,name+'.'+r.ext);if(r.ext!=='mp3')msg('MP3 was not available, so a WAV sound file was saved.')}
       else if(f==='Original')saveFile(blob,name+'.'+((blob.type.split('/')[1]||'bin').split(';')[0]));
       else{const want=f==='MP4'?'video/mp4':'video/webm';
         if(blob.type.startsWith(want))saveFile(blob,name+'.'+f.toLowerCase());
@@ -1235,12 +1625,13 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
     case 'back':history.back();break;
     case 'close':closeLayer();break;
     case 'new':nameDialog('New container','Container '+(liveCS().length+1),async v=>{const k=newContainer(v);CS.push(k);await saveC(k);go('container',{id:k.id})});break;
-    case 'voice':if(S.voiceOff)break;if(Session.active){Voice.stop();Session.stop()}else{if(!Ear.supported&&!G.active().length){toast('Add a free API key in Menu so the app can hear you on this browser.');break}Session.start();Voice.say(G.active().length?'I am listening.':'I am listening. Please add a free API key in the menu so I can create for you.')}break;
+    case 'reccancel':Rec.cancel();break;case 'recstop':Rec.stop();break;
+    case 'voice':if(S.voiceOff)break;if(Rec.active){Rec.stop();break}if(Session.active){Voice.stop();Session.stop()}else{if(!setupDone())toast('Voice is listening. Replies start as soon as the setup finishes.');if(!Ear.supported&&!G.active().length){toast('Add a free API key in Menu so the app can hear you on this browser.');break}Session.start();Voice.unlock();Voice.say(G.active().length?'I am listening.':'I am listening. Please add a free API key in the menu so I can create for you.')}break;
     case 'voiceoff':setVoiceOff(!S.voiceOff);break;
     case 'yt':sheet('Add YouTube link',`<input class="field" id="yt" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=" aria-label="YouTube link"><p class="note">The app watches the video to understand it, so it can create something in a similar style. YouTube videos cannot be downloaded.</p><button class="pbtn prime" data-act="ytsave">${I('link')} Add link</button>`);break;
     case 'ytsave':{const v=$('#yt').value.trim();if(!/^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\//i.test(v)){toast('Paste a full YouTube link.');break}closeLayer();if(c){c.links=[...new Set([...(c.links||[]),v])];saveC(c)}toast('Link added for the AI to watch.');if(!S.voiceOff&&Session.active)Voice.say('Link added. What would you like me to do with it?');break}
     case 'req':openRequirement();break;
-    case 'chat':nav.chat=!nav.chat;history.replaceState(nav,'');render();if(nav.chat&&matchMedia('(min-width:900px)').matches)setTimeout(()=>{const ta=$('#ta');if(ta)ta.focus()},80);break;
+    case 'chat':toggleChat(!nav.chat);break;
     case 'send':{const ta=$('#ta'),v=ta.value.trim();if(!v||!c)break;c.chat.push({me:true,t:v,ts:Date.now()});ta.value='';ta.style.height='';saveC(c);renderChatOnly();handleText(v,'chat');break}
     case 'download':if(c)downloadDialog(c);break;
     case 'dodl':doDownload();break;
@@ -1254,31 +1645,94 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
   }});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&e.target.id==='ta'){e.preventDefault();$('[data-act=send]').click()}if(e.key==='Enter'&&e.target.id==='keyin')$('[data-act=savekey]').click();if(e.key==='Enter'&&e.target.id==='yt')$('[data-act=ytsave]').click();if(e.key==='Escape')closeLayer();
   if((e.key==='Enter'||e.key===' ')&&e.target.matches('label[role=button]')){e.preventDefault();const i=e.target.querySelector('input');if(i)i.click()}});
-document.addEventListener('focusin',e=>{if(e.target.id==='ta'){const v=$('#cview');if(v)v.classList.add('kb')}});
-document.addEventListener('focusout',e=>{if(e.target.id==='ta')setTimeout(()=>{const v=$('#cview');if(v&&(!document.activeElement||document.activeElement.id!=='ta'))v.classList.remove('kb')},150)});
+document.addEventListener('focusin',e=>{if(e.target.id==='ta'){const v=$('#cview');if(v)v.classList.add('kb');document.body.classList.add('kb')}});
+document.addEventListener('focusout',e=>{if(e.target.id==='ta')setTimeout(()=>{if(!document.activeElement||document.activeElement.id!=='ta'){const v=$('#cview');if(v)v.classList.remove('kb');document.body.classList.remove('kb')}},150)});
 document.addEventListener('input',e=>{if(e.target.id==='ta'){e.target.style.height='auto';e.target.style.height=Math.min(140,e.target.scrollHeight)+'px'}});
+
+/* ---------- camera recording with teleprompter ---------- */
+const Rec={active:false,opening:false,stream:null,rec:null,chunks:[],c:null,a:null,bgStart:0,t0:0,timer:null,raf:0,el:null,
+  async open(c,a){if(this.active||this.opening)return;this.opening=true;this.c=c;this.a=a||{};Voice.stop();BargeIn.disarm();
+    const el=document.createElement('div');el.className='recl';el.setAttribute('role','dialog');el.setAttribute('aria-label','Camera recording');
+    el.innerHTML=`<video class="recbg" id="recbg" playsinline></video><video class="recpv ${this.a.play?'pip':'full'} ${this.a.camera==='back'?'':'mirror'}" id="recpv" muted playsinline autoplay></video>
+      ${this.a.script?`<div class="prompter" aria-hidden="true"><div class="ptext" id="ptext">${esc(this.a.script)}</div></div>`:''}
+      <div class="rectop"><span class="recdot"></span><span id="rect">Getting ready</span></div><div class="countdown" id="rcd" aria-live="assertive"></div>
+      <div class="recbar"><button class="ibtn" data-act="reccancel" aria-label="Cancel recording">${I('x')}</button><button class="recstop" data-act="recstop" aria-label="Stop recording"><span></span></button><span style="width:42px"></span></div>`;
+    document.body.appendChild(el);this.el=el;
+    try{this.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:this.a.camera==='back'?'environment':'user',width:{ideal:1280},height:{ideal:720}},audio:{echoCancellation:true,noiseSuppression:true}})}
+    catch(e){this.close();this.opening=false;toast('The camera could not open. Allow camera and microphone access for this site.');handleText('[app] The camera could not be opened; permission was refused or no camera is available.','voice');return}
+    $('#recpv').srcObject=this.stream;const bg=$('#recbg');
+    if(this.a.play){const p=this.a.play,id=p.type==='version'?versionId(c,p.version):p.media_id;const m=id&&await DB.get('media',id);if(m&&/^video\//.test(m.type)){bg.src=URL.createObjectURL(m.blob);this.playId=id;await once(bg,'loadedmetadata',8000);this.bgStart=clamp(num(p.start,0),0,(bg.duration||1)-.1);bg.currentTime=this.bgStart}else this.a.play=null}
+    if(!this.a.play)bg.remove();
+    this.opening=false;this.active=true;wakeOn();setPill();
+    if(this.a.countdown!==false){const cd=$('#rcd');for(const n of[3,2,1]){if(!this.el)return;cd.textContent=n;cd.classList.remove('pulse');void cd.offsetWidth;cd.classList.add('pulse');await sleep(900)}if(cd)cd.textContent=''}
+    if(!this.el)return;
+    const mt=pickMime('mp4');this.chunks=[];this.rec=new MediaRecorder(this.stream,mt?{mimeType:mt}:{});this.rec.ondataavailable=e=>{if(e.data&&e.data.size)this.chunks.push(e.data)};this.rec.start(1000);this.t0=Date.now();
+    if(this.a.play){bg.muted=false;bg.play().catch(()=>{bg.muted=true;bg.play().catch(()=>{})})}
+    const rect=$('#rect');this.timer=setInterval(()=>{const s=Math.floor((Date.now()-this.t0)/1000);if(rect)rect.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},500);
+    const pt=$('#ptext');if(pt){const words=this.a.script.split(/\s+/).length,dur=Math.max(6,words/2.3)*1000,st=performance.now(),h=pt.scrollHeight;const step=()=>{if(!this.active)return;const p=Math.min(1,(performance.now()-st)/dur);pt.style.transform=`translateY(${-p*Math.max(0,h-80)}px)`;if(p<1)this.raf=requestAnimationFrame(step)};this.raf=requestAnimationFrame(step)}},
+  async stop(){if(!this.active||!this.rec)return this.close();this.active=false;clearInterval(this.timer);cancelAnimationFrame(this.raf);const secs=(Date.now()-this.t0)/1000;
+    const stopped=once(this.rec,'stop',6000);try{this.rec.stop()}catch(e){}await stopped;const type=(this.rec.mimeType||'video/webm').split(';')[0];const blob=new Blob(this.chunks,{type});const c=this.c,a=this.a;this.close();
+    if(!blob.size){toast('Nothing was recorded.');return}
+    const id=await addMedia(c.id,blob,{name:'Camera recording'});c.media.push({id,type,name:'Camera recording',size:blob.size,duration:Math.round(secs*10)/10,recorded_with:a.play?{media:this.playId,start:this.bgStart}:null});c.sel={t:'m',id};if(!c.thumb)c.thumb=await makeThumb(blob);if(!c.kind)c.kind='video';await saveC(c);renderAfterChange(c);
+    handleText(`[app] The camera recording was saved as media_id ${id}, ${Math.round(secs)} seconds long${a.play?`, recorded while media ${this.playId} played from second ${this.bgStart}`:''}. Continue with what the user asked for, or ask what to do next.`,'voice')},
+  close(){this.active=false;clearInterval(this.timer);cancelAnimationFrame(this.raf);if(this.stream){this.stream.getTracks().forEach(t=>t.stop());this.stream=null}
+    if(this.el){const bg=this.el.querySelector('#recbg');if(bg&&bg.src){bg.pause();URL.revokeObjectURL(bg.src)}this.el.remove();this.el=null}setPill();wakeOffIfIdle()},
+  cancel(){if(this.rec&&this.rec.state!=='inactive'){this.rec.ondataavailable=null;try{this.rec.stop()}catch(e){}}this.close();toast('Recording cancelled.')}
+};
+
+/* ---------- first-run setup: critical components, one time only ---------- */
+const SETUP_MB=120;
+const setupDone=()=>!!LS.get('spc.setup');
+let setupRunning=false;
+function ringSVG(id){const C=2*Math.PI*20;return `<svg viewBox="0 0 48 48" class="sring" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke-width="4" class="bgc"/><circle id="${id}" cx="24" cy="24" r="20" fill="none" stroke-width="4" stroke-linecap="round" class="fgc" stroke-dasharray="${C}" stroke-dashoffset="${C}"/></svg>`}
+function showSetupCard(){const el=document.createElement('div');el.className='setup';el.id='setupcard';
+  el.innerHTML=`<div class="scard" role="dialog" aria-modal="true" aria-labelledby="sch"><div class="sbadge">${I('spark')}</div><h2 id="sch">Initial app setup</h2>
+    <p>Importing critical components for initial app setup. These include the natural voice engine and the video and image creation components.</p>
+    <div class="sfacts"><div><b>About ${SETUP_MB} MB</b><span>Total download</span></div><div><b>One time only</b><span>Saved on this device</span></div></div>
+    <p class="small">This happens only on the first run. The components are saved and will not be needed again next time. You may switch to Wi-Fi to save your mobile data.</p>
+    <button class="pbtn prime big" id="setupgo">${I('down')} Download</button><p class="small">Please tap Download when ready.</p></div>`;
+  document.body.appendChild(el);$('#setupgo').onclick=startSetup;setTimeout(()=>$('#setupgo').focus(),100)}
+function setBar(pct,text,state){const bar=$('#setupbar');if(!bar)return;bar.hidden=false;bar.dataset.state=state||'run';const C=2*Math.PI*20,f=$('#sbr');if(f)f.style.strokeDashoffset=C*(1-pct/100);
+  const p=$('#sbp');if(p)p.textContent=state==='done'?'':Math.round(pct)+'%';const t=$('#sbt');if(t&&text)t.textContent=text}
+async function startSetup(){if(setupRunning)return;setupRunning=true;Voice.unlock();started=true;const card=$('#setupcard');if(card)card.remove();const st=$('#start');if(st)st.remove();
+  setBar(0,'Importing critical components for initial app setup','run');$('#sbmore').hidden=false;
+  const tick=setInterval(()=>setBar(Voice.progress*95,null,'run'),400);
+  try{await Voice.load();clearInterval(tick);setBar(96,'Preparing the creation components','run');
+    await Promise.race([Promise.all([ensureFonts(),FX.call('warm')]),sleep(15000)]);setBar(100,'Setup complete. Everything is ready.','done');LS.set('spc.setup',1);
+    setTimeout(()=>{const b=$('#setupbar');if(b)b.hidden=true},2800);setupRunning=false;queueBackground();if(!S.voiceOff)startVoice(true)}
+  catch(e){clearInterval(tick);setupRunning=false;setBar(Voice.progress*95,'The download paused. Check your connection, then tap Retry.','fail')}}
+/* later runs: load the voice from the device cache in the background; show progress only if it has to download again */
+function warmVoice(){if(Voice.ready||Voice.loading)return;const t0=Date.now();const iv=setInterval(()=>{if(Voice.ready||Voice.failed){clearInterval(iv);if(!$('#setupbar').hidden&&Voice.ready){setBar(100,'Voice ready.','done');setTimeout(()=>{$('#setupbar').hidden=true},1800)}return}
+    if(Date.now()-t0>2500&&Voice.progress<.9)setBar(Voice.progress*100,'Restoring the natural voice on this device','run')},500);
+  Voice.load().catch(()=>{});}
+function queueBackground(){Bg.add('fonts',()=>ensureFonts());Bg.add('encoders',()=>FX.call('warm'));Bg.add('cutout',()=>Promise.race([SEG.call('warm'),sleep(600000)]))}
 
 /* ---------- start ---------- */
 let started=false,hiddenAt=0;
 document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=Date.now();Ear.pause();return}
-  housekeeping();if(Session.active){wakeOn();Ear.resume();if(Date.now()-hiddenAt>8000&&!Gen.running)Voice.say('I am listening again.')}else if(Gen.running)wakeOn()});
+  housekeeping();if(Session.active){wakeOn();Ear.resume();if(Date.now()-hiddenAt>8000&&!Gen.running&&!Rec.active)Voice.say('I am listening again.')}else if(Gen.running||Rec.active)wakeOn()});
+window.addEventListener('pageshow',e=>{if(e.persisted&&Session.active){Ear.resume();setPill()}});
 window.addEventListener('pagehide',()=>{if(nav.v==='container'){const c=byId(nav.id);if(c&&dirty.has(c.id))Backup.leave(c)}});
-async function begin(){if(started)return;started=true;$('#start').remove();
+function greeting(){const p=LS.get('spc.pending'),pc=p&&byId(p.cid);if(p&&!pc)LS.del('spc.pending');
+  if(pc)return `Welcome back. Last time, the generation in ${pc.name} from ${fmtDate(p.t)} was interrupted: ${p.summary}. Would you like me to continue it, or drop it?`;
+  if(!G.active().length)return 'Welcome to Spoken PixelCraft. To start creating with me, please add a free API key in the menu, under API keys.';
+  return liveCS().length?'Welcome back. What shall we create today?':'Welcome to Spoken PixelCraft. What shall we create today?'}
+function startVoice(first){Session.start();Voice.say(first?'Setup is complete. '+greeting():greeting())}
+async function begin(){if(started)return;started=true;const st=$('#start');if(st)st.remove();Voice.unlock();
   if(Backup.needPerm)await Backup.allow();
-  try{if(Voice.ac)Voice.ac.resume();else Voice.ac=new AudioContext()}catch(e){}
-  if(S.voiceOff){render();return}Session.start();
-  const p=LS.get('spc.pending'),pc=p&&byId(p.cid);let g;
-  if(pc)g=`Welcome back. Last time, the generation in ${pc.name} from ${fmtDate(p.t)} was interrupted: ${p.summary}. Would you like me to continue it, or drop it?`;
-  else if(!G.active().length)g='Welcome to Spoken PixelCraft. To start creating with me, please add a free API key in the menu, under API keys.';
-  else g=liveCS().length?'Welcome back. What shall we create today?':'Welcome to Spoken PixelCraft. What shall we create today?';
-  if(p&&!pc)LS.del('spc.pending');Voice.say(g)}
+  if(!Voice.ready)warmVoice();queueBackground();
+  if(S.voiceOff){render();return}startVoice(false)}
 (async()=>{applyMode();try{await DB.open()}catch(e){toast('This browser blocked storage. Your work cannot be saved here.')}
-  try{CS=(await DB.all('containers'))||[]}catch(e){CS=[]}await Backup.init();await housekeeping();
-  history.replaceState({v:'home',depth:0},'');nav={v:'home',depth:0};render();
-  const st=$('#start');st.addEventListener('click',begin);st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')begin()});
+  try{CS=(await DB.all('containers'))||[]}catch(e){CS=[]}await Backup.init();
+  history.replaceState({v:'home',depth:0},'');nav={v:'home',depth:0};render();setPill();
+  $('#sbmenu').onclick=()=>go('menu');$('#sbkeys').onclick=()=>go('keys');$('#sbretry').onclick=()=>{Voice.loading=null;Voice.failed=false;setupRunning=false;startSetup()};
+  if(!setupDone()){const st=$('#start');if(st)st.remove();showSetupCard()}
+  else{const st=$('#start');st.addEventListener('click',begin);st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')begin()});setTimeout(()=>warmVoice(),300)}
   try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
-  const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));idle(()=>Voice.preload());
-  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});})();
+  Voice.listeners.add(onVoiceStatus);
+  setTimeout(()=>housekeeping(),4000);
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+  if(location.hash==='#spc-test')window.__spc={DB,CS:()=>CS,runTool,Gen,go,Voice,Session,heard,handleText,Rec,Backup,Bg,FX};})();
 
 
 </script>
