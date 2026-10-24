@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JIXCYFOODS Prototype · UAT Form</title>
-<meta name="theme-color" content="#f5f5f7">
+<meta name="theme-color" content="#f2f2f4">
 <meta name="description" content="User acceptance testing form for the JIXCYFOODS e-commerce prototype. Answers save in this browser; download the results file and send it back.">
 <script>
   /* Apply the saved or system light/dark choice before the first paint. */
@@ -18,17 +18,19 @@
 <style>
 :root,html[data-theme="light"]{
   color-scheme:light;
-  --bg:#f5f5f7;--surface:#ffffff;--fill:#e8e8ed;--fill-on:#ffffff;--ink:#1d1d1f;--muted:#6e6e73;--line:#e5e5ea;
-  --accent:#0071e3;--accent-press:#0077ed;--on-accent:#ffffff;--link:#0066cc;
-  --pass:#1d7c37;--fail:#d70015;--blocked:#b25000;--na:#6e6e73;--focus:rgba(0,113,227,.45);
-  --glass:rgba(245,245,247,.8);--shadow:0 1px 2px rgba(0,0,0,.04),0 6px 22px rgba(0,0,0,.05);
+  --bg:#f2f2f4;--surface:#ffffff;--fill:#ececef;--fill-hover:#e2e2e6;--ink:#1d1d1f;--muted:#6e6e73;--line:#e3e3e8;
+  --accent:#00838f;--band-out:#3a3a3c;--fill-on:#1d1d1f;--ink-on:#ffffff;--on-accent:#ffffff;--link:#00707a;
+  --pass:#1d7c37;--fail:#d70015;--blocked:#b25000;--na:#6e6e73;--focus:rgba(0,131,143,.45);
+  --dot-pass:#34c759;--dot-fail:#ff3b30;--dot-blocked:#ff9f0a;--dot-na:#aeaeb2;
+  --glass:rgba(242,242,244,.82);--shadow:0 1px 2px rgba(0,0,0,.04),0 6px 22px rgba(0,0,0,.05);
 }
 html[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#000000;--surface:#1c1c1e;--fill:#2c2c2e;--fill-on:#636366;--ink:#f5f5f7;--muted:#98989d;--line:#38383a;
-  --accent:#0a84ff;--accent-press:#409cff;--on-accent:#ffffff;--link:#2997ff;
-  --pass:#30d158;--fail:#ff453a;--blocked:#ff9f0a;--na:#98989d;--focus:rgba(10,132,255,.5);
-  --glass:rgba(0,0,0,.72);--shadow:none;
+  --bg:#141416;--surface:#1f1f22;--fill:#2c2c2e;--fill-hover:#38383b;--ink:#f5f5f7;--muted:#a1a1a6;--line:#3a3a3d;
+  --accent:#1fb5c4;--band-out:#4a4a4e;--fill-on:#ffffff;--ink-on:#000000;--on-accent:#000000;--link:#3cc3d1;
+  --pass:#30d158;--fail:#ff453a;--blocked:#ff9f0a;--na:#98989d;--focus:rgba(31,181,196,.5);
+  --dot-pass:#28a745;--dot-fail:#e0342b;--dot-blocked:#e08600;--dot-na:#8e8e93;
+  --glass:rgba(20,20,22,.78);--shadow:none;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -65,12 +67,13 @@ html[data-theme="dark"] input[type=text],html[data-theme="dark"] input[type=emai
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--focus);background:var(--surface)}
 textarea{min-height:76px;resize:vertical}
 .hint{font-size:.88rem;color:var(--muted)}
-.btn{font:inherit;font-weight:600;font-size:.95rem;min-height:44px;padding:0 20px;border-radius:980px;border:0;background:var(--accent);color:var(--on-accent);cursor:pointer;transition:background .2s,transform .15s}
-.btn:hover{background:var(--accent-press)}
+.btn{font:inherit;font-weight:600;font-size:.95rem;min-height:44px;padding:0 20px;border-radius:980px;border:2px solid var(--accent);box-shadow:0 0 0 2px var(--band-out);background:var(--fill-on);color:var(--ink-on);cursor:pointer;margin:2px;transition:background .2s,transform .15s,filter .2s}
+.btn:hover{filter:brightness(1.12)}
 .btn:active{transform:scale(.97)}
 .btn.ghost{background:var(--fill);color:var(--ink)}
-.btn.ghost:hover{background:var(--line)}
-.btn.danger{background:transparent;color:var(--fail);box-shadow:inset 0 0 0 1px var(--fail)}
+.btn.ghost:hover{background:var(--fill-hover);filter:none}
+.btn.danger{background:var(--fill);color:var(--fail)}
+.btn.danger:hover{background:var(--fill-hover);filter:none}
 .icon-toggle{display:inline-flex;align-items:center;gap:8px}
 .icon-toggle svg{width:18px;height:18px}
 .logins{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;background:var(--bg);border-radius:16px;padding:16px 18px;margin-top:4px}
@@ -97,18 +100,19 @@ html[data-theme="dark"] .exp{background:var(--fill)}
 .devs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 fieldset.dev{border:0;padding:0;margin:0;min-width:0}
 fieldset.dev legend{font-weight:600;font-size:.86rem;color:var(--muted);padding:0;margin-bottom:6px}
-.opts{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:12px;background:var(--fill);max-width:100%}
+.opts{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:12px;background:var(--fill);max-width:100%;box-shadow:inset 0 0 0 1px var(--line)}
 .opt{position:relative;flex:1 1 auto}
 .opt input{position:absolute;opacity:0;width:1px;height:1px}
 .opt span{display:flex;align-items:center;justify-content:center;min-height:38px;padding:0 14px;border-radius:9px;font-weight:500;font-size:.9rem;color:var(--ink);cursor:pointer;white-space:nowrap;transition:background .15s,box-shadow .15s}
 .opt:hover span{color:var(--accent)}
 .opt input:focus-visible + span{outline:3px solid var(--focus);outline-offset:1px}
-.opt input:checked + span{background:var(--fill-on);box-shadow:0 1px 3px rgba(0,0,0,.14),0 3px 8px rgba(0,0,0,.06);font-weight:600}
-.opt input[value=pass]:checked + span{color:var(--pass)}
-.opt input[value=fail]:checked + span{color:var(--fail)}
-.opt input[value=blocked]:checked + span{color:var(--blocked)}
-.opt input[value=na]:checked + span{color:var(--na)}
-.rate-opts .opt input:checked + span{color:var(--accent)}
+.opt input:checked + span{background:var(--fill-on);color:var(--ink-on);box-shadow:inset 0 0 0 2px var(--accent);font-weight:600}
+.opt input:checked + span::before{content:"";width:9px;height:9px;border-radius:50%;margin-right:7px;flex:none;background:var(--accent)}
+.opt input[value=pass]:checked + span::before{background:var(--dot-pass)}
+.opt input[value=fail]:checked + span::before{background:var(--dot-fail)}
+.opt input[value=blocked]:checked + span::before{background:var(--dot-blocked)}
+.opt input[value=na]:checked + span::before{background:var(--dot-na)}
+.opt:hover input:checked + span{color:var(--ink-on)}
 .cmt{margin-top:14px}
 .need{color:var(--fail);font-weight:600;font-size:.86rem}
 .rating{margin-top:14px;border:0;border-radius:20px;padding:18px 20px;background:var(--surface);box-shadow:var(--shadow)}
@@ -191,13 +195,15 @@ footer{padding:30px 0 60px;color:var(--muted);font-size:.86rem}
     </ol>
     <h3 style="margin:18px 0 10px;font-size:1.15rem">Demo logins and test data</h3>
     <div class="logins">
-      <span class="lbl">Customer OTP</span><span><code>1234</code> (any OTP screen, including card payments)</span>
-      <span class="lbl">Demo customer</span><span>Ananya Desai, mobile <code>98201 23456</code>, or press "Use the demo customer account"</span>
-      <span class="lbl">Back office</span><span>username <code>admin</code>, password <code>jixcy2026</code></span>
+      <span class="lbl">One login screen</span><span>Press the small <strong>Log in</strong> button at the top right. The same screen serves members and the back office.</span>
+      <span class="lbl">Back office</span><span>login <code>admin</code>, password <code>admin</code>. The whole site switches to the back office.</span>
+      <span class="lbl">Demo member</span><span>Ananya Desai: mobile <code>98201 23456</code>, password <code>demo1234</code>, or press "Use the demo member account"</span>
+      <span class="lbl">Other sample members</span><span>password <code>jixcy123</code> (for example Meera Iyer, Rahul Shah)</span>
+      <span class="lbl">OTP</span><span><code>1234</code> (registration and card payments)</span>
       <span class="lbl">Coupons</span><span><code>JIXCY20</code>, <code>FRESH50</code>, <code>MUMBAI100</code>; <code>OLDCODE</code> is switched off</span>
       <span class="lbl">Mumbai PINs</span><span><code>400064</code> Malad West, <code>400097</code>, <code>400703</code> Vashi. Outside Mumbai: <code>110001</code></span>
       <span class="lbl">Test UPI ID</span><span><code>name@okaxis</code>; test card <code>4111 1111 1111 1111</code>, expiry <code>12/29</code>, CVV <code>123</code></span>
-      <span class="lbl">Start fresh</span><span>Back office, Settings, "Reset demo data". This restores all sample orders and customers.</span>
+      <span class="lbl">Start fresh</span><span>Menu, Backup, "Reset demo data", or Back office, Settings, "Reset demo data". This restores all sample orders and customers.</span>
     </div>
     <p class="hint" style="margin-top:12px">This is a prototype. Payments are simulated, nothing is charged, and all data stays in the browser where the prototype is open.</p>
   </section>
@@ -267,14 +273,18 @@ const AREAS = [
   ["H2", "Short home page", ["Scroll from top to bottom of the home page."], "About three screens: the headline with a line of five oil bottles, four category tiles, Loved most, The JIXCY promise (five promises), links to Our story and Help, then the footer. No repeated product rows and no placeholder text.", "both"],
   ["H3", "First screen and product images", ["On a computer, look at the first screen without scrolling. Then look at several product cards."], "The first screen shows the headline, the bottle line-up and all four category tiles. Each oil has its own bottle shape, and every label shows JIXCY and the exact product name.", "both"],
   ["H4", "Category pages", ["Open Oils, Pantry, Grains and Pulses, and Skin and Hair Care from the header (computer) or the category tiles (phone)."], "Each opens its own page with a title, a short introduction, a picture of its products, the product cards, and a More to explore row linking to the other three categories.", "both"],
-  ["H5", "Light and dark mode", ["Press the moon icon in the header, browse a few pages, then press the sun icon.", "Reload the page while in dark mode."], "The whole site switches between a white and grey look with blue accents and a dark look. Text stays easy to read, and the chosen mode is kept after reloading.", "both"],
+  ["H5", "Light and dark mode", ["Open the menu (three lines, top right) and switch Dark mode on. Browse a few pages, then switch it off.", "Reload the page while in dark mode."], "The whole site switches between a light grey look and a dark grey look, with deep cyan accents. Text stays easy to read, and the chosen mode is kept after reloading.", "both"],
   ["H6", "Questions and answers", ["Open Help. Open and close several questions."], "Each question expands to show its answer and collapses again.", "both"],
   ["H7", "Category tiles", ["On the home page, press each of the four category tiles."], "Each tile opens that category page.", "both"],
   ["H8", "Footer links", ["In the footer, open each link under Shop and Help.", "Tap a phone number and the email address."], "Shop links open the four category pages. Help links open Help and FAQs, Contact us, Our story and each policy page. The phone number starts a call (on phone) and the email opens your mail app.", "both"],
-  ["H9", "Bottom dock on phone", ["On a phone, look at the bottom of the screen on every page."], "A dock with six medium icons: Home, Account, Orders, Cart (a four-wheeled trolley), Ask Jixbot and Admin. The current section is highlighted. Every button works.", "phone"],
-  ["H10", "Desktop menu", ["On a computer, use the top menu: Shop, Oils, Pantry, Grains, Skin and Hair, Our story, Help, Admin, and the search, moon, Jixbot, account and basket icons."], "Each opens the right page or panel, and the current page is highlighted. On smaller laptops the four category links hide to keep the header tidy; they stay reachable from Shop and the home tiles.", "desktop"],
+  ["H9", "No bottom dock on phone", ["On a phone, scroll every page to the very bottom."], "There is no bar fixed to the bottom of the screen. Pages run full length. Only the small Ask Jixbot button sits at the bottom right.", "phone"],
+  ["H10", "Header", ["Look at the header on a phone and on a computer. On a computer, use Shop, Oils, Pantry, Grains, Skin and Hair, Our story, Help, the magnifying glass and the basket."], "Phone: logo, basket, a small Log in button and the menu button, all on one line with no overflow. Computer: the same plus the page links and search. Each link opens the right page, and the current page is highlighted.", "both"],
   ["H11", "Page not found", ["Change the end of the address to #/xyz and press Enter."], "A friendly 'Page not found' message appears with buttons back to the home page and the shop.", "both"],
-  ["H12", "Keyboard use", ["On a computer, press Tab repeatedly from the top of the page."], "A 'Skip to content' link appears first. Every button and link can be reached and shows a clear focus outline.", "desktop"]
+  ["H12", "Keyboard use", ["On a computer, press Tab repeatedly from the top of the page."], "A 'Skip to content' link appears first. Every button and link can be reached and shows a clear focus outline.", "desktop"],
+  ["H13", "Menu contents", ["Press the menu button (three lines) at the top right. Read every group, then close it with the X, by pressing outside it, or with Escape."], "A panel slides in with groups for Shop (Home, Shop everything, Search products, the four categories), Your account, Help and information (Help, About, Our story, Contact us), Settings (Dark mode switch) and Backup. Every item works and the panel closes.", "both"],
+  ["H14", "About page", ["Open About from the menu or the footer."], "Explains what the software is, with six feature cards. Get in touch shows admin@jixcyfoods.com for website suggestions or issues and support@jixcyfoods.com for product, order, query or payment issues. At the bottom: Designed by, with the full SigmaVidhi Technologies logo at text size (shown light on dark mode).", "both"],
+  ["H15", "Backup, restore and reset", ["In the menu, press Download backup. Make a change (add to the basket). Press Restore from a backup and choose the file. Then press Reset demo data and confirm."], "A backup file downloads. Restoring brings back the saved state. Reset asks for confirmation, then returns the prototype to fresh sample data.", "both"],
+  ["H16", "Jixcoins explainer", ["On the home page, find the Jixcoins section and press 'Learn more in Help'."], "The home page explains how to earn and use Jixcoins in a few steps. The link opens Help at the 'Jixcoins, explained' section.", "both"]
  ]},
  { id: "S", name: "Shop and search", tests: [
   ["S1", "Product listing", ["Open Shop."], "20 cards in four category sections. Single products (oils, ghee, honey, jaggery, hair oil) and grouped families (for example Handmade Soap with 11 fragrances) each show a realistic pack, rating, price and an Add or Choose button.", "both"],
@@ -282,8 +292,8 @@ const AREAS = [
   ["S3", "Header search", ["On a computer, press the magnifying glass in the header, then type millet."], "The shop opens with the search box ready, and results update as you type.", "desktop"],
   ["S4", "Category filter in the shop", ["In Shop, press All, Oils, Pantry, Grains and Pulses, and Skin and Hair Care."], "The list filters to that category, and All shows everything again in four sections.", "both"],
   ["S5", "Sorting", ["Use the sort menu: Top rated, Price low to high, Price high to low, Name A to Z."], "The product order changes to match each choice.", "both"],
-  ["S6", "Quick add", ["Press Add on a single product card, such as Groundnut Oil."], "A confirmation message appears and the basket count in the header (and dock on phone) goes up by one.", "both"],
-  ["S7", "Wishlist when signed out", ["While signed out, press the heart on a product card."], "You are asked to sign in and taken to the sign-in page.", "both"],
+  ["S6", "Quick add", ["Press Add on a single product card, such as Groundnut Oil."], "A confirmation message appears and the basket count on the basket icon in the header goes up by one.", "both"],
+  ["S7", "Wishlist when logged out", ["While logged out, press the heart on a product card."], "You are asked to log in and taken to the login page.", "both"],
   ["S8", "Family cards", ["Find Handmade Soap, Face Wash, Spices and Masalas, Millets and Unpolished Dals in the shop. Press Choose on one."], "Each family shows several packs, colour dots for its varieties and the number of choices. Choose opens the product page for that family.", "both"]
  ]},
  { id: "P", name: "Product page", tests: [
@@ -302,18 +312,20 @@ const AREAS = [
   ["B3", "Change quantities", ["Use plus, minus and typing on a line. Reduce one line to 0."], "Totals update straight away. A line at 0 disappears.", "both"],
   ["B4", "Remove a line", ["Press Remove on a line."], "The line is removed and a confirmation message appears.", "both"],
   ["B5", "Free delivery nudge", ["Keep the products total below ₹500, then add more to go above ₹499."], "Below the limit: 'Add ₹X more for free delivery'. Above ₹499: 'You have free delivery'.", "both"],
-  ["B6", "Mini basket bar on phone", ["On a phone, add an item, then visit the home page and shop."], "A bar above the dock shows the number of items and total, with 'View basket'. It is hidden on the basket and checkout pages.", "phone"]
+  ["B6", "Basket icon in the header", ["On a phone and a computer, add an item, then visit the home page and shop."], "The basket icon at the top shows the number of items on every page and opens the basket.", "both"]
  ]},
- { id: "R", name: "Sign in and registration", tests: [
-  ["R1", "Checkout needs sign-in", ["While signed out, add an item and press Checkout."], "The sign-in page opens. After signing in you return to checkout.", "both"],
-  ["R2", "Mobile number checks", ["Try 12345, then 5123456789, then a valid number such as 98765 43210."], "Invalid numbers show a clear error. The number formats as 98765 43210 while typing.", "both"],
-  ["R3", "Unknown number on sign-in", ["On Sign in, enter a new number such as 91234 56789 and press Send OTP."], "A message says there is no account for this number, with a 'Create an account' option.", "both"],
-  ["R4", "Create an account", ["Choose Create an account, enter a new number, enter OTP 1234, then your name and email."], "The account is created and you are signed in. The message mentions the welcome bonus on the first order.", "both"],
-  ["R5", "Wrong OTP, resend and change number", ["Enter OTP 0000. Then press Resend OTP and Change number."], "Wrong OTP shows an error. Resend shows a confirmation. Change number returns to the number step.", "both"],
-  ["R6", "Duplicate registration", ["Try to create an account with 98201 23456 (the demo customer)."], "A message says an account already exists and suggests signing in.", "both"],
-  ["R7", "Demo customer", ["On the sign-in page, press 'Use the demo customer account'."], "You are signed in as Ananya Desai with saved addresses, past orders, Jixcoins and a wishlist.", "both"],
-  ["R8", "Phone masking", ["Look at mobile numbers on the account page, addresses and checkout."], "Numbers are masked, for example 98XXX XX456.", "both"],
-  ["R9", "Sign out", ["In Your account, press Sign out."], "You are signed out and returned to the home page.", "both"]
+ { id: "R", name: "Log in and registration", tests: [
+  ["R1", "Checkout needs login", ["While logged out, add an item and press Checkout."], "The login page opens. After logging in you return to checkout.", "both"],
+  ["R2", "Login button", ["Look at the small Log in button next to the menu button, then press it."], "The login page opens with one box for 'Mobile number, email or admin username', a password box with Show and Hide, a link to create an account, the demo member button and a demo logins box.", "both"],
+  ["R3", "Member login with password", ["Log in with 98201 23456 and a wrong password. Then use demo1234. Log out, and log in again with Ananya's email and demo1234."], "The wrong password shows a clear error. The correct password logs you in as Ananya Desai, and the Log in button changes to her name. Email works as well as mobile.", "both"],
+  ["R4", "Create an account with a password", ["Choose Create an account. Enter a new mobile number, OTP 1234, your name and email, and a password. Try a 3-letter password and two different passwords first."], "Step 1 of 3 to step 3 of 3 are shown. Short or mismatched passwords show a clear error. A valid password creates the account and logs you in. The message mentions the welcome bonus.", "both"],
+  ["R5", "New password works", ["Log out, then log in with the mobile number or email and the password you created in R4."], "You are logged in to your new account.", "both"],
+  ["R6", "Mobile number checks", ["During Create an account, try 12345, then 5123456789, then a valid number such as 98765 43210."], "Invalid numbers show a clear error. The number formats as 98765 43210 while typing.", "both"],
+  ["R7", "Wrong OTP, resend and change number", ["During Create an account, enter OTP 0000. Then press Resend OTP and Change number."], "Wrong OTP shows an error. Resend shows a confirmation. Change number returns to the number step.", "both"],
+  ["R8", "Duplicate registration", ["Try to create an account with 98201 23456 (the demo member)."], "A message says an account already exists and suggests logging in.", "both"],
+  ["R9", "Demo member button", ["On the login page, press 'Use the demo member account'."], "You are logged in as Ananya Desai with saved addresses, past orders, Jixcoins and a wishlist.", "both"],
+  ["R10", "Phone masking", ["Look at mobile numbers on the account page, addresses and checkout."], "Numbers are masked, for example 98XXX XX456.", "both"],
+  ["R11", "Log out", ["Open the menu and press Log out (or use Your account)."], "You are logged out, the button reads Log in again, and you return to the home page.", "both"]
  ]},
  { id: "A", name: "Address book and PIN checks", tests: [
   ["A1", "Address groups", ["As the demo customer, open Your account, Addresses."], "Addresses are grouped under Home, Work and Other with counts. The default address is marked. 'Other' can show a custom name such as Parents' house.", "both"],
@@ -360,7 +372,7 @@ const AREAS = [
   ["X2", "Order tracker", ["Open an order."], "A 4-step tracker (Placed, Preparing, Dispatched, Delivered) with dates, including when dispatch is due.", "both"],
   ["X3", "Cancel within 12 hours", ["Place a new order. In Orders, press Cancel order, read the hours left, and confirm."], "A confirmation appears. The order changes to Cancelled, and any Jixcoins earned on it are removed from your balance.", "both"],
   ["X4", "No cancel after 12 hours", ["Look at older orders, such as the delivered ones."], "No Cancel button appears on orders older than 12 hours.", "both"],
-  ["X5", "Report a problem within 48 hours", ["As the demo customer, find order JX-1091 (delivered recently) and press 'Report a problem'. If the 48 hour window has closed, reset demo data in the back office and sign in as the demo customer again."], "A form opens with the hours left, a reason list, a details box, a photo upload and a note that refunds go to the original payment method only.", "both"],
+  ["X5", "Report a problem within 48 hours", ["As the demo customer, find order JX-1091 (delivered recently) and press 'Report a problem'. If the 48 hour window has closed, reset demo data from the menu and log in as the demo member again."], "A form opens with the hours left, a reason list, a details box, a photo upload and a note that refunds go to the original payment method only.", "both"],
   ["X6", "Photo is required", ["Submit the claim without a photo. Then try a photo over 1 MB, then a small photo."], "No photo: error. Too large: error. Small photo: the claim is submitted.", "both"],
   ["X7", "Claim status", ["Open the order after submitting the claim."], "A 'Refund claim' box shows status Requested and your reason.", "both"],
   ["X8", "No claim after 48 hours", ["Look at order JX-1092 (delivered long ago)."], "No 'Report a problem' option appears.", "both"],
@@ -372,7 +384,7 @@ const AREAS = [
   ["U3", "Wishlist", ["Save two products with the heart, open Wishlist, remove one."], "Saved products appear and removal works.", "both"]
  ]},
  { id: "J", name: "Ask Jixbot", tests: [
-  ["J1", "Open and close the bot", ["Open Ask Jixbot (floating button on computer, dock button on phone). Close it with the X, and on computer also with Escape."], "A chat panel opens with a greeting and quick question buttons, and closes again.", "both"],
+  ["J1", "Open and close the bot", ["Press the small Ask Jixbot button fixed at the bottom right, on a phone and on a computer. Close it with the X, and on computer also with Escape."], "The button stays at the bottom right on every shop page (not on checkout or the back office). A chat panel opens with a greeting and quick question buttons, and closes again.", "both"],
   ["J2", "Quick questions", ["Press each quick question button."], "Each gives a correct, relevant answer.", "both"],
   ["J3", "Delivery charges", ["Type: What is the delivery charge?"], "Answer: free above ₹499, otherwise ₹60 per kg rounded up, delivery always payable.", "both"],
   ["J4", "PIN check", ["Type 400064, then 110001."], "400064 is confirmed as Malad West. 110001 is reported as outside the delivery area.", "both"],
@@ -385,11 +397,11 @@ const AREAS = [
   ["I2", "Contact details", ["Open Contact."], "Address: Shop no 1, Surbhi CHS, Jankalyan Nagar, Malad West, Mumbai 400064. Phones 73034 66463 and 70212 60518. Email, opening hours and a drawn map.", "both"],
   ["I3", "Contact form", ["Submit with a bad phone number and a 5-letter message. Then submit valid details."], "Errors are clear. Valid details show 'Thank you. We have received your message.' and the form clears.", "both"],
   ["I4", "Policy pages", ["Open Delivery and preparation, Cancellation, Returns and refunds, Privacy and Terms of sale from the Help page cards and from the footer."], "Each page opens with its text and a side menu to the other policies.", "both"],
-  ["I5", "Help page", ["Open Help from the header, the footer, or the link at the bottom of the home page."], "Topic cards for delivery, cancellation, refunds, privacy and terms, an Ask Jixbot card that opens the chat, the questions and answers, and a Talk to us panel with both phone numbers, the email and a Send us a message button.", "both"]
+  ["I5", "Help page", ["Open Help from the menu, the header, the footer, or the link at the bottom of the home page."], "Topic cards (including Jixcoins and an Ask Jixbot card that opens the chat), a six-step 'Using JIXCYFOODS' how-to, 'Jixcoins, explained', the questions and answers, and a Talk to us panel with both phone numbers, the email and a Send us a message button.", "both"]
  ]},
  { id: "Z", name: "Back office (admin)", tests: [
-  ["Z1", "Admin sign-in", ["Open Admin. Read the screen. Try a wrong password, then admin and jixcy2026."], "The demo login is shown with a 'Prototype only' note. Wrong password is rejected. Correct details open the Dashboard.", "both"],
-  ["Z2", "Admin navigation", ["On computer, use the tab bar at the top. On phone, use the Admin dock button and swipe through the tabs."], "All 11 tabs open: Dashboard, Orders, Refunds, Products, Customers, Reports, Coupons, Coins and offers, Website text, Messages, Settings.", "both"],
+  ["Z1", "Admin login switches the whole site", ["Press the Log in button. Enter admin and a wrong password, then admin and admin.", "While logged in as admin, try to open the shop or the home page."], "The wrong password is rejected. admin and admin open the Dashboard. The header changes to JIXCYFOODS Back office with an Admin button and the menu; the shop links, announcement bar and Ask Jixbot disappear. Shop pages redirect to the back office until you log out from the menu.", "both"],
+  ["Z2", "Admin navigation", ["On computer, use the tab bar at the top. On phone, swipe through the tabs, and also open the menu, which lists the back office sections."], "All 11 tabs open: Dashboard, Orders, Refunds, Products, Customers, Reports, Coupons, Coins and offers, Website text, Messages, Settings. The selected tab is filled and every tab shows its full rounded outline.", "both"],
   ["Z3", "Dashboard", ["Look at the Dashboard."], "Six tiles (orders, net revenue, to prepare or dispatch, open refunds, new messages, customers), latest orders and shortcuts.", "both"],
   ["Z4", "Manage orders", ["In Orders, search by a customer name and by a PIN. Filter by status. Move an order from Placed to Preparing to Dispatched to Delivered. Press View."], "Search and filter work. Status moves forward only. A placed or preparing order can also be cancelled. View shows full details.", "both"],
   ["Z5", "Orders CSV", ["Press 'Export orders CSV'."], "A CSV file downloads and opens in Excel with all orders.", "both"],
@@ -403,9 +415,9 @@ const AREAS = [
   ["Z13", "Reports", ["Open Reports and switch between Weekly, Monthly and Yearly. Download the Sales CSV."], "Sales chart and table, orders by status, top products, payment method split, delivery by PIN area and repeat buyers. There are no stock or inventory reports anywhere.", "both"],
   ["Z14", "Coupons", ["Add coupon FREE100 (Percent, 100, cap 5000). Change a coupon value. Switch FRESH50 off and try it at checkout. Remove a coupon."], "Each change saves. A switched-off code is refused at checkout. Removed codes no longer work.", "both"],
   ["Z15", "Coins and offers", ["Change the revisit bonus to 40, the boosted coin value to 0.10, and switch the boost off and on. Save and check checkout."], "Checkout and the coins page use the new values.", "both"],
-  ["Z16", "Website text", ["Change the announcement text, home headline, a question and answer, and a policy paragraph. Untick Customer reviews and Questions and answers. Save and view the site."], "Every text change shows on the site. Reviews disappear from Our story and questions disappear from Help. The layout does not change.", "both"],
+  ["Z16", "Website text", ["Change the announcement text, home headline, a question and answer, and a policy paragraph. Untick Customer reviews and Questions and answers. Save, log out from the menu and view the site."], "Every text change shows on the site. Reviews disappear from Our story and questions disappear from Help. The layout does not change.", "both"],
   ["Z17", "Messages", ["Open Messages. Find the message you sent in I3. Add a note, set status Replied and save. Use the filter."], "Your message is listed. The note and status save. The filter shows only matching messages.", "both"],
-  ["Z18", "Settings", ["Try changing the password with a wrong current password, then a short one, then correctly. Sign out and sign in with the new password. Finally press Reset demo data."], "Errors are clear. The new password works. Reset restores sample data and signs you out of the back office.", "both"]
+  ["Z18", "Settings", ["Try changing the password with a wrong current password, then a short one, then correctly. Log out from the menu and log in as admin with the new password. Finally press Reset demo data."], "Errors are clear. The new password works. Reset restores sample data (including the admin password admin) and logs you out of the back office.", "both"]
  ]},
  { id: "Q", name: "Overall quality", tests: [
   ["Q1", "No placeholder text", ["While testing, watch for 'lorem ipsum', 'TBD', broken images or empty boxes."], "None appear anywhere.", "both"],
@@ -413,7 +425,8 @@ const AREAS = [
   ["Q3", "Data is kept", ["Place an order, add an address, then close and reopen the prototype in the same browser."], "Basket, account, orders and settings are still there.", "both"],
   ["Q4", "Speed", ["Move quickly between pages."], "Pages change instantly with no visible delay or flicker.", "both"],
   ["Q5", "Brand and wording", ["Read headings, buttons and messages."], "JIXCYFOODS branding everywhere. The bot is Jixbot and the rewards are Jixcoins (one word each). The founder is Jixcy Ramesh. Clear English, and no mention of Telegram or stock levels.", "both"],
-  ["Q6", "Screen reader and keyboard (optional)", ["If you use a screen reader or keyboard only, try the main shopping flow."], "Buttons and fields are announced with clear names, and the flow can be completed without a mouse.", "both"]
+  ["Q6", "Screen reader and keyboard (optional)", ["If you use a screen reader or keyboard only, try the main shopping flow."], "Buttons and fields are announced with clear names, and the flow can be completed without a mouse.", "both"],
+  ["Q7", "Button design", ["In light mode and in dark mode, look at buttons, size choices, filters and the menu and Log in buttons."], "Each button has a thin outer dark grey ring, then a deep cyan ring. The main or selected button is filled black with white text in light mode, and white with black text in dark mode. Other buttons are light grey with black text (light mode) or dark grey with light text (dark mode).", "both"]
  ]}
 ];
 const DEVICES = { phone: "Phone", desktop: "Desktop" };
