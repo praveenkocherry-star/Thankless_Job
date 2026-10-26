@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#0A0A0C">
+<meta name="theme-color" content="#0B0C0E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Spoken PixelCraft</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -432,10 +436,89 @@ ol.steps li::marker{color:var(--accent);font-weight:700}
 .prog{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:color-mix(in srgb,var(--bg) 72%,transparent)}
 .ring .spin{will-change:transform}
 .ibtn#menuBtn.on{color:var(--onsel)}
+/* ================= v4: cyan and warm amber, slow animations, new layout ================= */
+:root,[data-mode="dark"]{--accent:#22D3EE;--accent2:#67E8F9;--glow:rgba(34,211,238,.30);--sel:#22D3EE;--onsel:#03161C;--amber:#F5B544;--amber2:#FFD98A;--amberglow:rgba(245,181,68,.32);
+  --bg:#0B0C0E;--bg2:#101215;--surface:#16181C;--surface2:#1D2025;--surface3:#262A30}
+[data-mode="light"]{--accent:#0891B2;--accent2:#06B6D4;--glow:rgba(8,145,178,.22);--sel:#CFF5FB;--onsel:#052A33;--amber:#D97706;--amber2:#F59E0B;--amberglow:rgba(217,119,6,.22);
+  --bg:#F2F4F6;--bg2:#FAFBFC;--surface:#FFFFFF;--surface2:#EEF1F4;--surface3:#E2E6EA}
+.name .cal{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.rule{background:linear-gradient(90deg,transparent,var(--line2) 8%,color-mix(in srgb,var(--accent) 80%,transparent) 38%,color-mix(in srgb,var(--amber) 75%,transparent) 62%,var(--line2) 92%,transparent)}
+.fab{background:linear-gradient(135deg,var(--amber),var(--amber2));color:#2A1A00;box-shadow:0 14px 30px var(--amberglow),0 0 0 1px rgba(255,255,255,.25) inset}
+.pbtn.prime,.send,.msg.me .b,.chip.on,.seg button[aria-pressed="true"],.switch.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--onsel)}
+[data-mode="light"] .pbtn.prime,[data-mode="light"] .send,[data-mode="light"] .msg.me .b,[data-mode="light"] .chip.on{color:#fff}
+.seg button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--glow)}
+.dot{background:var(--accent)}
+.vpill.speak .dot{background:var(--amber)}
+.vpill.listen .dot{animation:none;opacity:calc(.35 + var(--lv,0)*.65);transform:scaleY(calc(1 + var(--lv,0)*1.8));border-radius:6px;transition:transform .12s linear,opacity .12s linear;box-shadow:0 0 calc(var(--lv,0)*14px) var(--glow)}
+.vpill.listen .dot:nth-child(2),.vpill.listen .dot:nth-child(3){transform:scaleY(calc(1 + var(--lv,0)*2.6))}
+.vpill.listen{border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.ring .spin{border-top-color:var(--amber)}
+.pct{color:var(--amber)}
+.sbp{color:var(--amber)}
+.stat.ok{color:var(--ok)}
+.qn{color:var(--amber)}
+.sbadge{background:linear-gradient(135deg,#22D3EE,#0891B2);box-shadow:0 10px 24px rgba(34,211,238,.4)}
+.scard .pbtn.prime{background:linear-gradient(135deg,#F5B544,#FFCF6E);color:#2A1A00}
+.tbtn{color:var(--accent)}
+.tile.empty::after{border-color:color-mix(in srgb,var(--accent) 45%,var(--line2))}
+.badge svg.i{color:var(--accent)}
+.card h2,.lbl{color:var(--accent)}
+.req .g h4{color:var(--amber)}
+.ver.cur{box-shadow:0 0 0 2px var(--accent),0 0 14px var(--glow)}
+/* preview actions: share and download in warm amber */
+.pacts{position:absolute;right:14px;bottom:14px;display:flex;gap:10px;z-index:2}
+.pacts .dl{position:static;width:50px;height:50px;border-radius:17px;background:var(--surface);border:1px solid color-mix(in srgb,var(--amber) 55%,transparent);color:var(--amber)}
+.pacts .dl:active{background:var(--amber);color:#2A1A00}
+.preview.isvideo .pacts{bottom:64px}
+/* container header: transcript icon on the right; messages icon below the preview */
+.ctop .ibtn[data-act="req"]{color:var(--accent)}
+.msgbtn{position:fixed;left:max(18px,calc(50% - 622px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:31;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line2);color:var(--accent);box-shadow:var(--shadow-s);transition:transform .15s,background .2s}
+.msgbtn:active,.msgbtn.on{background:var(--sel);color:var(--onsel);border-color:transparent;box-shadow:0 0 0 4px var(--glow)}
+body.chatopen .msgbtn{bottom:calc((100dvh - 96px) * .5 + 8px)}
+@media (min-width:900px){body.chatopen .msgbtn{bottom:calc(20px + env(safe-area-inset-bottom,0px))}}
+body.kb .msgbtn{opacity:0;pointer-events:none}
+.pempty.doc .snip{font-size:.8rem;color:var(--muted);max-height:7.5em;overflow:hidden;text-align:left;white-space:pre-wrap}
+/* install prompt */
+.installcard{position:fixed;left:50%;transform:translateX(-50%);top:calc(84px + env(safe-area-inset-top,0px));z-index:70;display:flex;align-items:center;gap:12px;width:min(92vw,440px);padding:12px 12px 12px 18px;border-radius:22px;background:var(--surface);border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line2));box-shadow:var(--shadow);animation:dropin .8s cubic-bezier(.2,.8,.2,1)}
+.installcard.out{animation:dropout .7s ease forwards}
+@keyframes dropin{from{opacity:0;transform:translate(-50%,-24px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes dropout{to{opacity:0;transform:translate(-50%,-24px)}}
+.ictext{flex:1;display:flex;flex-direction:column;gap:2px}.ictext b{font-size:.95rem}.ictext span{font-size:.78rem;color:var(--muted)}
+.iconbtn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line2);background:var(--surface2);color:var(--muted);flex:none}
+.iconbtn.yes{background:linear-gradient(135deg,var(--amber),var(--amber2));color:#2A1A00;border-color:transparent;box-shadow:0 8px 20px var(--amberglow)}
+.iconbtn:active{transform:scale(.94)}
+/* status check */
+.diag{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.diag li{display:grid;grid-template-columns:12px auto;column-gap:10px;row-gap:2px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--surface2)}
+.diag li span:last-child{grid-column:2;font-size:.8rem;color:var(--muted)}
+.diag .dot2{width:10px;height:10px;border-radius:50%;background:var(--warn)}
+.diag li.ok .dot2{background:var(--ok)}.diag li.fail .dot2{background:var(--danger)}
+/* slow, clearly visible animations; taps stay instant */
+.view{animation:fade .7s cubic-bezier(.2,.8,.2,1)}
+.cview{animation:fadeup 1s cubic-bezier(.2,.8,.2,1)}
+@keyframes fadeup{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.scrim{animation:fadein .6s ease}
+.sheet{animation:rise .7s cubic-bezier(.2,.8,.2,1)}
+.chat{animation:rise .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.preview .pm{animation:reveal 1s cubic-bezier(.2,.8,.2,1)}
+@keyframes reveal{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.setup{animation:fadein .7s ease}.scard{animation:rise .8s cubic-bezier(.2,.8,.2,1)}
+.setupbar{animation:rise .7s cubic-bezier(.2,.8,.2,1)}
+.toast{animation:toast .6s cubic-bezier(.2,.8,.2,1)}
+.secb{transition:grid-template-rows .7s cubic-bezier(.2,.8,.2,1)}
+.sec .sech .chev{transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.strip .ver{animation:reveal .7s cubic-bezier(.2,.8,.2,1)}
+.grid .cell{animation:reveal .7s cubic-bezier(.2,.8,.2,1) both}
+.grid .cell:nth-child(2){animation-delay:.05s}.grid .cell:nth-child(3){animation-delay:.1s}.grid .cell:nth-child(4){animation-delay:.15s}.grid .cell:nth-child(5){animation-delay:.2s}.grid .cell:nth-child(6){animation-delay:.25s}
+.recl{animation:fadein .7s ease}
+.noanim>*,.noanim .preview .pm{animation:none!important}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+.preview .pm.logo{background:repeating-conic-gradient(#E9ECEF 0 25%,#FFFFFF 0 50%) 0 0/24px 24px}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B83F7"/><stop offset="1" stop-color="#A88EFA"/></linearGradient></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B544"/><stop offset="1" stop-color="#FFD98A"/></linearGradient></defs></svg>
 <div class="app" id="app">
   <header class="hdr">
     <div class="brandwrap">
@@ -536,20 +619,26 @@ function videoFrame(blob,t=.5){return new Promise((res,rej)=>{const v=document.c
   v.onseeked=()=>fin(true);v.onerror=()=>fin(false);setTimeout(()=>fin(v.readyState>=2),12000);v.src=u})}
 async function makeThumb(blob){try{const T=240,cv=canvas(T,T),x=cv.getContext('2d');let src;const t=blob.type||'';
   if(t.startsWith('image/'))src=await createImageBitmap(blob);else if(t.startsWith('video/'))src=await videoFrame(blob,.8);else return null;
-  const sw=src.width,sh=src.height,s=Math.max(T/sw,T/sh);x.drawImage(src,(T-sw*s)/2,(T-sh*s)/2,sw*s,sh*s);return cv.toDataURL('image/jpeg',.8)}catch(e){return null}}
+  const sw=src.width,sh=src.height,s=Math.max(T/sw,T/sh);x.fillStyle='#F4F5F7';x.fillRect(0,0,T,T);x.drawImage(src,(T-sw*s)/2,(T-sh*s)/2,sw*s,sh*s);return cv.toDataURL('image/jpeg',.8)}catch(e){return null}}
 
 /* ---------- Google Gemini: several keys, round robin, fallback on failure ---------- */
 const G={base:'https://generativelanguage.googleapis.com/',rr:0,models:null,listed:false,cool:{},files:new Map(),
   active(){return S.keys.filter(k=>k.st!=='inactive')},
   pick(skip){const now=Date.now();const ks=this.active().filter(k=>!skip.has(k.key)&&!((this.cool[k.key]||0)>now));if(!ks.length)return null;return ks[(this.rr++)%ks.length]},
   async ensureModels(key){if(this.models)return;const ver=n=>{const m=/gemini-(\d+(?:\.\d+)?)/.exec(n);return m?parseFloat(m[1]):0};
-    try{const r=await fetch(this.base+'v1beta/models?pageSize=300',{headers:{'x-goog-api-key':key}});const j=await r.json();
-      const names=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace('models/',''));
-      const text=names.filter(n=>/^gemini-\d+(\.\d+)?-flash$/.test(n)).sort((a,b)=>ver(b)-ver(a));
-      const lite=names.filter(n=>/^gemini-\d+(\.\d+)?-flash-lite$/.test(n)).sort((a,b)=>ver(b)-ver(a));
-      const img=names.filter(n=>/^gemini-[\d.]+-flash-image(-preview)?$/.test(n)).sort((a,b)=>ver(b)-ver(a));
-      this.models={text:text[0]||lite[0]||'gemini-2.5-flash',lite:lite[0]||text[0]||'gemini-2.5-flash-lite',image:img[0]||'gemini-2.5-flash-image'}}
-    catch(e){this.models={text:'gemini-2.5-flash',lite:'gemini-2.5-flash-lite',image:'gemini-2.5-flash-image'}}},
+    const rank=(a,b)=>{const pa=/preview|exp/.test(a),pb=/preview|exp/.test(b);if(pa!==pb)return pa?1:-1;return ver(b)-ver(a)};
+    let names=[];try{const r=await fetch(this.base+'v1beta/models?pageSize=300',{headers:{'x-goog-api-key':key}});const j=await r.json();
+      names=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace('models/',''))}catch(e){}
+    const bad=/tts|live|audio|thinking|embedding|learnlm|gemma|robotics|computer|nano|banana(?!.*image)/i;
+    const text=names.filter(n=>/^gemini-\d+(\.\d+)?-flash(-\d{3}|-preview[\w-]*)?$/.test(n)&&!bad.test(n)).sort(rank);
+    const lite=names.filter(n=>/^gemini-\d+(\.\d+)?-flash-lite(-\d{3}|-preview[\w-]*)?$/.test(n)&&!bad.test(n)).sort(rank);
+    const img=names.filter(n=>/^gemini-[\d.]+-flash-image(-preview[\w-]*)?$/.test(n)).sort(rank);
+    const uniq=a=>[...new Set(a)];
+    this.cands={text:uniq([...text,...(names.includes('gemini-flash-latest')?['gemini-flash-latest']:[]),'gemini-2.5-flash','gemini-flash-latest']),
+      lite:uniq([...lite,...(names.includes('gemini-flash-lite-latest')?['gemini-flash-lite-latest']:[]),...text,'gemini-2.5-flash-lite','gemini-flash-lite-latest','gemini-2.5-flash']),
+      image:uniq([...img,'gemini-2.5-flash-image'])};
+    this.models={text:this.cands.text[0],lite:this.cands.lite[0],image:this.cands.image[0]}},
+  dropModel(kind){const c=this.cands&&this.cands[kind];if(!c||c.length<2)return false;c.shift();this.models[kind]=c[0];return true},
   /* body may be an object, or a function (key) => body, so media can be uploaded to whichever key runs the request */
   async gen(kind,body,opt={}){const tried=new Set();let last=null;
     for(let n=0;n<12;n++){const k=opt.key||this.pick(tried);if(!k)break;
@@ -560,8 +649,7 @@ const G={base:'https://generativelanguage.googleapis.com/',rr:0,models:null,list
         last=mkErr(msg||('HTTP '+r.status),r.status);
         if(r.status===429)this.cool[k.key]=Date.now()+60000;
         else if(r.status===403||(r.status===400&&/api key/i.test(msg))){k.st='inactive';saveS()}
-        else if(r.status===404&&kind==='lite'&&this.models&&this.models.lite!==this.models.text){this.models.lite=this.models.text;n--;continue}
-        else if(r.status===404&&!this.listed){this.listed=true;this.models=null;n--;continue}
+        else if((r.status===404||(r.status===400&&/not found|not supported|unsupported model/i.test(msg)))&&this.dropModel(opt.model?'':kind)){n--;continue}
         else if(r.status===400)throw last;
       }catch(e){if(e.name==='AbortError'||e.status===400)throw e;last=last||e}
       if(opt.key)break;tried.add(k.key)}
@@ -581,7 +669,10 @@ const G={base:'https://generativelanguage.googleapis.com/',rr:0,models:null,list
     if(!f.uri||f.state==='FAILED')throw mkErr('The file could not be processed');
     this.files.set(ck,f.uri);return {file_data:{mime_type:mime,file_uri:f.uri}}}
 };
-async function testKey(k){k.st='checking';saveS();try{const r=await fetch(G.base+'v1beta/models?pageSize=1',{headers:{'x-goog-api-key':k.key}});k.st=r.ok?'active':'inactive'}catch(e){k.st='unknown'}saveS();if(typeof onKeysChanged==='function')onKeysChanged()}
+async function testKey(k){k.st='checking';saveS();
+  try{const r=await fetch(G.base+'v1beta/models?pageSize=1',{headers:{'x-goog-api-key':k.key}});if(!r.ok){k.st='inactive';k.why=r.status===429?'Free limit reached for now':'Google did not accept this key'}
+    else{G.models=null;try{await G.gen('lite',{contents:[{parts:[{text:'Reply with the single word OK.'}]}],generationConfig:{maxOutputTokens:5}},{key:k});k.st='active';k.why=''}catch(e){if(e.status===429){k.st='active';k.why='Free limit reached for now'}else{k.st='inactive';k.why=e.message||'Google AI did not respond'}}}}
+  catch(e){k.st='unknown';k.why='No internet connection'}saveS();if(typeof onKeysChanged==='function')onKeysChanged()}
 
 /* ---------- workers: heavy work runs off the screen thread ---------- */
 function makeWorker(fn){const src='('+fn.toString()+')()';return new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})),{type:'module'})}
@@ -1064,7 +1155,11 @@ function saveFile(blob,name){const u=URL.createObjectURL(blob),a=document.create
    Ready-made designs: templates the app expands into polished image and video plans
    (few AI tokens: the AI or the keyword engine only fills in the fields)
    ============================================================ */
-const FORMATS={square:[1080,1080],portrait:[1080,1350],story:[1080,1920],landscape:[1920,1080],thumbnail:[1280,720],a4:[1240,1754]};
+const FORMATS={square:[1080,1080],portrait:[1080,1350],story:[1080,1920],landscape:[1920,1080],thumbnail:[1280,720],a4:[1240,1754],
+  instagram_post:[1080,1350],instagram_square:[1080,1080],instagram_reel:[1080,1920],instagram_story:[1080,1920],facebook_post:[1080,1350],facebook_reel:[1080,1920],facebook_story:[1080,1920],facebook_link:[1200,630],
+  whatsapp_status:[1080,1920],youtube_video:[1920,1080],youtube_short:[1080,1920],youtube_thumbnail:[1280,720],
+  google_ad_square:[1200,1200],google_ad_landscape:[1200,628],google_ad_portrait:[960,1200],google_ad_rectangle:[600,500],google_ad_leaderboard:[1456,180],google_ad_skyscraper:[320,1200],
+  listing_photo:[1200,1200],olx:[1200,1200],ebay:[1600,1600],quikr:[1200,900]};
 const PALETTES={
   royal:{bg:['#1B1464','#4A1D8C'],accent:'#FFD36E',text:'#FFFFFF',sub:'#E8DFFF'},
   sunset:{bg:['#2A2E6E','#C2557A','#FF8A7A'],accent:'#FFE2A8',text:'#FFFFFF',sub:'#FFE9DE'},
@@ -1111,7 +1206,7 @@ const OCCASIONS={
   farewell:{title:'Farewell',emoji:'👋',fx:'sparkles',pal:'ocean',music:'calm'},
   welcome:{title:'Welcome',emoji:'🎊',fx:'confetti',pal:'royal',music:'upbeat'}
 };
-const TEMPLATE_NAMES=['greeting_card','sale_poster','event_invite','quote_card','menu_card','youtube_thumbnail','announcement','photo_card','slideshow_video','promo_video','greeting_video','quote_video'];
+const TEMPLATE_NAMES=['logo','product_ad','new_arrival','daily_special','property_listing','service_ad','listing_photo','greeting_card','sale_poster','event_invite','quote_card','menu_card','youtube_thumbnail','announcement','photo_card','slideshow_video','promo_video','dish_reel','property_reel','greeting_video','quote_video'];
 function sizeFor(f,def){const fm=FORMATS[f.format]||FORMATS[def]||FORMATS.square;return {width:fm[0],height:fm[1]}}
 function palOf(f,def){return PALETTES[f.palette]||PALETTES[def]||PALETTES.royal}
 function bgOf(p,f){return f.photos&&f.photos.length&&f.photo_background?f.photos[0]:{type:'gradient',colors:p.bg,angle:160}}
@@ -1121,6 +1216,54 @@ function expandTemplate(name,f0){const f=Object.assign({},f0||{});const occ=OCCA
   const p=palOf(f,occ?occ.pal:null),txt=p.text,acc=p.accent,sub=p.sub,photos=photoSources(f),keep=!!f.keep_previous,summary=f.summary||null;
   const fxCols=occ&&occ.colors?occ.colors:[acc,p.sub,'#FF6FB5','#7B83F7','#4ADE80'];
   switch(name){
+    case 'logo':return {tool:'make_logo',args:{...f,keep_previous:keep,summary:summary||'Logo: '+(f.name||f.title||'brand')}};
+    case 'product_ad':case 'new_arrival':{const sz=sizeFor(f,'instagram_post'),L=[];const head=name==='new_arrival'?(f.label||'NEW ARRIVAL'):(f.label||'');
+      if(photos.length)L.push({kind:'image',source:photos[0],x:50,y:42,w:84,h:58*sz.width/sz.height,radius:5,fit:'cover'});
+      if(head)L.push({kind:'shape',shape:'ribbon',x:50,y:8,w:46,h:6,color:acc},T_(head,{font:'bold',style:'plain',color:'#111',size:2.8,y:8}));
+      L.push(T_(f.title||'Product name',{font:'bold',style:'shadow',color:txt,size:5.2,y:photos.length?76:36,w:88}));
+      if(f.subtitle)L.push(T_(f.subtitle,{font:'modern',style:'plain',color:sub,size:2.9,y:photos.length?82:46,w:84}));
+      if(f.price)L.push({kind:'shape',shape:'badge',x:84,y:photos.length?20:62,w:24,h:24*sz.width/sz.height,color:acc},T_(f.price,{font:'display',style:'plain',color:'#111',size:4.6,x:84,y:photos.length?20:62,w:22}));
+      if(f.old_price)L.push(T_('MRP '+f.old_price,{font:'modern',style:'plain',color:sub,size:2.4,x:84,y:photos.length?31:73,w:30}));
+      L.push(T_(f.cta||'Order now',{font:'bold',style:'banner',colors:[acc],color:'#111',size:3.4,y:89}));
+      if(f.contact)L.push(T_(f.contact,{font:'modern',style:'plain',color:sub,size:2.5,y:95.5}));
+      return {tool:'make_image',args:{...sz,base:{type:'gradient',colors:p.bg,angle:160},adjust:{vignette:18},layers:L,keep_previous:keep,summary:summary||(head?head+': ':'Ad: ')+(f.title||'')}}}
+    case 'daily_special':{const sz=sizeFor(f,'instagram_post'),L=[];
+      if(photos.length)L.push({kind:'image',source:photos[0],shape:'circle',x:50,y:42,w:70,h:70*sz.width/sz.height,border:acc});
+      L.push(T_(f.label||"TODAY'S SPECIAL",{font:'bold',style:'banner',colors:[acc],color:'#111',size:3,y:8}));
+      L.push(T_(f.title||'Chef\'s special',{font:'script',style:'gradient',colors:[acc,'#FFFFFF'],size:7.5,y:photos.length?76:40,w:88}));
+      if(f.subtitle)L.push(T_(f.subtitle,{font:'modern',style:'plain',color:sub,size:2.8,y:photos.length?83:52,w:80}));
+      if(f.price)L.push(T_(f.price,{font:'display',style:'3d',color:acc,size:6,y:photos.length?90:64}));
+      if(f.contact)L.push(T_(f.contact,{font:'modern',style:'plain',color:sub,size:2.4,y:96}));
+      return {tool:'make_image',args:{...sz,base:{type:'gradient',colors:p.bg,angle:170},adjust:{vignette:25},layers:L,keep_previous:keep,summary:summary||"Today's special: "+(f.title||'')}}}
+    case 'property_listing':{const sz=sizeFor(f,'instagram_post'),L=[];
+      if(photos.length)L.push({kind:'image',source:photos[0],x:50,y:34,w:100,h:68,radius:0,fit:'cover',border:false});
+      L.push({kind:'shape',shape:'rect',x:50,y:84,w:100,h:34,color:'rgba(10,14,20,.86)',radius:0});
+      L.push(T_(f.label||'FOR SALE',{font:'bold',style:'banner',colors:[acc],color:'#111',size:3,align:'left',x:50,y:71.5,w:86}));
+      L.push(T_(f.title||'Spacious 3 BHK villa',{font:'bold',style:'plain',color:'#FFFFFF',size:4.4,align:'left',x:50,y:78,w:86}));
+      if(f.subtitle)L.push(T_(f.subtitle,{font:'modern',style:'plain',color:'#D7DCE3',size:2.6,align:'left',x:50,y:84,w:86}));
+      if(f.place)L.push(T_('📍 '+f.place,{font:'modern',style:'plain',color:'#D7DCE3',size:2.5,align:'left',x:50,y:89,w:86}));
+      if(f.price)L.push(T_(f.price,{font:'display',style:'plain',color:acc,size:4.6,align:'right',x:50,y:71.5,w:86}));
+      if(f.contact)L.push(T_(f.contact,{font:'bold',style:'plain',color:'#FFFFFF',size:2.6,align:'right',x:50,y:95,w:86}));
+      return {tool:'make_image',args:{...sz,base:{type:'color',color:'#0A0E14'},layers:L,keep_previous:keep,summary:summary||'Property: '+(f.title||'')}}}
+    case 'service_ad':{const sz=sizeFor(f,'instagram_post'),L=[];
+      if(photos.length)L.push({kind:'image',source:photos[0],x:72,y:40,w:50,h:50*sz.width/sz.height*1.1,radius:8,fit:'cover'});
+      L.push(T_(f.title||'Your service',{font:'bold',style:'shadow',color:txt,size:6,align:'left',x:photos.length?30:50,y:20,w:photos.length?52:86}));
+      if(f.subtitle)L.push(T_(f.subtitle,{font:'modern',style:'plain',color:sub,size:3,align:'left',x:photos.length?30:50,y:32,w:photos.length?52:86}));
+      const items=(f.items||[]).slice(0,5);items.forEach((it,i)=>L.push(T_('✓  '+(it.name||it),{font:'modern',style:'plain',color:txt,size:3,align:'left',x:photos.length?30:50,y:46+i*6.4,w:photos.length?52:86})));
+      if(f.offer)L.push(T_(f.offer,{font:'display',style:'banner',colors:[acc],color:'#111',size:4.2,y:82}));
+      L.push(T_(f.cta||'Book now',{font:'bold',style:'banner',colors:['rgba(255,255,255,.14)'],color:txt,size:3.2,y:89}));
+      if(f.contact)L.push(T_(f.contact,{font:'bold',style:'plain',color:acc,size:2.8,y:95}));
+      return {tool:'make_image',args:{...sz,base:{type:'gradient',colors:p.bg,angle:135},adjust:{vignette:20},layers:L,keep_previous:keep,summary:summary||'Service ad: '+(f.title||'')}}}
+    case 'listing_photo':{const sz=sizeFor(f,'listing_photo'),L=[];const src=photos[0]||{type:'color',color:'#FFFFFF'};
+      L.push({kind:'image',source:{...src,cutout:!!f.clean_background,background:null},x:50,y:50,w:84,h:84,radius:2,fit:'contain',border:false});
+      if(f.price)L.push({kind:'shape',shape:'rect',x:83,y:9,w:28,h:9,color:acc,radius:30},T_(f.price,{font:'bold',style:'plain',color:'#111',size:4.4,x:83,y:9,w:26}));
+      if(f.title)L.push(T_(f.title,{font:'bold',style:'banner',colors:['rgba(0,0,0,.6)'],color:'#FFFFFF',size:3.4,y:93,w:90}));
+      return {tool:'make_image',args:{...sz,base:{type:'gradient',colors:['#FFFFFF','#EEF1F5'],angle:180},layers:L,keep_previous:keep,summary:summary||'Listing photo'}}}
+    case 'dish_reel':case 'property_reel':{const sz=sizeFor(f,'instagram_reel'),S=[];const dish=name==='dish_reel';const ps=photos.length?photos:(f.photo_query?[1,2,3,4].map(k=>({type:'web',query:f.photo_query,pick:k})):[]);
+      S.push({source:ps[0]||{type:'gradient',colors:p.bg},duration:3,motion:'zoom_in',adjust:{brightness:-25,vignette:40},layers:[T_(f.label||(dish?'FRESH TODAY':'NOW AVAILABLE'),{font:'bold',style:'banner',colors:[acc],color:'#111',size:3,y:38,appear:'pop'}),T_(f.title||(dish?'Signature dish':'Dream home'),{font:dish?'script':'serif',style:'shadow',color:'#FFFFFF',size:8,y:50,w:88,appear:'slide_up',start:.3})]});
+      ps.slice(1).forEach((src,i)=>S.push({source:src,duration:2.6,motion:['pan_left','zoom_out','pan_right','ken_burns'][i%4],transition:['slide_left','zoom','wipe_left','dissolve'][i%4],fit:'cover',adjust:{preset:dish?'golden_hour':'cinematic'},layers:(f.captions||[])[i]?[T_(f.captions[i],{font:'bold',style:'banner',colors:['rgba(0,0,0,.55)'],color:'#FFFFFF',size:3.4,y:84,appear:'slide_up'})]:[]}));
+      S.push({source:{type:'gradient',colors:p.bg,angle:160},duration:3.2,transition:'dip_black',layers:[f.price?T_(f.price,{font:'display',style:'3d',color:acc,size:9,y:38,appear:'bounce'}):null,f.place?T_('📍 '+f.place,{font:'modern',style:'plain',color:sub,size:3.2,y:50,appear:'fade',start:.4}):null,T_(f.cta||(dish?'Order now':'Book a site visit'),{font:'bold',style:'banner',colors:[acc],color:'#111',size:4.4,y:60,appear:'pop',start:.6}),f.contact?T_(f.contact,{font:'bold',style:'plain',color:txt,size:3.4,y:70,appear:'fade',start:.9}):null].filter(Boolean)});
+      return {tool:'make_video',args:{...sz,scenes:S,audio:{tracks:[{source:'music',style:f.music||(dish?'upbeat':'cinematic'),volume:60}]},keep_previous:keep,summary:summary||(dish?'Dish reel: ':'Property reel: ')+(f.title||'')}}}
     case 'greeting_card':{const sz=sizeFor(f,'portrait'),title=f.title||(occ?occ.title:'Best Wishes'),L=[];
       L.push({kind:'particles',effect:f.effect||(occ?occ.fx:'sparkles'),density:34,colors:fxCols});
       if(photos.length){L.push({kind:'image',source:photos[0],shape:'circle',x:50,y:33,w:sz.width>=sz.height?32:52,h:sz.width>=sz.height?57:(52*sz.width/sz.height),border:acc});
@@ -1212,6 +1355,81 @@ function expandTemplate(name,f0){const f=Object.assign({},f0||{});const occ=OCCA
   throw mkErr('Unknown template '+name)}
 
 /* ============================================================
+   Vector logos: one layout, drawn to a canvas (PNG, JPEG) and written as SVG
+   ============================================================ */
+const LOGO_ICONS={leaf:'M12 2C6 6 4 11 6 17c1 3 4 5 6 5 0-6 2-11 7-15C17 4 14 2 12 2Z',house:'M3 11 12 3l9 8v10h-6v-6H9v6H3Z',drop:'M12 2C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-13Z',bolt:'M13 2 4 14h7l-1 8 9-12h-7l1-8Z',
+  heart:'M12 21C5 15 2 12 2 8a5 5 0 0 1 10-2 5 5 0 0 1 10 2c0 4-3 7-10 13Z',crown:'M3 18 2 7l6 5 4-8 4 8 6-5-1 11Z',flame:'M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-7 0 3 2 4 3 4 0-3-1-6 0-9Z',mountain:'M1 20 9 7l4 6 3-4 7 11Z',
+  wave:'M2 13c3-4 6-4 9 0s6 4 9 0c1 0 1 1 2 1v7H2Z',spark:'M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6Z',star:'M12 1.5l3.2 6.6 7.3 1-5.3 5.1 1.3 7.2L12 18l-6.5 3.4 1.3-7.2L1.5 9.1l7.3-1Z',
+  shield:'M12 2 20 5v6c0 6-4 10-8 11-4-1-8-5-8-11V5Z',hexagon:'M12 1.5 21 6.7v10.6L12 22.5 3 17.3V6.7Z',diamond:'M12 1 23 12 12 23 1 12Z',bowl:'M2 11h20a10 9 0 0 1-20 0Z M7 3c-1 2 1 3 0 6h1.6c1-3-1-4 0-6Z M11.2 3c-1 2 1 3 0 6h1.6c1-3-1-4 0-6Z M15.4 3c-1 2 1 3 0 6H17c1-3-1-4 0-6Z',
+  cup:'M3 7h14v6a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6Z M17 9h1.5a3 3 0 0 1 0 6H17v-1.8h1.5a1.2 1.2 0 0 0 0-2.4H17Z',book:'M2 4h8a2 2 0 0 1 2 2v15a3 3 0 0 0-3-2H2Z M22 4h-8a2 2 0 0 0-2 2v15a3 3 0 0 1 3-2h7Z',
+  gear:'M10.3 1h3.4l.6 3 2.2 1 2.6-1.7 2.4 2.4-1.7 2.6 1 2.2 3 .6v3.4l-3 .6-1 2.2 1.7 2.6-2.4 2.4-2.6-1.7-2.2 1-.6 3h-3.4l-.6-3-2.2-1-2.6 1.7-2.4-2.4 1.7-2.6-1-2.2-3-.6v-3.4l3-.6 1-2.2-1.7-2.6 2.4-2.4 2.6 1.7 2.2-1ZM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z',
+  scissors:'M6 2a3 3 0 1 0 1.8 5.4L10.6 12l-2.8 4.6A3 3 0 1 0 9.4 18L12 13.8l2.6 4.2a3 3 0 1 0 1.6-1.4L13.4 12 21 3h-2.6L12 10.2 9.4 6A3 3 0 0 0 6 2Z',tooth:'M7 2c-3 0-5 2-5 5 0 4 2 6 3 10 .5 2 1 5 2.5 5S9 19 10 16c.5-1.5 3.5-1.5 4 0 1 3 1 6 2.5 6s2-3 2.5-5c1-4 3-6 3-10 0-3-2-5-5-5-2 0-3 1-5 1S9 2 7 2Z'};
+const LOGO_STYLES=['emblem','monogram','wordmark','badge','horizontal'];
+function initialsOf(n){const w=String(n||'').trim().split(/\s+/).filter(Boolean);return (w.length>1?w[0][0]+w[1][0]:String(n||'A').slice(0,2)).toUpperCase()}
+function logoSpec(f){const style=LOGO_STYLES.includes(f.style)?f.style:'emblem',name=String(f.name||f.title||'Brand').trim(),tag=String(f.tagline||f.subtitle||'').trim();
+  const pal=PALETTES[f.palette]||null,c=f.colors||[];const primary=c[0]||(pal?(pal.light?pal.accent:pal.bg[pal.bg.length-1]):'#0E7490'),secondary=c[1]||(pal?pal.accent:'#F5B544');
+  const bgMode=f.background||'transparent',dark=bgMode==='dark'||(/^#/.test(bgMode)&&luminance(bgMode)<.45),text=c[2]||(dark?'#FFFFFF':'#16161C');
+  const tagCol=(bgMode==='transparent'||bgMode==='light')&&luminance(secondary)>.62?primary:secondary;const font=fontFor(f.font||'bold',name),icon=LOGO_ICONS[f.icon]?f.icon:(f.icon?null:'spark');
+  const horiz=style==='horizontal',W=horiz?1800:1200,H=horiz?900:1200;const P=[];const bg=bgMode==='transparent'?null:bgMode==='light'?'#FFFFFF':bgMode==='dark'?'#111216':bgMode;
+  if(bg)P.push({t:'rect',x:0,y:0,w:W,h:H,fill:bg});
+  const iconAt=(cx,cy,sz,col)=>{if(!icon)return P.push({t:'text',x:cx,y:cy+sz*.36,text:initialsOf(name),size:sz,font:fontFor('serif'),weight:700,fill:col,anchor:'middle'});P.push({t:'path',d:LOGO_ICONS[icon],fill:col,x:cx-sz/2,y:cy-sz/2,s:sz/24})};
+  const fit=(t,max,size,wt,ls)=>{const m=canvas(10,10).getContext('2d');let z=size;for(let i=0;i<30;i++){m.font=`${wt} ${z}px "${font}",Inter,sans-serif`;if('letterSpacing' in m)m.letterSpacing=(ls||0)+'px';if(m.measureText(t).width<=max)break;z*=.92}return Math.round(z)};
+  if(style==='emblem'){P.push({t:'circle',cx:600,cy:430,r:250,fill:primary});P.push({t:'circle',cx:600,cy:430,r:222,fill:'none',stroke:secondary,sw:10});iconAt(600,430,250,'#FFFFFF');
+    const z=fit(name,1080,132,700,2);P.push({t:'text',x:600,y:820,text:name,size:z,font,weight:700,fill:text,anchor:'middle',ls:2});
+    if(tag)P.push({t:'text',x:600,y:820+z*.75+20,text:tag.toUpperCase(),size:fit(tag.toUpperCase(),980,52,600,8),font:fontFor('modern'),weight:600,fill:tagCol,anchor:'middle',ls:8})}
+  else if(style==='monogram'){P.push({t:'circle',cx:600,cy:450,r:270,fill:'none',stroke:primary,sw:22});P.push({t:'circle',cx:600,cy:450,r:236,fill:'none',stroke:secondary,sw:6});
+    const ini=initialsOf(name),iz=fit(ini,330,280,700,0);P.push({t:'text',x:600,y:450+iz*.35,text:ini,size:iz,font:fontFor('serif'),weight:700,fill:primary,anchor:'middle'});
+    const z=fit(name.toUpperCase(),1080,96,700,12);P.push({t:'text',x:600,y:860,text:name.toUpperCase(),size:z,font,weight:700,fill:text,anchor:'middle',ls:12});
+    if(tag)P.push({t:'text',x:600,y:860+z*.8+18,text:tag,size:fit(tag,980,44,500,2),font:fontFor('serif'),weight:400,fill:tagCol,anchor:'middle',ls:2})}
+  else if(style==='wordmark'){const z=fit(name,1100,230,700,0);P.push({t:'text',x:600,y:590,text:name,size:z,font,weight:700,fill:primary,anchor:'middle'});
+    P.push({t:'rect',x:420,y:650,w:360,h:16,rx:8,fill:secondary});if(icon)P.push({t:'path',d:LOGO_ICONS[icon],fill:secondary,x:600-60,y:590-z-130,s:5});
+    if(tag)P.push({t:'text',x:600,y:760,text:tag.toUpperCase(),size:fit(tag.toUpperCase(),1000,46,600,10),font:fontFor('modern'),weight:600,fill:text,anchor:'middle',ls:10})}
+  else if(style==='badge'){const sh=f.shape==='hexagon'?'hexagon':'shield';P.push({t:'path',d:LOGO_ICONS[sh],fill:primary,x:600-300,y:430-300,s:25});P.push({t:'path',d:LOGO_ICONS[sh],fill:'none',stroke:secondary,sw:.5,x:600-270,y:430-270,s:22.5});iconAt(600,410,230,'#FFFFFF');
+    const z=fit(name,1080,124,700,2);P.push({t:'text',x:600,y:880,text:name,size:z,font,weight:700,fill:text,anchor:'middle',ls:2});
+    if(tag)P.push({t:'text',x:600,y:880+z*.75+20,text:tag.toUpperCase(),size:fit(tag.toUpperCase(),980,50,600,8),font:fontFor('modern'),weight:600,fill:tagCol,anchor:'middle',ls:8})}
+  else{P.push({t:'rect',x:130,y:250,w:400,h:400,rx:110,fill:primary});iconAt(330,450,250,'#FFFFFF');
+    const z=fit(name,1100,170,700,1);P.push({t:'text',x:620,y:tag?470:510,text:name,size:z,font,weight:700,fill:text,anchor:'start',ls:1});
+    if(tag)P.push({t:'text',x:624,y:470+z*.55+30,text:tag.toUpperCase(),size:fit(tag.toUpperCase(),1080,48,600,8),font:fontFor('modern'),weight:600,fill:tagCol,anchor:'start',ls:8})}
+  return {W,H,P,font,name}}
+function luminance(hex){const c=String(hex).replace('#','');const n=parseInt(c.length===3?c.split('').map(x=>x+x).join(''):c,16)||0;return (.299*(n>>16&255)+.587*(n>>8&255)+.114*(n&255))/255}
+function logoToCanvas(sp){const cv=canvas(sp.W,sp.H),x=cv.getContext('2d');
+  for(const p of sp.P){x.save();
+    if(p.t==='rect'){rr(x,p.x,p.y,p.w,p.h,p.rx||0);if(p.fill&&p.fill!=='none'){x.fillStyle=p.fill;x.fill()}}
+    else if(p.t==='circle'){x.beginPath();x.arc(p.cx,p.cy,p.r,0,Math.PI*2);if(p.fill&&p.fill!=='none'){x.fillStyle=p.fill;x.fill()}if(p.stroke){x.lineWidth=p.sw;x.strokeStyle=p.stroke;x.stroke()}}
+    else if(p.t==='path'){x.translate(p.x,p.y);x.scale(p.s,p.s);const pa=new Path2D(p.d);if(p.fill&&p.fill!=='none'){x.fillStyle=p.fill;x.fill(pa,'evenodd')}if(p.stroke){x.lineWidth=p.sw;x.strokeStyle=p.stroke;x.stroke(pa)}}
+    else if(p.t==='text'){x.font=`${p.weight||700} ${p.size}px "${p.font}",Inter,sans-serif`;if('letterSpacing' in x)x.letterSpacing=(p.ls||0)+'px';x.textAlign=p.anchor==='middle'?'center':p.anchor==='end'?'right':'left';x.textBaseline='alphabetic';x.fillStyle=p.fill;x.fillText(p.text,p.x,p.y)}
+    x.restore()}return cv}
+function logoToSVG(sp){const e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));const fams=[...new Set(sp.P.filter(p=>p.t==='text').map(p=>p.font))].filter(f=>f!=='Inter');
+  const out=[`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sp.W} ${sp.H}" width="${sp.W}" height="${sp.H}">`];
+  if(fams.length)out.push(`<style>@import url('https://fonts.googleapis.com/css2?${fams.map(f=>'family='+f.replace(/ /g,'+')+(ONE_WEIGHT.has(f)?'':':wght@400;600;700')).join('&')}&amp;display=swap');</style>`);
+  for(const p of sp.P){if(p.t==='rect')out.push(`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="${p.rx||0}" fill="${p.fill||'none'}"/>`);
+    else if(p.t==='circle')out.push(`<circle cx="${p.cx}" cy="${p.cy}" r="${p.r}" fill="${p.fill||'none'}"${p.stroke?` stroke="${p.stroke}" stroke-width="${p.sw}"`:''}/>`);
+    else if(p.t==='path')out.push(`<path transform="translate(${p.x} ${p.y}) scale(${p.s})" d="${p.d}" fill="${p.fill||'none'}" fill-rule="evenodd"${p.stroke?` stroke="${p.stroke}" stroke-width="${p.sw}"`:''}/>`);
+    else if(p.t==='text')out.push(`<text x="${p.x}" y="${p.y}" text-anchor="${p.anchor||'start'}" font-family="'${e(p.font)}', Inter, Arial, sans-serif" font-weight="${p.weight||700}" font-size="${p.size}"${p.ls?` letter-spacing="${p.ls}"`:''} fill="${p.fill}">${e(p.text)}</text>`)}
+  out.push('</svg>');return new Blob([out.join('\n')],{type:'image/svg+xml'})}
+async function makeLogo(f){await ensureFonts();const sp=logoSpec(f);await Promise.race([document.fonts.load(`700 80px "${sp.font}"`,sp.name),sleep(3000)]).catch(()=>{});const sp2=logoSpec(f);
+  const cv=logoToCanvas(sp2);return {blob:await toBlob(cv,'image/png'),svg:logoToSVG(sp2),kind:'image',w:cv.width,h:cv.height}}
+
+/* ---------- redraw a blurry logo as a sharp vector ---------- */
+let tracerLib=null;function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(mkErr('Component could not load'));document.head.appendChild(s)})}
+async function redrawLogo(blob,colors){tracerLib=tracerLib||window.ImageTracer||null;if(!tracerLib){await loadScript('https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.js');tracerLib=window.ImageTracer}if(!tracerLib)throw mkErr('The redraw component is not available.');
+  const b=await createImageBitmap(blob);const k=Math.min(1,700/Math.max(b.width,b.height)),w=Math.max(16,Math.round(b.width*k)),h=Math.max(16,Math.round(b.height*k));const c=canvas(w,h),x=c.getContext('2d',{willReadFrequently:true});x.drawImage(b,0,0,w,h);
+  const id=x.getImageData(0,0,w,h);await sleep(0);const svgStr=tracerLib.imagedataToSVG(id,{numberofcolors:clamp(num(colors,8),2,24),colorquantcycles:3,ltres:.5,qtres:.5,pathomit:6,rightangleenhance:true,blurradius:1,blurdelta:20,strokewidth:0,linefilter:true,roundcoords:2,viewbox:true,desc:false});
+  const svg=new Blob([svgStr],{type:'image/svg+xml'});const u=URL.createObjectURL(svg);const img=new Image();img.src=u;await once(img,'load',8000);const S=Math.max(1,2000/Math.max(w,h));const out=canvas(Math.round(w*S),Math.round(h*S));out.getContext('2d').drawImage(img,0,0,out.width,out.height);URL.revokeObjectURL(u);
+  return {blob:await toBlob(out,'image/png'),svg,kind:'image',w:out.width,h:out.height}}
+/* sharpness check: strong edges in a crisp picture, weak in a blurry one */
+async function sharpness(blob){try{const b=await createImageBitmap(blob);const k=Math.min(1,512/Math.max(b.width,b.height)),w=Math.round(b.width*k),h=Math.round(b.height*k);const c=canvas(w,h),x=c.getContext('2d',{willReadFrequently:true});x.drawImage(b,0,0,w,h);const d=x.getImageData(0,0,w,h).data;
+  const g=new Float32Array(w*h);for(let i=0,j=0;j<g.length;i+=4,j++)g[j]=.299*d[i]+.587*d[i+1]+.114*d[i+2];const v=[];for(let y=1;y<h-1;y++)for(let i=1;i<w-1;i++){const p=y*w+i;v.push(Math.abs(4*g[p]-g[p-1]-g[p+1]-g[p-w]-g[p+w]))}
+  v.sort((a,b)=>a-b);const p98=v[Math.floor(v.length*.985)]||0;return {w:b.width,h:b.height,edge:Math.round(p98),blurry:Math.min(b.width,b.height)<300||p98<22}}catch(e){return null}}
+
+/* ---------- documents: price lists, menus, brochures, scripts ---------- */
+async function docText(blob,name){const t=(blob.type||'').toLowerCase(),n=String(name||'').toLowerCase();
+  try{if(t.startsWith('text/')||/\.(txt|csv|md)$/.test(n))return (await blob.text()).slice(0,40000);
+    if(/wordprocessingml|\.docx$/.test(t+n)){if(!window.JSZip)await loadScript('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');const z=await window.JSZip.loadAsync(blob);const xml=await z.file('word/document.xml').async('string');
+      return xml.replace(/<w:tab\/>/g,'\t').replace(/<\/w:p>/g,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/\n{3,}/g,'\n\n').trim().slice(0,40000)}}catch(e){}
+  return null}
+
+/* ============================================================
    Voice: natural female voice with a phrase cache, beep-free listening
    (one steady microphone, on-device voice detection, offline English speech model)
    ============================================================ */
@@ -1301,52 +1519,75 @@ function pickDeviceVoice(lang){const vs=('speechSynthesis' in window)?speechSynt
   return pool.find(v=>/en.IN/i.test(v.lang)&&want.test(v.name))||pool.find(v=>want.test(v.name))||pool.find(v=>!avoid.test(v.name))||pool[0]||null}
 
 /* ---------- voice detection on the audio thread (no beeps, one steady microphone) ---------- */
-const VAD_SRC=`class P extends AudioWorkletProcessor{constructor(){super();this.ratio=sampleRate/16000;this.acc=0;this.sum=0;this.cnt=0;this.frame=new Float32Array(480);this.fi=0;this.noise=0.004;this.mode='mute';this.pre=[];this.reset();
-  this.port.onmessage=e=>{const d=e.data;if(d.debug)this.dbg=true;if(d.mode){if(d.mode==='mute'&&this.speech&&this.mode!=='mute'){}this.mode=d.mode;if(d.mode==='mute')this.reset()}}}
+/* ---------- voice detection core: runs on the audio thread, or on the main thread as a fallback ---------- */
+const VAD_CORE=`class VadCore{constructor(post,sr){this.post=post;this.ratio=sr/16000;this.acc=0;this.sum=0;this.cnt=0;this.frame=new Float32Array(480);this.fi=0;this.noise=0.004;this.mode='mute';this.pre=[];this.win=[];this.lc=0;this.lmax=0;this.reset()}
+ msg(d){if(d&&d.mode){this.mode=d.mode;if(d.mode==='mute')this.reset()}}
  adapt(rms){if(rms<this.noise)this.noise=this.noise*0.9+rms*0.1;else if(rms<this.noise*2.2)this.noise=this.noise*0.996+rms*0.004;this.noise=Math.min(Math.max(this.noise,0.0008),0.04)}
- reset(){this.speech=false;this.above=0;this.below=0;this.seg=[];this.segLen=0;this.voiced=0}
+ reset(){this.speech=false;this.above=0;this.below=0;this.seg=[];this.segLen=0;this.voiced=0;this.win=[]}
  push(v){this.frame[this.fi++]=v;if(this.fi===480){this.onFrame(this.frame.slice());this.fi=0}}
- process(inputs){const ch=inputs[0]&&inputs[0][0];if(!ch)return true;
-  if(this.ratio>0.999&&this.ratio<1.001){for(let i=0;i<ch.length;i++)this.push(ch[i])}else{for(let i=0;i<ch.length;i++){this.sum+=ch[i];this.cnt++;this.acc+=1;if(this.acc>=this.ratio){this.acc-=this.ratio;this.push(this.sum/this.cnt);this.sum=0;this.cnt=0}}}return true}
- onFrame(f){let s=0;for(let i=0;i<f.length;i++)s+=f[i]*f[i];const rms=Math.sqrt(s/f.length);if(this.dbg){this.fc=(this.fc||0)+1;this.mx=Math.max(this.mx||0,rms);if(this.fc%33===0){this.port.postMessage({t:'lvl',rms:this.mx,noise:this.noise,mode:this.mode,sp:this.speech});this.mx=0}}
+ feed(ch){if(this.ratio>0.999&&this.ratio<1.001){for(let i=0;i<ch.length;i++)this.push(ch[i])}else{for(let i=0;i<ch.length;i++){this.sum+=ch[i];this.cnt++;this.acc+=1;if(this.acc>=this.ratio){this.acc-=this.ratio;this.push(this.sum/this.cnt);this.sum=0;this.cnt=0}}}}
+ onFrame(f){let s=0;for(let i=0;i<f.length;i++)s+=f[i]*f[i];const rms=Math.sqrt(s/f.length);
+  this.lmax=Math.max(this.lmax,rms);if(++this.lc>=3){this.post({t:'lvl',rms:this.lmax,noise:this.noise,mode:this.mode,sp:this.speech});this.lc=0;this.lmax=0}
   if(this.mode==='mute'){this.adapt(rms);this.pre.push(f);if(this.pre.length>10)this.pre.shift();return}
-  const strict=this.mode==='strict';const startThr=Math.max(this.noise*(strict?4:3),strict?0.035:0.012),endThr=Math.max(this.noise*1.8,strict?0.03:0.008);
+  const strict=this.mode==='strict';const startThr=Math.max(this.noise*(strict?4:3),strict?0.035:0.010),endThr=Math.max(this.noise*1.8,strict?0.03:0.007);
   if(!this.speech){this.pre.push(f);if(this.pre.length>10)this.pre.shift();
-   this.win=(this.win||[]);this.win.push(rms>startThr?1:0);if(this.win.length>(strict?10:6))this.win.shift();this.above=this.win.reduce((x,y)=>x+y,0);
-   if(rms>startThr||this.above>0){if(this.above>=(strict?6:4)){this.win=[];this.speech=true;this.seg=this.pre.slice();this.segLen=this.seg.length*480;this.pre=[];this.below=0;this.voiced=this.above;this.port.postMessage({t:'start',strict,rms})}}
+   this.win.push(rms>startThr?1:0);if(this.win.length>(strict?10:6))this.win.shift();this.above=this.win.reduce((x,y)=>x+y,0);
+   if(this.above>=(strict?6:3)){this.win=[];this.speech=true;this.seg=this.pre.slice();this.segLen=this.seg.length*480;this.pre=[];this.below=0;this.voiced=this.above;this.post({t:'start',strict,rms})}
    if(rms<=startThr)this.adapt(rms)}
   else{this.seg.push(f);this.segLen+=480;if(rms>endThr){this.below=0;this.voiced++}else this.below++;
    if(this.below>=24||this.segLen>=16000*25){const trim=this.below>=24?(this.below-8)*480:0,n=Math.max(480,this.segLen-trim),out=new Float32Array(n);let o=0;for(const fr of this.seg){if(o>=n)break;out.set(fr.subarray(0,Math.min(480,n-o)),o);o+=480}
-    const ok=this.voiced>=9;this.port.postMessage({t:ok?'seg':'drop',audio:ok?out:null,ms:Math.round(n/16)},ok?[out.buffer]:[]);this.reset();this.above=0}}}}
+    const ok=this.voiced>=8;this.post(ok?{t:'seg',audio:out,ms:Math.round(n/16)}:{t:'drop'},ok?[out.buffer]:[]);this.reset();this.above=0}}}}`;
+const VAD_WORKLET=VAD_CORE+`
+class P extends AudioWorkletProcessor{constructor(){super();this.c=new VadCore((m,t)=>this.port.postMessage(m,t||[]),sampleRate);this.port.onmessage=e=>this.c.msg(e.data)}
+ process(inputs){const ch=inputs[0]&&inputs[0][0];if(ch)this.c.feed(ch);return true}}
 registerProcessor('spc-vad',P);`;
-const Listen={on:false,stream:null,ac:null,node:null,src:null,mode:'mute',engine:null,queue:[],busy:false,starting:null,
-  ready(){return this.engine==='local'||this.engine==='ai'},
-  async loadModel(){STW.onEvent=m=>{if(m.event==='progress'){Essentials.s={l:m.loaded,t:m.total};Voice.emit()}};try{await STW.call('load');this.engine='local'}catch(e){STW.kill();this.engine=G.active().length?'ai':'browser';throw e}},
-  async start(){if(this.on||this.starting)return this.starting;this.starting=(async()=>{
-      if(this.engine==='browser'){LegacyEar.start();this.on=true;return}
-      try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}})}
-      catch(e){if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError'))Session.denied();else toast('The microphone could not start.');throw e}
-      try{this.ac=new AudioContext({sampleRate:16000})}catch(e){this.ac=new AudioContext()}
+const VadCoreMain=new Function(VAD_CORE+';return VadCore;')();
+
+/* ---------- listening: one steady microphone, health-checked, with automatic fallbacks ---------- */
+const Listen={on:false,stream:null,ac:null,node:null,src:null,proc:null,core:null,mode:'mute',engine:null,queue:[],busy:false,starting:null,lastLvl:0,peak:0,heardSound:false,path:'',err:'',modelLoaded:false,
+  ready(){return this.engine==='local'||this.engine==='ai'||this.engine==='browser'},
+  /* engine: Google AI when a working key exists, otherwise the offline model */
+  chooseEngine(){if(G.active().length&&navigator.onLine!==false)this.engine='ai';else if(this.modelLoaded)this.engine='local';else this.engine=SR?'browser':null;return this.engine},
+  async loadModel(){STW.onEvent=m=>{if(m.event==='progress'){Essentials.s={l:m.loaded,t:m.total};Voice.emit()}};try{await STW.call('load');this.modelLoaded=true;this.chooseEngine()}catch(e){STW.kill();this.modelLoaded=false;this.chooseEngine();throw e}},
+  /* call inside a tap: opens the microphone and the audio engine while Android trusts the gesture */
+  async prepare(){if(this.stream&&this.ac)return;try{if(!this.ac)this.ac=new AudioContext();if(this.ac.state==='suspended')this.ac.resume().catch(()=>{});
+      if(!this.stream)this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});this.err=''}
+    catch(e){this.err=e&&e.name==='NotAllowedError'?'denied':'nomic';throw e}},
+  async start(){if(this.on||this.starting)return this.starting;this.starting=(async()=>{this.chooseEngine();
+      if(this.engine==='browser'){LegacyEar.start();this.on=true;this.path='browser';return}
+      try{await this.prepare()}catch(e){if(this.err==='denied')Session.denied();else{toast('The microphone could not start.');diag('mic','fail','The microphone could not start')}throw e}
       if(this.ac.state==='suspended')await this.ac.resume().catch(()=>{});
-      const url=URL.createObjectURL(new Blob([VAD_SRC],{type:'text/javascript'}));await this.ac.audioWorklet.addModule(url);URL.revokeObjectURL(url);
-      this.src=this.ac.createMediaStreamSource(this.stream);this.node=new AudioWorkletNode(this.ac,'spc-vad',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
-      const sink=this.ac.createGain();sink.gain.value=0;this.src.connect(this.node);this.node.connect(sink);sink.connect(this.ac.destination);
-      this.node.port.onmessage=e=>this.onMsg(e.data);if(window.__spcLog)this.node.port.postMessage({debug:true});this.on=true;this.setMode(Voice.speaking?(Voice.long?'strict':'mute'):this.mode==='strict'?'strict':'normal')})().finally(()=>{this.starting=null});return this.starting},
-  stop(){this.on=false;this.queue=[];LegacyEar.stop();try{if(this.node){this.node.port.onmessage=null;this.node.disconnect()}}catch(e){}try{if(this.src)this.src.disconnect()}catch(e){}
-    if(this.stream){this.stream.getTracks().forEach(t=>t.stop());this.stream=null}if(this.ac){this.ac.close().catch(()=>{});this.ac=null}this.node=null;this.src=null},
-  setMode(m){this.mode=m;if(this.node)this.node.port.postMessage({mode:m});if(this.engine==='browser'){if(m==='mute')LegacyEar.pause();else LegacyEar.resume()}},
-  onMsg(d){if(window.__spcLog)window.__spcLog.push(['vad',d.t+' '+(d.rms?d.rms.toFixed(3):'')+' n='+(d.noise?d.noise.toFixed(4):'')+' '+(d.mode||this.mode)+(d.sp?' SP':''),Date.now()]);if(d.t==='lvl')return;if(d.t==='start'){Session.touch();if(d.strict&&Voice.speaking){Voice.stop(true);this.setMode('normal')}showCaption('…');return}
+      this.src=this.ac.createMediaStreamSource(this.stream);const sink=this.ac.createGain();sink.gain.value=0;sink.connect(this.ac.destination);this.sink=sink;
+      let ok=false;
+      try{if(!this.ac.audioWorklet)throw new Error('no worklet');const url=URL.createObjectURL(new Blob([VAD_WORKLET],{type:'text/javascript'}));await this.ac.audioWorklet.addModule(url);URL.revokeObjectURL(url);
+        this.node=new AudioWorkletNode(this.ac,'spc-vad',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});this.node.port.onmessage=e=>this.onMsg(e.data);this.src.connect(this.node);this.node.connect(sink);this.path='worklet';ok=true}catch(e){this.node=null}
+      if(!ok){this.core=new VadCoreMain((m)=>this.onMsg(m),this.ac.sampleRate);this.proc=this.ac.createScriptProcessor(2048,1,1);this.proc.onaudioprocess=ev=>{this.core.feed(ev.inputBuffer.getChannelData(0))};this.src.connect(this.proc);this.proc.connect(sink);this.path='script'}
+      this.on=true;this.lastLvl=0;this.heardSound=false;this.setMode(Voice.speaking?(Voice.long?'strict':'mute'):'normal');
+      /* health check: the app only says it is listening once sound really arrives */
+      const t0=Date.now();while(Date.now()-t0<2500&&!this.lastLvl)await sleep(100);
+      if(!this.lastLvl&&this.path==='worklet'){try{this.node.disconnect()}catch(e){}this.node=null;this.core=new VadCoreMain((m)=>this.onMsg(m),this.ac.sampleRate);this.proc=this.ac.createScriptProcessor(2048,1,1);this.proc.onaudioprocess=ev=>{this.core.feed(ev.inputBuffer.getChannelData(0))};this.src.connect(this.proc);this.proc.connect(sink);this.path='script';this.setMode(this.mode);
+        const t1=Date.now();while(Date.now()-t1<2500&&!this.lastLvl)await sleep(100)}
+      if(!this.lastLvl){const msg='The microphone is not delivering any sound to the app.';diag('mic','fail',msg);this.stop();if(SR){this.engine='browser';LegacyEar.start();this.on=true;this.path='browser';diag('mic','warn','Using the browser\'s own recognition instead');return}throw mkErr(msg)}
+      diag('mic','ok','The microphone is working')})().finally(()=>{this.starting=null});return this.starting},
+  stop(){this.on=false;this.queue=[];LegacyEar.stop();try{if(this.node){this.node.port.onmessage=null;this.node.disconnect()}}catch(e){}try{if(this.proc){this.proc.onaudioprocess=null;this.proc.disconnect()}}catch(e){}try{if(this.src)this.src.disconnect()}catch(e){}
+    if(this.stream){this.stream.getTracks().forEach(t=>t.stop());this.stream=null}this.node=null;this.proc=null;this.src=null;this.core=null;setLevel(0)},
+  setMode(m){this.mode=m;if(this.node)this.node.port.postMessage({mode:m});if(this.core)this.core.msg({mode:m});if(this.engine==='browser'){if(m==='mute')LegacyEar.pause();else LegacyEar.resume()}},
+  onMsg(d){if(d.t==='lvl'){this.lastLvl=Date.now();if(d.rms>0.004)this.heardSound=true;setLevel(this.mode==='mute'?0:d.rms);return}
+    if(d.t==='start'){Session.touch();if(d.strict&&Voice.speaking){Voice.stop(true);this.setMode('normal')}showCaption('Listening…');return}
     if(d.t==='drop'){showCaption('');return}
     if(d.t==='seg'){this.queue.push({audio:d.audio,ms:d.ms});this.pump()}},
   async pump(){if(this.busy)return;this.busy=true;try{while(this.queue.length){const it=this.queue.shift();let pk=0;for(let i=0;i<it.audio.length;i+=4){const v=Math.abs(it.audio[i]);if(v>pk)pk=v}
       if(pk>0&&pk<.35){const g=Math.min(6,.6/pk);for(let i=0;i<it.audio.length;i++)it.audio[i]*=g}
-      const wavBlob=G.active().length?wav16(it.audio):null;let text='';
-      try{if(this.engine==='local')text=await STW.call('asr',{audio:it.audio},[it.audio.buffer]);else if(this.engine==='ai'&&wavBlob)text=(await aiTranscribe(wavBlob)).text||''}catch(e){}
-      if(unclearSpeech(text,it.ms)&&wavBlob&&this.engine==='local'){setPill('think');try{const r=await aiTranscribe(wavBlob);if(r&&r.text)text=r.text}catch(e){}setPill()}
-      text=String(text||'').replace(/\[[^\]]*\]|\([^)]*\)/g,'').trim();
-      if(!text||unclearSpeech(text,it.ms)){showCaption('');if(it.ms>1200&&Session.active&&!Voice.speaking&&!Rec.active)Voice.say('Sorry, I did not catch that. Please say it once more.');continue}
+      const eng=this.chooseEngine();let text='',viaAI=false;setPill('think');showCaption('Understanding…');
+      if(eng==='ai'){try{text=(await aiTranscribe(wav16(it.audio))).text||'';viaAI=true}catch(e){diag('ai','fail','Google AI could not be reached: '+(e.message||''));if(this.modelLoaded){try{text=await STW.call('asr',{audio:it.audio.slice()})}catch(er){}}}}
+      else if(eng==='local'){try{text=await STW.call('asr',{audio:it.audio.slice()})}catch(e){}}
+      setPill();text=String(text||'').replace(/\[[^\]]*\]|\([^)]*\)/g,'').trim();
+      if(!text||(!viaAI&&unclearSpeech(text,it.ms))){showCaption('');if(it.ms>1200&&Session.active&&!Voice.speaking&&!Rec.active)Voice.say('Sorry, I did not catch that. Please say it once more.');continue}
       if(isEcho(text))continue;heard(text,{via:'voice'})}}finally{this.busy=false}}
 };
+let lvT=0;function setLevel(r){const now=performance.now();if(now-lvT<90&&r>0)return;lvT=now;const b=$('#vpill');if(b)b.style.setProperty('--lv',Math.min(1,Math.sqrt(Math.max(0,r))*3.2).toFixed(2))}
+/* component health shown in Menu, Voice */
+const Diag={};function diag(k,st,msg){Diag[k]={st,msg,t:Date.now()};if(typeof onVoiceStatus==='function')onVoiceStatus()}
 function wav16(a){const n=a.length,o=new DataView(new ArrayBuffer(44+n*2));const ws=(p,s)=>{for(let i=0;i<s.length;i++)o.setUint8(p+i,s.charCodeAt(i))};ws(0,'RIFF');o.setUint32(4,36+n*2,true);ws(8,'WAVE');ws(12,'fmt ');o.setUint32(16,16,true);o.setUint16(20,1,true);o.setUint16(22,1,true);o.setUint32(24,16000,true);o.setUint32(28,32000,true);o.setUint16(32,2,true);o.setUint16(34,16,true);ws(36,'data');o.setUint32(40,n*2,true);
   for(let i=0,p=44;i<n;i++,p+=2){const s=a[i]<-1?-1:a[i]>1?1:a[i];o.setInt16(p,s<0?s*32768:s*32767,true)}return new Blob([o.buffer],{type:'audio/wav'})}
 function unclearSpeech(t,ms){t=String(t||'').trim();if(!t)return ms>900;if(/^\W+$/.test(t))return true;const w=t.split(/\s+/).filter(Boolean);
@@ -1372,7 +1613,7 @@ const LegacyEar={rec:null,want:false,paused:false,quick:0,startedAt:0,timer:null
 /* ---------- session: continuous conversation and the silence ladder (2 min, 1 min, 30 s, 15 s) ---------- */
 const Session={active:false,last:Date.now(),stage:0,timer:null,isDenied:false,
   async start(){if(S.voiceOff)return;this.active=true;this.isDenied=false;this.touch();setPill();wakeOn();clearInterval(this.timer);this.timer=setInterval(()=>this.tick(),1000);
-    if(Listen.ready()||Listen.engine==='browser'){try{await Listen.start()}catch(e){}}setPill()},
+    if(Listen.chooseEngine()){try{await Listen.start()}catch(e){}}else diag('mic','warn','Listening will start when the speech model is ready');setPill()},
   stop(){this.active=false;Listen.stop();clearInterval(this.timer);setPill();wakeOffIfIdle()},
   touch(){this.last=Date.now();this.stage=0},
   denied(){this.isDenied=true;this.stop();toast('Microphone access was blocked. Allow the microphone for this site, then tap the microphone.')},
@@ -1415,7 +1656,7 @@ const TOOLS=[
  {name:'look_at_link',description:'Watch a YouTube link the user added, to understand it. The video cannot be downloaded or reused as footage.',parameters:{type:T.O,properties:{url:{type:T.S},question:{type:T.S}},required:['url']}},
  {name:'search_images',description:'Find free-to-reuse images online (Wikimedia Commons, Openverse). Results are saved to the library and can be used as source type asset.',parameters:{type:T.O,properties:{query:{type:T.S},count:{type:T.N}},required:['query']}},
  {name:'prepare_download',description:'Open the download dialog with the chosen formats and file name, after asking the user which formats they want. The user then taps Download.',parameters:{type:T.O,properties:{formats:{type:T.A,items:{type:T.S,enum:['PNG','JPEG','WebP','GIF','MP4','WebM','MP3']}},filename:{type:T.S}},required:['formats']}},
- {name:'highlight',description:'Make a button glow so the user can find and tap it. Browsers need a tap to open the file picker, to download, and to choose the backup folder.',parameters:{type:T.O,properties:{control:{type:T.S,enum:['upload','link','download','backup','messages','requirement','new']}},required:['control']}},
+ {name:'highlight',description:'Make a button glow so the user can find and tap it. Browsers need a tap to open the file picker, to download, and to choose the backup folder.',parameters:{type:T.O,properties:{control:{type:T.S,enum:['gallery','files','link','download','share','backup','messages','requirement','new','install']}},required:['control']}},
  {name:'app_action',description:'Navigate or change app settings.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['go_home','open_menu','open_keys','open_voice','open_backup','open_about','go_back','dark_mode','light_mode','voice_female','voice_male','stop_listening','disable_voice_mode','cancel_generation','open_messages','close_messages','open_requirement']}},required:['action']}},
  {name:'container_action',description:'Manage containers and versions. Confirm with the user before deleting.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['create','open','rename','delete','undo_delete','show_version','delete_version','delete_upload']},name:{type:T.S},new_name:{type:T.S},version:{type:T.N},media_id:{type:T.S}},required:['action']}},
  {name:'use_template',description:'Create a polished ready-made design by filling in fields. Prefer this for greeting cards, festival wishes, sale posters, invitations, quote cards, menu cards, YouTube thumbnails, announcements, photo cards, slideshows, greeting videos, promo reels and quote videos. The app does the layout, fonts, colours, effects and music. Saves a new version.',parameters:{type:T.O,properties:{
@@ -1426,20 +1667,24 @@ const TOOLS=[
    photos:{type:T.A,items:SRC,description:'Pictures to use: uploads, versions or web images.'},photo_query:{type:T.S,description:'Web image search when no photos are given (videos).'},
    music:{type:T.S,enum:Object.keys(MUSIC)},look:{type:T.S,enum:Object.keys(PRESETS)},effect:{type:T.S,enum:['confetti','snow','sparkles','stars','hearts','bubbles','fireworks']},seconds_per_photo:{type:T.N},
    keep_previous:{type:T.B},summary:{type:T.S}},required:['template','keep_previous']}},
+ {name:'redraw_logo',description:'Redraw a blurry or low-quality logo picture as a sharp vector (best for simple flat-colour logos). Saves a new version with PNG and SVG. Ask first whether the user wants to keep both versions to compare, or only the redrawn one.',parameters:{type:T.O,properties:{media_id:{type:T.S},version:{type:T.N},colors:{type:T.N,description:'Number of colours, 2 to 24; default 8.'},keep_previous:{type:T.B},summary:{type:T.S}},required:['keep_previous']}},
  {name:'camera_record',description:'Record the user with the front or back camera, optionally while a saved version or uploaded video plays (for a reaction or commentary), optionally showing a script as a teleprompter. Opens the recorder; the user says "stop recording" or taps stop. The recording is then saved as an upload, and you are told its media_id so you can place it, for example as a picture-in-picture window in a corner.',parameters:{type:T.O,properties:{camera:{type:T.S,enum:['front','back']},script:{type:T.S},play:{type:T.O,properties:{type:{type:T.S,enum:['version','upload']},version:{type:T.N},media_id:{type:T.S},start:{type:T.N}}},countdown:{type:T.B}},required:['camera']}},
  {name:'transcribe',description:'Get the spoken words of an uploaded video or audio with start and end seconds, for captions.',parameters:{type:T.O,properties:{media_id:{type:T.S}},required:['media_id']}},
  {name:'interrupted_job',description:'Continue or drop the generation that was interrupted last time.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['continue','drop']}},required:['action']}}
 ];
-const ABOUT_FACTS=`Spoken PixelCraft is a voice-first app for creating and editing images and videos. Containers hold each project; the plus button or voice creates one; tiles sort by last edit; pencil renames, bin deletes. Deleted containers can be brought back by voice until the next day's first use. Inside a container: upload button (photos, videos, audio), YouTube link button (for understanding only, cannot be downloaded), Recorded User Requirement button (summary with play aloud), messages button (typed chat), large preview, download button on the preview, strip of saved versions and uploads below the preview. Before a new version replaces the current one, the app asks whether to keep the previous. Downloads: PNG, JPEG, WebP, GIF for images; MP4, WebM, MP3, GIF for videos; saved to the Downloads folder; the folder button opens a file picker. Menu: API keys (create a free Google key in Google AI Studio, save several keys from different projects; they work together and share the work), Voice (female or male), Disable voice mode (typing only), Backup (choose a folder once; a folder named Spoken_PixelCraft_backup is created; a backup is saved when leaving a container after changes; restore adds containers marked Restored, restoring again replaces them), About. Light and dark switch top right. To add a key: Menu, API keys, Create free key, follow the Google page, copy the key, press Back until you return, then tap Paste key. Ready-made designs: greeting cards for any occasion, sale posters, invitations, quote cards, menu cards, YouTube thumbnails, announcements, photo cards, slideshows, greeting videos, promo reels and quote videos. Listening and speaking are in English, on the device, without beeps. First run downloads the essential components once (about 160 MB: natural voice engine and offline English speech recognition); other components download quietly in the background. Camera recording: front or back camera, teleprompter script, recording while a video plays, say stop recording or tap stop. Voice: always listening while the app is open; the user can interrupt; after 2 minutes of silence the app asks if the user is there, then after 1 minute, then 30 seconds, then closes after 15 more seconds; tap the microphone to start again. During a generation, keep the app on screen; questions and cancel work; new requests are queued. Daily cleanup runs silently on the first use of each day. The asset library keeps fetched images up to 500 MB. Everything stays in this browser and the backup folder; backups include the keys.`;
+const ABOUT_FACTS=`Spoken PixelCraft is a voice-first app for creating and editing images and videos. Containers hold each project; the plus button or voice creates one; tiles sort by last edit; pencil renames, bin deletes. Deleted containers can be brought back by voice until the next day's first use. Inside a container: gallery icon (photos and videos from the phone's gallery), files icon (documents such as PDF, Word or text price lists, menus, scripts, and music), YouTube link button (for understanding only, cannot be downloaded), Recorded User Requirement icon at the top right (summary with play aloud), messages icon below the preview (typed chat), large preview with download and share icons, strip of saved versions and uploads below the preview. Before a new version replaces the current one, the app asks whether to keep the previous. Downloads: PNG, JPEG, WebP, GIF for images; MP4, WebM, MP3, GIF for videos; saved to the Downloads folder; the folder button opens a file picker. Menu: API keys (create a free Google key in Google AI Studio, save several keys from different projects; they work together and share the work), Voice (female or male), Disable voice mode (typing only), Backup (choose a folder once; a folder named Spoken_PixelCraft_backup is created; a backup is saved when leaving a container after changes; restore adds containers marked Restored, restoring again replaces them), About. Light and dark switch top right. The app can be installed: Chrome offers Install, or Menu, Install app; it then opens full screen from its own icon. Logos are drawn as sharp vectors and can be saved as PNG, JPEG or SVG; blurry logos can be redrawn. To add a key: Menu, API keys, Create free key, follow the Google page, copy the key, press Back until you return, then tap Paste key. Ready-made designs: greeting cards for any occasion, sale posters, invitations, quote cards, menu cards, YouTube thumbnails, announcements, photo cards, slideshows, greeting videos, promo reels and quote videos. Listening and speaking are in English, on the device, without beeps. First run downloads the essential components once (about 160 MB: natural voice engine and offline English speech recognition); other components download quietly in the background. Camera recording: front or back camera, teleprompter script, recording while a video plays, say stop recording or tap stop. Voice: always listening while the app is open; the user can interrupt; after 2 minutes of silence the app asks if the user is there, then after 1 minute, then 30 seconds, then closes after 15 more seconds; tap the microphone to start again. During a generation, keep the app on screen; questions and cancel work; new requests are queued. Daily cleanup runs silently on the first use of each day. The asset library keeps fetched images up to 500 MB. Everything stays in this browser and the backup folder; backups include the keys.`;
 function brainState(){const c=nav.v==='container'?byId(nav.id):null;const st={screen:nav.v,containers:liveCS().slice(0,40).map(x=>({name:(x.restored?'(Restored) ':'')+x.name,versions:x.versions.length,uploads:x.media.length})),recently_deleted:CS.filter(x=>x.deleted).map(x=>x.name),keys_saved:G.active().length,voice_mode:S.voiceOff?'off (typing only)':'on',generation:Gen.running?{container:(byId(Gen.running.cid)||{}).name,summary:Gen.running.summary,percent:Gen.running.p,queued:Gen.queue.length}:null,interrupted_last_time:LS.get('spc.pending')};
-  if(c)st.open_container={name:c.name,uploads:c.media.map(m=>({media_id:m.id,type:m.type,name:m.name,width:m.w,height:m.h,seconds:m.duration?Math.round(m.duration):undefined,description:m.desc?m.desc.slice(0,600):undefined})),youtube_links:c.links,
+  if(c)st.open_container={name:c.name,uploads:c.media.map(m=>({media_id:m.id,type:m.type,name:m.name,width:m.w,height:m.h,seconds:m.duration?Math.round(m.duration):undefined,looks_blurry:m.quality&&m.quality.blurry||undefined,description:m.desc?m.desc.slice(0,600):undefined,document_text:m.text?m.text.slice(0,2500):undefined})),youtube_links:c.links,
     versions:c.versions.map((v,i)=>({version:i+1,kind:v.kind,summary:v.summary,width:v.w,height:v.h,seconds:v.duration?Math.round(v.duration):undefined,kept:!!v.kept})),showing:c.sel?(c.sel.t==='v'?'version '+(c.versions.findIndex(v=>v.id===c.sel.id)+1):'upload '+c.sel.id):null,requirement:c.req,status:c.reqStatus};
   return st}
 function systemPrompt(){return `You are Spoken PixelCraft, a warm, expert creative partner inside a voice-first image and video app. Users may be seniors, partially blind, or new to editing. You talk with them in plain words, like a friendly professional.
 
 How to talk:
-1. Keep each reply short: one to three spoken sentences. Plain text only, no lists, no symbols, no markdown.
-2. Ask one clear question at a time until the request is completely clear. Ask about format and size (portrait 9:16 for Reels and stories, landscape 16:9 for YouTube, square 1:1 for posts), mood, colours, text and its language, music, length. Briefly explain the advantage or trade-off of each choice when it helps.
+1. Keep each reply short: one to three spoken sentences, spoken by the app's own voice. Plain text only, no lists, no symbols, no markdown.
+2. Your most important job is perfect requirement gathering. Be interactive: never assume anything the user did not say. Ask one clear question at a time until the request is completely clear, confirm your understanding, and offer simple choices with a short reason for each.
+2a. Always find out which platform and shape it is for, if not said: Instagram post (4:5) or square, Instagram or Facebook Reel or Story or WhatsApp Status (tall 9:16), Facebook post, YouTube video (16:9), YouTube Short, YouTube thumbnail, Google Ads (square, landscape, portrait, rectangle, leaderboard, skyscraper), listing photos for OLX, Quikr or eBay, or print. Use the matching format name. Make only what the user needs.
+2b. Also ask about the business and audience, the exact text (name, offer, price, phone, address), colours, mood, music and length, when relevant.
+2c. If the user seems unsure or has no ideas, say: "If you are not sure, I can make three versions in different styles for you to compare. Would you like that?" If they agree, create three versions (keep_previous true for each), then ask which one to keep, which to delete, or whether to refine one. When the user is sure, ask whether they want one version or all three.
 3. When everything is clear, describe in one or two sentences exactly what you will create and ask: "Shall I create it? Say generate now." Only call make_image, make_video or ai_image after the user agrees, or says generate now.
 4. If a previous version exists, before generating ask whether to keep the previous version or replace it, and pass keep_previous.
 5. Always reply in English. Text inside designs may be in any language the user asks for.
@@ -1449,6 +1694,11 @@ How to talk:
 9. Confirm before deleting anything. Never invent file ids; use the ids in the state below.
 10. If there is no open container and the user wants to create something, first call container_action create with a short fitting name.
 11. While a generation runs, answer questions, cancel if asked, and new generation requests are queued automatically.
+17. Logos: create them with use_template template logo (sharp vector, PNG, JPEG and SVG). Ask for the business name, tagline, style (emblem, monogram, wordmark, badge, horizontal), icon (one of: ${Object.keys(LOGO_ICONS).join(', ')}), colours and background. Use ai_image for a painted, picture-style logo only when the user asks for it.
+18. When the app reports that an uploaded picture looks blurry or small, tell the user, and offer to redraw it sharply with redraw_logo. Ask whether they want to keep both versions to compare, or only the redrawn one.
+19. Documents (price lists, menus, brochures, scripts) appear in the state with their text; use look_at_media to read a PDF. Use their exact prices and details.
+20. Business focus: shop offers, new arrivals and festival sales; restaurant menus, dish reels and daily specials; real estate listings and site-visit reels; services such as salons, clinics, tutors and repairs; personal sellers' listing photos. Prefer the matching template: product_ad, new_arrival, sale_poster, daily_special, menu_card, dish_reel, property_listing, property_reel, service_ad, listing_photo, promo_video, slideshow_video.
+21. To share, the user taps the share icon on the preview, which hands the file to WhatsApp, Instagram or Facebook on the phone; call highlight with share. Direct posting to accounts is not available.
 14. For a reaction or commentary video, call camera_record with play set; when told the recording's media_id, ask (if not given) which corner and size, then build make_video with the played video as the scene and the recording as a video layer (picture-in-picture, rounded or circle, with a white border).
 15. For a caricature, use ai_image with edit_current. The cartoon effect is a free built-in alternative. Any image or web picture can become a video with motion, text and music.
 16. Messages that start with [app] are notes from the app itself, not the user.
@@ -1468,23 +1718,26 @@ const Gen={running:null,queue:[],
   async start(job){this.running=job;job.p=0;job.ctrl=new AbortController();LS.set('spc.pending',{cid:job.cid,name:(byId(job.cid)||{}).name,summary:job.summary,t:Date.now(),tool:job.tool,args:job.args});wakeOn();renderPreviewOnly();
     let result={status:'failed'};
     try{const out=await job.exec(job.ctrl.signal,p=>{job.p=Math.round(p);updateRing()});const c=byId(job.cid);if(!c)throw mkErr('The container was deleted.');await addVersion(c,job,out);result={status:'done',version:c.versions.length};
-      if(!job.quiet)announce(c,`Your ${out.kind==='video'?'video':'image'} is ready${nav.id===c.id?'':' in '+c.name}. Would you like any changes, or shall I prepare the download?`)}
+      if(!job.quiet)announce(c,`Your ${job.tool==='make_logo'||job.tool==='redraw_logo'?'logo':out.kind==='video'?'video':'image'} is ready${nav.id===c.id?'':' in '+c.name}. Would you like any changes, or shall I prepare the download?`)}
     catch(e){if(e.status==='cancel'||(job.ctrl.signal.aborted)){result={status:'cancelled'};announce(byId(job.cid),'The generation was cancelled.')}else{result={status:'failed',error:e.message};if(!job.quiet)announce(byId(job.cid),'Sorry, that could not be created. '+e.message)}}
     finally{LS.del('spc.pending');this.running=null;Session.touch();renderPreviewOnly();job._resolve(result);const c=byId(job.cid);if(c&&dirty.has(c.id)&&!(nav.v==='container'&&nav.id===c.id))Backup.leave(c);const n=this.queue.shift();if(n)this.start(n);else wakeOffIfIdle()}},
   cancel(){this.queue.forEach(j=>j._resolve({status:'cancelled'}));this.queue=[];if(this.running)this.running.ctrl.abort()}
 };
 function announce(c,text){if(!S.voiceOff)Voice.say(text);if(c&&(S.voiceOff||(nav.v==='container'&&nav.id===c.id&&nav.chat))){c.chat.push({me:false,t:text,ts:Date.now()});saveC(c,false);renderChatOnly()}else if(S.voiceOff)toast(text)}
 async function addVersion(c,job,out){const id=await addMedia(c.id,out.blob,{name:job.summary,w:out.w,h:out.h,duration:out.duration});
-  const prevIdx=curVersionIndex(c);if(!job.args.keep_previous&&prevIdx>=0){const p=c.versions[prevIdx];if(p&&!p.kept){c.versions.splice(prevIdx,1);delMedia(p.id)}else if(p)p.kept=true}else if(prevIdx>=0)c.versions[prevIdx].kept=true;
-  c.versions.push({id,kind:out.kind,mime:out.blob.type,created:Date.now(),summary:job.summary,tool:job.tool,plan:job.args,w:out.w,h:out.h,duration:out.duration});c.sel={t:'v',id};c.kind=out.kind;
+  const prevIdx=curVersionIndex(c);if(!job.args.keep_previous&&prevIdx>=0){const p=c.versions[prevIdx];if(p&&!p.kept){c.versions.splice(prevIdx,1);delMedia(p.id);if(p.svg)delMedia(p.svg)}else if(p)p.kept=true}else if(prevIdx>=0)c.versions[prevIdx].kept=true;
+  const svgId=out.svg?await addMedia(c.id,out.svg,{name:'vector.svg'}):null;
+  c.versions.push({id,kind:out.kind,mime:out.blob.type,created:Date.now(),summary:job.summary,tool:job.tool,plan:job.args,w:out.w,h:out.h,duration:out.duration,svg:svgId});c.sel={t:'v',id};c.kind=out.kind;
   c.thumb=await makeThumb(out.blob)||c.thumb;c.reqStatus=`Generated version ${c.versions.length}: ${job.summary}. Ready to download or edit further.`;await saveC(c);renderAfterChange(c)}
 const execFor={
   make_image:(c,a)=>async(sig,prog)=>{prog(15);const {cv}=await renderImagePlan(a,c);prog(80);const blob=await toBlob(cv,'image/png');prog(100);return {blob,kind:'image',w:cv.width,h:cv.height}},
   ai_image:(c,a)=>async(sig,prog)=>{let t=0;const iv=setInterval(()=>prog(Math.min(92,t+=3)),600);try{let input=null;if(a.edit_current){const id=c.sel&&c.sel.t==='m'?c.sel.id:versionId(c);const m=id&&await DB.get('media',id);if(m&&m.type.startsWith('image/'))input=m.blob}
       const blob=await aiImageBlob(a.prompt,a.aspect_ratio,input,sig);const b=await createImageBitmap(blob);return {blob,kind:'image',w:b.width,h:b.height}}finally{clearInterval(iv)}},
+  make_logo:(c,a)=>async(sig,prog)=>{prog(20);const r=await makeLogo(a);prog(100);return r},
+  redraw_logo:(c,a)=>async(sig,prog)=>{prog(10);const id=a.media_id||(a.version?versionId(c,a.version):(c.sel&&c.sel.t==='m'?c.sel.id:versionId(c)));const m=id&&await DB.get('media',id);if(!m||!/^image\//.test(m.type))throw mkErr('Choose the logo picture first.');prog(30);const r=await redrawLogo(m.blob,a.colors);prog(100);return r},
   make_video:(c,a)=>async(sig,prog)=>{const r=await renderVideoPlan(a,c,{signal:sig,onProgress:prog,mime:a._mime});return {...r,kind:'video'}}
 };
-function genTool(name,c,a){if(!c)return {error:'No container is open. Create or open one first.'};const job={cid:c.id,tool:name,args:a,summary:String(a.summary||(name==='make_video'?'Video':'Image')).slice(0,140),exec:execFor[name](c,a)};const r=Gen.submit(job);
+function genTool(name,c,a){if(!c)return {error:'No container is open. Create or open one first.'};if(!execFor[name])return {error:'Unknown tool '+name};const job={cid:c.id,tool:name,args:a,summary:String(a.summary||(name==='make_video'?'Video':'Image')).slice(0,140),exec:execFor[name](c,a)};const r=Gen.submit(job);
   if(name==='ai_image'&&r.status==='started')return job.done.then(x=>x.status==='done'?{status:'done',version:x.version}:{status:x.status,error:x.error,note:'If the AI image model is not available, build the image with make_image instead.'});return r}
 
 /* ---------- tools ---------- */
@@ -1509,6 +1762,7 @@ async function runTool(name,a){const c=nav.v==='container'?byId(nav.id):null;a=a
     case 'highlight':glow(a.control);return {ok:true};
     case 'app_action':return appAction(a.action);
     case 'container_action':return await containerAction(a);
+    case 'redraw_logo':return genTool('redraw_logo',c,{...a,summary:a.summary||'Redrawn logo'});
     case 'use_template':{if(!c)return {error:'No container open'};let x;try{x=expandTemplate(a.template,a)}catch(e){return {error:e.message}}return await genTool(x.tool,c,x.args)}
     case 'camera_record':if(!c)return {error:'No container open'};Rec.open(c,a);return {status:'recorder_open',note:'Tell the user briefly that recording starts after the countdown and to say stop recording when done.'};
     case 'transcribe':{const m=await DB.get('media',a.media_id);if(!m)return {error:'not found'};const {json}=await G.gen('text',async k=>({contents:[{parts:[{text:'Transcribe the speech. Reply only as JSON array: [{"start":seconds,"end":seconds,"text":"..."}], short segments of up to 8 words.'},await G.part(m.blob,k,m.name,m.id)]}],generationConfig:{responseMimeType:'application/json',temperature:0}}));let segs=[];try{segs=JSON.parse(G.text(json))}catch(e){}return {segments:segs.slice(0,400)}}
@@ -1546,7 +1800,8 @@ function interim(t){showCaption(t)}
 let capT=0;function showCaption(t){const el=$('#livecap');if(!el)return;el.textContent=t||'';clearTimeout(capT);if(t&&t!=='…')capT=setTimeout(()=>{if(!Voice.speaking)el.textContent=''},9000)}
 async function handleText(text,channel,opt={}){if(Brain.busy){Brain.pending.push([text,channel,opt]);return}Brain.busy=true;setPill('think');
   try{const isApp=text.startsWith('[app]');
-    if(!isApp){const loc=localUnderstand(text,channel);if(loc!==false){if(loc)reply(loc,channel);return}}
+    const withAI=G.active().length&&navigator.onLine!==false;
+    if(!isApp){const loc=withAI?localEssential(text):localUnderstand(text,channel);if(loc!==false){if(loc)reply(loc,channel);return}}
     if(G.active().length&&navigator.onLine!==false){
       try{await aiTurn(text,channel);return}
       catch(e){if(e.name==='AbortError')return;const net=!e.status&&!e.quota;
@@ -1804,8 +2059,15 @@ function localCreate(raw){const s=norm(raw);if(!/\b(make|create|design|generate|
       if(!k){const occ=OCCASIONS[f.occasion];const nm=(occ&&/greeting|invite/.test(t)?occ.title.replace(/^(Happy|Merry) /,'')+' ':'')+({greeting_card:'card',greeting_video:'video'}[t]||T_LABEL[t])+(f.name?' for '+f.name:'');k=newContainer((nm.charAt(0).toUpperCase()+nm.slice(1)).slice(0,60));CS.push(k);saveC(k);go('container',{id:k.id})}
       const prev=k.versions.length>0;const exec=keep=>{f.keep_previous=keep;const x=expandTemplate(t,f);const r=genTool(x.tool,k,x.args);Local.note(k,'Request',`The user asked for ${desc}.`,'Generating.');Local.sync(k,`The app created ${desc} with the ${t} design.`);return r.status==='queued'?'Another creation is running, so this is queued.':'Creating it now.'};
       if(!prev)return exec(false);return Local.ask('Shall I keep the current version as well?',()=>exec(true),()=>exec(false),null,{keepQ:true})},()=>'Okay. Tell me what you would like instead.')}
-const NOKEY_FALLBACK='I can answer questions about the app, do simple edits, and make ready-made designs like greeting cards, posters, invitations, quote cards and slideshows without a key. For anything else, please add a free API key in the menu. Shall I open API keys?';
-const PHRASES=['Welcome to Spoken PixelCraft. Please give me a few seconds while the essential components are loaded into memory.','The program is now ready and completely functional. How may I help you today?','To start creating with me, please add a free API key in the menu, under API keys. You can ask me how.','I am listening.','Are you still there?','Sorry, I did not catch that. Please say it once more.','Working on it.','Creating it now.','Okay.',"You're welcome.",'Hello! How may I help you today?','Dark mode.','Light mode.','Menu.','Home.','Downloaded.','Key saved.','Cancelling.','Tap Download to save it.','Your image is ready. Would you like any changes, or shall I prepare the download?','Your video is ready. Would you like any changes, or shall I prepare the download?','Recording now. Say stop recording when you are done.'];
+const NOKEY_FALLBACK='The voice engine is not adequate enough to carry out this function. Please add an API key in the settings section, so that the app can work with AI assistance. Shall I open API keys for you?';
+const PHRASES=['Welcome to Spoken PixelCraft. Please give me a few seconds while the essential components are loaded into memory.','The program is now ready and completely functional. How may I help you today?','For full AI assistance, please add a free API key in the menu, under API keys. You can ask me how.','The program is ready.',NOKEY_FALLBACK,'Redrawing it now.','Your logo is ready. Would you like any changes, or shall I prepare the download?','I am listening.','Are you still there?','Sorry, I did not catch that. Please say it once more.','Working on it.','Creating it now.','Okay.',"You're welcome.",'Hello! How may I help you today?','Dark mode.','Light mode.','Menu.','Home.','Downloaded.','Key saved.','Cancelling.','Tap Download to save it.','Your image is ready. Would you like any changes, or shall I prepare the download?','Your video is ready. Would you like any changes, or shall I prepare the download?','Recording now. Say stop recording when you are done.'];
+
+/* with a key, the AI handles everything except these instant essentials */
+function localEssential(raw){const s=norm(raw);const pr=Local.tryPending(s);if(pr!==false)return pr;
+  if(Gen.running&&/^(stop|cancel|stop it|cancel it|stop the (generation|video|creation)|cancel (the )?(generation|video|creation)|stop generating|abort)$/.test(s)){Gen.cancel();return 'Cancelling.'}
+  if(/^(stop|quiet|be quiet|stop talking|silence)$/.test(s)&&!Gen.running){Voice.stop();return null}
+  if(/^(repeat( that)?|say (that|it) again|pardon|come again)$/.test(s))return Voice.last||null;
+  return false}
 
 /* ============================================================
    Backup, restore and daily housekeeping
@@ -1880,6 +2142,12 @@ const P={back:'<path d="M15 5l-7 7 7 7"/>',chev:'<path d="M9 5l7 7-7 7"/>',plus:
   book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 19V5"/>',shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6Z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   screen:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',layers:'<path d="M12 3l9 5-9 5-9-5Z"/><path d="M3 13l9 5 9-5"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   file:'<path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5"/>',lib:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'};
+P.gallery='<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15.5l-4.5-4.5L7 20.5"/>';
+P.files='<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h6M9 9h2"/>';
+P.share='<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4"/>';
+P.install='<path d="M12 3v11M7.5 9.5 12 14l4.5-4.5"/><rect x="4" y="17" width="16" height="4" rx="2"/>';
+P.check='<path d="M5 12.5l4.5 4.5L19 7.5"/>';
+P.pulse='<path d="M3 12h4l2-6 4 12 2-6h6"/>';
 const I=(n,cls='')=>`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
 
 /* ---------- light and dark ---------- */
@@ -1923,42 +2191,43 @@ function renderHome(){const cs=liveCS();
 async function currentItem(c){if(!c)return null;let sel=c.sel;
   if(!sel||(sel.t==='v'&&!c.versions.some(v=>v.id===sel.id))||(sel.t==='m'&&!c.media.some(m=>m.id===sel.id)))sel=c.versions.length?{t:'v',id:c.versions[c.versions.length-1].id}:(c.media.length?{t:'m',id:c.media[c.media.length-1].id}:null);
   if(!sel)return null;const meta=sel.t==='v'?c.versions.find(v=>v.id===sel.id):c.media.find(m=>m.id===sel.id);const type=meta.mime||meta.type||'';
-  return {sel,meta,type,kind:type.startsWith('video/')?'video':type.startsWith('audio/')?'audio':'image'}}
+  return {sel,meta,type,kind:type.startsWith('video/')?'video':type.startsWith('audio/')?'audio':type.startsWith('image/')?'image':'doc'}}
 async function previewInner(c){const it=await currentItem(c);const g=Gen.running&&Gen.running.cid===c.id?Gen.running.p:null,G2=g!==null;
-  if(!it)return `<div class="pempty"><div class="big">${I('spark')}</div><p>Tell me what you would like to create. You can also upload photos, videos or music, or add a YouTube link.</p></div>${G2?ringHTML(g):''}`;
+  if(!it)return `<div class="pempty"><div class="big">${I('spark')}</div><p>Tell me what you would like to create. You can also add photos and videos from your gallery, documents, or a YouTube link.</p></div>${G2?ringHTML(g):''}`;
+  if(it.kind==='doc')return `<div class="pempty doc"><div class="big">${I('files')}</div><p><b>${esc(it.meta.name||'Document')}</b></p><p class="snip">${esc((it.meta.text||'').slice(0,320)||'Ready for the AI to read.')}</p></div><span class="kind">${I('files')}Document</span>${G2?ringHTML(g):''}`;
   const u=await mediaURL(it.sel.id);let media;
   if(it.kind==='video')media=`<video class="pm" src="${u}" controls playsinline preload="metadata"></video>`;
   else if(it.kind==='audio')media=`<div class="pempty"><div class="big">${I('audio')}</div><p>${esc(it.meta.name||'Audio')}</p><audio src="${u}" controls preload="metadata"></audio></div>`;
-  else media=`<img class="pm" src="${u}" alt="${esc(it.meta.summary||it.meta.name||'Image')}">`;
+  else media=`<img class="pm${it.meta.svg||/png|svg/.test(it.type)&&/logo/i.test(it.meta.summary||it.meta.name||'')?' logo':''}" src="${u}" alt="${esc(it.meta.summary||it.meta.name||'Image')}">`;
   const label=it.sel.t==='v'?`Version ${c.versions.findIndex(v=>v.id===it.sel.id)+1}`:'Upload';
-  return `${media}<span class="kind">${I(it.kind)}${label}</span><button class="dl" data-act="download" aria-label="Download" title="Download">${I('down')}</button>${G2?ringHTML(g):''}`}
+  return `${media}<span class="kind">${I(it.kind)}${label}</span><div class="pacts"><button class="dl" data-act="share" aria-label="Share" title="Share">${I('share')}</button><button class="dl" data-act="download" aria-label="Download" title="Download">${I('down')}</button></div>${G2?ringHTML(g):''}`}
 function ringHTML(p){const C=2*Math.PI*56;return `<div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Creating"><div class="ring"><span class="spin"></span><svg viewBox="0 0 132 132"><circle class="bgc" cx="66" cy="66" r="56" fill="none" stroke-width="6"/><circle class="fgc" id="fgc" cx="66" cy="66" r="56" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p/100)}"/></svg><span class="pct" id="pct">${p}%</span></div>${Gen.queue.length?`<p class="qn">${Gen.queue.length} waiting</p>`:''}</div>`}
 let ringT=0;function updateRing(){const j=Gen.running;if(!j)return;const now=performance.now();if(now-ringT<200&&j.p<100)return;ringT=now;const f=$('#fgc'),p=$('#pct'),C=2*Math.PI*56;if(f){f.style.strokeDashoffset=C*(1-j.p/100);p.textContent=j.p+'%';f.closest('.prog').setAttribute('aria-valuenow',j.p)}}
 function stripHTML(c){const items=[...c.versions.map((v,i)=>({t:'v',id:v.id,label:'Version '+(i+1),kind:v.kind})),...c.media.map(m=>({t:'m',id:m.id,label:'Upload '+(m.name||''),kind:(m.type||'').split('/')[0]}))];
   if(c.versions.length<2&&!c.media.length)return '';const cur=c.sel&&c.sel.id;
-  return `<div class="strip" aria-label="Saved versions and uploads">${items.map(it=>`<div class="ver ${it.id===cur?'cur':''}" data-thumb="${it.id}"><button class="vsel" data-pick="${it.t}:${it.id}" aria-label="Show ${esc(it.label)}"></button>${it.t==='m'?`<span class="vb">${I(it.kind==='audio'?'audio':'upload')}</span>`:''}<button class="vx" data-vdel="${it.t}:${it.id}" aria-label="Delete ${esc(it.label)}">${I('x')}</button></div>`).join('')}</div>`}
+  return `<div class="strip" aria-label="Saved versions and uploads">${items.map(it=>`<div class="ver ${it.id===cur?'cur':''}" data-thumb="${it.id}"><button class="vsel" data-pick="${it.t}:${it.id}" aria-label="Show ${esc(it.label)}"></button>${it.t==='m'?`<span class="vb">${I(it.kind==='audio'?'audio':it.kind==='image'||it.kind==='video'?'gallery':'files')}</span>`:''}<button class="vx" data-vdel="${it.t}:${it.id}" aria-label="Delete ${esc(it.label)}">${I('x')}</button></div>`).join('')}</div>`}
 async function fillStripThumbs(c){for(const el of $$('[data-thumb]')){const id=el.dataset.thumb;const m=await DB.get('media',id);if(!m)continue;const k=(m.type||'').split('/')[0];
-  if(k==='image'||k==='video'){const u=await mediaURL(id);const node=document.createElement(k==='image'?'img':'video');node.className='art';node.src=u;if(k==='video'){node.muted=true;node.preload='metadata';node.src=u+'#t=0.5'}node.alt='';el.prepend(node)}else{el.classList.add('aud')}}}
+  if((k==='image'&&!/svg/.test(m.type))||k==='video'){const u=await mediaURL(id);const node=document.createElement(k==='image'?'img':'video');node.className='art';node.src=u;if(k==='video'){node.muted=true;node.preload='metadata';node.src=u+'#t=0.5'}node.alt='';el.prepend(node)}else{el.classList.add('aud')}}}
 async function renderContainer(){const c=byId(nav.id);const chatOpen=!!nav.chat;const full=(c.restored?'(Restored) ':'')+c.name;
   main.innerHTML=`<section class="cview ${chatOpen?'chatopen':''}" id="cview">
     <div class="ctop"><button class="ibtn" data-act="back" aria-label="Back to Home">${I('back')}</button>
-      <div class="cname"><button class="mini" data-ren="${c.id}" aria-label="Rename container">${I('pen')}</button><span class="t">${esc(full)}</span><button class="mini" data-del="${c.id}" aria-label="Delete container">${I('trash')}</button></div><span style="width:42px"></span></div>
+      <div class="cname"><button class="mini" data-ren="${c.id}" aria-label="Rename container">${I('pen')}</button><span class="t">${esc(full)}</span><button class="mini" data-del="${c.id}" aria-label="Delete container">${I('trash')}</button></div><button class="ibtn" data-act="req" title="Recorded user requirement" aria-label="Recorded user requirement">${I('doc')}</button></div>
     <div class="tools">
-      <label class="tbtn" id="upBtn" title="Upload photos, videos or audio" aria-label="Upload photos, videos or audio" tabindex="0" role="button">${I('upload')}<input type="file" id="upIn" accept="image/*,video/*,audio/*" multiple hidden></label>
-      <button class="tbtn" data-act="yt" title="Add YouTube link" aria-label="Add YouTube link">${I('link')}</button>
-      <button class="tbtn" data-act="req" title="Recorded user requirement" aria-label="Recorded user requirement">${I('doc')}</button>
-      <button class="tbtn ${chatOpen?'on':''}" data-act="chat" title="Messages" aria-label="${chatOpen?'Close messages':'Open messages'}" aria-pressed="${chatOpen}">${I('chat')}</button></div>
+      <label class="tbtn" id="galBtn" title="Photos and videos from your gallery" aria-label="Add photos and videos from your gallery" tabindex="0" role="button">${I('gallery')}<input type="file" id="galIn" accept="image/*,video/*" multiple hidden></label>
+      <label class="tbtn" id="fileBtn" title="Documents and music" aria-label="Add documents or music" tabindex="0" role="button">${I('files')}<input type="file" id="fileIn" accept=".pdf,.doc,.docx,.txt,.csv,.md,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,audio/*" multiple hidden></label>
+      <button class="tbtn" data-act="yt" title="Add YouTube link" aria-label="Add YouTube link">${I('link')}</button></div>
     <div class="stage"><div class="preview" id="preview">${await previewInner(c)}</div><div id="stripbox">${stripHTML(c)}</div></div>
+    <button class="msgbtn ${chatOpen?'on':''}" data-act="chat" title="Messages" aria-label="${chatOpen?'Close messages':'Type a message'}" aria-pressed="${chatOpen}">${I('chat')}</button>
     ${chatOpen?chatHTML(c):''}</section>`;
   if(nav.v!=='container'||nav.id!==c.id)return;const pv=$('#preview');pv.classList.toggle('isvideo',!!pv.querySelector('video'));
-  $('#upIn').onchange=e=>{const fs=[...e.target.files];e.target.value='';uploadFiles(c,fs)};fillStripThumbs(c);const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight}
+  for(const id of ['#galIn','#fileIn']){$(id).onchange=e=>{const fs=[...e.target.files];e.target.value='';uploadFiles(c,fs)}}fillStripThumbs(c);const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight}
 async function renderPreviewOnly(){if(nav.v!=='container')return;const c=byId(nav.id);const pv=$('#preview');if(!c||!pv)return;pv.innerHTML=await previewInner(c);pv.classList.toggle('isvideo',!!pv.querySelector('video'))}
 async function renderAfterChange(c){if(nav.v==='container'&&nav.id===c.id){await renderPreviewOnly();const sb=$('#stripbox');if(sb){sb.innerHTML=stripHTML(c);fillStripThumbs(c)}}else if(nav.v==='home')renderHome()}
 function chatHTML(c){const ms=c.chat.length?c.chat:[{me:false,t:'Type a request or a command, or paste a video or image script here. I will read it and reply.'}];
   return `<div class="chat" role="region" aria-label="Messages"><div class="grab"></div><div class="msgs" id="msgs" aria-live="polite">${ms.map(m=>`<div class="msg ${m.me?'me':'app'}"><span class="who">${m.me?'You':'Spoken PixelCraft'}</span><div class="b">${esc(m.t)}</div></div>`).join('')}</div>
     <div class="compose"><textarea id="ta" rows="1" placeholder="Type or paste here" aria-label="Message"></textarea><button class="send" data-act="send" aria-label="Send">${I('send')}</button></div></div>`}
 function toggleChat(open){if(nav.v!=='container')return;const c=byId(nav.id),cv=$('#cview');nav.chat=open;history.replaceState(nav,'');if(!c||!cv)return render();
-  document.body.classList.toggle('chatopen',open);cv.classList.toggle('chatopen',open);const btn=cv.querySelector('[data-act=chat]');if(btn){btn.classList.toggle('on',open);btn.setAttribute('aria-pressed',open);btn.setAttribute('aria-label',open?'Close messages':'Open messages')}
+  document.body.classList.toggle('chatopen',open);cv.classList.toggle('chatopen',open);const btn=cv.querySelector('.msgbtn');if(btn){btn.classList.toggle('on',open);btn.setAttribute('aria-pressed',open);btn.setAttribute('aria-label',open?'Close messages':'Type a message')}
   const ex=cv.querySelector('.chat');if(open&&!ex){cv.insertAdjacentHTML('beforeend',chatHTML(c));const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight;if(matchMedia('(min-width:900px)').matches)setTimeout(()=>{const ta=$('#ta');if(ta)ta.focus()},80)}
   else if(!open&&ex){ex.remove();cv.classList.remove('kb');document.body.classList.remove('kb')}}
 function renderChatOnly(){if(nav.v!=='container'||!nav.chat)return;const c=byId(nav.id),m=$('#msgs');if(!m||!c)return;m.innerHTML=c.chat.map(x=>`<div class="msg ${x.me?'me':'app'}"><span class="who">${x.me?'You':'Spoken PixelCraft'}</span><div class="b">${esc(x.t)}</div></div>`).join('');m.scrollTop=m.scrollHeight}
@@ -1970,7 +2239,8 @@ function renderMenu(){const n=S.keys.length;
     ${row('voice','voice','Voice',(S.voice==='female'?'Female voice':'Male voice')+' · '+({natural:'natural voice ready',downloading:'natural voice preparing',device:'device voice'}[Voice.status()]))}
     <button class="row" data-act="voiceoff" aria-pressed="${S.voiceOff}"><span class="ric">${I('mute')}</span><span class="rtx"><span class="rt">Disable voice mode</span><span class="rsub">${S.voiceOff?'Voice is off. Type in the messages panel.':'Voice is on'}</span></span><span class="switch ${S.voiceOff?'on':''}" aria-hidden="true"></span></button>
     ${row('backup','backup','Backup',Backup.mode?('Set up'+(Backup.needPerm?', needs permission':'')):'Not set up')}
-    ${row('about','info','About','How Spoken PixelCraft works')}</div></section>`}
+    ${row('about','info','About','How Spoken PixelCraft works')}
+    ${installEvt&&!isStandalone()?`<button class="row" data-act="install"><span class="ric">${I('install')}</span><span class="rtx"><span class="rt">Install app</span><span class="rsub">Open full screen from its own icon</span></span>${I('chev','chev')}</button>`:''}</div></section>`}
 function renderKeys(){
   main.innerHTML=`<section class="view">${vtitle('API keys')}<div class="list">
     <div class="card"><p class="note">A free Google key lets Spoken PixelCraft understand you. Create keys in several Google projects and save them all: they work together, share the work, and take over when one runs out of its free limit.</p>
@@ -1980,7 +2250,10 @@ function renderVoice(){const st=Voice.status(),pct=Math.round(Voice.progress*100
   main.innerHTML=`<section class="view">${vtitle('Voice')}<div class="list"><div class="card"><h2>Speaking voice</h2>
     <div class="seg" role="group" aria-label="Speaking voice"><button data-vc="female" aria-pressed="${S.voice==='female'}">Female</button><button data-vc="male" aria-pressed="${S.voice==='male'}">Male</button></div>
     <p class="note" id="vstat">${st==='natural'?'The natural voice is ready on this device.':st==='downloading'?'The natural voice is being prepared.':'The natural voice could not load, so the device voice is used for now.'} </p></div>
-    <div class="card"><h2>Listening</h2><p class="note">I listen in English with an offline speech model on this device, in one steady session without beeps. ${Listen.engine==='local'?'The speech model is ready.':Listen.engine==='ai'?'The offline speech model could not load, so your API key is used to understand speech.':Listen.engine==='browser'?'The browser\'s own recognition is used for now; it may beep on some phones.':'The speech model is being prepared.'} Unclear speech is checked with Google's AI when a key is saved.</p></div></div></section>`}
+    <div class="card"><h2>Status check</h2><ul class="diag">${[['voice','Natural voice',Voice.ready?{st:'ok',msg:'Ready'}:Voice.failed?{st:'fail',msg:'Could not load; the device voice is used'}:{st:'warn',msg:'Loading'}],['mic','Microphone',Diag.mic||{st:'warn',msg:'Not started yet'}],
+      ['ears','Understanding speech',Listen.engine==='ai'?{st:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<60000)?'fail':'ok',msg:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<60000)?Diag.ai.msg:'Google AI with your key'}:Listen.engine==='local'?{st:'ok',msg:'Offline speech model'}:Listen.engine==='browser'?{st:'warn',msg:'Browser recognition'}:{st:'warn',msg:'Speech model loading'}],
+      ['keys','Google AI keys',G.active().length?{st:'ok',msg:G.active().length+' working'}:{st:'warn',msg:'None saved'}]].map(([k,t,d])=>`<li class="${d.st}"><span class="dot2"></span><b>${t}</b><span>${esc(d.msg)}</span></li>`).join('')}</ul></div>
+    <div class="card"><h2>Listening</h2><p class="note">I listen in English with an offline speech model on this device, in one steady session without beeps. ${Listen.engine==='local'?'The speech model is ready.':Listen.engine==='ai'?'With your key, Google\'s AI understands your speech for best accuracy; the offline model is the backup.':Listen.engine==='browser'?'The browser\'s own recognition is used for now; it may beep on some phones.':'The speech model is being prepared.'} Unclear speech is checked with Google's AI when a key is saved.</p></div></div></section>`}
 async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()}catch(e){}if(nav.v!=='backup')return;
   const groups=[];for(const e of list){const g=groups.find(x=>Math.abs(x.t-e.t)<60000);if(g)g.names.push(e.name);else groups.push({t:e.t,names:[e.name]})}
   main.innerHTML=`<section class="view">${vtitle('Backup')}<div class="list">
@@ -2013,7 +2286,7 @@ const ABOUT=[
 let openSec=0;
 function renderAbout(){main.innerHTML=`<section class="view">${vtitle('About')}<div class="acc">${ABOUT.map((s,i)=>`<div class="sec ${i===openSec?'open':''}"><button class="sech" data-sec="${i}" aria-expanded="${i===openSec}"><span class="ric">${I(s[0])}</span><span class="tx">${s[1]}</span>${I('chev','chev')}</button><div class="secb"><div><div class="in">${s[2]}</div></div></div></div>`).join('')}</div></section>`}
 function onKeysChanged(){if(nav.v==='keys')renderKeys();else if(nav.v==='home'&&!liveCS().length)renderHome()}
-let vsT=0;function onVoiceStatus(){if(nav.v==='voice'&&Date.now()-vsT>800){vsT=Date.now();renderVoice()}}
+let vsT=0;function onVoiceStatus(){if(nav.v==='voice'&&Date.now()-vsT>600){vsT=Date.now();renderVoice()}}
 
 /* ---------- sheets and dialogs ---------- */
 const layer=$('#layer');
@@ -2029,26 +2302,46 @@ function openRequirement(refresh){const c=byId(nav.id);if(!c)return;const g=reqS
   $('#reqspk').onclick=function(){if(reqSpeaking){Voice.stop();reqSpeaking=false;this.classList.remove('on');this.setAttribute('aria-pressed','false');return}
     reqSpeaking=true;this.classList.add('on');this.setAttribute('aria-pressed','true');const b=this,wasOff=S.voiceOff;S.voiceOff=false;
     Voice.say(reqSections(c).map(x=>x.heading+'. '+x.text).join(' ')).then(()=>{reqSpeaking=false;b.classList.remove('on');b.setAttribute('aria-pressed','false')});S.voiceOff=wasOff}}
-function glow(ctrl){const sel={upload:'#upBtn',link:'[data-act=yt]',download:'#dlgo, .dl',backup:'[data-act=setbk]',messages:'[data-act=chat]',requirement:'[data-act=req]',new:'.fab'}[ctrl];
+function glow(ctrl){const sel={upload:'#galBtn',gallery:'#galBtn',files:'#fileBtn',link:'[data-act=yt]',download:'#dlgo, [data-act=download]',share:'[data-act=share]',backup:'[data-act=setbk]',messages:'.msgbtn',requirement:'[data-act=req]',new:'.fab',install:'[data-act=install]'}[ctrl]||'#galBtn';
   if(ctrl==='backup'&&nav.v!=='backup')go('backup');if(ctrl==='new'&&nav.v!=='home')goHome();
   setTimeout(()=>{const el=document.querySelector(sel);if(el){el.classList.remove('glow');void el.offsetWidth;el.classList.add('glow');el.focus&&el.focus({preventScroll:true});setTimeout(()=>el.classList.remove('glow'),4200)}},350)}
 
 /* ---------- uploads, versions, deletion ---------- */
-async function uploadFiles(c,files){if(!files.length)return;let n=0;
-  for(const f of files){const k=(f.type||'').split('/')[0];if(!['image','video','audio'].includes(k)){toast(f.name+' is not a photo, video or audio file.');continue}
-    const meta=await probe(f);const id=await addMedia(c.id,f,{name:f.name});c.media.push({id,type:f.type,name:f.name,size:f.size,w:meta.w,h:meta.h,duration:meta.duration});c.sel={t:'m',id};n++;
-    if(!c.thumb&&k!=='audio')c.thumb=await makeThumb(f);if(!c.kind)c.kind=k==='audio'?null:k}
-  if(!n)return;await saveC(c);renderAfterChange(c);const msg=n>1?`${n} files added.`:'Added.';toast(msg+(n&&files.some(f=>f.size>500*1048576)?' Large files are edited directly from your device storage.':''));
-  if(Session.active&&!S.voiceOff&&!Brain.busy&&!Rec.active)Voice.say(n>1?`I have your ${n} files. What would you like to do with them?`:'Got it. What would you like to do with it?')}
-async function deleteVersion(c,i){const v=c.versions[i];if(!v)return;c.versions.splice(i,1);await delMedia(v.id);if(c.sel&&c.sel.id===v.id)c.sel=null;await refreshThumb(c);await saveC(c);renderAfterChange(c)}
+async function uploadFiles(c,files){if(!files.length)return;let n=0;const blurry=[];
+  for(const f of files){const k=(f.type||'').split('/')[0];const isDoc=!['image','video','audio'].includes(k);
+    if(isDoc&&!/pdf|word|officedocument|text|rtf|csv|markdown/.test(f.type||'')&&!/\.(pdf|docx?|txt|csv|md|rtf)$/i.test(f.name)){toast(f.name+' is not a supported file.');continue}
+    const meta=isDoc?{}:await probe(f);const type=f.type||(/\.pdf$/i.test(f.name)?'application/pdf':/\.docx$/i.test(f.name)?'application/vnd.openxmlformats-officedocument.wordprocessingml.document':'text/plain');
+    const id=await addMedia(c.id,f,{name:f.name});const item={id,type,name:f.name,size:f.size,w:meta.w,h:meta.h,duration:meta.duration};
+    if(isDoc){item.text=await docText(f,f.name)||'';if(!item.text&&/doc$/i.test(f.name))item.note='Old Word format; save as DOCX or PDF for best results'}
+    if(k==='image'){const q=await sharpness(f);if(q){item.quality=q;if(q.blurry)blurry.push(item)}}
+    c.media.push(item);c.sel={t:'m',id};n++;if(!c.thumb&&(k==='image'||k==='video'))c.thumb=await makeThumb(f);if(!c.kind&&(k==='image'||k==='video'))c.kind=k}
+  if(!n)return;await saveC(c);renderAfterChange(c);toast(n>1?`${n} files added.`:'Added.');
+  if(blurry.length){const b=blurry[0];const note=`[app] The user uploaded ${b.name} (media_id ${b.id}); it looks blurry or small (${b.quality.w} by ${b.quality.h} pixels). Tell the user and offer to redraw it sharply as a vector, asking whether to keep both versions to compare or only the redrawn one.`;
+    handleText(note,'voice',{fallback:()=>reply(Local.ask('This picture looks a little blurry or small. If it is a logo, I can try to redraw it sharply. Would you like that?',
+      ()=>Local.ask('Shall I keep both versions so you can compare, or only the redrawn one? Say both, or only the new one.',()=>{redrawThen(c,b.id,false);return 'Redrawing it now. You will have both to compare.'},()=>{redrawThen(c,b.id,true);return 'Redrawing it now. I will remove the blurry one afterwards.'},
+        s=>/\bboth\b/.test(s)?(redrawThen(c,b.id,false),'Redrawing it now. You will have both to compare.'):/only|new one|redrawn/.test(s)?(redrawThen(c,b.id,true),'Redrawing it now. I will remove the blurry one afterwards.'):undefined),
+      ()=>'Okay, I will use it as it is.'),'voice')});return}
+  const docs=files.filter(f=>!/^(image|video|audio)\//.test(f.type||''));
+  if(Session.active&&!S.voiceOff&&!Brain.busy&&!Rec.active)Voice.say(docs.length?'I have your document. What would you like me to make with it?':n>1?`I have your ${n} files. What would you like to do with them?`:'Got it. What would you like to do with it?')}
+async function redrawThen(c,id,removeOld){const before=c.versions.length;genTool('redraw_logo',c,{media_id:id,keep_previous:true,summary:'Redrawn logo'});if(!removeOld)return;await sleep(300);while(Gen.running||Gen.queue.length)await sleep(500);if(c.versions.length>before)deleteUpload(c,id)}
+async function deleteVersion(c,i){const v=c.versions[i];if(!v)return;c.versions.splice(i,1);await delMedia(v.id);if(v.svg)await delMedia(v.svg);if(c.sel&&c.sel.id===v.id)c.sel=null;await refreshThumb(c);await saveC(c);renderAfterChange(c)}
 async function deleteUpload(c,id){const i=c.media.findIndex(m=>m.id===id);if(i<0)return;c.media.splice(i,1);await delMedia(id);if(c.sel&&c.sel.id===id)c.sel=null;await refreshThumb(c);await saveC(c);renderAfterChange(c)}
 async function refreshThumb(c){const it=await currentItem(c);if(!it){c.thumb=null;c.kind=null;return}if(it.kind==='audio')return;const m=await DB.get('media',it.sel.id);if(m){c.thumb=await makeThumb(m.blob);c.kind=it.kind}}
 async function softDelete(c){c.deleted=Date.now();await saveC(c,false);if(nav.v==='container'&&nav.id===c.id)goHome();else render();toast('Deleted. Say "undo" or "bring it back" until tomorrow.')}
 function setVoiceOff(off){S.voiceOff=off;saveS();if(off){Voice.stop();Session.stop()}else if(started&&(Listen.ready()||Listen.engine==='browser'))Session.start();render()}
 
+/* ---------- share: hands the file to WhatsApp, Instagram, Facebook and other apps ---------- */
+async function shareCurrent(){const c=byId(nav.id);const it=await currentItem(c);if(!it||it.kind==='doc')return toast('Nothing to share yet.');const m=await DB.get('media',it.sel.id);if(!m)return;
+  const ext=(m.type.split('/')[1]||'bin').split(';')[0].replace('jpeg','jpg').replace('svg+xml','svg');const file=new File([m.blob],(c.name.replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')||'Spoken_PixelCraft')+'.'+ext,{type:m.type});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:c.name});return}catch(e){if(e.name==='AbortError')return}}
+  toast('Sharing files is not supported in this browser. Use Download instead.')}
+function micStatusLine(){if(Listen.on&&Listen.lastLvl)return 'I am listening.';if(Listen.err==='denied')return 'The microphone is blocked. Please allow the microphone for this app, then tap the microphone again.';if(Listen.err==='nomic')return 'I could not open the microphone. Please check that the microphone is allowed for this app and not in use by a call, then tap the microphone again.';
+  return 'The microphone is not delivering any sound. Please check that no other app, such as a call, is using it, then tap the microphone again.'}
+
 /* ---------- download ---------- */
 async function downloadDialog(c,pre,fname){const it=await currentItem(c);if(!it)return toast('Nothing to download yet.');
-  const fm=it.kind==='video'?['MP4','WebM','MP3','GIF']:it.kind==='audio'?['MP3','Original']:['PNG','JPEG','WebP','GIF'];
+  if(it.kind==='doc')return toast('Documents are used for reading only.');
+  const fm=it.kind==='video'?['MP4','WebM','MP3','GIF']:it.kind==='audio'?['MP3','Original']:(it.meta.svg?['PNG','JPEG','SVG','WebP']:['PNG','JPEG','WebP','GIF']);
   const want=(pre&&pre.length?pre:[fm[0]]).filter(f=>fm.includes(f));if(!want.length)want.push(fm[0]);
   const base=String(fname||c.name).replace(/\.[a-z0-9]{2,4}$/i,'').replace(/[\\/:*?"<>|]+/g,'').trim().slice(0,80)||'Spoken_PixelCraft';
   sheet('Download',`<span class="lbl">File name</span><input class="field" id="fname" value="${esc(base)}" aria-label="File name">
@@ -2061,6 +2354,7 @@ async function doDownload(){const c=byId(nav.id);const it=await currentItem(c);i
   const ext={PNG:['image/png','png'],JPEG:['image/jpeg','jpg'],WebP:['image/webp','webp']};
   for(const f of fmts){try{msg('Preparing '+f+'…');
       if(ext[f]){const out=blob.type===ext[f][0]?blob:await convertImage(blob,ext[f][0]);saveFile(out,name+'.'+ext[f][1])}
+      else if(f==='SVG'){const sv=it.meta.svg&&await DB.get('media',it.meta.svg);if(!sv){msg('SVG is not available for this picture.');continue}saveFile(sv.blob,name+'.svg')}
       else if(f==='GIF')saveFile(await gifFrom(blob,p=>msg('Preparing GIF… '+Math.round(p)+'%')),name+'.gif');
       else if(f==='MP3'){const r=await mp3From(blob);saveFile(r.blob,name+'.'+r.ext);if(r.ext!=='mp3')msg('MP3 was not available, so a WAV sound file was saved.')}
       else if(f==='Original')saveFile(blob,name+'.'+((blob.type.split('/')[1]||'bin').split(';')[0]));
@@ -2092,7 +2386,10 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
     case 'close':closeLayer();break;
     case 'new':nameDialog('New container','Container '+(liveCS().length+1),async v=>{const k=newContainer(v);CS.push(k);await saveC(k);go('container',{id:k.id})});break;
     case 'reccancel':Rec.cancel();break;case 'recstop':Rec.stop();break;
-    case 'voice':if(S.voiceOff)break;if(Rec.active){Rec.stop();break}if(Session.active||Voice.speaking){Voice.stop();Session.stop()}else{Voice.unlock();if(!Listen.ready()&&Listen.engine!=='browser'){toast('Voice will start as soon as the essential components are ready.');Session.start();break}Session.start().then(()=>Voice.say('I am listening.'))}break;
+    case 'voice':if(S.voiceOff)break;if(Rec.active){Rec.stop();break}if(Session.active||Voice.speaking){Voice.stop();Session.stop()}else{Voice.unlock();Listen.prepare().catch(()=>{});
+      if(!Listen.chooseEngine()){toast('Voice will start as soon as the speech model is ready.');Session.start();break}Session.start().then(()=>Voice.say(micStatusLine()))}break;
+    case 'share':shareCurrent();break;
+    case 'install':doInstall();break;case 'installno':dismissInstall();break;
     case 'voiceoff':setVoiceOff(!S.voiceOff);break;
     case 'yt':sheet('Add YouTube link',`<input class="field" id="yt" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=" aria-label="YouTube link"><p class="note">The app watches the video to understand it, so it can create something in a similar style. YouTube videos cannot be downloaded.</p><button class="pbtn prime" data-act="ytsave">${I('link')} Add link</button>`);break;
     case 'ytsave':{const v=$('#yt').value.trim();if(!/^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\//i.test(v)){toast('Paste a full YouTube link.');break}closeLayer();if(c){c.links=[...new Set([...(c.links||[]),v])];saveC(c)}toast('Link added for the AI to watch.');if(!S.voiceOff&&Session.active)Voice.say('Link added. What would you like me to do with it?');break}
@@ -2185,25 +2482,39 @@ function setBar(pct,text,state){const bar=$('#setupbar');if(!bar)return;bar.hidd
   const p=$('#sbp');if(p)p.textContent=state==='done'?'':Math.round(pct)+'%';const t=$('#sbt');if(t&&text)t.textContent=text}
 function hideBar(ms){setTimeout(()=>{const b=$('#setupbar');if(b&&b.dataset.state==='done')b.hidden=true},ms)}
 /* loads (or downloads) the voice engine and the speech model in parallel */
-async function loadEssentials(onTick){const iv=setInterval(()=>onTick&&onTick(Essentials.pct()*100),350);
-  const v=Voice.load().catch(e=>{throw e}),s=Listen.loadModel().catch(e=>e);
-  try{await v;const r=await s;if(r instanceof Error&&!G.active().length&&!SR)throw r}finally{clearInterval(iv)}}
-async function startSetup(){if(setupRunning)return;setupRunning=true;Voice.unlock();started=true;const card=$('#setupcard');if(card)card.remove();
+/* with a working key, Google understands speech, so only the voice is essential; the offline model loads later */
+async function loadEssentials(onTick,force){const needModel=force||!G.active().length;Essentials.EXPECT=(needModel?155:92)*1048576;if(!needModel)Essentials.s={l:0,t:0};
+  const iv=setInterval(()=>onTick&&onTick(Essentials.pct()*100),350);
+  const v=Voice.load(),s=needModel?Listen.loadModel().catch(e=>e):null;
+  try{await v;const r=s&&await s;if(r instanceof Error&&!G.active().length&&!SR)throw r}finally{clearInterval(iv)}
+  if(!needModel&&!Listen.modelLoaded)Bg.add('speech-model',()=>Listen.loadModel().catch(()=>{}))}
+async function startSetup(){if(setupRunning)return;setupRunning=true;Voice.unlock();Listen.prepare().catch(()=>{});started=true;const card=$('#setupcard');if(card)card.remove();
   setBar(0,'Importing critical components for initial app setup','run');$('#sbmore').hidden=false;render();
-  try{await loadEssentials(p=>setBar(p,null,'run'));setBar(100,'Setup complete. Everything is ready.','done');LS.set('spc.setup',1);hideBar(2600);setupRunning=false;
+  try{await loadEssentials(p=>setBar(p,null,'run'),true);setBar(100,'Setup complete. Everything is ready.','done');LS.set('spc.setup',1);hideBar(2600);setupRunning=false;
     if(!S.voiceOff){await Session.start();Voice.say(readyMessage())}
     Voice.synthRaw(Voice.sentences(PHRASES[0])[0]).then(()=>Voice.synthRaw(Voice.sentences(PHRASES[0])[1])).catch(()=>{});queueBackground()}
   catch(e){setupRunning=false;setBar(Essentials.pct()*100,'The download paused. Check your connection, then tap Retry.','fail')}}
 function readyMessage(){const p=LS.get('spc.pending'),pc=p&&byId(p.cid);if(p&&!pc)LS.del('spc.pending');
-  if(pc)return `The program is now ready. Last time, the generation in ${pc.name} from ${fmtDate(p.t)} was interrupted: ${p.summary}. Would you like me to continue it, or drop it?`;
-  if(!G.active().length)return 'The program is now ready and completely functional. How may I help you today? To start creating with me, please add a free API key in the menu, under API keys. You can ask me how.';
-  return 'The program is now ready and completely functional. How may I help you today?'}
+  const micOk=S.voiceOff||(Listen.on&&Listen.lastLvl);const mic=micOk?'':' '+micStatusLine();
+  if(pc)return `The program is now ready. Last time, the generation in ${pc.name} from ${fmtDate(p.t)} was interrupted: ${p.summary}. Would you like me to continue it, or drop it?`+mic;
+  if(!G.active().length)return (micOk?'The program is now ready and completely functional. How may I help you today?':'The program is ready.')+mic+' For full AI assistance, please add a free API key in the menu, under API keys. You can ask me how.';
+  return (micOk?'The program is now ready and completely functional. How may I help you today?':'The program is ready.')+mic}
 /* background work: low priority, pauses while the user interacts */
 const STARTER=['sunset sky','beach','mountains','flowers','forest','city skyline night','coffee cup','birthday cake','balloons','gift box','diya lamp','christmas tree','fireworks','rangoli','kerala backwaters','paper texture','abstract background','bokeh lights','food platter','tea'];
 function queueBackground(){Bg.add('fonts',()=>ensureFonts());Bg.add('encoders',()=>FX.call('warm'));Bg.add('phrases',()=>Voice.precache(PHRASES));
   Bg.add('help-voice',()=>Voice.precache(HELP.map(h=>h.a+(h.offer?' '+h.offer:''))));
   Bg.add('cutout',()=>Promise.race([SEG.call('warm'),sleep(900000)]));
   if(!LS.get('spc.starter'))Bg.add('starter',async()=>{for(const q of STARTER){while(!Bg.free())await sleep(1500);try{await Lib.searchImages(q,2)}catch(e){}}LS.set('spc.starter',1)})}
+
+/* ---------- install as an app: own prompt with Install and Cancel icons ---------- */
+let installEvt=null;const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(nav.v==='menu')renderMenu();if(!LS.get('spc.noinstall')&&!isStandalone())setTimeout(showInstallCard,started?600:2500)});
+window.addEventListener('appinstalled',()=>{installEvt=null;const el=$('#installcard');if(el)el.remove();toast('Installed. Open Spoken PixelCraft from its icon.')});
+function showInstallCard(){if(!installEvt||$('#installcard')||$('#setupcard'))return;const el=document.createElement('div');el.id='installcard';el.className='installcard';el.setAttribute('role','dialog');el.setAttribute('aria-label','Install Spoken PixelCraft');
+  el.innerHTML=`<div class="ictext"><b>Install Spoken PixelCraft</b><span>Full screen, from its own icon</span></div><button class="iconbtn no" data-act="installno" aria-label="Cancel" title="Cancel">${I('x')}</button><button class="iconbtn yes" data-act="install" aria-label="Install" title="Install">${I('install')}</button>`;document.body.appendChild(el)}
+async function doInstall(){const el=$('#installcard');if(el)el.remove();if(!installEvt){toast('Use Chrome\'s menu, then Install app.');return}const ev=installEvt;installEvt=null;try{await ev.prompt();const r=await ev.userChoice;if(r&&r.outcome!=='accepted')LS.set('spc.noinstall',1)}catch(e){}if(nav.v==='menu')renderMenu()}
+function dismissInstall(){LS.set('spc.noinstall',1);const el=$('#installcard');if(el){el.classList.add('out');setTimeout(()=>el.remove(),700)}}
+if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
 /* ---------- start ---------- */
 let started=false,hiddenAt=0;
@@ -2212,13 +2523,13 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=D
   if(Session.active&&!Session.paused){wakeOn();if(Listen.ready()||Listen.engine==='browser')Listen.start().catch(()=>{});if(Date.now()-hiddenAt>8000&&!Gen.running&&!Rec.active)Voice.say('I am listening.')}else if(Gen.running||Rec.active)wakeOn()});
 window.addEventListener('pageshow',e=>{if(e.persisted&&Session.active)Listen.start().catch(()=>{})});
 window.addEventListener('pagehide',()=>{if(nav.v==='container'){const c=byId(nav.id);if(c&&dirty.has(c.id))Backup.leave(c)}});
-async function begin(){if(started)return;started=true;const st=$('#start');if(st)st.remove();Voice.unlock();
+async function begin(){if(started)return;started=true;const st=$('#start');if(st)st.remove();Voice.unlock();const mic=S.voiceOff?null:Listen.prepare().catch(()=>{});
   if(Backup.needPerm)Backup.allow();
   const welcome=PHRASES[0];if(!S.voiceOff)Voice.say(welcome);
   setBar(2,'Loading the essential components into memory','run');
   try{await loadEssentials(p=>setBar(Math.max(3,p),null,'run'));setBar(100,'Ready.','done');hideBar(1500)}catch(e){setBar(Essentials.pct()*100,'The components could not load. Check your connection, then tap Retry.','fail');}
   queueBackground();
-  if(S.voiceOff)return;await Session.start();Voice.say(readyMessage())}
+  if(S.voiceOff)return;await mic;await Session.start();Voice.say(readyMessage())}
 (async()=>{applyMode();try{await DB.open()}catch(e){toast('This browser blocked storage. Your work cannot be saved here.')}
   try{CS=(await DB.all('containers'))||[]}catch(e){CS=[]}await Backup.init();
   history.replaceState({v:'home',depth:0},'');nav={v:'home',depth:0};render();setPill();
