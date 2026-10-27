@@ -732,6 +732,91 @@ body.manual .vdock,body.manual .msgbtn,body.manual .reqbtn,body.manual .reqpanel
 .edpanel.full{flex:1 1 auto;max-height:none;border-top:0}
 .wave{width:100%;height:110px;border-radius:12px;background:var(--surface2);display:block;margin:4px 0 10px}
 .trackbox{margin-top:12px;padding:12px;border-radius:16px;border:1.5px solid color-mix(in srgb,var(--accent) 45%,var(--line2));background:var(--surface2)}
+/* ================= v6: wider palette, thicker accents, strong selected state, 4 per row, library and backup ================= */
+:root,[data-mode="dark"]{--sky:#38BDF8;--lblue:#93C5FD;--navy:#3B5BDB;--lcyan:#A5F3FC;--dcyan:#0E7490;--grey:#9AA3AE;--lgrey:#D5DAE0;--dgrey:#3A4049;--stripe:#FFFFFF}
+[data-mode="light"]{--sky:#0284C7;--lblue:#2563EB;--navy:#1E3A8A;--lcyan:#0891B2;--dcyan:#0E7490;--grey:#6B7280;--lgrey:#E5E7EB;--dgrey:#374151;--stripe:#111316}
+.acc-sky{--acc:var(--sky)}.acc-navy{--acc:var(--navy)}.acc-dcyan{--acc:var(--dcyan)}.acc-lblue{--acc:var(--lblue)}
+/* the band under the header: thick black (light) or white (dark) stripe with amber and cyan inserts */
+.rule{height:5px!important;border:0!important;background:linear-gradient(90deg,var(--stripe) 0 56%,var(--c-amber) 56% 70%,var(--c-cyan) 70% 84%,var(--navy) 84% 92%,var(--sky) 92%)!important;opacity:1!important;margin:0!important}
+/* header icons: each with its own colour */
+.hbtns{display:flex;gap:9px;align-items:center}
+.hdr .ibtn{width:40px;height:40px;border-width:2px}
+#modeBtn{color:var(--sky);border-color:color-mix(in srgb,var(--sky) 70%,var(--ink))}
+#helpBtn{color:var(--c-amber);border-color:color-mix(in srgb,var(--c-amber) 75%,var(--ink))}
+#menuBtn{color:var(--c-cyan);border-color:color-mix(in srgb,var(--c-cyan) 75%,var(--ink))}
+/* selected state: the icon whose page or panel is open fills completely with colour and glows; tapping it again closes it */
+@keyframes selglow{0%,100%{box-shadow:0 0 0 4px color-mix(in srgb,var(--selc,var(--c-cyan)) 35%,transparent),0 0 16px color-mix(in srgb,var(--selc,var(--c-cyan)) 55%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--selc,var(--c-cyan)) 45%,transparent),0 0 26px color-mix(in srgb,var(--selc,var(--c-cyan)) 75%,transparent)}}
+#helpBtn{--selc:var(--c-amber)}#menuBtn{--selc:var(--c-cyan)}.reqbtn{--selc:var(--c-cyan)}.msgbtn{--selc:var(--sky)}
+.ibtn.on,.ibtn[aria-pressed="true"],.msgbtn.on,.reqbtn.on,#helpBtn.on,#menuBtn.on{background:var(--selc,var(--c-cyan))!important;color:#06121A!important;border-color:transparent!important;animation:selglow 2.4s ease-in-out infinite}
+.ibtn.on svg.i,#menuBtn.on svg.i,#helpBtn.on svg.i{color:#06121A!important;stroke-width:2.4}
+.edtab.on{background:var(--c-cyan);color:#06121A;box-shadow:0 0 0 3px color-mix(in srgb,var(--c-cyan) 35%,transparent),0 0 16px color-mix(in srgb,var(--c-cyan) 50%,transparent)}
+.edtab:nth-child(3n+2) svg.i{color:var(--c-amber)}.edtab:nth-child(3n) svg.i{color:var(--sky)}.edtab.on svg.i{color:#06121A!important}
+/* the plus icon sits higher: about a fifth of the screen above the bottom */
+.fab{bottom:calc(20vh + env(safe-area-inset-bottom,0px))!important;border:3px solid var(--stripe)!important}
+/* four containers per row on phones */
+@media (max-width:699px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px 8px!important}
+  .tile{border-radius:14px}
+  .cell .tile::before{width:4px}
+  .badge{right:4px;bottom:4px;width:20px;height:20px;border-radius:6px}.badge svg.i{width:12px;height:12px}
+  .cap{flex-wrap:wrap;justify-content:space-between;gap:2px}
+  .cap .t{order:-1;flex:1 1 100%;font-size:.66rem;padding-top:1px}
+  .cap .mini{width:24px!important;height:24px!important;border-radius:8px}.cap .mini svg.i{width:14px!important;height:14px!important}
+}
+/* thicker accents on cards and rows */
+.card{border-width:1.5px;border-color:color-mix(in srgb,var(--ink) 18%,transparent);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:var(--cardc,var(--c-cyan))}
+.list>.card:nth-of-type(4n+1){--cardc:var(--c-cyan)}.list>.card:nth-of-type(4n+2){--cardc:var(--c-amber)}.list>.card:nth-of-type(4n+3){--cardc:var(--sky)}.list>.card:nth-of-type(4n+4){--cardc:var(--stripe)}
+.vtitle h1{border-bottom:4px solid var(--stripe);padding-bottom:4px;display:inline-block}
+.htitle{border-left:5px solid var(--c-amber);padding-left:10px}
+.row{border-left:4px solid var(--rowc,var(--c-cyan))!important}
+.row:nth-child(4n+2){--rowc:var(--c-amber)}.row:nth-child(4n+3){--rowc:var(--sky)}.row:nth-child(4n+4){--rowc:var(--navy)}
+.row:nth-child(4n+2) .ric{color:var(--c-amber)}.row:nth-child(4n+3) .ric{color:var(--sky)}.row:nth-child(4n+4) .ric{color:var(--navy)}
+.pacts .dl[data-act="addlib"] svg.i{color:var(--c-amber)}.pacts .dl[data-act="share"] svg.i{color:var(--sky)}.pacts .dl[data-act="download"] svg.i{color:var(--c-cyan)}
+.chip{border-width:1.5px}
+.seg button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--glow),0 0 14px color-mix(in srgb,var(--c-cyan) 40%,transparent)}
+.seg.seg4{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px}
+.seg.seg4 button{min-height:52px;font-size:.74rem;flex-direction:column;gap:1px;line-height:1.15;padding:4px 2px}
+.seg.seg4 button small{font-size:.66rem;opacity:.75;font-weight:700}
+.seg.seg2{grid-template-columns:1fr 1fr}
+/* small, neat buttons: icon plus short text */
+.sbtns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 2px}
+.sbtn{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 13px;border-radius:12px;border:1.5px solid color-mix(in srgb,var(--ink) 30%,transparent);background:var(--surface2);color:var(--ink);font-weight:600;font-size:.82rem}
+.sbtn svg.i{width:17px;height:17px;color:var(--c-cyan)}
+.sbtn.prime{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--onsel);border-color:transparent}.sbtn.prime svg.i{color:var(--onsel)}
+.sbtn.warn svg.i{color:var(--del)}.sbtn:active{transform:scale(.96)}.sbtn.busy{opacity:.6;pointer-events:none}
+/* backup */
+.locbtn{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:8px 12px;border-radius:14px;background:var(--surface2);border:1.5px solid color-mix(in srgb,var(--c-amber) 55%,var(--line2));color:var(--ink);font-weight:600;font-size:.9rem;text-align:left}
+.locbtn span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.locbtn svg.i{color:var(--c-amber)}.locbtn svg.i:last-child{color:var(--muted);width:16px}
+.locbtn.static{border-style:dashed}
+.bklist{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.bk{min-height:52px;padding:6px 6px 6px 12px;gap:6px;border-left:4px solid var(--sky)}
+.bk .bt{gap:2px}.bkk{font-size:.7rem!important;font-weight:700;letter-spacing:.02em;color:var(--sky)!important}.bkk.manual{color:var(--c-amber)!important}
+.bk:has(.bkk.manual){border-left-color:var(--c-amber)}
+.bk .mini{width:36px;height:36px;border-radius:11px}.bk .mini svg.i{width:18px;height:18px}
+.bk .mini.rest{color:var(--c-cyan);background:color-mix(in srgb,var(--c-cyan) 14%,transparent)}
+.bk .mini.del{color:var(--del)}
+/* library */
+.libgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:6px 0}
+.libgrid.aud{grid-template-columns:1fr}
+.lpcell{position:relative;display:block;width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--surface2);border:1.5px solid var(--line2)}
+.lpcell img{width:100%;height:100%;object-fit:cover;display:block}
+.lpcell .pk{position:absolute;left:5px;bottom:5px;width:22px;height:22px;border-radius:7px;background:rgba(0,0,0,.62);display:grid;place-items:center}.lpcell .pk svg.i{width:13px;height:13px;color:#fff}
+.lprow{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:6px 12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line2);color:var(--ink);text-align:left;font-size:.84rem}
+.lprow svg.i{color:var(--c-amber);flex:none}.lprow span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.libitem{display:flex;flex-direction:column;gap:4px}.libitem.audio{flex-direction:row;align-items:center}
+.libacts{display:flex;justify-content:space-between;gap:2px}.libitem.audio .libacts{flex:none;gap:4px}
+.libacts .mini{width:28px;height:28px}.libacts .mini svg.i{width:15px;height:15px}
+.libacts .mini:nth-child(1){color:var(--sky)}.libacts .mini:nth-child(2){color:var(--c-cyan)}
+.libview img,.libview video{display:block;max-width:100%;max-height:60vh;margin:0 auto;border-radius:12px}
+#lpmsg:empty{display:none}
+.libtabs{position:sticky;top:0;z-index:3}
+/* swipe feedback */
+.swipenudge-l{animation:nudgel .5s ease}.swipenudge-r{animation:nudger .5s ease}
+@keyframes nudgel{0%{transform:translateX(0)}40%{transform:translateX(-18px);opacity:.7}100%{transform:none}}
+@keyframes nudger{0%{transform:translateX(0)}40%{transform:translateX(18px);opacity:.7}100%{transform:none}}
+.sheet,.reqpanel,.chat{touch-action:pan-y}
+.sheet::before{content:"";display:block;width:44px;height:5px;border-radius:3px;background:var(--line3);margin:-4px auto 8px}
 </style>
 </head>
 <body>
@@ -749,6 +834,7 @@ body.manual .vdock,body.manual .msgbtn,body.manual .reqbtn,body.manual .reqpanel
         <svg class="i moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
         <svg class="i sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       </button>
+      <button class="ibtn" id="helpBtn" aria-label="Help" title="Help"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 0 1 4.8 1c0 1.7-2.4 2.2-2.4 3.8M12 17h.01"/></svg></button>
       <button class="ibtn" id="menuBtn" aria-label="Menu" title="Menu"><svg class="i" viewBox="0 0 24 24"><path d="M5 8h14M5 12h14M5 16h9"/></svg></button>
     </div>
   </header>
@@ -951,7 +1037,7 @@ const Bg={last:Date.now(),tasks:[],running:false,
 const Lib={
   async get(id){const a=await DB.get('assets',id);if(a){a.lastUsed=Date.now();a.uses=(a.uses||0)+1;DB.put('assets',a).catch(()=>{})}return a},
   async put(a){a.lastUsed=Date.now();a.size=a.blob.size;try{await DB.put('assets',a)}catch(e){await this.prune(a.size*4+50*1048576);await DB.put('assets',a)}},
-  async prune(free){const all=await DB.all('assets');all.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));let got=0;for(const a of all){if(got>=free)break;await DB.del('assets',a.id);got+=a.size||0}},
+  async prune(free){if(!(free>0))return;const all=await DB.all('assets');all.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));let got=0;for(const a of all){if(got>=free)break;await DB.del('assets',a.id);got+=a.size||0}},
   async stats(){const all=await DB.all('assets');const st={image:0,audio:0,video:0,bytes:0};for(const a of all){st[a.kind]=(st[a.kind]||0)+1;st.bytes+=a.size||0}return st},
   /* free music by mood: public-domain and CC0 sounds from Openverse, then Wikimedia Commons */
   async searchMusic(q,n=4){q=String(q||'').trim();if(!q)return [];const lq=q.toLowerCase();const all=await DB.all('assets');
@@ -1818,7 +1904,8 @@ const Voice={ready:true,queue:[],speaking:false,gen:0,done:Promise.resolve(),lis
   status(){return 'phone'},
   emit(){this.listeners.forEach(f=>{try{f()}catch(e){}})},
   /* inside a tap: lets the phone speak later without another tap */
-  unlock(){if(this.primed||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);this.primed=true}catch(e){}},
+  unlock(){if(this.primed||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);this.primed=true}catch(e){}
+    if(this.blocked){const b=this.blocked;this.blocked='';setTimeout(()=>this.say(b,{force:true}),150)}},
   clean(t){return String(t||'').replace(/\[(.*?)\]\((.*?)\)/g,'$1').replace(/[*_#`>~|]/g,'').replace(/\s+/g,' ').trim()},
   sentences(t){return (String(t).match(/[^.!?]+[.!?]*\s*/g)||[t]).map(s=>s.trim()).filter(Boolean)},
   say(text,opt={}){if((S.voiceOff||S.manual)&&!opt.force)return Promise.resolve();text=this.clean(text);if(!text)return Promise.resolve();this.queue.push({text});
@@ -1826,16 +1913,18 @@ const Voice={ready:true,queue:[],speaking:false,gen:0,done:Promise.resolve(),lis
     this.done=(async()=>{while(this.queue.length&&g===this.gen){const it=this.queue.shift();this.last=it.text;this.lastAt=Date.now();for(const p of this.sentences(it.text)){if(g!==this.gen)break;await this.device(p,g)}}
       if(g===this.gen){this.speaking=false;this.lastAt=Date.now();setPill();setTimeout(()=>{if(!this.speaking)Listen.setMode('normal')},300)}})();return this.done},
   stop(barge){this.queue=[];this.gen++;this.speaking=false;try{speechSynthesis.cancel()}catch(e){}setPill();if(!barge)Listen.setMode('normal');if(barge)Session.touch()},
-  device(text,g){return new Promise(res=>{if(!('speechSynthesis' in window)||g!==this.gen)return res();const u=new SpeechSynthesisUtterance(text);u.lang='en-IN';u.rate=clamp(num(S.rate,1),.7,1.4);u.pitch=1;const v=pickDeviceVoice('en-IN');if(v){u.voice=v;u.lang=v.lang}
-    let done=false;const fin=()=>{if(!done){done=true;clearTimeout(t);res()}};u.onend=fin;u.onerror=fin;const t=setTimeout(fin,text.length*110+6000);try{speechSynthesis.speak(u)}catch(e){fin()}})},
+  device(text,g){return new Promise(res=>{if(!('speechSynthesis' in window)||g!==this.gen)return res();const u=new SpeechSynthesisUtterance(text);u.rate=clamp(num(S.rate,1),.7,1.4);u.pitch=1;const v=pickDeviceVoice();if(v){u.voice=v;u.lang=v.lang}else u.lang=navigator.language||'en-US';
+    let done=false;const fin=()=>{if(!done){done=true;clearTimeout(t);res()}};u.onend=fin;
+    /* the phone may refuse to speak before the first touch: the words are kept and spoken on the first tap */
+    u.onerror=e=>{if(e&&e.error==='not-allowed'&&!this.primed){this.blocked=(this.blocked?this.blocked+' ':'')+text}fin()};const t=setTimeout(fin,text.length*110+6000);try{speechSynthesis.speak(u)}catch(e){fin()}})},
   voices(){return ('speechSynthesis' in window)?speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)):[]}
 };
-/* prefers a clearly female (or, if chosen, male) English voice on this phone; a voice picked in Menu, Voice wins */
-function pickDeviceVoice(lang){const vs=('speechSynthesis' in window)?speechSynthesis.getVoices():[];if(S.voiceName){const f=vs.find(v=>v.name===S.voiceName);if(f)return f}
+/* the phone's own default text-to-speech voice (as set in the phone's settings); if the phone marks none, a female English voice */
+function pickDeviceVoice(){const vs=('speechSynthesis' in window)?speechSynthesis.getVoices():[];if(!vs.length)return null;
+  const def=vs.find(v=>v.default&&v.localService!==false)||vs.find(v=>v.default);if(def)return def;
   const en=vs.filter(v=>/^en/i.test(v.lang));const pool=en.length?en:vs;
-  const male=/\bmale\b|\bman\b|david|daniel|alex\b|guy|james|rishi|ravi|hemant|prabhat|george|arthur|fred|mark|aaron|thomas|-x-.*?(gbb|ahp|end|enc|iom|tpd|gbd|rjs)|#male/i,female=/female|woman|samantha|zira|karen|victoria|susan|aria|neerja|veena|heera|kalpana|swara|libby|sonia|serena|moira|tessa|kajal|lekha|-x-.*?(gba|ena|enb|ene|iob|tpf|gbc|gbg|ahp)|#female/i;
-  const want=S.voice==='male'?male:female,avoid=S.voice==='male'?female:male;
-  return pool.find(v=>/en.IN/i.test(v.lang)&&want.test(v.name)&&!avoid.test(v.name))||pool.find(v=>want.test(v.name)&&!avoid.test(v.name))||pool.find(v=>/en.IN/i.test(v.lang)&&!avoid.test(v.name))||pool.find(v=>!avoid.test(v.name))||pool[0]||null}
+  const male=/\bmale\b|\bman\b|david|daniel|alex\b|guy|james|rishi|ravi|george|arthur|fred|mark|aaron|thomas|#male/i,female=/female|woman|samantha|zira|karen|victoria|susan|aria|neerja|libby|sonia|serena|moira|tessa|#female/i;
+  return pool.find(v=>female.test(v.name))||pool.find(v=>!male.test(v.name))||pool[0]||null}
 /* one-time cleanup: the old downloaded reply voice and its stored phrases are removed (voice-over voices stay) */
 async function cleanupOldVoice(){if(LS.get('spc.v5clean'))return;try{const ks=(await DB.tx('kv','readonly',o=>o.getAllKeys())).filter(k=>String(k).startsWith('tts:'));for(const k of ks)await DB.del('kv',k)}catch(e){}LS.set('spc.v5clean',1)}
 
@@ -1990,6 +2079,8 @@ const Session={active:false,last:Date.now(),stage:0,timer:null,isDenied:false,
     else{this.stage=0;const t=this.last;Voice.say('It seems you are not available, hence closing now. Tap the microphone when you want to talk again.').then(()=>{if(this.last===t)this.stop()})}}
 };
 
+addEventListener('pointerdown',()=>Voice.unlock(),{capture:true,passive:true});
+
 /* ============================================================
    The manager: understands requests and drives the built-in tools
    ============================================================ */
@@ -2025,7 +2116,7 @@ const TOOLS=[
  {name:'search_images',description:'Find free-to-reuse images online (Wikimedia Commons, Openverse). Results are saved to the library and can be used as source type asset.',parameters:{type:T.O,properties:{query:{type:T.S},count:{type:T.N}},required:['query']}},
  {name:'prepare_download',description:'Open the download dialog with the chosen formats and file name, after asking the user which formats they want. The user then taps Download.',parameters:{type:T.O,properties:{formats:{type:T.A,items:{type:T.S,enum:['PNG','JPEG','WebP','GIF','MP4','WebM','MP3']}},filename:{type:T.S}},required:['formats']}},
  {name:'highlight',description:'Make a button glow so the user can find and tap it. Browsers need a tap to open the file picker, to download, and to choose the backup folder.',parameters:{type:T.O,properties:{control:{type:T.S,enum:['gallery','files','link','download','share','backup','messages','requirement','new','install']}},required:['control']}},
- {name:'app_action',description:'Navigate or change app settings.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['go_home','open_menu','open_keys','open_voice','open_backup','open_about','go_back','dark_mode','light_mode','voice_female','voice_male','stop_listening','cancel_generation','open_messages','close_messages','open_requirement','close_requirement','open_help','start_tour','open_library','manual_mode']}},required:['action']}},
+ {name:'app_action',description:'Navigate or change app settings.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['go_home','open_menu','open_keys','open_voice','open_backup','open_about','go_back','dark_mode','light_mode','add_to_library','back_up_now','stop_listening','cancel_generation','open_messages','close_messages','open_requirement','close_requirement','open_help','start_tour','open_library','manual_mode']}},required:['action']}},
  {name:'container_action',description:'Manage containers and versions. Confirm with the user before deleting.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['create','open','rename','delete','undo_delete','show_version','delete_version','delete_upload']},name:{type:T.S},new_name:{type:T.S},version:{type:T.N},media_id:{type:T.S}},required:['action']}},
  {name:'use_template',description:'Create a polished ready-made design by filling in fields. Prefer this for greeting cards, festival wishes, sale posters, invitations, quote cards, menu cards, YouTube thumbnails, announcements, photo cards, slideshows, greeting videos, promo reels and quote videos. The app does the layout, fonts, colours, effects and music. Saves a new version.',parameters:{type:T.O,properties:{
    template:{type:T.S,enum:TEMPLATE_NAMES},occasion:{type:T.S,enum:Object.keys(OCCASIONS)},format:{type:T.S,enum:Object.keys(FORMATS)},palette:{type:T.S,enum:Object.keys(PALETTES)},
@@ -2045,7 +2136,7 @@ const TOOLS=[
  {name:'listening_mode',description:'Switch how the app listens. patient: the app listens quietly and only responds when the user says go ahead or taps the dots. normal: reply after each request.',parameters:{type:T.O,properties:{mode:{type:T.S,enum:['patient','normal']}},required:['mode']}},
  {name:'interrupted_job',description:'Continue or drop the generation that was interrupted last time.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['continue','drop']}},required:['action']}}
 ];
-const ABOUT_FACTS=`Spoken PixelCraft is a voice-first app for creating and editing images, videos and logos for businesses and personal use. Containers hold each project; the plus icon or voice creates one; tiles sort by last edit; pencil renames, bin deletes. Deleted containers can be brought back by voice until the next day's first use. Home screen: Exit icon at the top left (the app can only be exited with this icon, after a confirmation). Every other screen has a Back icon at the top left. Inside a container: gallery icon (photos and videos), files icon (documents such as PDF, Word or text price lists, menus, scripts, and music), YouTube link icon (for understanding only, cannot be downloaded), the Recorded Requirement icon at the top right (tap once to open, tap again to close; play aloud inside), the messages icon below (tap to open the typing box, tap again to close), large preview with share and download icons, strip of saved versions and uploads. Before a new version replaces the current one, the app asks whether to keep the previous. Downloads: PNG, JPEG, WebP, GIF for images; MP4, WebM, MP3, GIF for videos; SVG for logos. Menu: API keys (Google keys from Google AI Studio; optional Mistral keys from console.mistral.ai, free plan, API keys, create key; each key is tested as soon as it is added and a failure is reported at once so the user can delete it; several keys work together and share the work), Voice (the phone's own voice speaks replies; female or male, speed), Library (free images, video clips and music downloaded on Wi-Fi), Backup, Help (How to use, every icon explained, and a guided tour), About, Install app. Manual mode (Menu, Switch to manual mode, with a warning): AI, voice and typed commands stop; containers show New image, Edit image, New video, Edit video, Logo and Audio icons for full manual editing; Menu, Switch to AI mode brings voice back. Light and dark switch top right. Replies are spoken with the phone's own voice so they start instantly. Voice-overs inside videos use a natural voice engine with many voices: ${Object.values(VO_VOICES).map(v=>v.label).join(', ')}; or the user records their own voice. Listening: one steady microphone without beeps; with a key, Google's AI hears and understands each request in one step; without a key, an offline English speech model on the phone. If speech keeps stopping and starting, the app offers patient listening: it listens quietly until the user says go ahead or taps the dots. Say back to normal to leave it. During a generation, a ring shows the percentage and what is happening; the work continues while the user moves around the app, and voice keeps working; ask how far along it is at any time. Music: built-in styles (${Object.keys(MUSIC).join(', ')}), free library music, or the user's own audio file. YouTube audio and copyrighted film songs cannot be used. Logos are sharp vectors (PNG, JPEG, SVG); blurry logos can be redrawn. Camera recording with teleprompter. Silence ladder: after 2 minutes of silence the app asks if the user is there, then after 1 minute, 30 seconds, and closes listening after 15 more seconds. Everything stays on the device and in the backup folder; backups include the keys.`;
+const ABOUT_FACTS=`Spoken PixelCraft is a voice-first app for creating and editing images, videos and logos for businesses and personal use. Containers hold each project; the plus icon or voice creates one; tiles sort by last edit; pencil renames, bin deletes. Deleted containers can be brought back by voice until the next day's first use. Home screen: Exit icon at the top left (the app can only be exited with this icon; it closes at once, and an unfinished creation is offered again next time). Every other screen has a Back icon at the top left. Inside a container: gallery icon (photos and videos), files icon (documents such as PDF, Word or text price lists, menus, scripts, and music), YouTube link icon (for understanding only, cannot be downloaded), the Recorded Requirement icon at the top right (tap once to open, tap again to close; play aloud inside), the messages icon below (tap to open the typing box, tap again to close), large preview with share and download icons, strip of saved versions and uploads. Before a new version replaces the current one, the app asks whether to keep the previous. Downloads: PNG, JPEG, WebP, GIF for images; MP4, WebM, MP3, GIF for videos; SVG for logos. Help icon at the top, between the light and dark switch and the Menu icon; the same icon closes Help. Menu: API keys (Google keys from Google AI Studio; optional Mistral keys from console.mistral.ai, free plan, API keys, create key; each key is tested as soon as it is added and a failure is reported at once so the user can delete it; several keys work together and share the work), Voice (replies use the phone's own default text-to-speech voice, changed in the phone's settings; speaking speed; voice-over voice samples; status check), Library (free images, video clips and music downloaded on Wi-Fi), Backup (one file per backup, named with date and time, saved once a day automatically into a folder the user picks, such as Google Drive; Back up now; the 7 newest are kept, each marked Automatic or Manual, with its own restore and delete icons; restoring adds containers marked Restored and then deletes that backup file; Restore picks a backup file from anywhere; turning backup off keeps the files), About. The preview has an Add to library icon (app_action add_to_library) that stores the current version under My creations; the Library page has sections Images, Video clips, Music and My creations, each item can be viewed or played, shared, downloaded or deleted. The editors pick backgrounds, pictures, scenes and music from the library. Help (top bar): how to use every icon, swipes, and a guided tour. Manual mode (Menu, Switch to manual mode, with a warning): AI, voice and typed commands stop; containers show New image, Edit image, New video, Edit video, Logo and Audio icons for full manual editing; Menu, Switch to AI mode brings voice back. Light and dark switch top right. Replies are spoken with the phone's own voice so they start instantly. Voice-overs inside videos use a natural voice engine with many voices: ${Object.values(VO_VOICES).map(v=>v.label).join(', ')}; or the user records their own voice. Listening: one steady microphone without beeps; with a key, Google's AI hears and understands each request in one step; without a key, an offline English speech model on the phone. If speech keeps stopping and starting, the app offers patient listening: it listens quietly until the user says go ahead or taps the dots. Say back to normal to leave it. During a generation, a ring shows the percentage and what is happening; the work continues while the user moves around the app, and voice keeps working; ask how far along it is at any time. Music: built-in styles (${Object.keys(MUSIC).join(', ')}), free library music, or the user's own audio file. YouTube audio and copyrighted film songs cannot be used. Logos are sharp vectors (PNG, JPEG, SVG); blurry logos can be redrawn. Camera recording with teleprompter. Silence ladder: after 2 minutes of silence the app asks if the user is there, then after 1 minute, 30 seconds, and closes listening after 15 more seconds. Everything stays on the device and in the backup folder. Backups hold the containers, not the keys.`;
 function brainState(){const c=nav.v==='container'?byId(nav.id):null;const st={screen:nav.v,containers:liveCS().slice(0,40).map(x=>({name:(x.restored?'(Restored) ':'')+x.name,versions:x.versions.length,uploads:x.media.length})),recently_deleted:CS.filter(x=>x.deleted).map(x=>x.name),keys_saved:G.active().length,
     generation:Gen.running?{container:(byId(Gen.running.cid)||{}).name,summary:Gen.running.summary,percent:Gen.running.p,stage:Gen.running.stage||'',queued:Gen.queue.length}:null,interrupted_last_time:LS.get('spc.pending'),listening:Patient.on?'patient':'normal',patient_offer_pending:(Patient.pendingOffer&&Date.now()-Patient.pendingOffer<90000)||undefined,app_last_said:Voice.last?Voice.last.slice(0,200):undefined};
   if(c)st.open_container={name:c.name,uploads:c.media.map(m=>({media_id:m.id,type:m.type,name:m.name,width:m.w,height:m.h,seconds:m.duration?Math.round(m.duration):undefined,looks_blurry:m.quality&&m.quality.blurry||undefined,description:m.desc?m.desc.slice(0,600):undefined,document_text:m.text?m.text.slice(0,2500):undefined})),youtube_links:c.links,
@@ -2071,7 +2162,7 @@ Creating and editing:
 11. Music: built-in styles ${Object.keys(MUSIC).join(', ')}; or search_music for free library music by mood; or the user's own audio file. YouTube audio and copyrighted songs cannot be fetched; say so kindly and offer these options.
 12. Browsers need a tap to open the file picker, download, choose a backup folder or install. Call highlight or prepare_download and tell the user to tap the glowing icon.
 13. Confirm before deleting anything. Never invent file ids; use the ids in the state.
-14. Navigation: open or create containers by name with container_action. To create something in another container, first call container_action open (or create), then the creation tool, in the same turn. go_back and go_home with app_action.
+14. Navigation: open or create containers by name with container_action. To create something in another container, first call container_action open (or create), then the creation tool, in the same turn. go_back and go_home with app_action. To save the current item to the library, app_action add_to_library. To back up now, app_action back_up_now.
 15. The app cannot be closed by voice. If the user asks to exit or close the app, say: "To exit, please press the Exit icon at the top left of the home screen." and call app_action go_home.
 16. While a generation runs, the state shows its percent and stage: answer how far along it is, cancel if asked; new creation requests are queued automatically.
 17. Patient listening: if patient_offer_pending is true and the user agrees, or the user asks you to listen quietly or wait until they finish, call listening_mode patient. If they say back to normal, call listening_mode normal.
@@ -2167,11 +2258,11 @@ async function runTool(name,a){const c=nav.v==='container'?byId(nav.id):null;a=a
   }return {error:'Unknown tool'}}catch(e){return {error:e.message}}}
 function appAction(x){switch(x){
   case 'go_home':goHome();break;case 'open_menu':go('menu');break;case 'open_keys':go('keys');break;case 'open_voice':go('voice');break;case 'open_backup':go('backup');break;case 'open_about':go('about');break;case 'go_back':history.back();break;
-  case 'dark_mode':setMode('dark');break;case 'light_mode':setMode('light');break;case 'voice_female':S.voice='female';saveS();break;case 'voice_male':S.voice='male';saveS();break;
+  case 'dark_mode':setMode('dark');break;case 'light_mode':setMode('light');break;
   case 'stop_listening':setTimeout(()=>Session.stop(),1800);break;
   case 'cancel_generation':Gen.cancel();break;case 'open_messages':toggleChat(true);break;case 'close_messages':toggleChat(false);break;
   case 'open_requirement':if(nav.v==='container')toggleReq(true);break;case 'close_requirement':toggleReq(false);break;
-  case 'open_help':go('help');break;case 'start_tour':setTimeout(()=>Tour.start(),900);break;case 'open_library':go('library');break;case 'manual_mode':askManual(true);return {ok:true,note:'The user must confirm on the screen. Tell them that in manual mode voice, typed commands and AI assistance stop, and they edit with the icons.'}}return {ok:true}}
+  case 'open_help':go('help');break;case 'start_tour':setTimeout(()=>Tour.start(),900);break;case 'open_library':go('library');break;case 'add_to_library':{const c=byId(nav.id);if(!c)return {error:'Open a container first'};return addToLibrary(c)}case 'back_up_now':return Backup.now(true);case 'manual_mode':askManual(true);return {ok:true,note:'The user must confirm on the screen. Tell them that in manual mode voice, typed commands and AI assistance stop, and they edit with the icons.'}}return {ok:true}}
 function findC(name,list){name=String(name||'').toLowerCase().replace(/^\(restored\)\s*/,'').trim();if(!name)return null;list=list||liveCS();
   return list.find(c=>c.name.toLowerCase()===name)||list.find(c=>c.name.toLowerCase().includes(name)||name.includes(c.name.toLowerCase()))||
     list.map(c=>({c,s:name.split(/\s+/).filter(w=>w.length>2&&c.name.toLowerCase().includes(w)).length})).filter(o=>o.s).sort((a,b)=>b.s-a.s).map(o=>o.c)[0]||null}
@@ -2205,31 +2296,50 @@ async function handleText(text,channel,opt={}){if(S.manual&&!text.startsWith('[a
     const withAI=G.active().length&&navigator.onLine!==false;
     if(!isApp){const loc=withAI?localEssential(text):localUnderstand(text,channel);if(loc!==false){if(loc)reply(loc,channel);return}}
     if(withAI){
-      try{await aiTurn({text},channel);return}
-      catch(e){if(e.name==='AbortError')return;const net=!e.status&&!e.quota;
+      try{try{await aiTurn({text},channel)}catch(e0){const c0=Conn.cause_(e0);if(e0.name==='AbortError'||c0==='quota'||c0==='key')throw e0;await sleep(1500);await aiTurn({text},channel)}Conn.ok();return}
+      catch(e){if(e.name==='AbortError')return;const net=!e.status&&!e.quota;Conn.fail(e);
         if(!isApp&&M.usable()&&!net){try{await mistralTurn(text,channel);return}catch(er){}}
         if(isApp){if(opt.fallback){opt.fallback();return}if(net)return;throw e}
         const lc=localCreate(text);if(lc!==false){reply((e.quota?'My AI keys have reached their free limit for now, so I will use a ready-made design. ':net?'I cannot reach Google\'s AI right now, so I will use a ready-made design. ':'')+lc,channel);return}
-        if(net){reply('I cannot reach Google\'s AI right now. Please check your internet connection. Meanwhile I can answer questions about the app, do simple edits and make ready-made designs.',channel);return}throw e}}
+        if(isApp)return;reply(Conn.words(Conn.cause_(e))+' Meanwhile I can answer questions about the app, do simple edits and make ready-made designs.',channel);return}}
     if(isApp){if(opt.fallback)opt.fallback();return}
     const lc=localCreate(text);if(lc!==false){reply(lc,channel);return}
     reply(Local.ask(navigator.onLine===false&&G.active().length?'You seem to be offline. I can still answer questions about the app, do simple edits and make ready-made designs. Please try again when you are online.':NOKEY_FALLBACK,()=>{go('keys');return null},()=>'Okay.'),channel)}
-  catch(e){reply(e.quota?'All your API keys have reached their free limit for now. Your conversation is saved in the requirement. Simple commands and ready-made designs still work; please try again later or add another key.':'Sorry, something went wrong. '+(e.message||''),channel)}
+  catch(e){reply(e.quota?Conn.words('quota'):'Sorry, something went wrong there. Please try again.',channel)}
   finally{Brain.busy=false;setPill();nextPending()}}
 function nextPending(){const n=Brain.pending.shift();if(!n)return;if(n[0]==='__voice')voiceTurn(n[1]);else handleText(n[0],n[1],n[2])}
 /* a voice message goes to Google once: it is heard, understood and answered in the same request */
+/* ---------- connection trouble: short blips are retried silently; only a lasting failure is reported, with its real cause ---------- */
+const Conn={fails:0,since:0,told:0,cause:'',timer:null,
+  cause_(e){if(navigator.onLine===false)return 'offline';if(e&&(e.quota||e.status===429))return 'quota';if(e&&(e.status===401||e.status===403||e.status==='nokey'||/api key/i.test(e.message||'')))return 'key';if(e&&e.status>=500)return 'busy';if(e&&!e.status)return 'net';return 'other'},
+  words(c){return {offline:'I cannot reach the internet right now. Please check your Wi-Fi or mobile data. I will keep trying in the background.',net:'I am having trouble reaching Google\'s AI. It may be a weak connection. I will keep trying in the background.',
+    quota:'Your Google keys have reached their free limit for now. Please try again later, or add another key in the menu, under API keys.',key:'Google is not accepting your API key. Please check it in the menu, under API keys.',
+    busy:'Google\'s AI is very busy right now. I will keep trying in the background.',other:'Google\'s AI could not answer just now. I will keep trying.'}[c]},
+  ok(){if(this.fails&&this.told){this.told=0;setTimeout(()=>Voice.say('I am connected again.'),300)}this.fails=0;this.since=0;this.cause='';clearInterval(this.timer);this.timer=null;diag('ai','ok','Google AI reachable')},
+  /* returns true when the user should now be told */
+  fail(e){const now=Date.now();if(!this.fails)this.since=now;this.fails++;this.cause=this.cause_(e);diag('ai','fail',this.words(this.cause));this.watch();
+    const lasting=this.cause==='quota'||this.cause==='key'||this.fails>=3||now-this.since>20000;if(!lasting||now-this.told<90000)return false;this.told=now;return true},
+  /* a light check in the background until Google answers again */
+  watch(){if(this.timer)return;this.timer=setInterval(async()=>{if(!this.fails){clearInterval(this.timer);this.timer=null;return}if(navigator.onLine===false||!G.active().length)return;
+      try{const k=G.active()[0];const r=await fetch(G.base+'v1beta/models?pageSize=1',{headers:{'x-goog-api-key':k.key}});if(r.ok)this.ok()}catch(e){}},15000)}};
+addEventListener('online',()=>{if(Conn.fails)Conn.watch()});
+const sleepRetry=[1200,2600];
+/* a voice message goes to Google once: it is heard, understood and answered in the same request */
 async function voiceTurn(it){if(Brain.busy){Brain.pending.push(['__voice',it]);return}Brain.busy=true;setPill('think');showCaption('Got it…',true);
-  const ack=setTimeout(()=>{if(Brain.busy&&!Voice.speaking)Voice.say('Got it.')},1100);
-  try{await aiTurn({audio:it.audio,ms:it.ms},'voice')}
-  catch(e){if(e.name!=='AbortError'){diag('ai','fail','Google AI could not be reached: '+(e.message||''));
-      /* Google not reachable: the offline model writes it down and the built-in understanding or Mistral takes over */
+  const ack=setTimeout(()=>{if(Brain.busy&&!Voice.speaking&&it.ms>=1000&&!Conn.fails)Voice.say('Got it.')},1100);
+  try{let last=null;
+    for(let a=0;a<=sleepRetry.length;a++){try{await aiTurn({audio:it.audio,ms:it.ms},'voice');Conn.ok();last=null;break}
+      catch(e){if(e.name==='AbortError'){last=null;break}last=e;const c=Conn.cause_(e);if(c==='quota'||c==='key'||c==='offline'||a===sleepRetry.length)break;await sleep(sleepRetry[a])}}
+    if(last){const tell=Conn.fail(last);
+      /* the offline model can still write it down; the built-in understanding or Mistral then takes over */
       let t='';if(Listen.modelLoaded){try{t=await STW.call('asr',{audio:it.audio.slice()})}catch(er){}}
-      Brain.busy=false;if(t&&!isEcho(t)){showCaption(t);clearTimeout(ack);await handleTextOffline(t,e);return}
-      reply(e.quota?'All your API keys have reached their free limit for now. Simple commands and ready-made designs still work. Please try again later or add another key.':'I cannot reach Google\'s AI right now. Please check your internet connection.','voice')}}
+      Brain.busy=false;clearTimeout(ack);showCaption('');
+      if(t&&!isEcho(t)&&!unclearSpeech(t,it.ms)){showCaption(t);await handleTextOffline(t,last,tell);return}
+      if(tell&&it.ms>=1000)reply(Conn.words(Conn.cause),'voice')}}
   finally{clearTimeout(ack);if(Brain.busy){Brain.busy=false;setPill();nextPending()}}}
-async function handleTextOffline(t,err){if(M.usable()&&navigator.onLine!==false){Brain.busy=true;try{await mistralTurn(t,'voice');return}catch(e){}finally{Brain.busy=false;setPill()}}
+async function handleTextOffline(t,err,tell){if(M.usable()&&navigator.onLine!==false){Brain.busy=true;try{await mistralTurn(t,'voice');return}catch(e){}finally{Brain.busy=false;setPill()}}
   const loc=localUnderstand(t,'voice');if(loc!==false){if(loc)reply(loc,'voice');return}const lc=localCreate(t);if(lc!==false){reply((err&&err.quota?'My AI keys have reached their free limit for now, so I will use a ready-made design. ':'')+lc,'voice');return}
-  reply(err&&err.quota?'All your API keys have reached their free limit for now. Please try again later or add another key.':'I cannot reach Google\'s AI right now. Please check your internet connection.','voice')}
+  reply(Conn.words(Conn.cause||Conn.cause_(err)),'voice')}
 /* the lighter, faster model for conversation; the stronger one when the user is answering a go-ahead question or a tool result needs planning */
 function lastSaid(hist){for(let i=hist.length-1;i>=0;i--){const h=hist[i];if(h.role!=='model'||!h.parts)continue;const r=h.parts.find(p=>p.functionCall&&p.functionCall.name==='respond');if(r)return String(r.functionCall.args&&r.functionCall.args.say||'');const t=h.parts.filter(p=>p.text).map(p=>p.text).join(' ');if(t)return t}return ''}
 function pickModel(text,hist){if(String(text||'').startsWith('[app]'))return 'text';if(/shall i (create|make|go ahead|start|generate|build)|go ahead\?|should i (create|make|start|go ahead)|ready to (create|make)/i.test(lastSaid(hist)))return 'text';
@@ -2241,6 +2351,7 @@ async function aiTurn(input,channel){let c=nav.v==='container'?byId(nav.id):null
     parts.push({text:'[voice message]'},{inline_data:{mime_type:'audio/wav',data:await b64(wav16(input.audio))}});userTurn=pushUser(hist,parts);input.held=held}
   else userTurn=pushUser(hist,[{text:(channel==='chat'&&!input.text.startsWith('[app]')?'[typed] ':'')+input.text}]);
   let heardText='';
+  try{
   for(let step=0;step<6;step++){const contents=trimHist(hist,useModel==='lite'?16:28);const last=contents[contents.length-1];
     contents[contents.length-1]={role:last.role,parts:[...last.parts,{text:stateNote()}]};
     const body={systemInstruction:{parts:[{text:systemPrompt()}]},tools:[{functionDeclarations:TOOLS}],toolConfig:{functionCallingConfig:{mode:'ANY'}},contents,generationConfig:{temperature:.5}};
@@ -2264,6 +2375,7 @@ async function aiTurn(input,channel){let c=nav.v==='container'?byId(nav.id):null
     if(others.some(p=>!['update_requirement','app_action','highlight','container_action','listening_mode'].includes(p.functionCall.name)))useModel='text';
     const nc=nav.v==='container'?byId(nav.id):null;if(nc!==c){const nh=historyFor(nc);sealHist(nh);hist.push({role:'user',parts:res});nh.push(...trimHist(hist.slice(-6),6));hist=nh;c=nc;if(!need)break;continue}
     hist.push({role:'user',parts:res});if(!need)break}
+  }catch(e){/* a failed request leaves no trace in the history, so a retry starts clean */const k=hist.indexOf(userTurn);if(k>=0&&k===hist.length-1){if(userTurn.parts.some(p=>p.functionResponse))userTurn.parts=userTurn.parts.filter(p=>p.functionResponse);else hist.splice(k,1)}throw e}
   if(c){c.ai=trimHist(hist,40).length===hist.length?hist:hist.slice(-40);saveC(c,false)}else{Brain.homeAI=hist.slice(-24);LS.set('spc.homeAI',Brain.homeAI)}}
 /* Mistral takes text turns when Google is out of reach or out of free limit */
 function toJSONSchema(o){if(Array.isArray(o))return o.map(toJSONSchema);if(o&&typeof o==='object'){const r={};for(const k in o)r[k]=k==='type'&&typeof o[k]==='string'?o[k].toLowerCase():toJSONSchema(o[k]);return r}return o}
@@ -2310,19 +2422,19 @@ const HELP=[
  {id:'delete',m:/(delete|remove|erase).*(container|project|version|everything)/,a:'Tap the bin icon next to a container\'s name, or say delete this container. A deleted container can be brought back by saying undo, until the first use of the next day. Versions are deleted with the small cross on their block.'},
  {id:'undo',m:/(undo|bring back|recover|get back).*(delete|container|project)?|deleted by mistake/,a:'Say undo, or bring it back, and the last deleted container returns. This works until the first use of the next day.'},
  {id:'rename',m:/rename|change (the |its )?name|name (of )?(the |my )?(container|project)/,a:'Tap the pencil icon next to the container\'s name, or say rename this container to, followed by the new name.'},
- {id:'backup',m:/back ?up|backups/,a:'Open the menu and choose Backup, then Set up backup and pick a folder. A folder named Spoken PixelCraft backup is created, and your work is saved there automatically whenever you leave a container after changes. On phones that cannot write to folders, backups stay in the browser, and you can save a backup file.',offer:'Shall I open Backup for you?',act:()=>go('backup')},
- {id:'restore',m:/\brestore/,a:'In the menu, under Backup, tap the restore icon next to a date. The containers come back marked Restored. Restoring the same backup again replaces them.'},
+ {id:'backup',m:/back ?up|backups/,a:'Open the menu and choose Backup, then Set up backup and pick a folder, on the phone or in Google Drive. One backup file, named with the date and time, is saved there automatically every day, and Back up now saves one at any time. The 7 newest are kept.',offer:'Shall I open Backup for you?',act:()=>go('backup')},
+ {id:'restore',m:/\brestore/,a:'In the menu, under Backup, tap the restore icon next to a backup. Its containers are added marked Restored, nothing is replaced, and that backup file is then deleted. To use a backup file from anywhere else, tap Restore.'},
  {id:'theme',m:/(dark|light|night|day) (mode|theme)|\btheme\b|colou?r (theme|mode|scheme)|change (the )?colou?rs?( of the app)?|\bmoon\b|\bsun\b/,a:'There is a light mode and a dark mode. Tap the moon or sun at the top right, or just say dark mode or light mode.'},
  {id:'exit',m:/^(exit|close|quit|shut down)( the)?( app| application| program)?$|how (do|can) i (exit|close|quit)/,a:'To exit, please press the Exit icon at the top left of the home screen.',act:()=>goHome()},
  {id:'tour',m:/show me around|guided tour|start (the )?tour|take (a|the) tour/,a:null,act:()=>Tour.start()},
  {id:'helppage',m:/^(open|show)( the)? help( page)?$|how to use|explain (the )?icons|what (does|do) (the|this|these) icons?/,a:'Help explains every icon. Opening it now.',act:()=>go('help')},
- {id:'voice',m:/(male|female|man'?s?|woman'?s?|lady|girl|boy|gents|ladies) voice|change (the |your )?voice|voice settings|how do you (speak|talk)/,a:'I reply with your phone\'s own voice, so I can answer at once. You can choose female or male, another phone voice, and the speed in the menu, under Voice. Voice-overs inside videos use natural voices, such as female, male, storyteller, kids, clown, robot or a chorus.'},
+ {id:'voice',m:/(male|female|man'?s?|woman'?s?|lady|girl|boy|gents|ladies) voice|change (the |your )?voice|voice settings|how do you (speak|talk)/,a:'I reply with your phone\'s own default voice, so I can answer at once. To change it, change the text-to-speech voice in your phone\'s settings. The speaking speed is in the menu, under Voice. Voice-overs inside videos use natural voices, such as female, male, storyteller, kids, clown, robot or a chorus.'},
  {id:'typing',m:/\btyp(e|ing)\b|text mode|keyboard|\bmessages?\b|\bchat\b|disable voice|voice off|without (voice|speaking)|silent mode/,a:'Inside a container, tap the messages icon to type or paste a request or a script; tap it again to close. To pause listening, tap the dots at the bottom.'},
  {id:'record',m:/\brecord|\bcamera|selfie|film me|teleprompter|reaction|front camera|back camera/,a:'Say, for example, record me with the front camera, or record me while version two plays. I count down, show your script as a teleprompter if you give one, and record. Say stop recording or tap the stop button. I can then place you in any corner of a video.'},
  {id:'time',m:/how long|takes? (so )?long|why (is it|so) slow|time to (create|make|generate)|waiting/,a:'Images take a few seconds. Videos are created in real time, so a one minute video takes about a minute. Keep the app on screen while it works. You can ask me questions or say cancel meanwhile.'},
  {id:'cancel',m:/(cancel|stop) (a |the )?(generation|creating|video)|\bqueue/,a:'Say cancel or stop while something is being created. If you ask for something new during a creation, it waits in a queue and starts automatically.'},
  {id:'requirement',m:/requirement|summary|what have (i|we) (asked|discussed|decided)|what did i ask|recorded/,a:'The document button inside a container shows the recorded user requirement: a summary of everything you asked for. Tap its speaker icon to hear it, or say read the requirement.'},
- {id:'privacy',m:/privacy|private|\bsafe\b|secure|my data|where.*(saved|stored|kept)/,a:'Your work stays on this device, in this browser, and in your backup folder if you set one. Requests go to Google only with your own keys. Backups include your keys, so keep that folder private.'},
+ {id:'privacy',m:/privacy|private|\bsafe\b|secure|my data|where.*(saved|stored|kept)/,a:'Your work stays on this device, in this browser, and in your backup folder if you set one. Requests go to Google only with your own keys. Backups hold your containers, not your keys.'},
  {id:'offline',m:/offline|internet|wi-?fi|mobile data|data usage|without (the )?internet|network/,a:'After the first setup, I listen and speak on your device, and many things work without internet: help, navigation, simple edits and ready-made designs. Google\'s AI, web images and new downloads need internet.'},
  {id:'mic',m:/notification|\bbeeps?\b|microphone|\bmic\b|listening/,a:'I keep one steady microphone session without beeps. Android always shows a notification while a microphone is on; you can silence it in Chrome\'s notification settings. Tap the dots at the bottom to stop listening, and the microphone to start again.'},
  {id:'effects',m:/\b(effects?|filters?|looks?|styles?)\b/,a:'Looks include warm, cool, vintage, cinematic, black and white, vivid, faded, moody, golden hour, dreamy and noir. Effects include cartoon, sketch, posterize, duotone, pixel art, glitch, grain, halftone and oil paint. Just say, make it cinematic, or add a cartoon effect.'},
@@ -2375,8 +2487,7 @@ function localUnderstand(raw,channel){const s=norm(raw).replace(/^(hey|hi|hello|
   if(/^(open|show|go to)( the)? backup( section| page)?$/.test(s)){go('backup');return 'Backup.'}
   if(/^(open|show|go to)( the)? about( section| page)?$|^about$/.test(s)){go('about');return 'About.'}
   if(/^(open|show|go to)( the)? voice( settings| section| page)?$/.test(s)){go('voice');return 'Voice settings.'}
-  if(/^(use|switch to|change to|set)( a| the)? (male|man'?s|gents) voice$/.test(s)){S.voice='male';S.voiceName='';saveS();if(nav.v==='voice')renderVoice();return 'This is the male voice.'}
-  if(/^(use|switch to|change to|set)( a| the)? (female|woman'?s|lady|ladies) voice$/.test(s)){S.voice='female';S.voiceName='';saveS();if(nav.v==='voice')renderVoice();return 'This is the female voice.'}
+  if(/^(use|switch to|change to|set)( a| the)? (male|man'?s|gents|female|woman'?s|lady|ladies) voice$|^change (the |your )?voice$/.test(s))return 'I speak with your phone\'s own voice. To change it, change the text-to-speech voice in your phone\'s settings.';
   if(/^(disable|turn off|switch off) (the )?voice( mode)?$|^(typing|text) mode$|^(switch to|use) typing$/.test(s))return 'Spoken PixelCraft is a voice-first app, so voice stays on. To pause listening, tap the dots at the bottom. You can also type in the messages box inside a container.';
   if(/^(listen quietly|wait (till|until) i (finish|am done)|let me (finish|think)|patient (listening|mode))$/.test(s)){Patient.start();return null}
   if(/^(back to normal|normal mode)$/.test(s)&&Patient.on){Patient.stop(true);return null}
@@ -2529,47 +2640,81 @@ function localEssential(raw){const s=norm(raw);const pr=Local.tryPending(s);if(p
 /* ============================================================
    Backup, restore and daily housekeeping
    ============================================================ */
-const BK_FOLDER='Spoken_PixelCraft_backup';
-const Backup={dir:null,parent:'',mode:null,needPerm:false,busy:Promise.resolve(),
-  async init(){const r=await DB.get('kv','backup').catch(()=>null);if(!r)return;this.mode=r.mode;this.parent=r.parent||'';
-    if(r.mode==='folder'&&r.handle){this.dir=r.handle;try{this.needPerm=(await this.dir.queryPermission({mode:'readwrite'}))!=='granted'}catch(e){this.needPerm=true}}},
+/* One backup = one file, named with its date and time, written straight into the folder the user chose.
+   Daily automatic backups plus Back up now; the 7 newest are kept. */
+const BK_KEEP=7,BK_RE=/^Spoken_PixelCraft_backup_(\d{4})-(\d\d)-(\d\d)_(\d\d)-(\d\d)(?:-(\d\d))?_(Automatic|Manual)\.spcbackup$/;
+const pad2=n=>String(n).padStart(2,'0');
+const Backup={dir:null,folder:'',mode:null,needPerm:false,running:null,lastErr:'',
+  async init(){const r=await DB.get('kv','backup2').catch(()=>null);if(!r)return;this.mode=r.mode;this.folder=r.folder||'';
+    if(r.mode==='folder'&&r.handle){this.dir=r.handle;try{this.needPerm=(await this.dir.queryPermission({mode:'readwrite'}))!=='granted'}catch(e){this.needPerm=true}}
+    setInterval(()=>this.daily(),30*60000);setTimeout(()=>this.daily(),45000)},
   folderOK:()=>!!window.showDirectoryPicker,
-  async setup(){if(this.folderOK()){const picked=await window.showDirectoryPicker({mode:'readwrite'});const dir=await picked.getDirectoryHandle(BK_FOLDER,{create:true});this.dir=dir;this.parent=picked.name;this.mode='folder';this.needPerm=false;await DB.put('kv',{mode:'folder',handle:dir,parent:picked.name},'backup')}
-    else{this.mode='device';this.parent='this browser';await DB.put('kv',{mode:'device',parent:'this browser'},'backup')}
-    for(const c of liveCS())await this.snapshot(c)},
-  async allow(){if(!this.dir)return;try{this.needPerm=(await this.dir.requestPermission({mode:'readwrite'}))!=='granted'}catch(e){this.needPerm=true}},
-  leave(c){if(!this.mode||!c){return}dirty.delete(c.id);this.busy=this.busy.then(()=>this.snapshot(c)).catch(()=>{})},
-  async write(dir,name,blob){const h=await dir.getFileHandle(name,{create:true});const w=await h.createWritable();await w.write(blob);await w.close()},
-  record(c){const r={...c};delete r.ai;return r},
-  async snapshot(c){if(!this.mode)return;const t=Date.now();const ids=[...c.versions.map(v=>v.id),...c.media.map(m=>m.id)];
-    if(this.mode==='folder'){if(!this.dir||this.needPerm)return;
-      const cs=await this.dir.getDirectoryHandle('containers',{create:true}),cd=await cs.getDirectoryHandle(c.id,{create:true}),md=await cd.getDirectoryHandle('media',{create:true});
-      for(const id of ids){let have=false;try{await md.getFileHandle(id);have=true}catch(e){}if(!have){const m=await DB.get('media',id);if(m)await this.write(md,id,m.blob)}}
-      await this.write(cd,'snap-'+t+'.json',new Blob([JSON.stringify({t,container:this.record(c),types:Object.fromEntries(await Promise.all(ids.map(async id=>[id,((await DB.get('media',id))||{}).type||''])))})],{type:'application/json'}));
-      let idx=[];try{idx=JSON.parse(await (await (await this.dir.getFileHandle('index.json')).getFile()).text())}catch(e){}idx.push({t,id:c.id,name:c.name});await this.write(this.dir,'index.json',new Blob([JSON.stringify(idx)],{type:'application/json'}))}
-    else{for(const id of ids){if(!(await DB.get('backups','m:'+id))){const m=await DB.get('media',id);if(m)await DB.put('backups',{id:'m:'+id,blob:m.blob,type:m.type})}}
-      await DB.put('backups',{id:'s:'+t+':'+c.id,t,cid:c.id,name:c.name,container:this.record(c)})}},
-  async list(){if(this.mode==='folder'){if(!this.dir||this.needPerm)return [];try{return JSON.parse(await (await (await this.dir.getFileHandle('index.json')).getFile()).text()).sort((a,b)=>b.t-a.t)}catch(e){return []}}
-    if(this.mode==='device')return (await DB.all('backups')).filter(b=>b.id.startsWith('s:')).map(b=>({t:b.t,id:b.cid,name:b.name})).sort((a,b)=>b.t-a.t);return []},
-  /* restore everything as it was at time t: for each container, its latest snapshot at or before t */
-  async restore(t){const idx=await this.list();const latest=new Map();for(const e of idx){if(e.t>t)continue;const p=latest.get(e.id);if(!p||e.t>p.t)latest.set(e.id,e)}
-    let replaced=0,added=0;
-    for(const e of latest.values()){let snap;
-      if(this.mode==='folder'){const cd=await (await this.dir.getDirectoryHandle('containers')).getDirectoryHandle(e.id);snap=JSON.parse(await (await (await cd.getFileHandle('snap-'+e.t+'.json')).getFile()).text());snap.dirh=cd}
-      else{const b=await DB.get('backups','s:'+e.t+':'+e.id);snap={t:e.t,container:b.container,types:{}}}
-      const old=CS.filter(x=>x.originId===e.id&&x.restored);for(const o of old){await purge(o);replaced++}
-      const src=snap.container,c={...newContainer(src.name),...src,id:'c'+uid(),restored:true,originId:e.id,deleted:0,ai:[],updated:Date.now()};const map={};
-      for(const m of [...src.versions,...src.media]){let blob=null;try{if(this.mode==='folder'){const md=await snap.dirh.getDirectoryHandle('media');const f=await (await md.getFileHandle(m.id)).getFile();blob=new Blob([f],{type:snap.types[m.id]||f.type||m.mime||m.type||''})}else{const b=await DB.get('backups','m:'+m.id);if(b)blob=b.blob}}catch(er){}
-        if(blob)map[m.id]=await addMedia(c.id,blob,{name:m.name})}
-      c.versions=src.versions.filter(v=>map[v.id]).map(v=>({...v,id:map[v.id]}));c.media=src.media.filter(m=>map[m.id]).map(m=>({...m,id:map[m.id]}));
-      c.sel=c.versions.length?{t:'v',id:c.versions[c.versions.length-1].id}:(c.media.length?{t:'m',id:c.media[0].id}:null);
-      CS.push(c);await saveC(c,false);added++}
-    return {added,replaced}},
-  /* device mode only: one file holding all backups, to keep outside the browser */
-  async exportFile(){const all=await DB.all('backups');const head=[],parts=[];let off=0;for(const b of all){if(b.blob){head.push({id:b.id,type:b.type,off,len:b.blob.size});parts.push(b.blob);off+=b.blob.size}else head.push({id:b.id,rec:b})}
-    const hj=new TextEncoder().encode(JSON.stringify(head)),len=new Uint8Array(new Uint32Array([hj.length]).buffer);saveFile(new Blob([len,hj,...parts],{type:'application/octet-stream'}),'Spoken_PixelCraft_backup_'+new Date().toISOString().slice(0,10)+'.spcbackup')},
-  async importFile(file){const n=new Uint32Array(await file.slice(0,4).arrayBuffer())[0];const head=JSON.parse(await file.slice(4,4+n).text());const base=4+n;
-    for(const h of head){if(h.rec)await DB.put('backups',h.rec);else await DB.put('backups',{id:h.id,type:h.type,blob:file.slice(base+h.off,base+h.off+h.len,h.type)})}}
+  fileName(t,kind){const d=new Date(t);return `Spoken_PixelCraft_backup_${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}-${pad2(d.getMinutes())}-${pad2(d.getSeconds())}_${kind==='auto'?'Automatic':'Manual'}.spcbackup`},
+  parse(name){const m=BK_RE.exec(name);if(!m)return null;return {name,t:new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0)).getTime(),kind:m[7]==='Automatic'?'auto':'manual'}},
+  /* writing to a chosen folder: a few tries, because cloud folders (Google Drive and others) can be slow to answer */
+  async writeFile(name,blob){let err;for(let a=0;a<3;a++){try{const h=await this.dir.getFileHandle(name,{create:true});const w=await h.createWritable();await w.write(blob);await w.close();return}catch(e){err=e;if(e&&e.name==='NotAllowedError')break;if(a<2)await sleep(600*(a+1))}}throw err},
+  async removeFile(name){for(let a=0;a<3;a++){try{await this.dir.removeEntry(name);return true}catch(e){if(e&&e.name==='NotFoundError')return true;await sleep(600)}}return false},
+  /* set up: choose the folder, check that a file can be saved there, then simply confirm. No backup is made yet. */
+  async setup(){if(!this.folderOK()){this.mode='device';this.folder='';await DB.put('kv',{mode:'device'},'backup2');return {mode:'device'}}
+    const dir=await window.showDirectoryPicker({id:'spcbackup',mode:'readwrite'});
+    try{if((await dir.queryPermission({mode:'readwrite'}))!=='granted'&&(await dir.requestPermission({mode:'readwrite'}))!=='granted')throw Object.assign(new Error('perm'),{name:'NotAllowedError'})}catch(e){if(e.name==='NotAllowedError')throw e}
+    const prev=this.dir;this.dir=dir;const test='.spc_test_'+Date.now()+'.tmp';
+    try{await this.writeFile(test,new Blob(['ok'],{type:'text/plain'}));await this.removeFile(test)}catch(e){this.dir=prev;throw Object.assign(new Error('write'),{name:'WriteError',cause:e})}
+    this.mode='folder';this.folder=dir.name;this.needPerm=false;await DB.put('kv',{mode:'folder',handle:dir,folder:dir.name},'backup2');return {mode:'folder',folder:dir.name}},
+  async allow(){if(!this.dir)return;try{this.needPerm=(await this.dir.requestPermission({mode:'readwrite'}))!=='granted'}catch(e){this.needPerm=true}if(!this.needPerm)this.daily()},
+  async off(){this.mode=null;this.dir=null;this.folder='';await DB.del('kv','backup2')},
+  leave(){},
+  /* the backup file: [4-byte header length][header JSON][media bytes] */
+  async pack(kind){const t=Date.now(),cs=liveCS(),media=[],parts=[];let off=0;
+    for(const c of cs)for(const it of [...c.versions,...c.media]){if(media.some(m=>m.id===it.id))continue;const m=await DB.get('media',it.id);if(!m)continue;media.push({id:it.id,type:m.type||m.blob.type||'',off,len:m.blob.size});parts.push(m.blob);off+=m.blob.size}
+    const head={app:'Spoken PixelCraft',format:2,t,kind,containers:cs.map(c=>{const r={...c};delete r.ai;delete r._tmp;return r}),media};
+    const hj=new TextEncoder().encode(JSON.stringify(head)),len=new Uint8Array(new Uint32Array([hj.length]).buffer);
+    return {t,blob:new Blob([len,hj,...parts],{type:'application/octet-stream'})}},
+  async list(){if(this.mode==='folder'){if(!this.dir||this.needPerm)return [];const out=[];try{for await(const [name,h] of this.dir.entries()){if(h.kind!=='file')continue;const p=this.parse(name);if(p)out.push(p)}}catch(e){return []}return out.sort((a,b)=>b.t-a.t)}
+    if(this.mode==='device')return (await DB.all('backups')).filter(b=>b.id.startsWith('f:')).map(b=>({name:b.name,t:b.t,kind:b.kind})).sort((a,b)=>b.t-a.t);return []},
+  /* make one backup now; kind is 'auto' or 'manual' */
+  async make(kind){if(!this.mode)throw Object.assign(new Error('Backup is not set up.'),{name:'NoBackup'});if(this.mode==='folder'&&(!this.dir||this.needPerm))throw Object.assign(new Error('perm'),{name:'NotAllowedError'});
+    if(this.running)return this.running;
+    this.running=(async()=>{const {t,blob}=await this.pack(kind);const name=this.fileName(t,kind);
+      if(this.mode==='folder')await this.writeFile(name,blob);else await DB.put('backups',{id:'f:'+name,name,t,kind,blob});
+      LS.set('spc.bklast',t);if(kind==='auto')LS.set('spc.bkday',todayStr());
+      const all=await this.list();for(const old of all.slice(BK_KEEP))await this.remove(old.name);return {name,t}})();
+    try{return await this.running}finally{this.running=null}},
+  async now(spoken){try{await this.make('manual');if(nav.v==='backup')renderBackup();return {ok:true,note:'A backup was saved.'}}catch(e){return {error:this.why(e)}}},
+  why(e){if(!this.mode)return 'Backup is not set up yet. Open Menu, then Backup.';if(e&&e.name==='NotAllowedError')return 'The app needs your permission again to use the backup folder. Open Backup and tap Allow.';if(e&&e.name==='QuotaExceededError')return 'There is not enough free space for the backup.';return 'The backup could not be saved to the folder. Please try again, or choose another folder.'},
+  /* once a day, quietly, when the app is idle and something changed since the last backup */
+  async daily(){if(!this.mode||this.needPerm||this.running||LS.get('spc.bkday')===todayStr())return;if(Gen.running||Rec.active){setTimeout(()=>this.daily(),5*60000);return}
+    const last=LS.get('spc.bklast',0)||0;if(last&&!liveCS().some(c=>(c.updated||0)>last)){LS.set('spc.bkday',todayStr());return}
+    if(!liveCS().length)return;try{await this.make('auto');if(nav.v==='backup')renderBackup()}catch(e){this.lastErr=this.why(e)}},
+  async remove(name){if(this.mode==='folder')return this.removeFile(name);await DB.del('backups','f:'+name);return true},
+  async readList(name){if(this.mode==='folder')return await (await this.dir.getFileHandle(name)).getFile();const b=await DB.get('backups','f:'+name);return b&&b.blob},
+  /* restoring adds the containers marked Restored; nothing already on Home is replaced */
+  async restoreBlob(file){const n=new Uint32Array(await file.slice(0,4).arrayBuffer())[0];if(!n||n>200*1048576)throw new Error('bad');const head=JSON.parse(await file.slice(4,4+n).text());const base=4+n;
+    let added=0;
+    if(head.format===2){for(const src of head.containers||[]){const c={...newContainer(src.name),...src,id:'c'+uid(),restored:true,originId:src.id,deleted:0,ai:[],updated:Date.now()};const map={};
+        for(const it of [...(src.versions||[]),...(src.media||[])]){const m=(head.media||[]).find(x=>x.id===it.id);if(!m||map[it.id])continue;map[it.id]=await addMedia(c.id,file.slice(base+m.off,base+m.off+m.len,m.type),{name:it.name})}
+        c.versions=(src.versions||[]).filter(v=>map[v.id]).map(v=>({...v,id:map[v.id]}));c.media=(src.media||[]).filter(m=>map[m.id]).map(m=>({...m,id:map[m.id]}));
+        c.sel=c.versions.length?{t:'v',id:c.versions[c.versions.length-1].id}:(c.media.length?{t:'m',id:c.media[0].id}:null);CS.push(c);await saveC(c,false);added++}}
+    else{/* an older backup file: per-container snapshots */const recs=head.filter(h=>h.rec&&String(h.id).startsWith('s:')).map(h=>h.rec);const latest=new Map();for(const r of recs){const p=latest.get(r.cid);if(!p||r.t>p.t)latest.set(r.cid,r)}
+      for(const r of latest.values()){const src=r.container,c={...newContainer(src.name),...src,id:'c'+uid(),restored:true,originId:src.id,deleted:0,ai:[],updated:Date.now()};const map={};
+        for(const it of [...src.versions,...src.media]){const h=head.find(x=>x.id==='m:'+it.id);if(h&&!map[it.id])map[it.id]=await addMedia(c.id,file.slice(base+h.off,base+h.off+h.len,h.type),{name:it.name})}
+        c.versions=src.versions.filter(v=>map[v.id]).map(v=>({...v,id:map[v.id]}));c.media=src.media.filter(m=>map[m.id]).map(m=>({...m,id:map[m.id]}));c.sel=c.versions.length?{t:'v',id:c.versions[c.versions.length-1].id}:(c.media.length?{t:'m',id:c.media[0].id}:null);CS.push(c);await saveC(c,false);added++}}
+    return {added}},
+  /* restore one backup from the list, then delete that backup file */
+  async restore(name){const f=await this.readList(name);if(!f)throw new Error('missing');const r=await this.restoreBlob(f);await this.remove(name);return r},
+  /* the general Restore and the location button: the phone's file picker, opened inside the backup folder when there is one */
+  async pick(){let file=null,handle=null;
+    if(window.showOpenFilePicker){const opts={id:'spcrestore',multiple:false};if(this.dir&&!this.needPerm)opts.startIn=this.dir;
+      try{[handle]=await window.showOpenFilePicker(opts)}catch(e){if(e.name==='AbortError')return null;try{delete opts.startIn;[handle]=await window.showOpenFilePicker(opts)}catch(e2){if(e2.name==='AbortError')return null;handle=null}}
+      if(handle)file=await handle.getFile()}
+    if(!file)file=await new Promise(res=>{const inp=document.createElement('input');inp.type='file';inp.accept='.spcbackup,application/octet-stream';inp.onchange=()=>res(inp.files[0]||null);inp.addEventListener('cancel',()=>res(null));inp.click()});
+    return file?{file,handle}:null},
+  async restorePicked(p){const r=await this.restoreBlob(p.file);
+    /* when the chosen file is one of the backups in the backup folder, it is removed, just like a restore from the list */
+    if(p.handle&&this.dir&&this.parse(p.file.name)){try{const path=await this.dir.resolve(p.handle);if(path&&path.length===1){await this.remove(p.file.name);r.removed=true}}catch(e){}}
+    return r},
+  /* device mode: save a copy of a backup outside the browser */
+  async saveCopy(name){const b=await this.readList(name);if(b)saveFile(b,name)}
 };
 async function purge(c){for(const v of c.versions)await delMedia(v.id);for(const m of c.media)await delMedia(m.id);CS=CS.filter(x=>x!==c);await DB.del('containers',c.id)}
 async function housekeeping(){const day=todayStr();if(LS.get('spc.hk')===day||Gen.running)return;LS.set('spc.hk',day);
@@ -2636,19 +2781,22 @@ function leaving(prev){if(prev&&prev.v==='container'){const c=byId(prev.id);if(c
 function go(v,p={}){const prev=nav;if(prev.v===v&&prev.id===p.id)return;closeLayer();leaving(prev);nav={v,...p,depth:(prev.depth||0)+1};history.pushState(nav,'');render();$('#main').scrollTop=0}
 function goHome(){if(nav.v==='home')return;closeLayer();const d=nav.depth||0;if(d>0)history.go(-d);else{leaving(nav);nav={v:'home',depth:0};history.replaceState(nav,'');render()}}
 window.addEventListener('popstate',e=>{closeLayer();const prev=nav;leaving(prev);nav=e.state||{v:'home',depth:0};if(nav.v==='container'&&!byId(nav.id))nav={v:'home',depth:0};render()});
-$('#menuBtn').onclick=()=>{if(nav.v!=='menu')go('menu')};
+/* the Menu and Help icons open their page, and the same icon closes it again */
+let menuBase=null,helpBase=null;
+$('#menuBtn').onclick=()=>{if(['menu','keys','voice','backup','about','library'].includes(nav.v)){const n=(nav.depth||0)-(menuBase??((nav.depth||1)-1));if(n>0)history.go(-n);else goHome()}else{menuBase=nav.depth||0;go('menu')}};
+$('#helpBtn').onclick=()=>{if(nav.v==='help'){const n=(nav.depth||0)-(helpBase??((nav.depth||1)-1));if(n>0)history.go(-n);else goHome()}else{helpBase=nav.depth||0;go('help')}};
 
 /* ---------- render ---------- */
 const main=$('#main');
 let lastKey='';
-function render(){const key=nav.v+'|'+(nav.id||'');main.classList.toggle('noanim',key===lastKey);lastKey=key;document.body.dataset.view=nav.v;document.body.classList.toggle('chatopen',nav.v==='container'&&!!nav.chat);if(!(nav.v==='container'&&nav.chat))document.body.classList.remove('kb');$('#menuBtn').classList.toggle('on',['menu','keys','voice','backup','about','help','library'].includes(nav.v));
+function render(){const key=nav.v+'|'+(nav.id||'');main.classList.toggle('noanim',key===lastKey);lastKey=key;document.body.dataset.view=nav.v;document.body.classList.toggle('chatopen',nav.v==='container'&&!!nav.chat);if(!(nav.v==='container'&&nav.chat))document.body.classList.remove('kb');$('#menuBtn').classList.toggle('on',['menu','keys','voice','backup','about','library'].includes(nav.v));$('#helpBtn').classList.toggle('on',nav.v==='help');$('#menuBtn').setAttribute('aria-pressed',$('#menuBtn').classList.contains('on'));$('#helpBtn').setAttribute('aria-pressed',nav.v==='help');
   if(nav.v==='container'&&byId(nav.id))return renderContainer();if(nav.v==='menu')return renderMenu();if(nav.v==='keys')return renderKeys();if(nav.v==='voice')return renderVoice();if(nav.v==='backup')return renderBackup();if(nav.v==='about')return renderAbout();if(nav.v==='help')return renderHelp();if(nav.v==='library')return renderLibrary();
   nav={v:'home'};renderHome()}
 const vtitle=t=>`<div class="vtitle"><button class="ibtn" data-act="back" aria-label="Back">${I('back')}</button><h1>${esc(t)}</h1></div>`;
-const ACC=['cyan','amber','coral','violet','green'];
+const ACC=['cyan','amber','sky','navy','dcyan','lblue'];
 function accentOf(c){let h=0;for(const ch of c.id)h=(h*31+ch.charCodeAt(0))>>>0;return ACC[h%ACC.length]}
 function renderHome(){const cs=liveCS();
-  main.innerHTML=`<section class="view" aria-label="Containers"><div class="hometop"><button class="ibtn exitbtn" data-act="exit" aria-label="Exit Spoken PixelCraft" title="Exit">${I('exit')}</button><h1 class="htitle">Your containers</h1><button class="ibtn" data-go="help" aria-label="Help and how to use" title="Help">${I('help')}</button></div>${cs.length?`<div class="grid">${cs.map(c=>{const nm=(c.restored?'<span class="rs">(Restored)</span> ':'')+esc(c.name);const full=(c.restored?'Restored ':'')+c.name;
+  main.innerHTML=`<section class="view" aria-label="Containers"><div class="hometop"><button class="ibtn exitbtn" data-act="exit" aria-label="Exit Spoken PixelCraft" title="Exit">${I('exit')}</button><h1 class="htitle">Your containers</h1></div>${cs.length?`<div class="grid">${cs.map(c=>{const nm=(c.restored?'<span class="rs">(Restored)</span> ':'')+esc(c.name);const full=(c.restored?'Restored ':'')+c.name;
       return `<div class="cell acc-${accentOf(c)}"><button class="tile ${c.thumb?'':'empty'}" data-open="${c.id}" aria-label="Open ${esc(full)}${c.thumb?'':', empty'}">${c.thumb?`<img class="art" src="${c.thumb}" alt="">`:''}${c.kind?`<span class="badge">${I(c.kind)}</span>`:''}</button>
         <div class="cap"><button class="mini edit" data-ren="${c.id}" aria-label="Rename ${esc(full)}">${I('pen')}</button><span class="t">${nm}</span><button class="mini del" data-del="${c.id}" aria-label="Delete ${esc(full)}">${I('trash')}</button></div></div>`}).join('')}</div>`
     :`<div class="emptyhome"><div class="big">${I('spark')}</div><h2>Welcome</h2><p>Tap the plus icon, or just say "create a new container".</p>${G.active().length?'':'<button class="pbtn" data-go="keys">'+I('key')+' Add a free API key first</button>'}</div>`}</section>
@@ -2667,7 +2815,7 @@ async function previewInner(c){const it=await currentItem(c);const g=Gen.running
   else if(it.kind==='audio')media=`<div class="pempty"><div class="big">${I('audio')}</div><p>${esc(it.meta.name||'Audio')}</p><audio src="${u}" controls preload="metadata"></audio></div>`;
   else media=`<img class="pm${it.meta.svg||/png|svg/.test(it.type)&&/logo/i.test(it.meta.summary||it.meta.name||'')?' logo':''}" src="${u}" alt="${esc(it.meta.summary||it.meta.name||'Image')}">`;
   const label=it.sel.t==='v'?`Version ${c.versions.findIndex(v=>v.id===it.sel.id)+1}`:'Upload';
-  return `${media}<span class="kind">${I(it.kind)}${label}</span><div class="pacts"><button class="dl" data-act="share" aria-label="Share" title="Share">${I('share')}</button><button class="dl" data-act="download" aria-label="Download" title="Download">${I('down')}</button></div>${G2?ringHTML(g):''}`}
+  return `${media}<span class="kind">${I(it.kind)}${label}</span><div class="pacts"><button class="dl" data-act="addlib" aria-label="Add to library" title="Add to library">${I('lib')}</button><button class="dl" data-act="share" aria-label="Share" title="Share">${I('share')}</button><button class="dl" data-act="download" aria-label="Download" title="Download">${I('down')}</button></div>${G2?ringHTML(g):''}`}
 function ringHTML(p){const C=2*Math.PI*56,st=(Gen.running&&Gen.running.stage)||'Working';return `<div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="${esc(st)}, ${p} percent"><div class="ring"><span class="spin"></span><svg viewBox="0 0 132 132"><circle class="bgc" cx="66" cy="66" r="56" fill="none" stroke-width="6"/><circle class="fgc" id="fgc" cx="66" cy="66" r="56" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p/100)}"/></svg><span class="pct" id="pct">${p}%</span></div><p class="pstage" id="pstage">${esc(st)}</p>${Gen.queue.length?`<p class="qn">${Gen.queue.length} waiting</p>`:''}</div>`}
 /* the big ring inside the container, and a small floating ring on every other screen */
 let ringT=0;function updateRing(force){const j=Gen.running;miniRing();if(!j)return;const now=performance.now();if(!force&&now-ringT<200&&j.p<100)return;ringT=now;const f=$('#fgc'),p=$('#pct'),C=2*Math.PI*56;
@@ -2711,13 +2859,12 @@ const row=(to,ic,t,s)=>`<button class="row" data-go="${to}"><span class="ric">${
 function renderMenu(){const n=S.keys.length,m=(S.mkeys||[]).length;
   main.innerHTML=`<section class="view">${vtitle('Menu')}<div class="list">
     ${row('keys','key','API keys',(n?`${n} Google key${n>1?'s':''}`:'Add a free Google key')+(m?` · ${m} Mistral key${m>1?'s':''}`:''))}
-    ${row('voice','voice','Voice',(S.voice==='female'?'Female':'Male')+' phone voice · voice-over voices '+(VOE.ready?'ready':VOE.loading?'downloading':'download on Wi-Fi'))}
+    ${row('voice','voice','Voice','Phone voice, speed · voice-over voices '+(VOE.ready?'ready':VOE.loading?'downloading':'download on Wi-Fi'))}
     ${row('library','lib','Library','Free images, video clips and music')}
-    ${row('backup','backup','Backup',Backup.mode?('Set up'+(Backup.needPerm?', needs permission':'')):'Not set up')}
+    ${row('backup','backup','Backup',Backup.mode?((Backup.mode==='folder'?'Daily, in '+esc(Backup.folder):'Daily, inside this browser')+(Backup.needPerm?', needs permission':'')):'Not set up')}
     <button class="row" data-act="manualask"><span class="ric">${I(S.manual?'spark':'sliders')}</span><span class="rtx"><span class="rt">${S.manual?'Switch to AI mode':'Switch to manual mode'}</span><span class="rsub">${S.manual?'Bring back voice, typed commands and AI assistance':'Edit and create everything yourself, without AI'}</span></span>${I('chev','chev')}</button>
-    ${row('help','help','Help','How to use every icon, and a guided tour')}
     ${row('about','info','About','What Spoken PixelCraft does')}
-    ${!isStandalone()?`<button class="row" data-act="install"><span class="ric">${I('install')}</span><span class="rtx"><span class="rt">Install app</span><span class="rsub">Open full screen from its own icon</span></span>${I('chev','chev')}</button>`:''}</div></section>`}
+</div></section>`}
 const keyRow=(k,i,kind)=>`<li class="key"><span class="kn">${kind==='m'?'Mistral':'Key'} ${i+1}</span><span class="stat ${k.st==='active'?'ok':k.st==='inactive'||k.st==='blocked'?'bad':'chk'}">${k.st==='active'?'Active':k.st==='inactive'?'Inactive':k.st==='blocked'?'Not usable here':k.st==='unknown'?'Not checked':'Checking'}</span><button class="mini big" data-kcopy="${kind}${i}" aria-label="Copy ${kind==='m'?'Mistral key':'key'} ${i+1}">${I('copy')}</button><button class="mini big del" data-kdel="${kind}${i}" aria-label="Delete ${kind==='m'?'Mistral key':'key'} ${i+1}">${I('trash')}</button></li>`;
 function renderKeys(){const mk=S.mkeys||[];
   main.innerHTML=`<section class="view">${vtitle('API keys')}<div class="list">
@@ -2728,10 +2875,8 @@ function renderKeys(){const mk=S.mkeys||[];
       <div class="btnrow"><button class="pbtn" data-act="createmkey">${I('ext')} Get a Mistral key</button><button class="pbtn prime" data-act="pastemkey">${I('key')} Paste Mistral key</button></div>
       ${mk.length?`<ul class="keys">${mk.map((k,i)=>keyRow(k,i,'m')).join('')}</ul>${M.blocked?'<p class="note warnline">Mistral does not allow direct use from a web app on this device, so your Google keys handle everything.</p>':''}`:'<p class="note">No Mistral keys saved.</p>'}</div></div></section>`}
 function renderVoice(){const vs=Voice.voices(),cur=pickDeviceVoice();
-  main.innerHTML=`<section class="view">${vtitle('Voice')}<div class="list"><div class="card"><h2>Speaking voice</h2>
-    <p class="note">Replies are spoken with this phone's own voice, so they start at once.</p>
-    <div class="seg" role="group" aria-label="Speaking voice"><button data-vc="female" aria-pressed="${S.voice==='female'}">Female</button><button data-vc="male" aria-pressed="${S.voice==='male'}">Male</button></div>
-    ${vs.length>1?`<span class="lbl">Voice on this phone</span><div class="vlist" role="group" aria-label="Phone voices">${vs.slice(0,14).map(v=>`<button class="chip ${cur&&cur.name===v.name?'on':''}" data-vname="${esc(v.name)}" aria-pressed="${!!(cur&&cur.name===v.name)}">${esc(v.name.replace(/^(Google|Microsoft)\s*/,'').replace(/\s*\(.*?\)\s*/g,' ').slice(0,28))}</button>`).join('')}</div>`:''}
+  main.innerHTML=`<section class="view">${vtitle('Voice')}<div class="list"><div class="card"><h2>Speaking</h2>
+    <p class="note">Replies are spoken with your phone's own default voice, so they start at once. To change it, change the text-to-speech voice in your phone's settings.</p>
     <span class="lbl">Speed</span><div class="seg seg3" role="group" aria-label="Speaking speed">${[['0.9','Calm'],['1','Normal'],['1.15','Quick']].map(([r,l])=>`<button data-rate="${r}" aria-pressed="${String(num(S.rate,1))===r}">${l}</button>`).join('')}</div></div>
     <div class="card"><h2>Voice-over voices</h2><p class="note">Natural voices for the voice-overs inside your videos. ${VOE.ready?'Ready on this device.':VOE.loading?'Downloading now, about 90 MB.':'They download once on Wi-Fi, about 90 MB, or the first time you ask for a voice-over.'}</p>
       <div class="vlist">${Object.entries(VO_VOICES).map(([k,v])=>`<button class="chip" data-vo="${k}" aria-label="Hear ${esc(v.label)}">${I('speaker')} ${esc(v.label)}</button>`).join('')}</div>
@@ -2743,15 +2888,16 @@ function renderVoice(){const vs=Voice.voices(),cur=pickDeviceVoice();
       ['keys','Google AI keys',G.active().length?{st:'ok',msg:G.active().length+' working'}:{st:'warn',msg:'None saved'}]].map(([k,t,d])=>`<li class="${d.st}"><span class="dot2"></span><b>${t}</b><span>${esc(d.msg)}</span></li>`).join('')}</ul></div>
     <div class="card"><h2>Listening</h2><p class="note">One steady microphone, without beeps. ${Listen.engine==='ai'?'With your key, Google\'s AI hears and understands each request in one quick step.':'Without a key, the offline English speech model on this phone writes down what you say.'} If your speech keeps stopping and starting, I offer to listen quietly until you say go ahead.</p></div></div></section>`}
 async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()}catch(e){}if(nav.v!=='backup')return;
-  const groups=[];for(const e of list){const g=groups.find(x=>Math.abs(x.t-e.t)<60000);if(g)g.names.push(e.name);else groups.push({t:e.t,names:[e.name]})}
+  const on=!!b.mode,folder=b.mode==='folder';
   main.innerHTML=`<section class="view">${vtitle('Backup')}<div class="list">
-    <div class="card">${b.mode?`<h2>Backup location</h2><div class="folder">${I('folder')}<span>${b.mode==='folder'?`<b>${esc(b.parent)}</b> / ${BK_FOLDER}`:'Stored inside this browser'}</span></div>
-      <p class="note">A backup is saved silently whenever you leave a container after making changes.${b.mode==='device'?' This browser cannot write to a folder, so backups are kept inside the browser. Save a backup file now and then to keep a copy outside the browser.':''}</p>
-      ${b.needPerm?`<button class="pbtn prime" data-act="allowbk">${I('shield')} Allow backups again</button>`:''}
-      <div class="btnrow">${b.mode==='device'?`<button class="pbtn" data-act="expbk">${I('down')} Save backup file</button><label class="pbtn" tabindex="0" role="button">${I('upload')} Open backup file<input type="file" id="impbk" accept=".spcbackup" hidden></label>`:`<button class="pbtn" data-act="setbk">${I('folder')} Change location</button><button class="pbtn" data-act="offbk">${I('x')} Turn off</button>`}</div>`
-      :`<p class="note">Choose a folder on this device once. Spoken PixelCraft creates a folder named ${BK_FOLDER} inside it, and keeps your work safe there automatically.</p><button class="pbtn prime" data-act="setbk">${I('folder')} Set up backup</button>`}</div>
-    ${b.mode?`<div class="card"><h2>Backups</h2>${groups.length?groups.slice(0,60).map(g=>`<div class="bk"><span class="bt"><b>${fmtDate(g.t)}, ${fmtTime(g.t)}</b><span>${esc([...new Set(g.names)].join(', '))}</span></span><button class="mini big" data-rest="${g.t+59999}" aria-label="Restore to ${fmtDate(g.t)} ${fmtTime(g.t)}">${I('restore')}</button></div>`).join(''):'<p class="note">No backups yet.</p>'}</div>`:''}</div></section>`;
-  const ib=$('#impbk');if(ib)ib.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await Backup.importFile(f);toast('Backup file opened.');renderBackup()}catch(er){toast('That file could not be read.')}}}
+    <div class="card bkcard">${on?`<h2>Backup location</h2>
+      ${folder?`<button class="locbtn" data-act="bkloc" aria-label="Backup location, ${esc(b.folder)}. Opens the folder">${I('folder')}<span>${esc(b.folder)}</span>${I('chev')}</button>`:`<div class="locbtn static">${I('folder')}<span>Inside this browser</span></div>`}
+      <p class="note">Backed up automatically once a day, as one file named with the date and time. The 7 newest backups are kept.${folder?'':' This browser cannot save to a folder, so backups stay inside the browser. Use the download icon to keep a copy elsewhere.'}</p>
+      ${b.needPerm?`<button class="sbtn prime" data-act="allowbk">${I('shield')} Allow</button>`:''}
+      <div class="sbtns"><button class="sbtn prime" data-act="bknow">${I('backup')} Back up now</button>${folder?`<button class="sbtn" data-act="setbk">${I('folder')} Change folder</button>`:''}<button class="sbtn warn" data-act="offbk">${I('x')} Turn off</button></div>`
+      :`<h2>Backup</h2><p class="note">Choose a folder once, on this phone or in Google Drive. A backup file is then saved there automatically every day.</p><div class="sbtns"><button class="sbtn prime" data-act="setbk">${I('folder')} Set up backup</button></div>`}</div>
+    ${on?`<div class="card"><h2>Backups</h2>${list.length?`<ul class="bklist">${list.map(e=>`<li class="bk"><span class="bt"><b>${fmtDate(e.t)}, ${fmtTime(e.t)}</b><span class="bkk ${e.kind}">${e.kind==='auto'?'Automatic':'Manual'}</span></span>${folder?'':`<button class="mini" data-bksave="${esc(e.name)}" aria-label="Save a copy of the backup of ${fmtDate(e.t)} ${fmtTime(e.t)}">${I('down')}</button>`}<button class="mini rest" data-bkrest="${esc(e.name)}" aria-label="Restore the backup of ${fmtDate(e.t)} ${fmtTime(e.t)}">${I('restore')}</button><button class="mini del" data-bkdel="${esc(e.name)}" aria-label="Delete the backup of ${fmtDate(e.t)} ${fmtTime(e.t)}">${I('trash')}</button></li>`).join('')}</ul>`:'<p class="note">No backups yet. The first one is made automatically today, or tap Back up now.</p>'}</div>`:''}
+    <div class="card"><h2>Restore</h2><p class="note">Bring back containers from any backup file, wherever it is kept. They are added to Home marked Restored; nothing on Home is replaced.</p><div class="sbtns"><button class="sbtn" data-act="bkpick">${I('restore')} Restore</button></div></div></div></section>`}
 const ABOUT=[
  ['spark','What Spoken PixelCraft is','<p>A voice-first studio for creating and editing images and videos. You speak in plain words. The app asks questions until it understands exactly what you want, explains the choices, and then creates it with its own built-in tools.</p>'],
  ['book','Getting started','<ul><li>Tap anywhere when the app opens. Voice turns on and stays on.</li><li>Add a free Google key in Menu, API keys.</li><li>Tap the plus button, or say <q>create a new container</q>.</li><li>Inside the container, tell the app what you want. It asks only what it needs, reads back a short summary, and asks whether to go ahead. Answer in your own words, such as <q>yes</q> or <q>go ahead, but softer music</q>.</li></ul>'],
@@ -2760,7 +2906,7 @@ const ABOUT=[
  ['layers','Containers and versions','<p>Each project lives in its own container. The newest edited container is shown first. Before a new version replaces the current one, the app asks whether to keep the previous one. Kept versions and your uploads appear as small blocks below the preview; tap one to see it, or its cross to delete it.</p>'],
  ['file','Recorded requirement and messages','<p>The document icon at the top right of a container opens the Recorded User Requirement: a clear summary of everything you asked for, with a speaker icon to hear it. Tap the same icon again to close it. The messages icon at the bottom opens a box where you can type commands or paste a script; tap it again to close.</p>'],
  ['down','Downloading','<p>Choose a file name and one or more formats: PNG, JPEG, WebP or GIF for images; MP4, WebM, MP3 or GIF for videos. Files are saved to your device\'s Downloads folder. The folder button opens a file picker there, where your browser allows it.</p>'],
- ['backup','Backup and restore','<p>Choose a folder once. A folder named Spoken_PixelCraft_backup is created, and your work is backed up silently whenever you leave a container after changes. Restore adds the backed-up containers marked (Restored); restoring the same backup again replaces them. Phone browsers that cannot write to folders keep backups inside the browser; save a backup file from time to time.</p>'],
+ ['backup','Backup and restore','<p>Choose a folder once, on the phone or in Google Drive. Nothing is saved at that moment. After that, one backup file named with the date and time is saved there automatically once a day, and Back up now saves one whenever you like. The 7 newest backups are kept, each marked Automatic or Manual.</p><p>The folder name is a button that opens the phone file picker in that folder. Each backup in the list has its own restore icon and a red delete icon. Restoring adds the containers to Home marked Restored, never replacing anything, and then deletes that backup file. Restore, at the bottom, opens a backup file from any place. Turning backup off stops new backups and keeps the files.</p>'],
  ['trash','Deleted containers','<p>A deleted container disappears at once, but you can say <q>undo</q> or <q>bring it back</q> until the first use of the next day, when it is removed for good. Backups taken earlier still hold a copy.</p>'],
  ['down','First-run setup','<p>On the very first run, the app downloads its one essential component: the offline English speech recognition model, about 65 MB. Tap Download when ready, preferably on Wi-Fi. While it downloads you can explore the Menu and add API keys. Replies use the phone\'s own voice, so nothing else is needed to talk. Other components, such as the voice-over voices, fonts, encoders, background removal and the starter library, download quietly in the background on Wi-Fi, pausing while you use the app.</p>'],
  ['spark','Ready-made designs','<p>Say, for example, <q>make a birthday card for Ravi</q>, <q>make a Diwali greeting video</q>, <q>make a sale poster for 50 percent off</q>, <q>make a quote card</q> or <q>make a slideshow of my photos</q>. Ready-made designs include greeting cards for any occasion, sale posters, invitations, quote cards, menu cards, YouTube thumbnails, announcements, photo cards, slideshows, greeting videos, promo reels and quote videos. They work even without an API key.</p>'],
@@ -2772,8 +2918,8 @@ const ABOUT=[
  ['screen','Phone and desktop','<p>The same app works on phones, tablets and computers. Larger screens show more containers, a bigger preview, and the messages panel at the side.</p>'],
  ['voice','Voice-overs','<p>Videos can carry a voice-over in many voices: female, male, British, storyteller, jovial, announcer, little girl, little boy, clown, robot, giant, old man, chipmunk, or a chorus. Or record your own voice: the app shows your script, records, and cleans up the sound. Spoken voices cannot sing; for a birthday, use the Happy Birthday tune, or sing it yourself.</p>'],
  ['sliders','Manual mode','<p>In Menu, choose Switch to manual mode. After a warning, all AI assistance, voice and typed commands stop, and each container shows editing icons: New image, Edit image, New video, Edit video, Logo and Audio.</p><ul><li><b>Image editor:</b> size for any platform, colour, gradient or photo backgrounds, crop, rotate and mirror, brightness, contrast, colour and more, ready-made looks, effects, text in many fonts and styles, shapes, stickers, pictures on top, particles, frames, background removal, and layers. Drag things with a finger to move them.</li><li><b>Video editor:</b> a timeline of scenes from clips, photos and colour cards; trim, split, reorder, copy and delete; speed, speed ramps and reverse; motion; transitions; looks; animated text; stickers; picture in picture; particles; and a quick preview.</li><li><b>Logo maker:</b> name, tagline, five styles, twenty icons, colours, background and font; saved as PNG and SVG.</li><li><b>Audio editor:</b> built-in or library music, voice-overs in many voices, your own voice, sound effects, volume, fades and start times; or trim, cut out and split sound files.</li></ul><p>Every save becomes a new version, and you can keep the one you started from. Choose Switch to AI mode in the Menu to bring voice and AI back.</p>'],
- ['exit','Back and Exit','<p>Every screen has a Back icon at the top left. On the home screen, the Exit icon in that spot closes the app after asking you to confirm. If something is being created, it pauses until you come back. You can also say <q>go back</q>, <q>go home</q>, or <q>open the Birthday container</q>.</p>'],
- ['shield','Privacy','<p>Your work stays in this browser and in your chosen backup folder. Requests are sent to Google, or Mistral, only with your own keys. Backups include your keys, so keep that folder private.</p>']];
+ ['exit','Back and Exit','<p>Every screen has a Back icon at the top left. On the home screen, the Exit icon in that spot closes the app at once. If something is being created, it pauses, and I offer to continue it next time. You can also say <q>go back</q>, <q>go home</q>, or <q>open the Birthday container</q>.</p>'],
+ ['shield','Privacy','<p>Your work stays in this browser and in your chosen backup folder. Requests are sent to Google, or Mistral, only with your own keys. Backups hold your containers, not your keys.</p>']];
 let openSec=0;
 function renderAbout(){main.innerHTML=`<section class="view">${vtitle('About')}<div class="acc">${ABOUT.map((s,i)=>`<div class="sec ${i===openSec?'open':''}"><button class="sech" data-sec="${i}" aria-expanded="${i===openSec}"><span class="ric">${I(s[0])}</span><span class="tx">${s[1]}</span>${I('chev','chev')}</button><div class="secb"><div><div class="in">${s[2]}</div></div></div></div>`).join('')}</div></section>`}
 function onKeysChanged(){if(nav.v==='keys')renderKeys();else if(nav.v==='home'&&!liveCS().length)renderHome()}
@@ -2797,7 +2943,7 @@ function toggleReq(open){if(nav.v!=='container')return;const c=byId(nav.id),cv=$
   else if(ex){if(reqSpeaking){Voice.stop();reqSpeaking=false}ex.classList.add('closing');setTimeout(()=>{if(!nav.req&&ex.parentNode)ex.remove()},1150)}}
 function speakReq(b){const c=byId(nav.id);if(!c)return;if(reqSpeaking){Voice.stop();reqSpeaking=false;b.classList.remove('on');b.setAttribute('aria-pressed','false');return}
   reqSpeaking=true;b.classList.add('on');b.setAttribute('aria-pressed','true');Voice.say(reqSections(c).map(x=>x.heading+'. '+x.text).join(' '),{force:true}).then(()=>{reqSpeaking=false;b.classList.remove('on');b.setAttribute('aria-pressed','false')})}
-function glow(ctrl){const sel={upload:'#galBtn',gallery:'#galBtn',files:'#fileBtn',link:'[data-act=yt]',download:'#dlgo, [data-act=download]',share:'[data-act=share]',backup:'[data-act=setbk]',messages:'.msgbtn',requirement:'[data-act=req]',new:'.fab',install:'[data-act=install]',exit:'[data-act=exit]',help:'[data-go=help]'}[ctrl]||'#galBtn';
+function glow(ctrl){const sel={upload:'#galBtn',gallery:'#galBtn',files:'#fileBtn',link:'[data-act=yt]',download:'#dlgo, [data-act=download]',share:'[data-act=share]',backup:'[data-act=setbk]',messages:'.msgbtn',requirement:'[data-act=req]',new:'.fab',install:'[data-act=install]',exit:'[data-act=exit]',help:'#helpBtn'}[ctrl]||'#galBtn';
   if(ctrl==='backup'&&nav.v!=='backup')go('backup');if(ctrl==='new'&&nav.v!=='home')goHome();
   setTimeout(()=>{const el=document.querySelector(sel);if(el){el.classList.remove('glow');void el.offsetWidth;el.classList.add('glow');el.focus&&el.focus({preventScroll:true});setTimeout(()=>el.classList.remove('glow'),4200)}},350)}
 
@@ -2878,7 +3024,9 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
   if(d.sec!==undefined){const i=+d.sec;openSec=openSec===i?-1:i;$$('.sec').forEach((s,j)=>{s.classList.toggle('open',j===openSec);s.querySelector('.sech').setAttribute('aria-expanded',j===openSec)});return}
   if(d.kcopy!==undefined){const m=d.kcopy[0]==='m',i=+d.kcopy.slice(1),k=(m?S.mkeys:S.keys)[i];const done=()=>toast((m?'Mistral key ':'Key ')+(i+1)+' copied.');if(navigator.clipboard&&k)navigator.clipboard.writeText(k.key).then(done,()=>toast('Could not copy.'));return}
   if(d.kdel!==undefined){const m=d.kdel[0]==='m',i=+d.kdel.slice(1);ask('Delete '+(m?'Mistral key ':'Key ')+(i+1)+'?','This key will be removed from this device.','Delete',true,()=>{(m?S.mkeys:S.keys).splice(i,1);saveS();renderKeys()});return}
-  if(d.rest){ask('Restore this backup?','Its containers are added to Home marked (Restored). Containers restored earlier from the same backup are replaced.','Restore',false,async()=>{toast('Restoring…');try{const r=await Backup.restore(+d.rest);const m=r.replaced?'Restored. The earlier restored containers were replaced.':`Restored ${r.added} container${r.added===1?'':'s'}. They are marked Restored on Home.`;toast(m);if(!S.voiceOff)Voice.say(m)}catch(er){toast('The backup could not be restored.')}});return}
+  if(d.bkrest){const nm=d.bkrest,p=Backup.parse(nm);ask('Restore this backup?','The containers from '+(p?fmtDate(p.t)+', '+fmtTime(p.t):'this backup')+' are added to Home marked Restored. Nothing on Home is replaced. The backup file is then deleted.','Restore',false,async()=>{toast('Restoring…');try{const r=await Backup.restore(nm);bkDone(r)}catch(er){toast('The backup could not be restored.')}renderBackup()});return}
+  if(d.bkdel){const nm=d.bkdel,p=Backup.parse(nm);ask('Delete this backup?','The backup file of '+(p?fmtDate(p.t)+', '+fmtTime(p.t):'this time')+' is deleted from the backup location.','Delete',true,async()=>{const ok=await Backup.remove(nm);toast(ok?'Backup deleted.':'The backup file could not be deleted.');renderBackup()});return}
+  if(d.bksave){Backup.saveCopy(d.bksave).then(()=>toast('Saved to your Downloads folder.'));return}
   switch(d.act){
     case 'back':history.back();break;
     case 'exit':askExit();break;case 'doexit':doExit();break;case 'reopen':location.reload();break;
@@ -2905,10 +3053,11 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
     case 'openfolder':if(window.showOpenFilePicker)window.showOpenFilePicker({startIn:'downloads'}).catch(()=>{});else toast('Open the Downloads folder from your phone\'s Files app.');break;
     case 'createkey':openCreateKey();break;case 'goaistudio':goAIStudio();break;case 'pastekey':openPasteKey();break;case 'dopaste':doPasteKey();break;
     case 'savekey':saveKey($('#keyin')&&$('#keyin').value);break;
-    case 'setbk':Backup.setup().then(()=>{toast('Backup is set up.');if(!S.voiceOff)Voice.say('Backup is set up. Your work will be kept safe automatically.');renderBackup()}).catch(er=>{if(er&&er.name!=='AbortError')toast('The folder could not be used. Please try another folder.')});break;
+    case 'setbk':Backup.setup().then(r=>{const m=r.mode==='folder'?'Backup is set up in '+r.folder+'. A backup is saved there automatically every day.':'Backup is set up inside this browser. A backup is saved automatically every day.';toast(m);if(!S.voiceOff)Voice.say(m);renderBackup()}).catch(er=>{if(!er||er.name==='AbortError')return;const m=er.name==='NotAllowedError'?'Permission to use that folder was not given. Please try again and tap Allow.':'Files could not be saved in that folder. Please choose another folder.';toast(m);if(!S.voiceOff)Voice.say(m)});break;
     case 'allowbk':Backup.allow().then(()=>renderBackup());break;
-    case 'offbk':ask('Turn off backup?','New backups stop. Files already in the folder are kept.','Turn off',true,async()=>{Backup.mode=null;Backup.dir=null;await DB.del('kv','backup');renderBackup()});break;
-    case 'expbk':Backup.exportFile().catch(()=>toast('The backup file could not be saved.'));break;
+    case 'offbk':ask('Turn off backup?','Backups stop. The backup files already saved are kept, and you can still restore them with Restore.','Turn off',true,async()=>{await Backup.off();toast('Backup is off. Your backup files are kept.');renderBackup()});break;
+    case 'bknow':{const bt=t;bt.classList.add('busy');Backup.make('manual').then(()=>{toast('Backup saved.');renderBackup()}).catch(er=>{toast(Backup.why(er));bt.classList.remove('busy')});break}
+    case 'bkloc':case 'bkpick':Backup.pick().then(p=>{if(!p)return;ask('Restore this backup?','"'+p.file.name+'" will be added to Home, marked Restored. Nothing on Home is replaced.','Restore',false,async()=>{toast('Restoring…');try{bkDone(await Backup.restorePicked(p))}catch(er){toast('That file is not a Spoken PixelCraft backup, or it could not be read.')}renderBackup()})}).catch(()=>toast('The file could not be opened.'));break;
   }});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&e.target.id==='ta'){e.preventDefault();$('[data-act=send]').click()}if(e.key==='Enter'&&e.target.id==='keyin')$('[data-act=savekey]').click();if(e.key==='Enter'&&e.target.id==='yt')$('[data-act=ytsave]').click();if(e.key==='Escape')closeLayer();
   if((e.key==='Enter'||e.key===' ')&&e.target.matches('label[role=button]')){e.preventDefault();const i=e.target.querySelector('input');if(i)i.click()}});
@@ -3022,7 +3171,7 @@ function queueBackground(){Bg.add('fonts',()=>ensureFonts());Bg.add('encoders',(
   Library.resume();setTimeout(()=>Library.maybeAsk(),25000)}
 
 /* ---------- install as an app: own prompt with Install and Cancel icons ---------- */
-let installEvt=null;const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+let installEvt=null;const isStandalone=()=>['standalone','fullscreen','minimal-ui','window-controls-overlay'].some(m=>matchMedia('(display-mode: '+m+')').matches)||navigator.standalone===true;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(nav.v==='menu')renderMenu();if(!LS.get('spc.noinstall')&&!isStandalone())setTimeout(showInstallCard,started?600:2500)});
 window.addEventListener('appinstalled',()=>{installEvt=null;const el=$('#installcard');if(el)el.remove();toast('Installed. Open Spoken PixelCraft from its icon.')});
 function showInstallCard(){if(!installEvt||$('#installcard')||$('#setupcard')||$('#installpage'))return;const el=document.createElement('div');el.id='installcard';el.className='installcard';el.setAttribute('role','dialog');el.setAttribute('aria-label','Install Spoken PixelCraft');
@@ -3054,21 +3203,24 @@ async function begin(){if(started)return;started=true;const st=$('#start');if(st
   $('#sbmenu').onclick=()=>go('menu');$('#sbkeys').onclick=()=>go('keys');$('#sbretry').onclick=()=>{setupRunning=false;if(setupDone()){started=false;begin()}else startSetup()};
   S.voiceOff=false;cleanupOldVoice();document.body.classList.toggle('manual',!!S.manual);
   /* opened in a browser tab: the install page comes first, with a small option to continue in the browser */
-  if(!isStandalone()&&!sessionStorage.getItem('spc.browser')&&!location.hash.includes('spc-test')){const st=$('#start');if(st)st.remove();showInstallPage()}
-  else afterGate()
+  if(isStandalone())LS.set('spc.installed',1);
+  if(!isStandalone()&&!LS.get('spc.installed')&&!sessionStorage.getItem('spc.browser')&&!location.hash.includes('spc-test')){const st=$('#start');if(st)st.remove();showInstallPage()}
+  else afterGate(isStandalone()||!!LS.get('spc.installed'))
   try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{if(nav.v==='voice')renderVoice()}}catch(e){}
   Voice.listeners.add(onVoiceStatus);
   setTimeout(()=>housekeeping(),4000);
   if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
-  if(location.hash.startsWith('#spc-test'))window.__spc={DB,CS:()=>CS,runTool,Gen,go,Voice,Session,heard,handleText,Rec,Backup,Bg,FX,Listen,Local,localUnderstand,expandTemplate,genTool,STW,Essentials,VOE,Patient,Hold,voiceTurn,aiTurn,G,M,Lib,Library,Tour,Brain,toggleReq,toggleChat,musicBuffer,editPlan,parallelText,askExit,prepareScenes,Ed,LogoEd,get VidEd(){return VidEd}};})();
+  if(location.hash.startsWith('#spc-test'))window.__spc={DB,CS:()=>CS,runTool,Gen,go,Voice,Session,heard,handleText,Rec,Backup,Bg,FX,Listen,Local,localUnderstand,expandTemplate,genTool,STW,Essentials,VOE,Patient,Hold,voiceTurn,aiTurn,G,M,Lib,Library,Tour,Brain,toggleReq,toggleChat,musicBuffer,editPlan,parallelText,askExit,prepareScenes,Ed,LogoEd,get VidEd(){return VidEd},get LibPick(){return LibPick},get AudEd(){return AudEd},addToLibrary,renderLibraryPage,stepPreview,stepScene,stepLibrary,doExit,get libTab(){return libTab},Conn};})();
 /* after the install page, or straight away in the installed app */
-function afterGate(){if(!setupDone()){const st=$('#start');if(st)st.remove();showSetupCard()}
-  else{const st=$('#start');if(!st)return begin();st.addEventListener('click',begin);st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')begin()})}}
+function afterGate(auto){if(!setupDone()){const st=$('#start');if(st)st.remove();showSetupCard()}
+  else{const st=$('#start');if(!st||auto){if(st)st.remove();return begin()}st.addEventListener('click',begin);st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')begin()})}}
 
 /* manual mode: the creation and editing icons inside a container */
 function manualToolsHTML(c){const img=c.versions.some(v=>v.kind==='image')||c.media.some(m=>/^image\//.test(m.type)),vid=c.versions.some(v=>v.kind==='video')||c.media.some(m=>/^video\//.test(m.type));
   const b=(act,ic,t,lab,on=true)=>`<button class="mtool" data-act="${act}" aria-label="${lab}" ${on?'':'disabled'}>${I(ic)}<span>${t}</span></button>`;
   return `<div class="mtools" role="toolbar" aria-label="Manual editing tools">${b('newimage','newimg','New image','New image')}${b('editimage','editimg','Edit image','Edit the picture showing',img)}${b('newvideo','newvid','New video','New video')}${b('editvideo','editvid','Edit video','Edit the video showing',vid)}${b('newlogo','logo','Logo','Logo maker')}${b('editaudio','wave','Audio','Audio editor: music, voice, sound effects and cutting')}</div>`}
+
+function bkDone(r){const m=`Restored ${r.added} container${r.added===1?'':'s'}. They are marked Restored on Home.`;toast(m);if(!S.voiceOff)Voice.say(m)}
 
 /* ============================================================
    Install page, Exit, Help with a guided tour, Library, voice-over previews
@@ -3097,32 +3249,35 @@ if(isStandalone())LS.set('spc.installed',1);
 window.addEventListener('appinstalled',()=>{LS.set('spc.installed',1);const el=$('#installpage');if(el)el.innerHTML=installPageInner(true);Voice.say('Installed. Open Spoken PixelCraft from your home screen or app list.',{force:true})});
 window.addEventListener('beforeinstallprompt',()=>setTimeout(refreshInstallPage,50));
 
-/* ---------- Exit: only from the Exit icon on the home screen, after confirming ---------- */
-function askExit(){const run=Gen.running;Voice.stop();
-  sheet('Exit Spoken PixelCraft?',`<p class="note center">${run?'A creation is still running. It will pause until you come back, and I will offer to continue it.':'Do you want to exit?'}</p><div class="btnrow"><button class="pbtn" data-act="close">${I('x')} Cancel</button><button class="pbtn prime danger" data-act="doexit">${I('exit')} Exit</button></div>`);
-  Voice.say(run?'A creation is still running. It will pause until you come back. Do you want to exit?':'Do you want to exit?',{force:true})}
-function doExit(){closeLayer();Library.paused=true;Bg.tasks=[];Session.stop();Voice.stop();Voice.say('Goodbye.',{force:true});
-  setTimeout(()=>{try{window.close()}catch(e){}setTimeout(()=>{if(document.hidden)return;const el=document.createElement('div');el.className='closedpage';el.innerHTML=`<div class="ipbox"><img class="ipicon" src="icon-192.png" alt="" width="80" height="80"><h2>Spoken PixelCraft is closed</h2><p class="ipwhy">You can now leave this screen. Your work is saved.</p><button class="pbtn prime" data-act="reopen">${I('restore')} Open again</button></div>`;document.body.appendChild(el);
-    try{history.go(-(history.length-1))}catch(e){}},500)},900)}
+/* ---------- Exit: only from the Exit icon on the home screen; silent, and the app closes completely ---------- */
+let exiting=false;
+function askExit(){doExit()}
+function doExit(){if(exiting)return;exiting=true;closeLayer();Library.paused=true;Bg.tasks=[];try{Session.stop()}catch(e){}Voice.stop();Hold.clear();
+  try{window.close()}catch(e){}
+  /* an installed app closes when it goes back past its first screen */
+  const leave=()=>{try{if(history.length>1)history.go(-(history.length-1));setTimeout(()=>{try{history.back()}catch(e){}},350)}catch(e){}};
+  setTimeout(()=>{if(document.hidden)return;leave();setTimeout(()=>{if(!document.hidden)location.replace('about:blank')},1400)},250)}
+window.addEventListener('popstate',e=>{if(exiting)e.stopImmediatePropagation()},true);
 
 /* ---------- long press does nothing: no browser menu on containers, pictures or icons ---------- */
 document.addEventListener('contextmenu',e=>{if(e.target.closest('.tile,.cell,.cap,.ver,.ibtn,.mini,.tbtn,.fab,.vpill,.msgbtn,.row,img,.preview img'))e.preventDefault()});
 
 /* ---------- Help: every icon explained, grouped by screen, plus a guided tour ---------- */
 const HOWTO=[
- ['Home screen',[['exit','Exit','Closes the app after asking you to confirm. Saying exit will remind you to use this icon.'],['help','Help','Opens this page.','open help'],['moon','Light and dark','The moon or sun at the top right switches light and dark.','dark mode, or light mode'],['menu','Menu','The lines at the top right open the Menu.','open the menu'],['plus','Plus','Creates a new container (a project).','create a new container called Diwali offer'],['image','Container tile','Tap to open it. Long press does nothing.','open the Diwali container'],['pen','Pencil','Renames the container.','rename this container to Shop offers'],['trash','Bin','Deletes the container. You can bring it back until tomorrow.','delete the Diwali container, or undo']]],
+ ['Home screen',[['exit','Exit','Closes the app at once. An unfinished creation is offered again next time. Saying exit reminds you to use this icon.'],['help','Help','At the top, between the light and dark switch and the Menu. Opens this page; tap it again to close.','open help'],['moon','Light and dark','The moon or sun at the top right switches light and dark.','dark mode, or light mode'],['menu','Menu','The lines at the top right open the Menu; tap again to close it. While a page is open, its icon is filled with colour.','open the menu'],['plus','Plus','Creates a new container (a project).','create a new container called Diwali offer'],['image','Container tile','Tap to open it. Long press does nothing.','open the Diwali container'],['pen','Pencil','Renames the container.','rename this container to Shop offers'],['trash','Bin','Deletes the container. You can bring it back until tomorrow.','delete the Diwali container, or undo']]],
  ['Inside a container',[['back','Back','Returns to the previous screen.','go back, or go home'],['doc','Recorded requirement','Top right. Tap to open the summary of everything you asked for; tap again to close. The speaker inside reads it aloud.','show the requirement, or read the requirement'],['gallery','Gallery','Adds photos and videos from your phone.','add photos'],['files','Files','Adds documents (price lists, menus, scripts) and music files.','add a document'],['link','YouTube link','Adds a YouTube link for the app to watch and understand. It cannot be downloaded.','add a YouTube link'],['chat','Messages','Bottom left. Opens a box to type or paste a request or script; tap again to close.','open messages']]],
- ['Preview and versions',[['share','Share','Hands the file to WhatsApp, Instagram, Facebook and other apps.','share it'],['down','Download','Saves it in the formats you choose.','download it as PNG and JPEG'],['layers','Version blocks','Below the preview. Tap one to see it; its cross deletes it.','show version two, or delete version one'],['clock','Progress ring','Shows the percentage and what is happening. A small ring follows you to other screens; tap it to come back.','how far along is it']]],
+ ['Preview and versions',[['lib','Add to library','Saves what you see into your library, under My creations, so you can reuse it in any container or share it later.','add this to the library'],['share','Share','Hands the file to WhatsApp, Instagram, Facebook and other apps.','share it'],['down','Download','Saves it in the formats you choose.','download it as PNG and JPEG'],['layers','Version blocks','Below the preview. Tap one to see it; its cross deletes it.','show version two, or delete version one'],['clock','Progress ring','Shows the percentage and what is happening. A small ring follows you to other screens; tap it to come back.','how far along is it']]],
+ ['Swipes, as well as the icons and voice',[['left','Preview','Swipe left or right on the preview to see the next or previous version or upload.',''],['down','Close by swiping down','Swipe down on any pop-up, such as the download options, on the requirement panel, or on the messages and typing panel, to close it.',''],['video','Video editor','Swipe left or right on the scene preview to move to the next or previous scene.',''],['lib','Library','Swipe left or right on the Library page to move between Images, Video clips, Music and My creations.','']]],
  ['Voice bar',[['voice','Dots','They move with your voice. Tap to stop listening; tap the microphone to start again. In quiet listening, tap the dots when you want me to respond.','stop listening, listen quietly, back to normal']]],
  ['Manual mode',[['sliders','Switch to manual mode','In the Menu. After a warning, AI assistance, voice and typed commands stop, and editing icons appear in every container. The same row switches back to AI mode.',''],['newimg','New image','Opens the image editor with a fresh picture.',''],['editimg','Edit image','Opens the picture showing in the image editor.',''],['newvid','New video','Opens the video editor to build a video from clips, photos and colour cards.',''],['editvid','Edit video','Opens the video showing in the video editor.',''],['logo','Logo','Opens the logo maker: name, tagline, style, icon, colours and font. Saves PNG and SVG.',''],['wave','Audio','Opens the audio editor: music, voice-overs, your own voice, sound effects, volume and fades for the video; or trimming, cutting and splitting a sound file.','']]],
  ['Inside the editors',[['x','Close','Closes the editor. If you changed something, it asks first.',''],['undo','Undo and redo','Steps back or forward through your changes.',''],['play','Play','Video editor: makes a quick preview. Audio editor: plays or stops the sound.',''],['check','Save','Saves your work as a new version, and asks whether to keep the one you started from.',''],['layers','Tool icons','Along the bottom: Canvas, Crop, Rotate, Adjust, Looks, Effects, Text, Shapes, Stickers, Picture, Particles, Frame, Background and Layers for pictures; Trim, Speed, Motion, Transition, Look, Text, Stickers, Picture in picture, Particles and Video for videos. Drag text, stickers and pictures with a finger to move them.',''],['film','Timeline','Video editor: the strip of scenes. Tap a scene to choose it, the small icon between scenes for its transition, and the plus to add clips, photos, a colour card, or all photos as a slideshow.','']]],
- ['Menu',[['key','API keys','Add free Google keys, and optional Mistral keys. Each key is tested the moment you add it, and you are told at once if it fails.','open API keys'],['voice','Voice','Choose the phone voice and speed; hear the voice-over voices.','open voice settings'],['lib','Library','Free images, video clips and music, downloaded on Wi-Fi.','open the library'],['backup','Backup','Keeps your work safe in a folder.','open backup'],['sliders','Manual mode','Switches between AI mode and manual mode.',''],['install','Install app','Installs the app on your home screen.','']]]];
+ ['Menu',[['key','API keys','Add free Google keys, and optional Mistral keys. Each key is tested the moment you add it, and you are told at once if it fails.','open API keys'],['voice','Voice','Speaking speed, voice-over voice samples and a status check. Replies use your phone\'s own voice.','open voice settings'],['lib','Library','Free images, video clips and music, downloaded on Wi-Fi.','open the library'],['backup','Backup','Saves one backup file a day in a folder you choose, with Back up now and Restore.','open backup'],['sliders','Manual mode','Switches between AI mode and manual mode.','']]]];
 function renderHelp(){main.innerHTML=`<section class="view">${vtitle('Help')}<div class="list">
   <div class="card tourcard"><h2>Guided tour</h2><p class="note">I can show you each icon on the real screen, one by one, and explain it aloud. Say next, repeat, or stop tour at any time.</p><button class="pbtn prime" data-act="tour">${I('tour')} Start the tour</button></div>
   ${HOWTO.map(([h,items])=>`<div class="card"><h2>${esc(h)}</h2><ul class="howto">${items.map(([ic,n,t,v])=>`<li><span class="hic">${I(ic)}</span><span class="htx"><b>${esc(n)}</b><span>${esc(t)}</span>${v?`<span class="hv">Say: ${esc(v)}</span>`:''}</span></li>`).join('')}</ul></div>`).join('')}</div></section>`}
 
 const Tour={active:false,i:0,steps:[],
-  build(){const home=[['[data-act=exit]','Exit','This is the Exit icon. It closes the app after asking you to confirm.'],['.hometop [data-go=help]','Help','This opens Help, where every icon is explained.'],['#modeBtn','Light and dark','This switches between light and dark.'],['#menuBtn','Menu','This opens the Menu: API keys, voice, library, backup, help and about.'],['.fab','New container','This plus icon creates a new container for each project.'],['.grid .cell .tile','Container','Tap a container to open it.'],['.grid .cell .mini.edit','Rename','The pencil renames a container.'],['.grid .cell .mini.del','Delete','The bin deletes a container. You can bring it back until tomorrow.'],['#vpill','Voice','These dots show I am listening. Tap them to stop, and tap the microphone to start again.']];
+  build(){const home=[['[data-act=exit]','Exit','This is the Exit icon. It closes the app at once.'],['#helpBtn','Help','This opens Help, where every icon is explained. Tap it again to close Help.'],['#modeBtn','Light and dark','This switches between light and dark.'],['#menuBtn','Menu','This opens the Menu: API keys, voice, library, backup, help and about.'],['.fab','New container','This plus icon creates a new container for each project.'],['.grid .cell .tile','Container','Tap a container to open it.'],['.grid .cell .mini.edit','Rename','The pencil renames a container.'],['.grid .cell .mini.del','Delete','The bin deletes a container. You can bring it back until tomorrow.'],['#vpill','Voice','These dots show I am listening. Tap them to stop, and tap the microphone to start again.']];
     const cont=[['.ctop [data-act=back]','Back','This takes you back to the home screen.'],['.cname','Name','Here are the container name, the pencil to rename, and the bin to delete.'],['.reqbtn','Recorded requirement','This opens the summary of everything you asked for. Tap again to close it.'],['#galBtn','Gallery','This adds photos and videos from your phone.'],['#fileBtn','Files','This adds documents, such as price lists or scripts, and music files.'],['[data-act=yt]','YouTube link','This adds a YouTube link for me to watch and understand.'],['#preview','Preview','Your creation appears here, with share and download icons.'],['.msgbtn','Messages','This opens a box to type or paste. Tap again to close it.'],['#vpill','Voice','Tap the dots to stop listening.']];
     return (nav.v==='container'?cont:home).filter(([sel])=>document.querySelector(sel))},
   start(){if(nav.v!=='container'&&nav.v!=='home')goHome();setTimeout(()=>{this.steps=this.build();if(!this.steps.length)return;this.active=true;this.i=0;LS.set('spc.toured',1);document.body.classList.add('touring');this.show()},nav.v==='home'?0:1300)},
@@ -3162,12 +3317,7 @@ const Library={running:false,paused:false,state:'',TARGET:500*1048576,
         const before=(await Lib.stats()).bytes;try{if(k==='image')await Lib.searchImages(q,n);else if(k==='audio')await Lib.searchMusic(q,n);else await Lib.searchVideos(q,n)}catch(e){}
         const after=(await Lib.stats()).bytes;LS.set('spc.libbytes',(LS.get('spc.libbytes',0)||0)+Math.max(0,after-before));i++;LS.set('spc.libi',i);await sleep(1500)}
       this.state='Starter library complete';LS.set('spc.libdone',1)}finally{this.running=false;if(nav.v==='library')renderLibrary()}}};
-async function renderLibrary(){const st=await Lib.stats();if(nav.v!=='library')return;const ok=Library.ok();const got=LS.get('spc.libbytes',0)||0;
-  main.innerHTML=`<section class="view">${vtitle('Library')}<div class="list">
-    <div class="card"><h2>Your library</h2><div class="libstats"><div><b>${st.image||0}</b><span>Images</span></div><div><b>${st.video||0}</b><span>Video clips</span></div><div><b>${st.audio||0}</b><span>Music</span></div><div><b>${st.bytes?plainSize(st.bytes):'0 MB'}</b><span>On this device</span></div></div>
-      <p class="note">Only free, public-domain or openly licensed media is fetched. There is no fixed size limit: the library keeps growing as your requests need more.</p></div>
-    <div class="card"><h2>Starter library</h2>${ok===1?`<p class="note" id="libstat">${LS.get('spc.libdone')?'Complete.':esc(Library.state||'Starting soon')} · ${plainSize(got)} of about 500 MB</p><div class="bar"><span style="width:${Math.min(100,Math.round(got/Library.TARGET*100))}%"></span></div>${LS.get('spc.libdone')?'':`<button class="pbtn" data-act="libpause">${I(Library.paused?'down':'x')} ${Library.paused?'Resume':'Pause'}</button>`}`
-      :`<p class="note">About 500 MB of free images, video clips and music, downloaded in the background on Wi-Fi only.</p><button class="pbtn prime" data-act="libyes">${I('down')} Download on Wi-Fi</button>`}</div></div></section>`}
+async function renderLibrary(){return renderLibraryPage()}
 function updateLibStatus(){const e=$('#libstat');if(e)e.textContent=(Library.state||'')+' · '+plainSize(LS.get('spc.libbytes',0)||0)+' of about 500 MB'}
 
 /* ---------- hear a voice-over voice ---------- */
@@ -3254,8 +3404,8 @@ const Ed={on:false,c:null,plan:null,hist:[],fut:[],sel:-1,tool:'canvas',W:1080,H
         h=`<h3>Size</h3>${chipRow('format',[['keep','Keep'],['instagram_post','Instagram post'],['instagram_square','Square'],['instagram_story','Story / Status'],['youtube_thumbnail','YouTube thumbnail'],['facebook_link','Facebook link'],['google_ad_landscape','Google Ad wide'],['listing_photo','Listing photo'],['a4','A4 print']],'keep','Size')}
           <p class="note">${p.width} × ${p.height} pixels</p><h3>Background</h3>${chipRow('basetype',[['color','Colour'],['gradient','Gradient'],['picture','Picture']],p.base.type==='color'||p.base.type==='gradient'?p.base.type:'picture','Background type')}
           ${p.base.type==='color'?swatches('basecolor',p.base.color||'#111216'):p.base.type==='gradient'?`<span class="lbl">First colour</span>${swatches('grad0',(p.base.colors||[])[0]||'#0B3954')}<span class="lbl">Second colour</span>${swatches('grad1',(p.base.colors||[])[1]||'#22D3EE')}${slider('gradangle','Angle',0,360,num(p.base.angle,160),5)}`
-          :`<div class="pics">${pics.map(x=>`<button class="pic" data-edpic="${x.t}:${x.id}" aria-label="Use ${esc(x.label)}"><img data-thumb2="${x.id}" alt=""></button>`).join('')||'<p class="note">Add photos with the gallery icon first.</p>'}</div>`}
-          ${p.base.type!=='color'&&p.base.type!=='gradient'?chipRow('fit',[['cover','Fill'],['contain','Fit inside']],p.fit||'cover','Fit'):''}`;break}
+          :`<div class="pics">${pics.map(x=>`<button class="pic" data-edpic="${x.t}:${x.id}" aria-label="Use ${esc(x.label)}"><img data-thumb2="${x.id}" alt=""></button>`).join('')||'<p class="note">No photos in this container yet.</p>'}</div>`}
+          ${p.base.type!=='color'&&p.base.type!=='gradient'?chipRow('fit',[['cover','Fill'],['contain','Fit inside']],p.fit||'cover','Fit'):''}<div class="sbtns"><button class="sbtn" data-act="edlib">${I('lib')} Background from the library</button></div>`;break}
       case 'crop':{const cr=p.crop||{x:0,y:0,w:100,h:100};const zoom=Math.round(100/Math.max(1,cr.w)*100);h=`<h3>Crop</h3>${slider('zoom','Zoom percent',100,400,zoom,5)}${slider('cropx','Left to right',0,100,cr.w<100?Math.round(cr.x/(100-cr.w)*100):50)}${slider('cropy','Top to bottom',0,100,cr.h<100?Math.round(cr.y/(100-cr.h)*100):50)}<button class="pbtn" data-edact="cropreset">${I('restore')} Reset crop</button>`;break}
       case 'rotate':h=`<h3>Rotate and flip</h3><div class="btnrow4"><button class="pbtn" data-edact="rotl" aria-label="Rotate left">${I('undo')} Left</button><button class="pbtn" data-edact="rotr" aria-label="Rotate right">${I('redo')} Right</button><button class="pbtn" data-edact="fliph">Mirror</button><button class="pbtn" data-edact="flipv">Upside down</button></div><p class="note">Rotation ${num(p.rotate,0)} degrees${p.flip?', flipped '+p.flip:''}.</p>`;break;
       case 'adjust':h=`<h3>Adjust</h3>${[['brightness','Brightness',-100,100],['contrast','Contrast',-100,100],['saturation','Colour',-100,100],['warmth','Warmth',-100,100],['hue','Hue',-180,180],['blur','Blur',0,40],['vignette','Dark edges',0,100],['grain','Grain',0,100],['glow','Glow',0,100],['sepia','Sepia',0,100],['grayscale','Black and white',0,100]].map(([k,t,a1,b1])=>slider('adj_'+k,t,a1,b1,num(a[k],0))).join('')}<button class="pbtn" data-edact="adjreset">${I('restore')} Reset</button>`;break;
@@ -3273,7 +3423,7 @@ const Ed={on:false,c:null,plan:null,hist:[],fut:[],sel:-1,tool:'canvas',W:1080,H
       case 'stickers':{h=`<h3>Stickers</h3><div class="emojis">${EMOJI.map(e=>`<button class="emo" data-edemoji="${e}" aria-label="Add sticker ${e}">${e}</button>`).join('')}</div>`;if(L&&L.kind==='sticker')h+=`${slider('ssize','Size',3,60,num(L.size,12))}${slider('lrot','Tilt',-180,180,num(L.rotation,0))}${this.layerBtns()}`;break}
       case 'picture':{const c=this.c;const pics=[...c.versions.filter(v=>v.kind==='image').map(v=>({t:'version',id:v.id,label:'Version '+(c.versions.indexOf(v)+1),n:c.versions.indexOf(v)+1})),...c.media.filter(m=>/^image\//.test(m.type)).map(m=>({t:'upload',id:m.id,label:m.name||'Upload'}))];
         h=`<h3>Add a picture on top</h3><div class="pics">${pics.map(x=>`<button class="pic" data-edlayerpic="${x.t}:${x.id}:${x.n||''}" aria-label="Add ${esc(x.label)}"><img data-thumb2="${x.id}" alt=""></button>`).join('')||'<p class="note">Add photos with the gallery icon first.</p>'}</div>
-          <div class="libsearch"><input class="field" id="edlibq" placeholder="Search free images" aria-label="Search free images"><button class="ibtn" data-edact="libsearch" aria-label="Search">${I('globe')}</button></div><div class="pics" id="edlibres"></div>`;
+          <div class="btnrow"><button class="pbtn" data-act="edliblayer">${I('lib')} Picture from the library</button></div>`;
         if(L&&L.kind==='image')h+=`${slider('lw','Size',5,100,num(L.w,40))}${chipRow('pshape',[['rect','Square corners'],['circle','Circle']],L.shape==='circle'?'circle':'rect','Shape')}${slider('lrad','Rounded corners',0,50,num(L.radius,0))}${chipRow('pborder',[['none','No border'],['#FFFFFF','White border'],['#111216','Black border']],L.border||'none','Border')}${slider('lrot','Tilt',-45,45,num(L.rotation,0))}${this.layerBtns()}`;break}
       case 'particles':{const pl=p.layers.find(x=>x.kind==='particles');h=`<h3>Particles</h3>${chipRow('particles',[['none','None'],['confetti','Confetti'],['snow','Snow'],['sparkles','Sparkles'],['stars','Stars'],['hearts','Hearts'],['bubbles','Bubbles'],['fireworks','Fireworks']],pl?pl.effect:'none','Particles')}${pl?slider('pdens','Amount',5,100,num(pl.density,40)):''}`;break}
       case 'frame':{const fr=p.layers.find(x=>x.kind==='frame');h=`<h3>Frame</h3>${chipRow('frame',[['none','None'],['simple','Simple'],['rounded','Rounded'],['polaroid','Polaroid'],['film','Film'],['gold','Gold'],['double','Double'],['neon','Neon']],fr?fr.style:'none','Frame')}${fr?`<span class="lbl">Colour</span>${swatches('fcolor',fr.color||'#FFFFFF')}${slider('fthick','Thickness',1,12,num(fr.thickness,3),.5)}`:''}`;break}
@@ -3297,7 +3447,7 @@ const Ed={on:false,c:null,plan:null,hist:[],fut:[],sel:-1,tool:'canvas',W:1080,H
   chip(key,v,noPush){const p=this.plan,L=this.layer();if(!noPush)this.push();let repanel=true;
     switch(key){
       case 'format':if(v!=='keep'&&FORMATS[v]){p.width=FORMATS[v][0];p.height=FORMATS[v][1];p.fit=p.fit||'cover'}break;
-      case 'basetype':if(v==='color')p.base={type:'color',color:'#111216'};else if(v==='gradient')p.base={type:'gradient',colors:['#0B3954','#22D3EE'],angle:160};else{const c=this.c;const m=c.media.find(x=>/^image\//.test(x.type));const vv=c.versions.find(x=>x.kind==='image');if(m)p.base={type:'upload',media_id:m.id};else if(vv)p.base={type:'version',version:c.versions.indexOf(vv)+1};else{toast('Add photos with the gallery icon first.');return}}break;
+      case 'basetype':if(v==='color')p.base={type:'color',color:'#111216'};else if(v==='gradient')p.base={type:'gradient',colors:['#0B3954','#22D3EE'],angle:160};else{const c=this.c;const m=c.media.find(x=>/^image\//.test(x.type));const vv=c.versions.find(x=>x.kind==='image');if(m)p.base={type:'upload',media_id:m.id};else if(vv)p.base={type:'version',version:c.versions.indexOf(vv)+1};else{this.hist.pop();LibPick.open({kinds:['image'],title:'Background from the library',onPick:x=>Ed.change(q=>{q.base={type:'asset',asset_id:x.asset_id};q.fit=q.fit||'cover'},true)});return}}break;
       case 'basecolor':p.base={type:'color',color:v};break;
       case 'grad0':case 'grad1':p.base.colors=p.base.colors||['#0B3954','#22D3EE'];p.base.colors[key==='grad0'?0:1]=v;break;
       case 'fit':p.fit=v;break;
@@ -3452,7 +3602,7 @@ const VidEd={on:false,c:null,plan:null,hist:[],fut:[],si:0,sel:-1,tool:'trim',ti
     .map(x=>`<button class="pic ${x.kind==='video'?'isvid':''}" data-${attr}='${esc(JSON.stringify(x.src))}' aria-label="Add ${esc(x.label)}, ${x.kind}"><img data-thumb3="${x.id}" alt="">${x.kind==='video'?`<span class="pk">${I('video')}</span>`:''}</button>`).join('')},
   addMenu(){sheet('Add a scene',`<span class="lbl">Clips and photos in this container</span><div class="pics wrap">${this.pics(['video','image'],'vaddsrc')||'<p class="note">Add photos and videos with the gallery icon first.</p>'}</div>
       <div class="btnrow4"><button class="pbtn" data-act="vaddcolor">${I('palette')} Colour card</button><button class="pbtn" data-act="vslideshow">${I('slides')} All photos as a slideshow</button></div>
-      <span class="lbl">Free video clips</span><div class="libsearch"><input class="field" id="vlibq" placeholder="For example ocean waves" aria-label="Search free video clips"><button class="ibtn" data-act="vlibsearch" aria-label="Search">${I('globe')}</button></div><div class="pics" id="vlibres"></div>`);
+      <span class="lbl">Free clips and photos</span><div class="btnrow"><button class="pbtn prime" data-act="vlib">${I('lib')} Choose from the library</button></div>`);
     this.fillThumbs(layer)},
   async fillThumbs(root){for(const im of root.querySelectorAll('[data-thumb3]')){const m=await DB.get('media',im.dataset.thumb3);if(!m)continue;if(/^image\//.test(m.type))im.src=await mediaURL(im.dataset.thumb3);else{const t=await makeThumb(m.blob);if(t)im.src=t}}},
   addScene(src){const info=mediaInfo(this.c,src);this.change(p=>{p.scenes.push({source:src,fit:'cover',...(info&&info.kind==='image'?{duration:3,motion:'ken_burns'}:{}),...(p.scenes.length?{transition:'fade'}:{})})});this.si=this.plan.scenes.length-1;this.tool='trim';this.refresh()},
@@ -3600,7 +3750,7 @@ const AudEd={on:false,c:null,mode:'video',plan:null,from:null,hist:[],ti:-1,file
     el.innerHTML=h},
   add(t){this.push();this.tracks().push(t);this.ti=this.tracks().length-1;this.panel()},
   pickSheet(kind){const c=this.c;
-    if(kind==='music')sheet('Add music',`<span class="lbl">Built-in styles</span><div class="chips">${Object.keys(MUSIC).map(k=>`<button class="chip" data-amusic="${k}">${k.replace(/_/g,' ')}</button>`).join('')}</div><span class="lbl">Free library music</span><div class="libsearch"><input class="field" id="amq" placeholder="For example soft piano" aria-label="Search free music"><button class="ibtn" data-act="amsearch" aria-label="Search">${I('globe')}</button></div><div class="chips" id="amres"></div>`);
+    if(kind==='music')sheet('Add music',`<span class="lbl">Built-in styles</span><div class="chips">${Object.keys(MUSIC).map(k=>`<button class="chip" data-amusic="${k}">${k.replace(/_/g,' ')}</button>`).join('')}</div><span class="lbl">Free library music</span><div class="btnrow"><button class="pbtn" data-act="alib">${I('lib')} Choose from the library</button></div>`);
     else if(kind==='sfx')sheet('Add a sound effect',`<div class="chips">${SFX.map(k=>`<button class="chip" data-asfxadd="${k}">${k.replace(/_/g,' ')}</button>`).join('')}</div>`);
     else if(kind==='file'||kind==='rec'){const list=c.media.filter(m=>/^audio\//.test(m.type)||m.voice);
       sheet(kind==='rec'?'Add your voice':'Add an audio file',`${kind==='rec'?`<button class="pbtn prime big" data-act="arecord">${I('mic')} Record my voice now</button><p class="note">After recording, it appears below.</p>`:`<p class="note">Add music or voice files with the files icon in the container, then choose them here.</p>`}<div class="chips">${list.map(m=>`<button class="chip" data-afile="${m.id}">${I(m.voice?'mic':'music')} ${esc((m.name||'Audio').slice(0,30))}</button>`).join('')||'<p class="note">No sound files yet.</p>'}</div>`)}},
@@ -3659,6 +3809,106 @@ document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)r
   if(d.edc&&t.closest('#auded')){AudEd.chip(d.edc,d.v);return}});
 document.addEventListener('input',e=>{const t=e.target;if(!AudEd.on||!t.closest('#auded'))return;if(t.dataset.ed){AudEd.input(t.dataset.ed,+t.value);return}if(t.id==='avotext'){const tr=AudEd.tracks()[AudEd.ti];if(tr)tr.text=t.value}});
 document.addEventListener('pointerdown',e=>{if(AudEd.on&&e.target.matches&&e.target.matches('#auded input[type=range]'))AudEd.push()},true);
+
+/* ============================================================
+   Library everywhere: browse what is saved, pick from it in every editor, search for more online,
+   and add your own creations to it
+   ============================================================ */
+const LIB_KINDS={image:'Images',video:'Video clips',audio:'Music',mine:'My creations'};
+const LibPick={opts:null,kind:null,
+  open(opts){this.opts=opts;this.kind=opts.kinds[0];this.render()},
+  async render(){const o=this.opts,k=this.kind;
+    sheet(o.title||'Choose from the library',`${o.kinds.length>1?`<div class="seg seg${o.kinds.length}" role="group" aria-label="Kind">${o.kinds.map(x=>`<button data-lpk="${x}" aria-pressed="${x===k}">${LIB_KINDS[x]}</button>`).join('')}</div>`:''}
+      <div class="libsearch"><input class="field" id="lpq" placeholder="${k==='audio'?'Search free music, for example soft piano':k==='video'?'Search free clips, for example ocean waves':'Search free images, for example sunset beach'}" aria-label="Search the free online library"><button class="ibtn" data-act="lpsearch" aria-label="Search online">${I('globe')}</button></div>
+      <p class="note" id="lpmsg"></p><div class="libgrid ${k==='audio'?'aud':''}" id="lpgrid"></div>`);
+    await this.fill()},
+  async fill(list){const k=this.kind,grid=$('#lpgrid');if(!grid)return;const all=list||(await DB.all('assets')).filter(a=>a.kind===k).sort((a,b)=>(b.lastUsed||0)-(a.lastUsed||0));
+    const m=$('#lpmsg');if(m)m.textContent=all.length?(list?'Found online:':'In your library:'):(list?'Nothing found. Try other words.':'Nothing saved yet. Search above to fetch free '+(k==='audio'?'music':k==='video'?'clips':'images')+'.');
+    grid.innerHTML=all.slice(0,60).map(a=>k==='audio'?`<button class="lprow" data-lppick="${a.id||a.asset_id}">${I('music')}<span>${esc((a.title||'Music').slice(0,40))}</span></button>`:`<button class="lpcell" data-lppick="${a.id||a.asset_id}" aria-label="Use ${esc(a.title||k)}"><img data-lpth="${a.id||a.asset_id}" alt="">${k==='video'?`<span class="pk">${I('video')}</span>`:''}</button>`).join('');
+    for(const im of grid.querySelectorAll('[data-lpth]'))libThumb(im.dataset.lpth).then(u=>{if(u)im.src=u})},
+  async search(){const q=($('#lpq')||{}).value||'';if(!q.trim())return;const m=$('#lpmsg');if(m)m.textContent='Searching the free online library…';
+    try{const r=this.kind==='audio'?await Lib.searchMusic(q,6):this.kind==='video'?await Lib.searchVideos(q,4):await Lib.searchImages(q,8);this.fill(r.map(x=>({...x,id:x.asset_id})))}
+    catch(e){if(m)m.textContent='The free online library could not be reached. Please check the internet connection.'}},
+  pick(id){const k=this.kind,cb=this.opts.onPick;closeLayer();cb({asset_id:id,kind:k})}};
+const thumbCache=new Map();
+async function libThumb(id){if(thumbCache.has(id))return thumbCache.get(id);const a=await DB.get('assets',id);if(!a)return null;let u=null;
+  if(a.kind==='image')u=URL.createObjectURL(a.blob);else if(a.kind==='video')u=await makeThumb(a.blob);thumbCache.set(id,u);return u}
+
+/* ---------- your own creations into the library ---------- */
+async function addToLibrary(c){const it=await currentItem(c);if(!it||it.kind==='doc')return {error:'Nothing to add yet.'};const m=await DB.get('media',it.sel.id);if(!m)return {error:'Not found'};
+  const kind=it.kind==='video'?'video':it.kind==='audio'?'audio':'image';const label=it.sel.t==='v'?'version '+(c.versions.findIndex(v=>v.id===it.sel.id)+1):(it.meta.name||'upload');
+  const exists=(await DB.all('assets')).find(a=>a.from===it.sel.id);if(exists)return {ok:true,already:true};
+  await Lib.put({id:(kind==='video'?'lv':'')+'my'+uid(),kind,source:'My creations',mine:true,from:it.sel.id,title:c.name+', '+label,query:'',licence:'Your own work',author:'You',blob:m.blob,w:it.meta.w,h:it.meta.h});return {ok:true}}
+
+/* ---------- the Library page: browse by kind, play, share, download, delete ---------- */
+let libTab='image';
+async function renderLibraryPage(){const st=await Lib.stats();if(nav.v!=='library')return;const ok=Library.ok();const got=LS.get('spc.libbytes',0)||0;
+  const all=await DB.all('assets');const items=all.filter(a=>libTab==='mine'?a.mine:a.kind===libTab).sort((a,b)=>(b.lastUsed||0)-(a.lastUsed||0));
+  main.innerHTML=`<section class="view">${vtitle('Library')}<div class="list">
+    <div class="seg seg4 libtabs" role="tablist" aria-label="Library sections" id="libtabs">${Object.entries(LIB_KINDS).map(([k,t])=>`<button role="tab" data-libtab="${k}" aria-selected="${k===libTab}" aria-pressed="${k===libTab}">${t} <small>${k==='mine'?all.filter(a=>a.mine).length:(st[k]||0)}</small></button>`).join('')}</div>
+    <div class="card libbrowse" id="libbrowse">${items.length?`<div class="libgrid ${libTab==='audio'?'aud':''}">${items.slice(0,120).map(a=>`<div class="libitem ${a.kind}">${a.kind==='audio'?`<button class="lprow" data-libplay="${a.id}" aria-label="Play ${esc(a.title||'music')}">${I('play')}<span>${esc((a.title||'Music').slice(0,40))}</span></button>`:`<button class="lpcell" data-libview="${a.id}" aria-label="View ${esc(a.title||a.kind)}"><img data-lpth="${a.id}" alt="">${a.kind==='video'?`<span class="pk">${I('video')}</span>`:''}</button>`}
+        <div class="libacts"><button class="mini" data-libshare="${a.id}" aria-label="Share ${esc(a.title||'')}">${I('share')}</button><button class="mini" data-libdl="${a.id}" aria-label="Download ${esc(a.title||'')}">${I('down')}</button><button class="mini del" data-libdel="${a.id}" aria-label="Delete ${esc(a.title||'')} from the library">${I('trash')}</button></div></div>`).join('')}</div>`
+      :`<p class="note">${libTab==='mine'?'Nothing yet. Use the library icon on a preview to add your own images, videos and sounds here.':'Nothing here yet. Search in any editor, or download the starter library below.'}</p>`}</div>
+    <div class="card"><h2>On this device</h2><p class="note">${plainSize(st.bytes||0)} in all. Only free, public-domain or openly licensed media is fetched, and the library keeps growing as your requests need more.</p></div>
+    <div class="card"><h2>Starter library</h2>${ok===1?`<p class="note" id="libstat">${LS.get('spc.libdone')?'Complete.':esc(Library.state||'Starting soon')} · ${plainSize(got)} of about 500 MB</p><div class="bar"><span style="width:${Math.min(100,Math.round(got/Library.TARGET*100))}%"></span></div>${LS.get('spc.libdone')?'':`<button class="pbtn" data-act="libpause">${I(Library.paused?'down':'x')} ${Library.paused?'Resume':'Pause'}</button>`}`
+      :`<p class="note">About 500 MB of free images, video clips and music, downloaded in the background on Wi-Fi only.</p><button class="pbtn prime" data-act="libyes">${I('down')} Download on Wi-Fi</button>`}</div></div></section>`;
+  for(const im of main.querySelectorAll('[data-lpth]'))libThumb(im.dataset.lpth).then(u=>{if(u)im.src=u})}
+let libAudio=null;
+function libExt(a){return ((a.blob.type||'').split('/')[1]||'bin').split(';')[0].replace('jpeg','jpg').replace('mpeg','mp3')}
+document.addEventListener('click',async e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.lpk){LibPick.kind=d.lpk;LibPick.render();return}
+  if(d.act==='lpsearch'){LibPick.search();return}
+  if(d.lppick){LibPick.pick(d.lppick);return}
+  if(d.libtab){libTab=d.libtab;renderLibraryPage();return}
+  if(d.libplay){if(libAudio){libAudio.pause();URL.revokeObjectURL(libAudio.src);const same=libAudio.dataset.id===d.libplay;libAudio=null;if(same)return}const a=await Lib.get(d.libplay);if(!a)return;libAudio=new Audio(URL.createObjectURL(a.blob));libAudio.dataset.id=d.libplay;libAudio.play().catch(()=>toast('This sound could not be played.'));return}
+  if(d.libview){const a=await Lib.get(d.libview);if(!a)return;const u=URL.createObjectURL(a.blob);sheet(a.title||'Library item',`<div class="libview">${a.kind==='video'?`<video src="${u}" controls playsinline autoplay></video>`:`<img src="${u}" alt="${esc(a.title||'')}">`}</div><p class="note">${esc([a.source,a.licence,a.author].filter(Boolean).join(' · '))}</p>`);return}
+  if(d.libshare){const a=await Lib.get(d.libshare);if(!a)return;const f=new File([a.blob],(a.title||'Spoken_PixelCraft').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')+'.'+libExt(a),{type:a.blob.type});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:a.title})}catch(er){}}else toast('Sharing files is not supported in this browser. Use Download instead.');return}
+  if(d.libdl){const a=await Lib.get(d.libdl);if(a){saveFile(a.blob,(a.title||'Spoken_PixelCraft').replace(/[\\/:*?"<>|]+/g,'')+'.'+libExt(a));toast('Saved to your Downloads folder.')}return}
+  if(d.libdel){const a=await DB.get('assets',d.libdel);ask('Delete from the library?','"'+((a&&a.title)||'This item')+'" will be removed from the library. Versions in your containers are not affected.','Delete',true,async()=>{await DB.del('assets',d.libdel);thumbCache.delete(d.libdel);renderLibraryPage();toast('Deleted from the library.')});return}
+  if(d.act==='addlib'){const c=byId(nav.id);if(!c)return;const r=await addToLibrary(c);toast(r.error?r.error:r.already?'This is already in your library.':'Added to your library, under My creations.');return}
+  /* the editors pick from the library */
+  if(d.act==='edlib'&&Ed.on){LibPick.open({kinds:['image'],title:'Background from the library',onPick:x=>Ed.change(p=>{p.base={type:'asset',asset_id:x.asset_id};p.fit=p.fit||'cover'},true)});return}
+  if(d.act==='edliblayer'&&Ed.on){LibPick.open({kinds:['image'],title:'Picture from the library',onPick:x=>Ed.addLayer({kind:'image',source:{type:'asset',asset_id:x.asset_id},w:40,x:50,y:50,radius:4})});return}
+  if(d.act==='vlib'&&VidEd.on){LibPick.open({kinds:['video','image'],title:'Clips and photos from the library',onPick:x=>VidEd.addScene({type:'asset',asset_id:x.asset_id})});return}
+  if(d.act==='alib'&&AudEd.on){LibPick.open({kinds:['audio'],title:'Music from the library',onPick:x=>AudEd.add({source:'library',asset_id:x.asset_id,volume:55})});return}
+});
+
+/* ============================================================
+   Swipes, as extras to the icons and voice:
+   1. preview: left or right for the next or previous version or upload
+   2. down on a pop-up, the requirement panel or the messages panel: close it
+   3. video editor scene preview: left or right for the next or previous scene
+   4. Library page: left or right between the sections
+   ============================================================ */
+function stepPreview(dir){const c=byId(nav.id);if(!c)return false;const items=[...c.versions.map((v,i)=>({t:'v',id:v.id,label:'Version '+(i+1)})),...c.media.map((m,i)=>({t:'m',id:m.id,label:'Upload '+(i+1)}))];
+  if(items.length<2)return false;let i=items.findIndex(x=>c.sel&&x.id===c.sel.id);if(i<0)i=items.length-1;const j=i+dir;const pv=$('#preview');
+  if(j<0||j>=items.length){if(pv){pv.classList.remove('swipenudge-l','swipenudge-r');void pv.offsetWidth;pv.classList.add(dir>0?'swipenudge-l':'swipenudge-r')}toast(dir>0?'This is the last one.':'This is the first one.');return true}
+  const it=items[j];c.sel={t:it.t,id:it.id};saveC(c,false);renderPreviewOnly().then(()=>{const p2=$('#preview');if(p2){p2.classList.remove('swipenudge-l','swipenudge-r');void p2.offsetWidth;p2.classList.add(dir>0?'swipenudge-l':'swipenudge-r')}});
+  $$('.ver').forEach(v=>v.classList.toggle('cur',v.dataset.thumb===it.id));toast(it.label);return true}
+function stepScene(dir){if(!VidEd.on||!VidEd.plan)return false;const n=VidEd.plan.scenes.length;if(n<2)return false;const j=VidEd.si+dir;
+  if(j<0||j>=n){toast(dir>0?'This is the last scene.':'This is the first scene.');return true}VidEd.si=j;VidEd.sel=-1;VidEd.refresh();toast('Scene '+(j+1));return true}
+function stepLibrary(dir){const ks=Object.keys(LIB_KINDS);const j=ks.indexOf(libTab)+dir;if(j<0||j>=ks.length)return false;libTab=ks[j];renderLibraryPage().then(()=>{const m=$('#libbrowse');if(m){m.classList.add(dir>0?'swipenudge-l':'swipenudge-r')}});toast(LIB_KINDS[libTab]);return true}
+let swp=null;
+document.addEventListener('touchstart',e=>{if(e.touches.length!==1){swp=null;return}const p=e.touches[0],tg=e.target;
+  swp={x:p.clientX,y:p.clientY,t:Date.now(),tg,vsel:VidEd.on?VidEd.sel:-1,
+    /* a touch that starts on a slider, text box, or a video's own controls is never a swipe */
+    skip:!!tg.closest('input,textarea,select,.edpanel,.timeline,.strip,.edtabs')||(tg.tagName==='VIDEO'&&p.clientY>tg.getBoundingClientRect().bottom-56)}},{passive:true,capture:true});
+document.addEventListener('touchmove',e=>{if(swp&&e.touches.length!==1)swp=null},{passive:true,capture:true});
+document.addEventListener('touchend',e=>{const s=swp;swp=null;if(!s||s.skip)return;const p=e.changedTouches[0];const dx=p.clientX-s.x,dy=p.clientY-s.y,dt=Date.now()-s.t,ax=Math.abs(dx),ay=Math.abs(dy);if(dt>900)return;
+  const tg=s.tg;
+  /* swipe down closes */
+  if(dy>70&&ay>ax*1.4){
+    const sh=tg.closest('.sheet');
+    if(sh&&sh.scrollTop<=2){closeLayer();return}
+    const rp=tg.closest('.reqpanel');if(rp&&rp.scrollTop<=2){toggleReq(false);return}
+    const ch=tg.closest('.chat');if(ch){const ms=$('#msgs');if(tg.closest('.grab')||!ms||ms.scrollTop<=2||!tg.closest('.msgs')){toggleChat(false);return}}
+    return}
+  if(ax>60&&ax>ay*1.5){const dir=dx<0?1:-1;
+    if(VidEd.on&&tg.closest('#vstage')&&s.vsel<0&&VidEd.sel<0&&!VidEd.previewing){stepScene(dir);return}
+    if(!VidEd.on&&!Ed.on&&nav.v==='container'&&tg.closest('#preview')){stepPreview(dir);return}
+    if(nav.v==='library'&&tg.closest('#main')&&!tg.closest('#layer')){stepLibrary(dir);return}}
+},{passive:true,capture:true});
 
 
 </script>
