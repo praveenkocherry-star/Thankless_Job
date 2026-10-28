@@ -817,6 +817,23 @@ body.manual .vdock,body.manual .msgbtn,body.manual .reqbtn,body.manual .reqpanel
 @keyframes nudger{0%{transform:translateX(0)}40%{transform:translateX(18px);opacity:.7}100%{transform:none}}
 .sheet,.reqpanel,.chat{touch-action:pan-y}
 .sheet::before{content:"";display:block;width:44px;height:5px;border-radius:3px;background:var(--line3);margin:-4px auto 8px}
+/* ===== visible outlines: every unselected button and icon has a light grey border ===== */
+:root,[data-mode="dark"]{--btnline:#5A626E}
+[data-mode="light"]{--btnline:#B9C0CA}
+.pbtn:not(.prime),.sbtn:not(.prime),.chip:not(.on),.mini,.dl,.tbtn,.emo,.pic,.lprow,.lpcell,.edtab:not(.on),.seg button:not([aria-pressed="true"]),.vx,.tjoin,.locbtn,.row,.libacts .mini{border:2px solid var(--btnline)!important}
+.ibtn,.msgbtn,.mtool,.exitbtn{border-width:2px!important}
+.ibtn:not(.on):not([aria-pressed="true"]):not(.exitbtn):not(#modeBtn):not(#helpBtn):not(#menuBtn):not(.reqbtn){border-color:var(--btnline)!important}
+.seg{border:2px solid var(--btnline)}
+.row{border-left-width:4px!important}
+/* the message icon sits at the top left of the container, level with the upload icons */
+.tools{position:relative}
+.cview .msgbtn{position:absolute!important;left:0!important;top:50%!important;bottom:auto!important;transform:translateY(-50%);width:48px;height:48px;z-index:2}
+body.chatopen .cview .msgbtn{bottom:auto!important}
+.cview .msgbtn:active{transform:translateY(-50%) scale(.94)}
+/* the words stay on screen when the phone cannot speak */
+.hearbar{position:fixed;left:12px;right:12px;bottom:calc(150px + env(safe-area-inset-bottom,0px));z-index:120;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--surface);border:2px solid var(--c-amber);box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--ink);font-size:.86rem}
+.hearbar .ht{flex:1;max-height:4.2em;overflow:auto}.hearbar[hidden]{display:none}
+.vstat #vstatus{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -1903,9 +1920,12 @@ const Essentials={EXPECT:64*1048576,v:{l:0,t:0},s:{l:0,t:0},
 const Voice={ready:true,queue:[],speaking:false,gen:0,done:Promise.resolve(),listeners:new Set(),last:'',lastAt:0,startedAt:0,long:false,primed:false,
   status(){return 'phone'},
   emit(){this.listeners.forEach(f=>{try{f()}catch(e){}})},
-  /* inside a tap: lets the phone speak later without another tap */
-  unlock(){if(this.primed||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);this.primed=true}catch(e){}
-    if(this.blocked){const b=this.blocked;this.blocked='';setTimeout(()=>this.say(b,{force:true}),150)}},
+  /* the phone may only speak after a tap: the tap screen (and any later tap) unlocks speech */
+  state:'ok',blocked:'',fails:0,
+  activated(){const ua=navigator.userActivation;return ua?ua.hasBeenActive:true},
+  unlock(){if(!('speechSynthesis' in window))return;if(!this.primed&&this.activated()){try{speechSynthesis.cancel();speechSynthesis.resume();const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);this.primed=true}catch(e){}}
+    if(this.blocked&&this.activated()){const b=this.blocked;this.blocked='';this.state='ok';hideHear();setTimeout(()=>this.say(b,{force:true}),200)}},
+  report(st,msg){this.state=st;try{diag('speak',st==='ok'?'ok':'fail',msg)}catch(e){}try{if(nav.v==='voice'){const el=$('#vstatus');if(el)el.textContent=voiceStatusText()}}catch(e){}},
   clean(t){return String(t||'').replace(/\[(.*?)\]\((.*?)\)/g,'$1').replace(/[*_#`>~|]/g,'').replace(/\s+/g,' ').trim()},
   sentences(t){return (String(t).match(/[^.!?]+[.!?]*\s*/g)||[t]).map(s=>s.trim()).filter(Boolean)},
   say(text,opt={}){if((S.voiceOff||S.manual)&&!opt.force)return Promise.resolve();text=this.clean(text);if(!text)return Promise.resolve();this.queue.push({text});
@@ -1913,10 +1933,21 @@ const Voice={ready:true,queue:[],speaking:false,gen:0,done:Promise.resolve(),lis
     this.done=(async()=>{while(this.queue.length&&g===this.gen){const it=this.queue.shift();this.last=it.text;this.lastAt=Date.now();for(const p of this.sentences(it.text)){if(g!==this.gen)break;await this.device(p,g)}}
       if(g===this.gen){this.speaking=false;this.lastAt=Date.now();setPill();setTimeout(()=>{if(!this.speaking)Listen.setMode('normal')},300)}})();return this.done},
   stop(barge){this.queue=[];this.gen++;this.speaking=false;try{speechSynthesis.cancel()}catch(e){}setPill();if(!barge)Listen.setMode('normal');if(barge)Session.touch()},
-  device(text,g){return new Promise(res=>{if(!('speechSynthesis' in window)||g!==this.gen)return res();const u=new SpeechSynthesisUtterance(text);u.rate=clamp(num(S.rate,1),.7,1.4);u.pitch=1;const v=pickDeviceVoice();if(v){u.voice=v;u.lang=v.lang}else u.lang=navigator.language||'en-US';
-    let done=false;const fin=()=>{if(!done){done=true;clearTimeout(t);res()}};u.onend=fin;
-    /* the phone may refuse to speak before the first touch: the words are kept and spoken on the first tap */
-    u.onerror=e=>{if(e&&e.error==='not-allowed'&&!this.primed){this.blocked=(this.blocked?this.blocked+' ':'')+text}fin()};const t=setTimeout(fin,text.length*110+6000);try{speechSynthesis.speak(u)}catch(e){fin()}})},
+  /* one sentence through the phone's voice, with a watchdog: if the phone does not start speaking, it is reset and tried once more */
+  device(text,g,retry){return new Promise(res=>{if(!('speechSynthesis' in window)){this.report('fail','This browser has no speech voice.');return res()}if(g!==this.gen)return res();
+    if(!this.activated()){this.hold(text);return res()}
+    /* after two silent failures the words go straight to the screen until a tap or Test voice */
+    if(this.fails>=2&&!retry){this.missed=((this.missed||'')+' '+text).trim();showHear(this.missed);return res()}
+    const u=new SpeechSynthesisUtterance(text);u.rate=clamp(num(S.rate,1),.7,1.4);u.pitch=1;u.volume=1;const v=pickDeviceVoice();if(v){u.voice=v;u.lang=v.lang}else u.lang=navigator.language||'en-US';
+    let done=false,started=false;const fin=ok=>{if(done)return;done=true;clearTimeout(t);clearTimeout(w);res()};
+    u.onstart=()=>{started=true;this.fails=0;this.missed='';if(this.state!=='ok')this.report('ok','Speaking with the phone voice')};u.onend=()=>fin(true);
+    u.onerror=e=>{const er=e&&e.error;if(er==='interrupted'||er==='canceled')return fin();if(er==='not-allowed'){this.hold(text);return fin()}this.report('fail','The phone voice reported: '+(er||'error'));fin()};
+    /* the phone voice sometimes sticks without a word: reset it and try once more */
+    const w=setTimeout(()=>{if(started||done||g!==this.gen)return;try{speechSynthesis.cancel()}catch(e){}done=true;clearTimeout(t);
+      if(!retry){setTimeout(()=>this.device(text,g,true).then(res),250)}else{this.fails++;this.report('fail','The phone voice did not start.');this.missed=((this.missed||'')+' '+text).trim();if(this.fails>=2)showHear(this.missed);res()}},3000);
+    const t=setTimeout(()=>fin(),text.length*120+8000);
+    try{if(speechSynthesis.paused)speechSynthesis.resume();speechSynthesis.speak(u)}catch(e){fin()}})},
+  hold(text){this.blocked=(this.blocked?this.blocked+' ':'')+text;this.report('blocked','Waiting for a tap before speaking');showHear(this.blocked)},
   voices(){return ('speechSynthesis' in window)?speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)):[]}
 };
 /* the phone's own default text-to-speech voice (as set in the phone's settings); if the phone marks none, a female English voice */
@@ -2080,6 +2111,13 @@ const Session={active:false,last:Date.now(),stage:0,timer:null,isDenied:false,
 };
 
 addEventListener('pointerdown',()=>Voice.unlock(),{capture:true,passive:true});
+
+/* when the phone cannot speak, the words stay on screen with a Tap to hear button */
+function showHear(text){let el=document.getElementById('hearbar');if(!el){el=document.createElement('div');el.id='hearbar';el.className='hearbar';el.setAttribute('role','status');document.body.appendChild(el)}
+  el.innerHTML=`<span class="ht"></span><button class="sbtn prime" data-act="tapsay">${I('speaker')} Tap to hear</button>`;el.querySelector('.ht').textContent=String(text).slice(-240);el.hidden=false}
+function hideHear(){const el=document.getElementById('hearbar');if(el)el.hidden=true}
+function voiceStatusText(){const st=Voice.state;return st==='ok'?(Voice.primed?'Working. Replies use your phone\'s own voice.':'Ready. It switches on with your first tap.'):st==='blocked'?'Waiting for a tap. Tap the screen to hear the reply.':'The phone voice did not respond. Replies are shown as text. Check the text-to-speech voice in your phone settings, then tap Test voice.'}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act=tapsay]');if(!b)return;const t=Voice.blocked||((document.querySelector('#hearbar .ht')||{}).textContent)||'';Voice.blocked='';Voice.missed='';Voice.fails=0;hideHear();Voice.primed=false;Voice.unlock();Voice.stop();if(t)Voice.say(t,{force:true})});
 
 /* ============================================================
    The manager: understands requests and drives the built-in tools
@@ -2326,11 +2364,12 @@ addEventListener('online',()=>{if(Conn.fails)Conn.watch()});
 const sleepRetry=[1200,2600];
 /* a voice message goes to Google once: it is heard, understood and answered in the same request */
 async function voiceTurn(it){if(Brain.busy){Brain.pending.push(['__voice',it]);return}Brain.busy=true;setPill('think');showCaption('Got it…',true);
-  const ack=setTimeout(()=>{if(Brain.busy&&!Voice.speaking&&it.ms>=1000&&!Conn.fails)Voice.say('Got it.')},1100);
+  const ctl={cancelled:false,answered:false};instantCommand(it,ctl);
+  const ack=setTimeout(()=>{if(Brain.busy&&!ctl.cancelled&&!Voice.speaking&&it.ms>=1000&&!Conn.fails)Voice.say('Got it.')},1100);
   try{let last=null;
-    for(let a=0;a<=sleepRetry.length;a++){try{await aiTurn({audio:it.audio,ms:it.ms},'voice');Conn.ok();last=null;break}
-      catch(e){if(e.name==='AbortError'){last=null;break}last=e;const c=Conn.cause_(e);if(c==='quota'||c==='key'||c==='offline'||a===sleepRetry.length)break;await sleep(sleepRetry[a])}}
-    if(last){const tell=Conn.fail(last);
+    for(let a=0;a<=sleepRetry.length;a++){if(ctl.cancelled){last=null;break}try{await aiTurn({audio:it.audio,ms:it.ms,ctl},'voice');Conn.ok();last=null;break}
+      catch(e){if(e.name==='AbortError'||ctl.cancelled){last=null;break}last=e;const c=Conn.cause_(e);if(c==='quota'||c==='key'||c==='offline'||a===sleepRetry.length)break;await sleep(sleepRetry[a])}}
+    if(last){const tell=Conn.fail(last)||it.ms>=1500;
       /* the offline model can still write it down; the built-in understanding or Mistral then takes over */
       let t='';if(Listen.modelLoaded){try{t=await STW.call('asr',{audio:it.audio.slice()})}catch(er){}}
       Brain.busy=false;clearTimeout(ack);showCaption('');
@@ -2352,10 +2391,12 @@ async function aiTurn(input,channel){let c=nav.v==='container'?byId(nav.id):null
   else userTurn=pushUser(hist,[{text:(channel==='chat'&&!input.text.startsWith('[app]')?'[typed] ':'')+input.text}]);
   let heardText='';
   try{
-  for(let step=0;step<6;step++){const contents=trimHist(hist,useModel==='lite'?16:28);const last=contents[contents.length-1];
+  for(let step=0;step<6;step++){const contents=trimHist(hist,useModel==='lite'?10:20);const last=contents[contents.length-1];
     contents[contents.length-1]={role:last.role,parts:[...last.parts,{text:stateNote()}]};
     const body={systemInstruction:{parts:[{text:systemPrompt()}]},tools:[{functionDeclarations:TOOLS}],toolConfig:{functionCallingConfig:{mode:'ANY'}},contents,generationConfig:{temperature:.5}};
     const {json}=step===0?await G.genHedged(useModel,body,{fast:true,hedge:2000}):await G.gen(useModel,body,{fast:true});
+    /* the phone already carried out this short command itself: Google's answer is set aside */
+    if(step===0&&input.ctl){if(input.ctl.cancelled){const k=hist.indexOf(userTurn);if(k>=0)hist.splice(k,1);return}input.ctl.answered=true}
     const content=json.candidates&&json.candidates[0]&&json.candidates[0].content;if(!content||!content.parts)break;content.role='model';
     const calls=content.parts.filter(p=>p.functionCall);const resp=calls.find(p=>p.functionCall.name==='respond');const ra=resp?resp.functionCall.args||{}:{};const others=calls.filter(p=>p!==resp);
     if(step===0&&voice){heardText=String(ra.heard||'').trim();
@@ -2397,6 +2438,14 @@ function localRecordFollowup(c,id,secs,played){if(!played){reply('Your recording
     const r=genTool('make_video',k,{width:W,height:H,scenes:[{source:src,fit:'cover',layers:[{kind:'video',source:{type:'upload',media_id:id},x:pos.x,y:pos.y,w:34,radius:14,border:'#FFFFFF',volume:100}]}],keep_previous:true,summary:'Reaction video with picture-in-picture'});
     Local.note(k,'Reaction video','The user recorded themselves and asked to appear in a corner of the video.',null);return r.status==='queued'?'Another creation is running, so this is queued.':'Creating your reaction video now.'};
   reply(Local.ask('Your recording is saved. Shall I put you in a corner of the video? Say top left, top right, bottom left or bottom right.',()=>make({x:79,y:79}),()=>'Okay. Your recording is saved as an upload.',s=>{const p=corner(s);return p?make(p):undefined}),'voice')}
+
+/* ---------- instant app commands: a short command is written down on the phone (offline model) while Google is asked;
+   when it is a plain app command (open the menu, go home, go back, dark mode, stop...), it is done at once and Google's answer is not used ---------- */
+const INSTANT=/^(go (back|home)|back|home|open (the )?(menu|help|library|backup|keys|api keys|voice|about|messages|requirement)|close (the )?(menu|help|messages|requirement)|show (the )?(menu|help|library|requirement|messages)|(dark|light) (mode|theme)|switch to (dark|light)( mode)?|stop|stop talking|be quiet|quiet|silence|stop listening|cancel( it| that| the generation)?|next|repeat|stop (the )?tour|show me around|start (the )?tour|(open|go to) (the )?(container )?[\w ]{1,30}|undo|bring it back|read (the )?requirement|what can you do|help)$/;
+function instantCommand(it,ctl){const lg=r=>{if(window.__spcLog)window.__spcLog.push(['instant?',r])};if(!Listen.modelLoaded||it.ms>4000||Patient.on||Hold.text)return lg('skip');
+  STW.call('asr',{audio:it.audio.slice()}).then(t=>{if(ctl.answered||ctl.cancelled)return lg('late');t=String(t||'').trim();if(!t||isEcho(t)||unclearSpeech(t,it.ms))return lg('unclear '+t);
+    const s=norm(t).replace(/^(hey|hi|okay|ok|so|please)\s+/,'').replace(/\s+please$/,'').replace(/[.!?]+$/,'');if(s.split(/\s+/).length>6||!INSTANT.test(s))return lg('nomatch '+s);
+    const r=localUnderstand(t,'voice');if(r===false)return lg('local false');ctl.cancelled=true;if(window.__spcLog)window.__spcLog.push(['instant',t,Date.now()]);showCaption(t);if(r)reply(r,'voice')}).catch(()=>{})}
 
 /* ============================================================
    Built-in understanding: help answers, commands, simple edits and ready-made designs,
@@ -2834,13 +2883,12 @@ async function renderContainer(){const c=byId(nav.id);const chatOpen=!!nav.chat;
     <div class="ctop"><button class="ibtn" data-act="back" aria-label="Back to Home">${I('back')}</button>
       <div class="cname"><button class="mini edit" data-ren="${c.id}" aria-label="Rename container">${I('pen')}</button><span class="t">${esc(full)}</span><button class="mini del" data-del="${c.id}" aria-label="Delete container">${I('trash')}</button></div><button class="ibtn reqbtn ${nav.req?'on':''}" data-act="req" title="Recorded user requirement" aria-label="${nav.req?'Close the recorded requirement':'Open the recorded requirement'}" aria-pressed="${!!nav.req}">${I('doc')}</button></div>
     ${nav.req?reqPanelHTML(c):''}
-    <div class="tools">
+    <div class="tools"><button class="msgbtn ${chatOpen?'on':''}" data-act="chat" title="Messages" aria-label="${chatOpen?'Close messages':'Type a message'}" aria-pressed="${chatOpen}">${I('chat')}</button>
       <label class="tbtn" id="galBtn" title="Photos and videos from your gallery" aria-label="Add photos and videos from your gallery" tabindex="0" role="button">${I('gallery')}<input type="file" id="galIn" accept="image/*,video/*" multiple hidden></label>
       <label class="tbtn" id="fileBtn" title="Documents and music" aria-label="Add documents or music" tabindex="0" role="button">${I('files')}<input type="file" id="fileIn" accept=".pdf,.doc,.docx,.txt,.csv,.md,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,audio/*" multiple hidden></label>
       <button class="tbtn" data-act="yt" title="Add YouTube link" aria-label="Add YouTube link">${I('link')}</button></div>
     ${S.manual?manualToolsHTML(c):''}
     <div class="stage"><div class="preview" id="preview">${await previewInner(c)}</div><div id="stripbox">${stripHTML(c)}</div></div>
-    <button class="msgbtn ${chatOpen?'on':''}" data-act="chat" title="Messages" aria-label="${chatOpen?'Close messages':'Type a message'}" aria-pressed="${chatOpen}">${I('chat')}</button>
     ${chatOpen?chatHTML(c):''}</section>`;
   if(nav.v!=='container'||nav.id!==c.id)return;const pv=$('#preview');pv.classList.toggle('isvideo',!!pv.querySelector('video'));
   for(const id of ['#galIn','#fileIn']){$(id).onchange=e=>{const fs=[...e.target.files];e.target.value='';uploadFiles(c,fs)}}fillStripThumbs(c);const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight}
@@ -2877,6 +2925,7 @@ function renderKeys(){const mk=S.mkeys||[];
 function renderVoice(){const vs=Voice.voices(),cur=pickDeviceVoice();
   main.innerHTML=`<section class="view">${vtitle('Voice')}<div class="list"><div class="card"><h2>Speaking</h2>
     <p class="note">Replies are spoken with your phone's own default voice, so they start at once. To change it, change the text-to-speech voice in your phone's settings.</p>
+    <p class="note vstat"><b>Status:</b> <span id="vstatus">${voiceStatusText()}</span></p><div class="sbtns"><button class="sbtn prime" data-act="voicetest">${I('speaker')} Test voice</button></div>
     <span class="lbl">Speed</span><div class="seg seg3" role="group" aria-label="Speaking speed">${[['0.9','Calm'],['1','Normal'],['1.15','Quick']].map(([r,l])=>`<button data-rate="${r}" aria-pressed="${String(num(S.rate,1))===r}">${l}</button>`).join('')}</div></div>
     <div class="card"><h2>Voice-over voices</h2><p class="note">Natural voices for the voice-overs inside your videos. ${VOE.ready?'Ready on this device.':VOE.loading?'Downloading now, about 90 MB.':'They download once on Wi-Fi, about 90 MB, or the first time you ask for a voice-over.'}</p>
       <div class="vlist">${Object.entries(VO_VOICES).map(([k,v])=>`<button class="chip" data-vo="${k}" aria-label="Hear ${esc(v.label)}">${I('speaker')} ${esc(v.label)}</button>`).join('')}</div>
@@ -2884,7 +2933,7 @@ function renderVoice(){const vs=Voice.voices(),cur=pickDeviceVoice();
     <div class="card"><h2>Status check</h2><ul class="diag">${[['mic','Microphone',Diag.mic||{st:'warn',msg:'Not started yet'}],
       ['ears','Understanding speech',Listen.engine==='ai'?{st:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<60000)?'fail':'ok',msg:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<60000)?Diag.ai.msg:'Google AI with your key, one quick step'}:Listen.engine==='local'?{st:'ok',msg:'Offline speech model on this phone'}:Listen.engine==='browser'?{st:'warn',msg:'Browser recognition'}:{st:'warn',msg:'Speech model loading'}],
       ['backupear','Offline speech model',Listen.modelLoaded?{st:'ok',msg:'Ready as a backup'}:{st:'warn',msg:'Downloads quietly in the background'}],
-      ['speak','Speaking',('speechSynthesis' in window)?{st:'ok',msg:cur?cur.name:'Phone voice'}:{st:'fail',msg:'This browser cannot speak'}],
+      ['speak','Speaking',('speechSynthesis' in window)?{st:Voice.state==='ok'?'ok':Voice.state==='blocked'?'warn':'fail',msg:Voice.state==='ok'?(cur?cur.name:'Phone voice'):voiceStatusText()}:{st:'fail',msg:'This browser cannot speak'}],
       ['keys','Google AI keys',G.active().length?{st:'ok',msg:G.active().length+' working'}:{st:'warn',msg:'None saved'}]].map(([k,t,d])=>`<li class="${d.st}"><span class="dot2"></span><b>${t}</b><span>${esc(d.msg)}</span></li>`).join('')}</ul></div>
     <div class="card"><h2>Listening</h2><p class="note">One steady microphone, without beeps. ${Listen.engine==='ai'?'With your key, Google\'s AI hears and understands each request in one quick step.':'Without a key, the offline English speech model on this phone writes down what you say.'} If your speech keeps stopping and starting, I offer to listen quietly until you say go ahead.</p></div></div></section>`}
 async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()}catch(e){}if(nav.v!=='backup')return;
@@ -3029,6 +3078,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
   if(d.bksave){Backup.saveCopy(d.bksave).then(()=>toast('Saved to your Downloads folder.'));return}
   switch(d.act){
     case 'back':history.back();break;
+    case 'voicetest':{hideHear();Voice.fails=0;Voice.missed='';Voice.primed=false;Voice.unlock();Voice.stop();Voice.say('This is my voice. If you can hear me, speech is working.',{force:true}).then(()=>{const el=$('#vstatus');if(el)el.textContent=voiceStatusText();if(Voice.state!=='ok')toast('The phone voice did not respond. Check the text-to-speech voice in your phone settings.')});break}
     case 'exit':askExit();break;case 'doexit':doExit();break;case 'reopen':location.reload();break;
     case 'req':toggleReq();break;case 'reqspeak':speakReq(t);break;
     case 'gotojob':if(Gen.running){const k=byId(Gen.running.cid);if(k)go('container',{id:k.id})}break;
@@ -3204,7 +3254,7 @@ async function begin(){if(started)return;started=true;const st=$('#start');if(st
   S.voiceOff=false;cleanupOldVoice();document.body.classList.toggle('manual',!!S.manual);
   /* opened in a browser tab: the install page comes first, with a small option to continue in the browser */
   if(isStandalone())LS.set('spc.installed',1);
-  if(!isStandalone()&&!LS.get('spc.installed')&&!sessionStorage.getItem('spc.browser')&&!location.hash.includes('spc-test')){const st=$('#start');if(st)st.remove();showInstallPage()}
+  if(!isStandalone()&&!LS.get('spc.installed')&&!sessionStorage.getItem('spc.browser')&&!location.hash.includes('spc-test')){showInstallPage()}
   else afterGate(isStandalone()||!!LS.get('spc.installed'))
   try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{if(nav.v==='voice')renderVoice()}}catch(e){}
   Voice.listeners.add(onVoiceStatus);
@@ -3213,7 +3263,7 @@ async function begin(){if(started)return;started=true;const st=$('#start');if(st
   if(location.hash.startsWith('#spc-test'))window.__spc={DB,CS:()=>CS,runTool,Gen,go,Voice,Session,heard,handleText,Rec,Backup,Bg,FX,Listen,Local,localUnderstand,expandTemplate,genTool,STW,Essentials,VOE,Patient,Hold,voiceTurn,aiTurn,G,M,Lib,Library,Tour,Brain,toggleReq,toggleChat,musicBuffer,editPlan,parallelText,askExit,prepareScenes,Ed,LogoEd,get VidEd(){return VidEd},get LibPick(){return LibPick},get AudEd(){return AudEd},addToLibrary,renderLibraryPage,stepPreview,stepScene,stepLibrary,doExit,get libTab(){return libTab},Conn};})();
 /* after the install page, or straight away in the installed app */
 function afterGate(auto){if(!setupDone()){const st=$('#start');if(st)st.remove();showSetupCard()}
-  else{const st=$('#start');if(!st||auto){if(st)st.remove();return begin()}st.addEventListener('click',begin);st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')begin()})}}
+  else{const st=$('#start');if(!st)return begin();st.addEventListener('click',begin);st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')begin()})}}
 
 /* manual mode: the creation and editing icons inside a container */
 function manualToolsHTML(c){const img=c.versions.some(v=>v.kind==='image')||c.media.some(m=>/^image\//.test(m.type)),vid=c.versions.some(v=>v.kind==='video')||c.media.some(m=>/^video\//.test(m.type));
@@ -3265,7 +3315,7 @@ document.addEventListener('contextmenu',e=>{if(e.target.closest('.tile,.cell,.ca
 /* ---------- Help: every icon explained, grouped by screen, plus a guided tour ---------- */
 const HOWTO=[
  ['Home screen',[['exit','Exit','Closes the app at once. An unfinished creation is offered again next time. Saying exit reminds you to use this icon.'],['help','Help','At the top, between the light and dark switch and the Menu. Opens this page; tap it again to close.','open help'],['moon','Light and dark','The moon or sun at the top right switches light and dark.','dark mode, or light mode'],['menu','Menu','The lines at the top right open the Menu; tap again to close it. While a page is open, its icon is filled with colour.','open the menu'],['plus','Plus','Creates a new container (a project).','create a new container called Diwali offer'],['image','Container tile','Tap to open it. Long press does nothing.','open the Diwali container'],['pen','Pencil','Renames the container.','rename this container to Shop offers'],['trash','Bin','Deletes the container. You can bring it back until tomorrow.','delete the Diwali container, or undo']]],
- ['Inside a container',[['back','Back','Returns to the previous screen.','go back, or go home'],['doc','Recorded requirement','Top right. Tap to open the summary of everything you asked for; tap again to close. The speaker inside reads it aloud.','show the requirement, or read the requirement'],['gallery','Gallery','Adds photos and videos from your phone.','add photos'],['files','Files','Adds documents (price lists, menus, scripts) and music files.','add a document'],['link','YouTube link','Adds a YouTube link for the app to watch and understand. It cannot be downloaded.','add a YouTube link'],['chat','Messages','Bottom left. Opens a box to type or paste a request or script; tap again to close.','open messages']]],
+ ['Inside a container',[['back','Back','Returns to the previous screen.','go back, or go home'],['doc','Recorded requirement','Top right. Tap to open the summary of everything you asked for; tap again to close. The speaker inside reads it aloud.','show the requirement, or read the requirement'],['gallery','Gallery','Adds photos and videos from your phone.','add photos'],['files','Files','Adds documents (price lists, menus, scripts) and music files.','add a document'],['link','YouTube link','Adds a YouTube link for the app to watch and understand. It cannot be downloaded.','add a YouTube link'],['chat','Messages','Top left, level with the upload icons. Opens a box to type or paste a request or script; tap again to close.','open messages']]],
  ['Preview and versions',[['lib','Add to library','Saves what you see into your library, under My creations, so you can reuse it in any container or share it later.','add this to the library'],['share','Share','Hands the file to WhatsApp, Instagram, Facebook and other apps.','share it'],['down','Download','Saves it in the formats you choose.','download it as PNG and JPEG'],['layers','Version blocks','Below the preview. Tap one to see it; its cross deletes it.','show version two, or delete version one'],['clock','Progress ring','Shows the percentage and what is happening. A small ring follows you to other screens; tap it to come back.','how far along is it']]],
  ['Swipes, as well as the icons and voice',[['left','Preview','Swipe left or right on the preview to see the next or previous version or upload.',''],['down','Close by swiping down','Swipe down on any pop-up, such as the download options, on the requirement panel, or on the messages and typing panel, to close it.',''],['video','Video editor','Swipe left or right on the scene preview to move to the next or previous scene.',''],['lib','Library','Swipe left or right on the Library page to move between Images, Video clips, Music and My creations.','']]],
  ['Voice bar',[['voice','Dots','They move with your voice. Tap to stop listening; tap the microphone to start again. In quiet listening, tap the dots when you want me to respond.','stop listening, listen quietly, back to normal']]],
