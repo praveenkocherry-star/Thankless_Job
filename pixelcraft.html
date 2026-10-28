@@ -4,10 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#0B0C0E">
-<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="mobile-web-app-capable" content="yes">
 <title>Spoken PixelCraft</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -834,6 +832,10 @@ body.chatopen .cview .msgbtn{bottom:auto!important}
 .hearbar{position:fixed;left:12px;right:12px;bottom:calc(150px + env(safe-area-inset-bottom,0px));z-index:120;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--surface);border:2px solid var(--c-amber);box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--ink);font-size:.86rem}
 .hearbar .ht{flex:1;max-height:4.2em;overflow:auto}.hearbar[hidden]{display:none}
 .vstat #vstatus{color:var(--ink)}
+/* the start screen: one clear button */
+.startbtn{display:inline-flex;align-items:center;justify-content:center;min-width:220px;min-height:68px;padding:0 34px;margin:18px 0 6px;border-radius:34px;background:linear-gradient(135deg,var(--c-amber),#FFD98A);color:#1A1000;font-size:1.45rem;letter-spacing:.01em;border:3px solid var(--stripe);box-shadow:0 12px 30px color-mix(in srgb,var(--c-amber) 45%,transparent);animation:startpulse 2.2s ease-in-out infinite}
+.startbtn b{font-weight:800}
+@keyframes startpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 </style>
 </head>
 <body>
@@ -865,10 +867,10 @@ body.chatopen .cview .msgbtn{bottom:auto!important}
 </div>
 <div id="layer"></div>
 <div class="vdock" id="vdock" hidden><p class="livecap" id="livecap" aria-live="polite"></p><button class="vpill off" id="vpill" data-act="voice" data-st="off" aria-label="Voice is off. Tap to start listening"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="mic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span class="recsq"></span></button></div>
-<div class="start" id="start" role="button" tabindex="0" aria-label="Tap anywhere to start">
+<div class="start" id="start" role="button" tabindex="0" aria-label="Tap to start">
   <div class="box">
     <div class="orb" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-    <h2>Tap anywhere to start</h2>
+    <span class="startbtn" aria-hidden="true"><b>Tap to start</b></span>
     <p>Spoken PixelCraft listens and talks with you.</p>
   </div>
 </div>
@@ -1923,7 +1925,7 @@ const Voice={ready:true,queue:[],speaking:false,gen:0,done:Promise.resolve(),lis
   /* the phone may only speak after a tap: the tap screen (and any later tap) unlocks speech */
   state:'ok',blocked:'',fails:0,
   activated(){const ua=navigator.userActivation;return ua?ua.hasBeenActive:true},
-  unlock(){if(!('speechSynthesis' in window))return;if(!this.primed&&this.activated()){try{speechSynthesis.cancel();speechSynthesis.resume();const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);this.primed=true}catch(e){}}
+  unlock(){if(!('speechSynthesis' in window))return;if(!this.primed&&this.activated()){try{speechSynthesis.resume();this.primed=true}catch(e){}}
     if(this.blocked&&this.activated()){const b=this.blocked;this.blocked='';this.state='ok';hideHear();setTimeout(()=>this.say(b,{force:true}),200)}},
   report(st,msg){this.state=st;try{diag('speak',st==='ok'?'ok':'fail',msg)}catch(e){}try{if(nav.v==='voice'){const el=$('#vstatus');if(el)el.textContent=voiceStatusText()}}catch(e){}},
   clean(t){return String(t||'').replace(/\[(.*?)\]\((.*?)\)/g,'$1').replace(/[*_#`>~|]/g,'').replace(/\s+/g,' ').trim()},
@@ -1938,13 +1940,13 @@ const Voice={ready:true,queue:[],speaking:false,gen:0,done:Promise.resolve(),lis
     if(!this.activated()){this.hold(text);return res()}
     /* after two silent failures the words go straight to the screen until a tap or Test voice */
     if(this.fails>=2&&!retry){this.missed=((this.missed||'')+' '+text).trim();showHear(this.missed);return res()}
-    const u=new SpeechSynthesisUtterance(text);u.rate=clamp(num(S.rate,1),.7,1.4);u.pitch=1;u.volume=1;const v=pickDeviceVoice();if(v){u.voice=v;u.lang=v.lang}else u.lang=navigator.language||'en-US';
+    const u=new SpeechSynthesisUtterance(text);u.rate=clamp(num(S.rate,1),.7,1.4);u.pitch=1;u.volume=1;
     let done=false,started=false;const fin=ok=>{if(done)return;done=true;clearTimeout(t);clearTimeout(w);res()};
     u.onstart=()=>{started=true;this.fails=0;this.missed='';if(this.state!=='ok')this.report('ok','Speaking with the phone voice')};u.onend=()=>fin(true);
     u.onerror=e=>{const er=e&&e.error;if(er==='interrupted'||er==='canceled')return fin();if(er==='not-allowed'){this.hold(text);return fin()}this.report('fail','The phone voice reported: '+(er||'error'));fin()};
     /* the phone voice sometimes sticks without a word: reset it and try once more */
-    const w=setTimeout(()=>{if(started||done||g!==this.gen)return;try{speechSynthesis.cancel()}catch(e){}done=true;clearTimeout(t);
-      if(!retry){setTimeout(()=>this.device(text,g,true).then(res),250)}else{this.fails++;this.report('fail','The phone voice did not start.');this.missed=((this.missed||'')+' '+text).trim();if(this.fails>=2)showHear(this.missed);res()}},3000);
+    let waited=0;const w0=()=>{if(started||done||g!==this.gen)return;if((speechSynthesis.speaking||speechSynthesis.pending)&&waited<3){waited++;w=setTimeout(w0,2500);return}try{speechSynthesis.cancel()}catch(e){}done=true;clearTimeout(t);
+      if(!retry){setTimeout(()=>this.device(text,g,true).then(res),250)}else{this.fails++;this.report('fail','The phone voice did not start.');this.missed=((this.missed||'')+' '+text).trim();if(this.fails>=2)showHear(this.missed);res()}};let w=setTimeout(w0,4000);
     const t=setTimeout(()=>fin(),text.length*120+8000);
     try{if(speechSynthesis.paused)speechSynthesis.resume();speechSynthesis.speak(u)}catch(e){fin()}})},
   hold(text){this.blocked=(this.blocked?this.blocked+' ':'')+text;this.report('blocked','Waiting for a tap before speaking');showHear(this.blocked)},
@@ -2153,7 +2155,7 @@ const TOOLS=[
  {name:'search_videos',description:'Find free public-domain video clips (Wikimedia Commons) by subject, for example ocean waves, city traffic, fireworks. Results are saved to the library and can be used as a scene source of type asset with the asset_id.',parameters:{type:T.O,properties:{query:{type:T.S},count:{type:T.N}},required:['query']}},
  {name:'search_images',description:'Find free-to-reuse images online (Wikimedia Commons, Openverse). Results are saved to the library and can be used as source type asset.',parameters:{type:T.O,properties:{query:{type:T.S},count:{type:T.N}},required:['query']}},
  {name:'prepare_download',description:'Open the download dialog with the chosen formats and file name, after asking the user which formats they want. The user then taps Download.',parameters:{type:T.O,properties:{formats:{type:T.A,items:{type:T.S,enum:['PNG','JPEG','WebP','GIF','MP4','WebM','MP3']}},filename:{type:T.S}},required:['formats']}},
- {name:'highlight',description:'Make a button glow so the user can find and tap it. Browsers need a tap to open the file picker, to download, and to choose the backup folder.',parameters:{type:T.O,properties:{control:{type:T.S,enum:['gallery','files','link','download','share','backup','messages','requirement','new','install']}},required:['control']}},
+ {name:'highlight',description:'Make a button glow so the user can find and tap it. Browsers need a tap to open the file picker, to download, and to choose the backup folder.',parameters:{type:T.O,properties:{control:{type:T.S,enum:['gallery','files','link','download','share','backup','messages','requirement','new']}},required:['control']}},
  {name:'app_action',description:'Navigate or change app settings.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['go_home','open_menu','open_keys','open_voice','open_backup','open_about','go_back','dark_mode','light_mode','add_to_library','back_up_now','stop_listening','cancel_generation','open_messages','close_messages','open_requirement','close_requirement','open_help','start_tour','open_library','manual_mode']}},required:['action']}},
  {name:'container_action',description:'Manage containers and versions. Confirm with the user before deleting.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['create','open','rename','delete','undo_delete','show_version','delete_version','delete_upload']},name:{type:T.S},new_name:{type:T.S},version:{type:T.N},media_id:{type:T.S}},required:['action']}},
  {name:'use_template',description:'Create a polished ready-made design by filling in fields. Prefer this for greeting cards, festival wishes, sale posters, invitations, quote cards, menu cards, YouTube thumbnails, announcements, photo cards, slideshows, greeting videos, promo reels and quote videos. The app does the layout, fonts, colours, effects and music. Saves a new version.',parameters:{type:T.O,properties:{
@@ -2198,7 +2200,7 @@ Creating and editing:
 9. To change an existing video (add a voice-over, add or replace music, add the user's recorded voice, sound effects, text or captions), always call edit_video. Never rebuild an unrelated new video for an edit. For pictures, use make_image with base type version.
 10. Voice-overs: ask whether the user wants to record their own voice (voice_record) or a generated voice, and which voice: ${Object.entries(VO_VOICES).map(([k,v])=>k+' ('+v.label+')').join(', ')}. Spoken voices cannot sing. For a birthday song, use music style happy_birthday (the traditional tune, free to use), optionally with a spoken greeting, or let the user sing with voice_record.
 11. Music: built-in styles ${Object.keys(MUSIC).join(', ')}; or search_music for free library music by mood; or the user's own audio file. YouTube audio and copyrighted songs cannot be fetched; say so kindly and offer these options.
-12. Browsers need a tap to open the file picker, download, choose a backup folder or install. Call highlight or prepare_download and tell the user to tap the glowing icon.
+12. Browsers need a tap to open the file picker, download, or choose a backup folder. Call highlight or prepare_download and tell the user to tap the glowing icon.
 13. Confirm before deleting anything. Never invent file ids; use the ids in the state.
 14. Navigation: open or create containers by name with container_action. To create something in another container, first call container_action open (or create), then the creation tool, in the same turn. go_back and go_home with app_action. To save the current item to the library, app_action add_to_library. To back up now, app_action back_up_now.
 15. The app cannot be closed by voice. If the user asks to exit or close the app, say: "To exit, please press the Exit icon at the top left of the home screen." and call app_action go_home.
@@ -2349,13 +2351,13 @@ function nextPending(){const n=Brain.pending.shift();if(!n)return;if(n[0]==='__v
 /* a voice message goes to Google once: it is heard, understood and answered in the same request */
 /* ---------- connection trouble: short blips are retried silently; only a lasting failure is reported, with its real cause ---------- */
 const Conn={fails:0,since:0,told:0,cause:'',timer:null,
-  cause_(e){if(navigator.onLine===false)return 'offline';if(e&&(e.quota||e.status===429))return 'quota';if(e&&(e.status===401||e.status===403||e.status==='nokey'||/api key/i.test(e.message||'')))return 'key';if(e&&e.status>=500)return 'busy';if(e&&!e.status)return 'net';return 'other'},
+  cause_(e){if(navigator.onLine===false)return 'offline';if(e&&!e.status&&e.name!=='AbortError'&&!/fetch|network|load failed/i.test(e.message||''))return 'app';if(e&&(e.quota||e.status===429))return 'quota';if(e&&(e.status===401||e.status===403||e.status==='nokey'||/api key/i.test(e.message||'')))return 'key';if(e&&e.status>=500)return 'busy';if(e&&!e.status)return 'net';return 'other'},
   words(c){return {offline:'I cannot reach the internet right now. Please check your Wi-Fi or mobile data. I will keep trying in the background.',net:'I am having trouble reaching Google\'s AI. It may be a weak connection. I will keep trying in the background.',
     quota:'Your Google keys have reached their free limit for now. Please try again later, or add another key in the menu, under API keys.',key:'Google is not accepting your API key. Please check it in the menu, under API keys.',
-    busy:'Google\'s AI is very busy right now. I will keep trying in the background.',other:'Google\'s AI could not answer just now. I will keep trying.'}[c]},
+    busy:'Google\'s AI is very busy right now. I will keep trying in the background.',app:'Something went wrong inside the app while handling that. Please say it once more. The details are under Menu, Voice, Status check.',other:'Google\'s AI could not answer just now. I will keep trying.'}[c]},
   ok(){if(this.fails&&this.told){this.told=0;setTimeout(()=>Voice.say('I am connected again.'),300)}this.fails=0;this.since=0;this.cause='';clearInterval(this.timer);this.timer=null;diag('ai','ok','Google AI reachable')},
   /* returns true when the user should now be told */
-  fail(e){const now=Date.now();if(!this.fails)this.since=now;this.fails++;this.cause=this.cause_(e);diag('ai','fail',this.words(this.cause));this.watch();
+  fail(e){const now=Date.now();if(!this.fails)this.since=now;this.fails++;this.cause=this.cause_(e);this.detail=String((e&&(e.status?('HTTP '+e.status+': '):'')+(e&&e.message))||'').slice(0,220);diag('ai','fail',this.words(this.cause)+' Detail: '+this.detail);this.watch();
     const lasting=this.cause==='quota'||this.cause==='key'||this.fails>=3||now-this.since>20000;if(!lasting||now-this.told<90000)return false;this.told=now;return true},
   /* a light check in the background until Google answers again */
   watch(){if(this.timer)return;this.timer=setInterval(async()=>{if(!this.fails){clearInterval(this.timer);this.timer=null;return}if(navigator.onLine===false||!G.active().length)return;
@@ -2368,7 +2370,7 @@ async function voiceTurn(it){if(Brain.busy){Brain.pending.push(['__voice',it]);r
   const ack=setTimeout(()=>{if(Brain.busy&&!ctl.cancelled&&!Voice.speaking&&it.ms>=1000&&!Conn.fails)Voice.say('Got it.')},1100);
   try{let last=null;
     for(let a=0;a<=sleepRetry.length;a++){if(ctl.cancelled){last=null;break}try{await aiTurn({audio:it.audio,ms:it.ms,ctl},'voice');Conn.ok();last=null;break}
-      catch(e){if(e.name==='AbortError'||ctl.cancelled){last=null;break}last=e;const c=Conn.cause_(e);if(c==='quota'||c==='key'||c==='offline'||a===sleepRetry.length)break;await sleep(sleepRetry[a])}}
+      catch(e){if(e.name==='AbortError'||ctl.cancelled){last=null;break}last=e;const c=Conn.cause_(e);if(c==='quota'||c==='key'||c==='offline'||c==='app'||a===sleepRetry.length)break;await sleep(sleepRetry[a])}}
     if(last){const tell=Conn.fail(last)||it.ms>=1500;
       /* the offline model can still write it down; the built-in understanding or Mistral then takes over */
       let t='';if(Listen.modelLoaded){try{t=await STW.call('asr',{audio:it.audio.slice()})}catch(er){}}
@@ -2931,9 +2933,9 @@ function renderVoice(){const vs=Voice.voices(),cur=pickDeviceVoice();
       <div class="vlist">${Object.entries(VO_VOICES).map(([k,v])=>`<button class="chip" data-vo="${k}" aria-label="Hear ${esc(v.label)}">${I('speaker')} ${esc(v.label)}</button>`).join('')}</div>
       ${!VOE.ready&&!VOE.loading?`<button class="pbtn" data-act="voeload">${I('down')} Download voice-over voices</button>`:''}</div>
     <div class="card"><h2>Status check</h2><ul class="diag">${[['mic','Microphone',Diag.mic||{st:'warn',msg:'Not started yet'}],
-      ['ears','Understanding speech',Listen.engine==='ai'?{st:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<60000)?'fail':'ok',msg:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<60000)?Diag.ai.msg:'Google AI with your key, one quick step'}:Listen.engine==='local'?{st:'ok',msg:'Offline speech model on this phone'}:Listen.engine==='browser'?{st:'warn',msg:'Browser recognition'}:{st:'warn',msg:'Speech model loading'}],
+      ['ears','Understanding speech',Listen.engine==='ai'?{st:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<600000)?'fail':'ok',msg:(Diag.ai&&Diag.ai.st==='fail'&&Date.now()-Diag.ai.t<600000)?Diag.ai.msg:'Google AI with your key, one quick step'}:Listen.engine==='local'?{st:'ok',msg:'Offline speech model on this phone'}:Listen.engine==='browser'?{st:'warn',msg:'Browser recognition'}:{st:'warn',msg:'Speech model loading'}],
       ['backupear','Offline speech model',Listen.modelLoaded?{st:'ok',msg:'Ready as a backup'}:{st:'warn',msg:'Downloads quietly in the background'}],
-      ['speak','Speaking',('speechSynthesis' in window)?{st:Voice.state==='ok'?'ok':Voice.state==='blocked'?'warn':'fail',msg:Voice.state==='ok'?(cur?cur.name:'Phone voice'):voiceStatusText()}:{st:'fail',msg:'This browser cannot speak'}],
+      ['speak','Speaking',('speechSynthesis' in window)?{st:Voice.state==='ok'?'ok':Voice.state==='blocked'?'warn':'fail',msg:Voice.state==='ok'?'Your phone\'s default voice':voiceStatusText()}:{st:'fail',msg:'This browser cannot speak'}],
       ['keys','Google AI keys',G.active().length?{st:'ok',msg:G.active().length+' working'}:{st:'warn',msg:'None saved'}]].map(([k,t,d])=>`<li class="${d.st}"><span class="dot2"></span><b>${t}</b><span>${esc(d.msg)}</span></li>`).join('')}</ul></div>
     <div class="card"><h2>Listening</h2><p class="note">One steady microphone, without beeps. ${Listen.engine==='ai'?'With your key, Google\'s AI hears and understands each request in one quick step.':'Without a key, the offline English speech model on this phone writes down what you say.'} If your speech keeps stopping and starting, I offer to listen quietly until you say go ahead.</p></div></div></section>`}
 async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()}catch(e){}if(nav.v!=='backup')return;
@@ -3222,13 +3224,15 @@ function queueBackground(){Bg.add('fonts',()=>ensureFonts());Bg.add('encoders',(
 
 /* ---------- install as an app: own prompt with Install and Cancel icons ---------- */
 let installEvt=null;const isStandalone=()=>['standalone','fullscreen','minimal-ui','window-controls-overlay'].some(m=>matchMedia('(display-mode: '+m+')').matches)||navigator.standalone===true;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(nav.v==='menu')renderMenu();if(!LS.get('spc.noinstall')&&!isStandalone())setTimeout(showInstallCard,started?600:2500)});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault()});
 window.addEventListener('appinstalled',()=>{installEvt=null;const el=$('#installcard');if(el)el.remove();toast('Installed. Open Spoken PixelCraft from its icon.')});
 function showInstallCard(){if(!installEvt||$('#installcard')||$('#setupcard')||$('#installpage'))return;const el=document.createElement('div');el.id='installcard';el.className='installcard';el.setAttribute('role','dialog');el.setAttribute('aria-label','Install Spoken PixelCraft');
   el.innerHTML=`<div class="ictext"><b>Install Spoken PixelCraft</b><span>Full screen, from its own icon</span></div><button class="iconbtn no" data-act="installno" aria-label="Cancel" title="Cancel">${I('x')}</button><button class="iconbtn yes" data-act="install" aria-label="Install" title="Install">${I('install')}</button>`;document.body.appendChild(el)}
 async function doInstall(){const el=$('#installcard');if(el)el.remove();Voice.unlock();if(!installEvt){const st=installSteps();toast(st[0]+' '+st[1]);Voice.say(st.map((t,i)=>'Step '+(i+1)+'. '+t).join(' '),{force:true});return}const ev=installEvt;installEvt=null;try{await ev.prompt();const r=await ev.userChoice;if(r&&r.outcome!=='accepted')LS.set('spc.noinstall',1)}catch(e){}if(nav.v==='menu')renderMenu()}
 function dismissInstall(){LS.set('spc.noinstall',1);const el=$('#installcard');if(el){el.classList.add('out');setTimeout(()=>el.remove(),700)}}
-if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+/* not an installable app: any earlier offline helper and its stored copies are removed, so the newest version always loads */
+if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
+if(window.caches)caches.keys().then(ks=>ks.filter(k=>k.startsWith('spc-shell')).forEach(k=>caches.delete(k))).catch(()=>{});
 
 /* ---------- start ---------- */
 let started=false,hiddenAt=0;
@@ -3241,6 +3245,7 @@ async function begin(){if(started)return;started=true;const st=$('#start');if(st
   if(S.manual){document.body.classList.add('manual');loadEssentials().catch(()=>{});queueBackground();setPill();return}
   const mic=Listen.prepare().catch(()=>{});
   if(Backup.needPerm)Backup.allow();
+  await Promise.race([mic,sleep(6000)]);
   const welcome=G.active().length?'Welcome to Spoken PixelCraft.':PHRASES[0];Voice.say(welcome);
   if(!G.active().length){setBar(2,'Loading the speech model into memory','run');
     try{await loadEssentials(p=>setBar(Math.max(3,p),null,'run'));setBar(100,'Ready.','done');hideBar(1500)}catch(e){setBar(Essentials.pct()*100,'The speech model could not load. Check your connection, then tap Retry.','fail');}}
@@ -3252,15 +3257,13 @@ async function begin(){if(started)return;started=true;const st=$('#start');if(st
   history.replaceState({v:'home',depth:0},'');nav={v:'home',depth:0};render();setPill();
   $('#sbmenu').onclick=()=>go('menu');$('#sbkeys').onclick=()=>go('keys');$('#sbretry').onclick=()=>{setupRunning=false;if(setupDone()){started=false;begin()}else startSetup()};
   S.voiceOff=false;cleanupOldVoice();document.body.classList.toggle('manual',!!S.manual);
-  /* opened in a browser tab: the install page comes first, with a small option to continue in the browser */
-  if(isStandalone())LS.set('spc.installed',1);
-  if(!isStandalone()&&!LS.get('spc.installed')&&!sessionStorage.getItem('spc.browser')&&!location.hash.includes('spc-test')){showInstallPage()}
-  else afterGate(isStandalone()||!!LS.get('spc.installed'))
+  /* a plain web page: the Tap to start screen always comes first */
+  afterGate()
   try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{if(nav.v==='voice')renderVoice()}}catch(e){}
   Voice.listeners.add(onVoiceStatus);
   setTimeout(()=>housekeeping(),4000);
   if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
-  if(location.hash.startsWith('#spc-test'))window.__spc={DB,CS:()=>CS,runTool,Gen,go,Voice,Session,heard,handleText,Rec,Backup,Bg,FX,Listen,Local,localUnderstand,expandTemplate,genTool,STW,Essentials,VOE,Patient,Hold,voiceTurn,aiTurn,G,M,Lib,Library,Tour,Brain,toggleReq,toggleChat,musicBuffer,editPlan,parallelText,askExit,prepareScenes,Ed,LogoEd,get VidEd(){return VidEd},get LibPick(){return LibPick},get AudEd(){return AudEd},addToLibrary,renderLibraryPage,stepPreview,stepScene,stepLibrary,doExit,get libTab(){return libTab},Conn};})();
+  if(location.hash.startsWith('#spc-test'))window.__spc={DB,CS:()=>CS,runTool,Gen,go,Voice,Session,heard,handleText,Rec,Backup,Bg,FX,Listen,Local,localUnderstand,expandTemplate,genTool,STW,Essentials,VOE,Patient,Hold,voiceTurn,aiTurn,G,M,Lib,Library,Tour,Brain,toggleReq,toggleChat,musicBuffer,editPlan,parallelText,askExit,prepareScenes,Ed,LogoEd,get VidEd(){return VidEd},get LibPick(){return LibPick},get AudEd(){return AudEd},addToLibrary,renderLibraryPage,stepPreview,stepScene,stepLibrary,doExit,get libTab(){return libTab},Conn,get TOOLS(){return TOOLS},systemPrompt};})();
 /* after the install page, or straight away in the installed app */
 function afterGate(auto){if(!setupDone()){const st=$('#start');if(st)st.remove();showSetupCard()}
   else{const st=$('#start');if(!st)return begin();st.addEventListener('click',begin);st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')begin()})}}
