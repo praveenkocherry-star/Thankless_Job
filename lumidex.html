@@ -160,6 +160,12 @@ button{cursor:pointer}
 .doc ul,.doc ol{margin:.25rem 0;padding-left:1.25rem}
 .doc .k{display:inline-block;padding:0 .4rem;border-radius:6px;background:var(--surface3);font-weight:800;font-size:.85em}
 .doc h2{margin:0 0 .3rem;font-size:1.1rem}
+
+/* floating plus: new deck */
+.fab{position:absolute;right:18px;bottom:20%;z-index:30;width:3.6rem;height:3.6rem;border-radius:50%;border:0;background:var(--amber);color:var(--onamber);display:inline-flex;align-items:center;justify-content:center;padding:0;box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 28%,transparent),0 8px 22px rgba(0,0,0,.28)}
+.fab svg{width:1.8rem;height:1.8rem;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+.fab:active{transform:scale(.93)}
+.fab[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -188,7 +194,7 @@ button{cursor:pointer}
     <div class="scrim" id="scrim" hidden></div>
     <div class="scroll" id="scroll">
       <section id="viewHome" class="view">
-        <div class="homehead"><h2>Your decks</h2><button class="btn newbtn" id="openCram" type="button">+ New deck</button></div>
+        <div class="homehead"><h2>Your decks</h2></div>
         <div class="notekey" id="keyNote" hidden><span>Add a free Google key for the best results.</span><button class="btn amber" type="button" data-page="keys">Add key</button></div>
         <ul class="tiles" id="listCram" aria-label="Decks"></ul>
       </section>
@@ -256,7 +262,7 @@ button{cursor:pointer}
 
           <h3>Create a deck</h3>
           <ol>
-            <li>On the home screen tap New deck.</li>
+            <li>On the home screen tap the amber plus button at the bottom right.</li>
             <li>Type a name, or accept the suggested one, and confirm.</li>
             <li>The deck opens on Configure.</li>
           </ol>
@@ -335,6 +341,7 @@ button{cursor:pointer}
       <iframe id="cramFrame" class="stageframe" title="Lumidex deck" allow="clipboard-read; clipboard-write; microphone; camera; fullscreen"></iframe>
     </section>
   </div>
+  <button class="fab" id="openCram" type="button" aria-label="New deck" title="New deck"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
 
 <script>
@@ -436,7 +443,7 @@ function renderHomeLists(){
   const decks=cramObj().decks.map(d=>({id:d.id,name:d.name||'Untitled deck',n:(d.sources||[]).length}));
   $('#listCram').innerHTML=decks.length
     ?decks.map(r=>`<li class="tile"><button class="topen" type="button" data-open-cram="${esc(r.id)}" aria-label="Open ${esc(r.name)}"><span class="tname">${esc(r.name)}</span><span class="tmeta">${r.n} ${r.n===1?'item':'items'}</span></button><div class="tcap"><button class="mini" type="button" data-ren="cram" data-id="${esc(r.id)}" aria-label="Rename ${esc(r.name)}" title="Rename">${ICON_EDIT}</button><button class="mini red" type="button" data-del="cram" data-id="${esc(r.id)}" aria-label="Delete ${esc(r.name)}" title="Delete">${ICON_DEL}</button></div></li>`).join('')
-    :'<li class="tile blank"><span>No decks yet. Tap New deck.</span></li>';
+    :'<li class="tile blank"><span>No decks yet. Tap the plus button.</span></li>';
 }
 async function testKey(v){
   const ac=new AbortController();const to=setTimeout(()=>ac.abort(),8000);
@@ -627,6 +634,7 @@ function paint(){
   $('#viewHelp').hidden=!helpOpen;
   $('#scroll').hidden=showStage;
   $(MODS.cram.stage).hidden=!showStage;
+  $('#openCram').hidden=!(curView==='home'&&!helpOpen&&!openMod);
   $('#menuPop').hidden=!menuOpen;
   $('#scrim').hidden=!menuOpen;
   const mb=$('#menuBtn'),hb=$('#helpBtn');
