@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0B0C0E">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Special PixelCraft</title>
+<title>PixieCraft</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap">
@@ -836,7 +836,7 @@ body.chatopen .cview .msgbtn{bottom:auto!important}
 .startbtn{display:inline-flex;align-items:center;justify-content:center;min-width:220px;min-height:68px;padding:0 34px;margin:18px 0 6px;border-radius:34px;background:linear-gradient(135deg,var(--c-amber),#FFD98A);color:#1A1000;font-size:1.45rem;letter-spacing:.01em;border:3px solid var(--stripe);box-shadow:0 12px 30px color-mix(in srgb,var(--c-amber) 45%,transparent);animation:startpulse 2.2s ease-in-out infinite}
 .startbtn b{font-weight:800}
 @keyframes startpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-/* ================= Special PixelCraft: command window, four-button containers, rings, pickers ================= */
+/* ================= PixieCraft: command window, four-button containers, rings, pickers ================= */
 .cmdbtn[hidden]{display:none!important}
 .hdr .cmdbtn{width:auto;min-width:50px;height:46px;border-radius:15px;padding:3px 7px;flex-direction:column;gap:0;display:flex;align-items:center;justify-content:center;color:var(--c-cyan);border-color:color-mix(in srgb,var(--c-cyan) 75%,var(--ink));--selc:var(--c-cyan);flex:none}
 .cmdbtn svg.i{width:22px;height:22px}
@@ -933,7 +933,7 @@ body.hascmd .tagline{white-space:normal;line-height:1.15}
     <button class="ibtn cmdbtn" id="cmdBtn" data-act="cmd" hidden aria-pressed="false" aria-label="AI command window. Type what you want and the app does it." title="AI command: type what you want"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/><path d="M8 9l2.5 2L8 13M13 13h3"/></svg><span class="cmdtx">Command</span></button>
     <div class="brandwrap">
       <div class="brand">
-        <span class="name" aria-label="Special PixelCraft"><span aria-hidden="true"><span class="cal">S</span>pecial<span class="gap"></span><span class="cal">P</span>ixel<span class="cal">C</span>raft</span></span>
+        <span class="name" aria-label="PixieCraft"><span aria-hidden="true"><span class="cal">P</span>ixie<span class="cal">C</span>raft</span></span>
       </div>
       <span class="tagline">Create images and videos, your way.</span>
     </div>
@@ -950,11 +950,11 @@ body.hascmd .tagline{white-space:normal;line-height:1.15}
   <main id="main" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column"></main>
 </div>
 <div id="layer"></div>
-<noscript><p style="padding:20px">Special PixelCraft needs JavaScript.</p></noscript>
+<noscript><p style="padding:20px">PixieCraft needs JavaScript.</p></noscript>
 <script type="module">
 'use strict';
 /* ============================================================
-   Special PixelCraft — core: utilities, storage, settings, Google AI
+   PixieCraft — core: utilities, storage, settings, Google AI
    ============================================================ */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2065,14 +2065,14 @@ const TOOLS=[
  {name:'search_music',description:'Find free-to-use music in the app\'s library and the online open library by mood or style (for example soft piano, devotional, lo-fi, wedding, kids, epic). Returns asset ids for audio tracks with source library.',parameters:{type:T.O,properties:{query:{type:T.S},count:{type:T.N}},required:['query']}},
  {name:'interrupted_job',description:'Continue or drop the generation that was interrupted last time.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['continue','drop']}},required:['action']}}
 ];
-const ABOUT_FACTS=`Special PixelCraft is an app for creating and editing images and videos for businesses and personal use. Home shows Containers; each container is a project and always shows four buttons: New image, New video, Edit image and Edit video. Edit asks where the content comes from: this container, the library, or the phone's gallery. A plus icon makes a new container; tiles sort by last edit; the pencil renames and the bin deletes (deleted containers can be brought back until the next day). Pictures, video clips, audio and scripts are added inside the editors, and everything added is shared between the container's images and videos and the library. Image sizes: tall, wide, square, 4:5 and a custom size, plus print sizes (A4 flyer, business card, poster). Image downloads are chosen each time as PNG or JPG, and print sizes can also be PDF. Videos have a custom length box in minutes and seconds, may run 10 to 20 minutes, are always saved as MP4 in 720p or 1080p, and come in tall (Reels and Shorts), wide (YouTube), square, 4:5 (Instagram and Facebook feed) or a custom size. Captions, music and floating text are never added unless the user asks, by hand or through this command window. The video editor can import a script (lines starting with Scene, Visual, Voice-over or On-screen text become scenes, voice-over lines and text). Voice-overs are available in English, Hindi, Malayalam and Marathi; the voice engine and each language download only the first time they are used, after a size notice. Templates (editable, recolourable, several styles each): Indian festivals, birthday, anniversary, wedding, sale or offer, new arrival, shop opening, real estate, restaurant menu, business card, social posts, YouTube thumbnail, invitations, Instagram and Facebook reels, business logo, sales and marketing flyers. The Library has a starter set of images, clips, music, icons and cards, grows on demand and has no size limit. Backup: one file per backup, saved automatically once a day or with Back up now, the 7 newest kept, restore adds containers marked Restored. Menu: API keys (free Google keys from Google AI Studio; all saved keys work at the same time, and big jobs are split between them), Library, Backup, Help, About. Swipe left or right to move between pictures and versions. The command window (the glowing icon at the top left, shown only when a Google key is saved) lets the user type a request instead of tapping; on Home, a creative request makes a new container unless an existing container is named. A ring shows the percentage while something is being created. Everything stays on the device and in the backup folder. Backups hold the containers, not the keys.`;
+const ABOUT_FACTS=`PixieCraft is an app for creating and editing images and videos for businesses and personal use. Home shows Containers; each container is a project and always shows four buttons: New image, New video, Edit image and Edit video. Edit asks where the content comes from: this container, the library, or the phone's gallery. A plus icon makes a new container; tiles sort by last edit; the pencil renames and the bin deletes (deleted containers can be brought back until the next day). Pictures, video clips, audio and scripts are added inside the editors, and everything added is shared between the container's images and videos and the library. Image sizes: tall, wide, square, 4:5 and a custom size, plus print sizes (A4 flyer, business card, poster). Image downloads are chosen each time as PNG or JPG, and print sizes can also be PDF. Videos have a custom length box in minutes and seconds, may run 10 to 20 minutes, are always saved as MP4 in 720p or 1080p, and come in tall (Reels and Shorts), wide (YouTube), square, 4:5 (Instagram and Facebook feed) or a custom size. Captions, music and floating text are never added unless the user asks, by hand or through this command window. The video editor can import a script (lines starting with Scene, Visual, Voice-over or On-screen text become scenes, voice-over lines and text). Voice-overs are available in English, Hindi, Malayalam and Marathi; the voice engine and each language download only the first time they are used, after a size notice. Templates (editable, recolourable, several styles each): Indian festivals, birthday, anniversary, wedding, sale or offer, new arrival, shop opening, real estate, restaurant menu, business card, social posts, YouTube thumbnail, invitations, Instagram and Facebook reels, business logo, sales and marketing flyers. The Library has a starter set of images, clips, music, icons and cards, grows on demand and has no size limit. Backup: one file per backup, saved automatically once a day or with Back up now, the 7 newest kept, restore adds containers marked Restored. Menu: API keys (free Google keys from Google AI Studio; all saved keys work at the same time, and big jobs are split between them), Library, Backup, Help, About. Swipe left or right to move between pictures and versions. The command window (the glowing icon at the top left, shown only when a Google key is saved) lets the user type a request instead of tapping; on Home, a creative request makes a new container unless an existing container is named. A ring shows the percentage while something is being created. Everything stays on the device and in the backup folder. Backups hold the containers, not the keys.`;
 function brainState(){const c=nav.v==='container'?byId(nav.id):null;const st={screen:nav.v,containers:liveCS().slice(0,40).map(x=>({name:(x.restored?'(Restored) ':'')+x.name,versions:x.versions.length,uploads:x.media.length})),recently_deleted:CS.filter(x=>x.deleted).map(x=>x.name),keys_saved:G.active().length,
     generation:Gen.running?{container:(byId(Gen.running.cid)||{}).name,summary:Gen.running.summary,percent:Gen.running.p,stage:Gen.running.stage||'',queued:Gen.queue.length}:null,interrupted_last_time:LS.get('spc.pending')};
   if(c)st.open_container={name:c.name,uploads:c.media.map(m=>({media_id:m.id,type:m.type,name:m.name,width:m.w,height:m.h,seconds:m.duration?Math.round(m.duration):undefined,looks_blurry:m.quality&&m.quality.blurry||undefined,description:m.desc?m.desc.slice(0,600):undefined,document_text:m.text?m.text.slice(0,2500):undefined})),
     versions:c.versions.map((v,i)=>({version:i+1,kind:v.kind,summary:v.summary,width:v.w,height:v.h,seconds:v.duration?Math.round(v.duration):undefined,kept:!!v.kept,audio:v.plan&&v.plan.audio&&v.plan.audio.tracks?v.plan.audio.tracks.map(t=>t.source+(t.style?' '+t.style:'')+(t.voice?' '+t.voice:'')).join(', '):undefined})),showing:c.sel?(c.sel.t==='v'?'version '+(c.versions.findIndex(v=>v.id===c.sel.id)+1):'upload '+c.sel.id):null};
   else st.note='No container is open. A creation request creates a new container automatically, unless the user names an existing one: then open it first with container_action.';
   return st}
-function systemPrompt(){return `You are the helper inside Special PixelCraft, an app for creating and editing images and videos for businesses and personal use. The user types requests in a small command window. Talk in plain words, like a friendly professional, and keep every reply short.
+function systemPrompt(){return `You are the helper inside PixieCraft, an app for creating and editing images and videos for businesses and personal use. The user types requests in a small command window. Talk in plain words, like a friendly professional, and keep every reply short.
 
 Every turn:
 1. Call respond exactly once, with a short plain-text reply in say: one to three short sentences, no lists or symbols. Call any other tools in the same turn.
@@ -2281,14 +2281,14 @@ function capWords(t){return String(t).trim().replace(/\s+/g,' ').replace(/\b([a-
    ============================================================ */
 /* One backup = one file, named with its date and time, written straight into the folder the user chose.
    Daily automatic backups plus Back up now; the 7 newest are kept. */
-const BK_KEEP=7,BK_RE=/^Special_PixelCraft_backup_(\d{4})-(\d\d)-(\d\d)_(\d\d)-(\d\d)(?:-(\d\d))?_(Automatic|Manual)\.spcbackup$/;
+const BK_KEEP=7,BK_RE=/^(?:PixieCraft|Special_PixelCraft)_backup_(\d{4})-(\d\d)-(\d\d)_(\d\d)-(\d\d)(?:-(\d\d))?_(Automatic|Manual)\.spcbackup$/;
 const pad2=n=>String(n).padStart(2,'0');
 const Backup={dir:null,folder:'',mode:null,needPerm:false,running:null,lastErr:'',
   async init(){const r=await DB.get('kv','backup2').catch(()=>null);if(!r)return;this.mode=r.mode;this.folder=r.folder||'';
     if(r.mode==='folder'&&r.handle){this.dir=r.handle;try{this.needPerm=(await this.dir.queryPermission({mode:'readwrite'}))!=='granted'}catch(e){this.needPerm=true}}
     setInterval(()=>this.daily(),30*60000);setTimeout(()=>this.daily(),45000)},
   folderOK:()=>!!window.showDirectoryPicker,
-  fileName(t,kind){const d=new Date(t);return `Special_PixelCraft_backup_${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}-${pad2(d.getMinutes())}-${pad2(d.getSeconds())}_${kind==='auto'?'Automatic':'Manual'}.spcbackup`},
+  fileName(t,kind){const d=new Date(t);return `PixieCraft_backup_${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}-${pad2(d.getMinutes())}-${pad2(d.getSeconds())}_${kind==='auto'?'Automatic':'Manual'}.spcbackup`},
   parse(name){const m=BK_RE.exec(name);if(!m)return null;return {name,t:new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0)).getTime(),kind:m[7]==='Automatic'?'auto':'manual'}},
   /* writing to a chosen folder: a few tries, because cloud folders (Google Drive and others) can be slow to answer */
   async writeFile(name,blob){let err;for(let a=0;a<3;a++){try{const h=await this.dir.getFileHandle(name,{create:true});const w=await h.createWritable();await w.write(blob);await w.close();return}catch(e){err=e;if(e&&e.name==='NotAllowedError')break;if(a<2)await sleep(600*(a+1))}}throw err},
@@ -2306,7 +2306,7 @@ const Backup={dir:null,folder:'',mode:null,needPerm:false,running:null,lastErr:'
   /* the backup file: [4-byte header length][header JSON][media bytes] */
   async pack(kind){const t=Date.now(),cs=liveCS(),media=[],parts=[];let off=0;
     for(const c of cs)for(const it of [...c.versions,...c.media]){if(media.some(m=>m.id===it.id))continue;const m=await DB.get('media',it.id);if(!m)continue;media.push({id:it.id,type:m.type||m.blob.type||'',off,len:m.blob.size});parts.push(m.blob);off+=m.blob.size}
-    const head={app:'Special PixelCraft',format:2,t,kind,containers:cs.map(c=>{const r={...c};delete r.ai;delete r._tmp;return r}),media};
+    const head={app:'PixieCraft',format:2,t,kind,containers:cs.map(c=>{const r={...c};delete r.ai;delete r._tmp;return r}),media};
     const hj=new TextEncoder().encode(JSON.stringify(head)),len=new Uint8Array(new Uint32Array([hj.length]).buffer);
     return {t,blob:new Blob([len,hj,...parts],{type:'application/octet-stream'})}},
   async list(){if(this.mode==='folder'){if(!this.dir||this.needPerm)return [];const out=[];try{for await(const [name,h] of this.dir.entries()){if(h.kind!=='file')continue;const p=this.parse(name);if(p)out.push(p)}}catch(e){return []}return out.sort((a,b)=>b.t-a.t)}
@@ -2487,8 +2487,8 @@ const cmdOpen=()=>!!$('#cmdpanel');
 function syncCmdBtn(){const b=$('#cmdBtn');if(!b)return;const on=G.active().length>0;b.hidden=!on;document.body.classList.toggle('hascmd',on);if(!on&&cmdOpen())closeCmd()}
 function cmdContext(){const c=nav.v==='container'?byId(nav.id):null;return c}
 function cmdMsgs(c){const L=chatLog(c);const ms=L.length?L:[{me:false,t:c?'Type what you want to make or change in this container. You can also paste a video or image script.':'Type what you want to make, for example "a Diwali offer poster for my sweet shop". A new container is made for you, unless you name an existing one.'}];
-  const busy=Brain.busy?`<div class="msg app working"><span class="who">Special PixelCraft</span><div class="b">${esc(Brain.stage||'Thinking')}…</div></div>`:'';
-  return ms.map(m=>`<div class="msg ${m.me?'me':'app'}"><span class="who">${m.me?'You':'Special PixelCraft'}</span><div class="b">${esc(m.t)}</div></div>`).join('')+busy}
+  const busy=Brain.busy?`<div class="msg app working"><span class="who">PixieCraft</span><div class="b">${esc(Brain.stage||'Thinking')}…</div></div>`:'';
+  return ms.map(m=>`<div class="msg ${m.me?'me':'app'}"><span class="who">${m.me?'You':'PixieCraft'}</span><div class="b">${esc(m.t)}</div></div>`).join('')+busy}
 function cmdHeadLine(c){return c?`Working in: ${c.name}`:'On Home: a new container is made for you'}
 function openCmd(){if(!G.active().length){toast('Add a free Google key in Menu, API keys, to use AI commands.');return}if(cmdOpen())return;
   const c=cmdContext();const el=document.createElement('div');el.id='cmdpanel';el.className='cmdpanel';el.setAttribute('role','dialog');el.setAttribute('aria-label','AI command window');
@@ -2508,7 +2508,7 @@ function renderMenu(){const n=S.keys.length;
     ${row('voices','langs','Voice-overs and languages','English, Hindi, Malayalam, Marathi · '+(VOE.ready?'voice engine ready':'downloads when first used'))}
     ${row('library','lib','Library','Images, video clips, music, icons and cards')}
     ${row('backup','backup','Backup',Backup.mode?((Backup.mode==='folder'?'Daily, in '+esc(Backup.folder):'Daily, inside this browser')+(Backup.needPerm?', needs permission':'')):'Not set up')}
-    ${row('about','info','About','What Special PixelCraft does')}
+    ${row('about','info','About','What PixieCraft does')}
 </div></section>`}
 const keyRow=(k,i)=>`<li class="key"><span class="kn">Key ${i+1}</span><span class="stat ${k.st==='active'?'ok':k.st==='inactive'||k.st==='blocked'?'bad':'chk'}">${k.st==='active'?'Active':k.st==='inactive'?'Inactive':k.st==='unknown'?'Not checked':'Checking'}</span><button class="mini big" data-kcopy="${i}" aria-label="Copy key ${i+1}">${I('copy')}</button><button class="mini big del" data-kdel="${i}" aria-label="Delete key ${i+1}">${I('trash')}</button>${k.why?`<span class="kwhy">${esc(k.why)}</span>`:''}</li>`;
 function aiStatusHTML(){const l=G.last;if(!G.active().length)return 'No working key yet.';if(!l)return 'No request has been made yet. Tap Test Google AI.';
@@ -2537,7 +2537,7 @@ async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()
     ${on?`<div class="card"><h2>Backups</h2>${list.length?`<ul class="bklist">${list.map(e=>`<li class="bk"><span class="bt"><b>${fmtDate(e.t)}, ${fmtTime(e.t)}</b><span class="bkk ${e.kind}">${e.kind==='auto'?'Automatic':'Manual'}</span></span>${folder?'':`<button class="mini" data-bksave="${esc(e.name)}" aria-label="Save a copy of the backup of ${fmtDate(e.t)} ${fmtTime(e.t)}">${I('down')}</button>`}<button class="mini rest" data-bkrest="${esc(e.name)}" aria-label="Restore the backup of ${fmtDate(e.t)} ${fmtTime(e.t)}">${I('restore')}</button><button class="mini del" data-bkdel="${esc(e.name)}" aria-label="Delete the backup of ${fmtDate(e.t)} ${fmtTime(e.t)}">${I('trash')}</button></li>`).join('')}</ul>`:'<p class="note">No backups yet. The first one is made automatically today, or tap Back up now.</p>'}</div>`:''}
     <div class="card"><h2>Restore</h2><p class="note">Bring back containers from any backup file, wherever it is kept. They are added to Home marked Restored; nothing on Home is replaced.</p><div class="sbtns"><button class="sbtn" data-act="bkpick">${I('restore')} Restore</button></div></div></div></section>`}
 const ABOUT=[
- ['spark','What Special PixelCraft is','<p>A studio for creating and editing images and videos for your business, festivals, family and social media. Work lives in containers. Each container has four buttons: New image, New video, Edit image and Edit video. Everything is built in, so it works without AI. Free Google keys add an AI command window on top.</p>'],
+ ['spark','What PixieCraft is','<p>A studio for creating and editing images and videos for your business, festivals, family and social media. Work lives in containers. Each container has four buttons: New image, New video, Edit image and Edit video. Everything is built in, so it works without AI. Free Google keys add an AI command window on top.</p>'],
  ['book','Getting started','<ul><li>Tap the plus button to make a container.</li><li>Open it and tap New image or New video. Pick a size, a template or a blank page, and make it yours.</li><li>Tap Edit image or Edit video to change something you already have: from this container, from the library, or from your phone gallery.</li><li>Tap the tick to save. Every save becomes a new version, and you choose whether to keep the earlier one.</li></ul>'],
  ['cmd','The AI command window','<p>When at least one Google key is saved, a glowing command icon appears at the top left of every screen. Tap it to open a small window where you type, or paste a script, and the app does the work: <q>Make a Diwali offer poster for my sweet shop</q>, <q>Make a 30 second Reel from these clips</q>, <q>Make the sky darker</q>. On Home, a request makes a new container for you unless you name an existing one. The trash icon in the window clears the conversation. With no key, the window stays hidden and you edit everything by hand.</p>'],
  ['key','Free Google keys','<p>In Menu, API keys, tap Create free key, then Open Google AI Studio. Sign in, tap Create API key and copy it. Press Back until you return to the app, then tap Paste key. The key is tested at once. Save several keys from different Google projects: they all work together, so the app answers faster, big jobs are shared between them, and when one reaches its free limit the others carry on. Tap Test Google AI to see exactly what Google answers.</p>'],
@@ -2600,7 +2600,7 @@ function editFromLibrary(c,kind){closeLayer();LibPick.open({kinds:[kind],title:'
 
 /* ---------- share: hands the file to WhatsApp, Instagram, Facebook and other apps ---------- */
 async function shareCurrent(){const c=byId(nav.id);const it=await currentItem(c);if(!it||it.kind==='doc')return toast('Nothing to share yet.');const m=await DB.get('media',it.sel.id);if(!m)return;
-  const ext=(m.type.split('/')[1]||'bin').split(';')[0].replace('jpeg','jpg').replace('svg+xml','svg');const file=new File([m.blob],(c.name.replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')||'Special_PixelCraft')+'.'+ext,{type:m.type});
+  const ext=(m.type.split('/')[1]||'bin').split(';')[0].replace('jpeg','jpg').replace('svg+xml','svg');const file=new File([m.blob],(c.name.replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')||'PixieCraft')+'.'+ext,{type:m.type});
   if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:c.name});return}catch(e){if(e.name==='AbortError')return}}
   toast('Sharing files is not supported in this browser. Use Download instead.')}
 
@@ -2612,14 +2612,14 @@ async function downloadDialog(c,pre,fname){const it=await currentItem(c);if(!it)
   const fm=it.kind==='video'?['MP4']:it.kind==='audio'?['Original','MP3']:['PNG','JPG',...(pr?['PDF']:[]),...(it.meta.svg?['SVG']:[])];
   const norm_=f=>({JPEG:'JPG',jpeg:'JPG',jpg:'JPG'}[f]||f);
   const want=((pre&&pre.length?pre:[fm[0]]).map(norm_)).filter(f=>fm.includes(f));if(!want.length)want.push(fm[0]);
-  const base=String(fname||c.name).replace(/\.[a-z0-9]{2,4}$/i,'').replace(/[\\/:*?"<>|]+/g,'').trim().slice(0,80)||'Special_PixelCraft';
+  const base=String(fname||c.name).replace(/\.[a-z0-9]{2,4}$/i,'').replace(/[\\/:*?"<>|]+/g,'').trim().slice(0,80)||'PixieCraft';
   sheet('Download',`<span class="lbl">File name</span><input class="field" id="fname" value="${esc(base)}" aria-label="File name">
     <span class="lbl">Format</span><div class="fmts" role="group" aria-label="Formats">${fm.map(f=>`<button class="chip ${want.includes(f)?'on':''}" data-fmt="${f}" aria-pressed="${want.includes(f)}">${f}</button>`).join('')}</div>
     ${it.kind==='video'?`<span class="lbl">Quality</span><div class="fmts" role="group" aria-label="Quality">${['720p','1080p'].map(q=>`<button class="chip ${q===(S.vq||'720p')?'on':''}" data-q="${q}" aria-pressed="${q===(S.vq||'720p')}">${q}</button>`).join('')}</div>`:''}
     <p class="note">${it.kind==='video'?'Videos are saved as MP4.':'Choose the format you want this time.'} Files are saved to your device's default Downloads folder.</p><p class="note" id="dlmsg" aria-live="polite"></p>
     <div class="btnrow"><button class="pbtn" data-act="openfolder">${I('folder')} Open folder</button><button class="pbtn prime" id="dlgo" data-act="dodl">${I('down')} Download</button></div>`);
   if(pre&&pre.length)glow('download')}
-async function doDownload(){const c=byId(nav.id);const it=await currentItem(c);if(!it)return;const name=($('#fname').value.trim()||'Special_PixelCraft').replace(/[\\/:*?"<>|]+/g,'');const fmts=[...layer.querySelectorAll('[data-fmt].on')].map(x=>x.dataset.fmt);
+async function doDownload(){const c=byId(nav.id);const it=await currentItem(c);if(!it)return;const name=($('#fname').value.trim()||'PixieCraft').replace(/[\\/:*?"<>|]+/g,'');const fmts=[...layer.querySelectorAll('[data-fmt].on')].map(x=>x.dataset.fmt);
   const q=(layer.querySelector('[data-q].on')||{dataset:{}}).dataset.q||S.vq||'720p';
   const msg=t=>{const m=$('#dlmsg');if(m)m.textContent=t};const btn=$('#dlgo');btn.disabled=true;const m=await DB.get('media',it.sel.id);const blob=m.blob;let ok=0;
   for(const f of fmts){try{msg('Preparing '+f+'…');
@@ -2678,7 +2678,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
     case 'allowbk':Backup.allow().then(()=>renderBackup());break;
     case 'offbk':ask('Turn off backup?','Backups stop. The backup files already saved are kept, and you can still restore them with Restore.','Turn off',true,async()=>{await Backup.off();toast('Backup is off. Your backup files are kept.');renderBackup()});break;
     case 'bknow':{const bt=t;bt.classList.add('busy');Backup.make('manual').then(()=>{toast('Backup saved.');renderBackup()}).catch(er=>{toast(Backup.why(er));bt.classList.remove('busy')});break}
-    case 'bkloc':case 'bkpick':Backup.pick().then(p=>{if(!p)return;ask('Restore this backup?','"'+p.file.name+'" will be added to Home, marked Restored. Nothing on Home is replaced.','Restore',false,async()=>{toast('Restoring…');try{bkDone(await Backup.restorePicked(p))}catch(er){toast('That file is not a Special PixelCraft backup, or it could not be read.')}renderBackup()})}).catch(()=>toast('The file could not be opened.'));break;
+    case 'bkloc':case 'bkpick':Backup.pick().then(p=>{if(!p)return;ask('Restore this backup?','"'+p.file.name+'" will be added to Home, marked Restored. Nothing on Home is replaced.','Restore',false,async()=>{toast('Restoring…');try{bkDone(await Backup.restorePicked(p))}catch(er){toast('That file is not a PixieCraft backup, or it could not be read.')}renderBackup()})}).catch(()=>toast('The file could not be opened.'));break;
   }});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&e.target.id==='ta'){e.preventDefault();$('[data-act=send]').click()}if(e.key==='Enter'&&e.target.id==='keyin')$('[data-act=savekey]').click();if(e.key==='Escape'){if(layer.innerHTML)closeLayer();else if(cmdOpen())closeCmd()}
   if((e.key==='Enter'||e.key===' ')&&e.target.matches('label[role=button]')){e.preventDefault();const i=e.target.querySelector('input');if(i)i.click()}});
@@ -3385,9 +3385,9 @@ document.addEventListener('click',async e=>{const t=e.target.closest('button');i
   if(d.libtab){libTab=d.libtab;renderLibraryPage();return}
   if(d.libplay){if(libAudio){libAudio.pause();URL.revokeObjectURL(libAudio.src);const same=libAudio.dataset.id===d.libplay;libAudio=null;if(same)return}const a=await Lib.get(d.libplay);if(!a)return;libAudio=new Audio(URL.createObjectURL(a.blob));libAudio.dataset.id=d.libplay;libAudio.play().catch(()=>toast('This sound could not be played.'));return}
   if(d.libview){const a=await Lib.get(d.libview);if(!a)return;const u=URL.createObjectURL(a.blob);sheet(a.title||'Library item',`<div class="libview">${a.kind==='video'?`<video src="${u}" controls playsinline autoplay></video>`:`<img src="${u}" alt="${esc(a.title||'')}">`}</div><p class="note">${esc([a.source,a.licence,a.author].filter(Boolean).join(' · '))}</p>`);return}
-  if(d.libshare){const a=await Lib.get(d.libshare);if(!a)return;const f=new File([a.blob],(a.title||'Special_PixelCraft').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')+'.'+libExt(a),{type:a.blob.type});
+  if(d.libshare){const a=await Lib.get(d.libshare);if(!a)return;const f=new File([a.blob],(a.title||'PixieCraft').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')+'.'+libExt(a),{type:a.blob.type});
     if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:a.title})}catch(er){}}else toast('Sharing files is not supported in this browser. Use Download instead.');return}
-  if(d.libdl){const a=await Lib.get(d.libdl);if(a){saveFile(a.blob,(a.title||'Special_PixelCraft').replace(/[\\/:*?"<>|]+/g,'')+'.'+libExt(a));toast('Saved to your Downloads folder.')}return}
+  if(d.libdl){const a=await Lib.get(d.libdl);if(a){saveFile(a.blob,(a.title||'PixieCraft').replace(/[\\/:*?"<>|]+/g,'')+'.'+libExt(a));toast('Saved to your Downloads folder.')}return}
   if(d.libdel){const a=await DB.get('assets',d.libdel);ask('Delete from the library?','"'+((a&&a.title)||'This item')+'" will be removed from the library. Versions in your containers are not affected.','Delete',true,async()=>{await DB.del('assets',d.libdel);thumbCache.delete(d.libdel);renderLibraryPage();toast('Deleted from the library.')});return}
   if(d.act==='addlib'){const c=byId(nav.id);if(!c)return;const r=await addToLibrary(c);toast(r.error?r.error:r.already?'This is already in your library.':'Added to your library, under My creations.');return}
   /* the editors pick from the library */

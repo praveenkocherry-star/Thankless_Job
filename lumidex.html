@@ -931,6 +931,66 @@ function lumiArrows(){
   }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','style']});
   schedule();
 }
+/* ---------- App icon: white square, "Lumi" over "Dex", calligraphic L and D, drawn here with the same fonts as the header ---------- */
+const ICON_KEY='lumidex.icon.v3';
+function drawIcon(size){
+  const c=document.createElement('canvas');c.width=c.height=size;
+  const x=c.getContext('2d'),u=size/512;
+  x.fillStyle='#FFFFFF';x.fillRect(0,0,size,size);
+  const CAP='"Great Vibes","Segoe Script","Brush Script MT","Apple Chancery",cursive';
+  const SML='800 1px Inter,"Atkinson Hyperlegible",system-ui,"Segoe UI",Roboto,Arial,sans-serif';
+  const parts=[['L',1],['umi',0],['D',1],['ex',0]];
+  const measure=k=>{let w=0;parts.forEach(p=>{x.font=p[1]?(190*k)+'px '+CAP:SML.replace('1px',(104*k)+'px');w+=x.measureText(p[0]).width+(p[1]?2*k:0)});return w};
+  const target=392*u;
+  let k=u;k=k*target/measure(k);
+  let left=(size-measure(k))/2;
+  const base=size/2+36*k;
+  x.textBaseline='alphabetic';
+  parts.forEach(p=>{
+    x.fillStyle=p[1]?'#0891B2':'#111316';
+    x.font=p[1]?(190*k)+'px '+CAP:SML.replace('1px',(104*k)+'px');
+    x.fillText(p[0],left,base);
+    left+=x.measureText(p[0]).width+(p[1]?2*k:0);
+  });
+  return c.toDataURL('image/png');
+}
+function applyIcon(i192,i512){
+  const set=(id,rel,href,extra)=>{let l=document.getElementById(id);if(!l){l=document.createElement('link');l.id=id;l.rel=rel;document.head.appendChild(l)}if(extra)for(const k in extra)l.setAttribute(k,extra[k]);l.href=href};
+  set('lumiIcon','icon',i192,{type:'image/png',sizes:'192x192'});
+  set('lumiApple','apple-touch-icon',i512,{sizes:'512x512'});
+  try{
+    const man={name:'Lumidex',short_name:'Lumidex',description:'Research, Reflect and Revise',start_url:location.href.split('#')[0],scope:location.href.split('#')[0].replace(/[^/]*$/,''),display:'standalone',background_color:'#FFFFFF',theme_color:'#FFFFFF',icons:[{src:i192,sizes:'192x192',type:'image/png',purpose:'any'},{src:i512,sizes:'512x512',type:'image/png',purpose:'any'},{src:i512,sizes:'512x512',type:'image/png',purpose:'maskable'}]};
+    const url=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}));
+    set('lumiManifest','manifest',url);
+  }catch(e){}
+}
+function buildIcon(){
+  try{const a=drawIcon(192),b=drawIcon(512);applyIcon(a,b);return [a,b]}catch(e){return null}
+}
+function gvLoaded(){
+  let ok=false;
+  try{document.fonts.forEach(f=>{if(/great vibes/i.test(f.family)&&f.status==='loaded')ok=true})}catch(e){}
+  return ok;
+}
+function initIcon(){
+  try{const c=JSON.parse(readLS(ICON_KEY)||'null');if(c&&c.a&&c.b)applyIcon(c.a,c.b)}catch(e){}
+  let tries=0;
+  const attempt=()=>{
+    tries++;
+    const finish=()=>{
+      if(gvLoaded()){const r=buildIcon();if(r)writeLS(ICON_KEY,JSON.stringify({a:r[0],b:r[1]}));return}
+      if(tries<8)setTimeout(attempt,2500);
+      else if(!readLS(ICON_KEY))buildIcon();
+    };
+    try{
+      if(document.fonts&&document.fonts.load){
+        Promise.all([document.fonts.load('190px "Great Vibes"','LD'),document.fonts.load('800 100px Inter','umiex')]).then(finish,finish);
+      }else finish();
+    }catch(e){finish()}
+  };
+  attempt();
+  window.addEventListener('online',()=>{tries=0;attempt()});
+}
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
   const t=e.target;
@@ -993,6 +1053,7 @@ try{
   if(d0>0){popIgnore++;history.go(-d0)}else history.replaceState({lumiD:0},'');
 }catch(e){}
 initBackup();
+initIcon();
 
 })();
 </script>
