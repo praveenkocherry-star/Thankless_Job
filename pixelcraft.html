@@ -944,6 +944,8 @@ body.hascmd .tagline{white-space:normal;line-height:1.15}
 .hdr .name{white-space:nowrap}
 body.hascmd .name{font-size:clamp(1rem,4.6vw,1.38rem)}
 body.hascmd .name .cal{font-size:clamp(1.5rem,6.9vw,2.05rem)}
+.routel{display:flex;flex-direction:column;gap:8px;max-height:40vh;overflow:auto;margin:8px 0 12px}
+.routel .pbtn{justify-content:flex-start;text-align:left}
 </style>
 </head>
 <body>
@@ -2084,12 +2086,12 @@ const TOOLS=[
  {name:'search_music',description:'Find free-to-use music in the app\'s library and the online open library by mood or style (for example soft piano, devotional, lo-fi, wedding, kids, epic). Returns asset ids for audio tracks with source library.',parameters:{type:T.O,properties:{query:{type:T.S},count:{type:T.N}},required:['query']}},
  {name:'interrupted_job',description:'Continue or drop the generation that was interrupted last time.',parameters:{type:T.O,properties:{action:{type:T.S,enum:['continue','drop']}},required:['action']}}
 ];
-const ABOUT_FACTS=`PixieCraft is an app for creating and editing images and videos for businesses and personal use. Home shows Containers; each container is a project and always shows four buttons: New image, New video, Edit image and Edit video. Edit asks where the content comes from: this container, the library, or the phone's gallery. A plus icon makes a new container; tiles sort by last edit; the pencil renames and the bin deletes (deleted containers can be brought back until the next day). Pictures, video clips, audio and scripts are added inside the editors, and everything added is shared between the container's images and videos and the library. Image sizes: tall, wide, square, 4:5 and a custom size, plus print sizes (A4 flyer, business card, poster). Image downloads are chosen each time as PNG or JPG, and print sizes can also be PDF. Videos have a custom length box in minutes and seconds, may run 10 to 20 minutes, are always saved as MP4 in 720p or 1080p, and come in tall (Reels and Shorts), wide (YouTube), square, 4:5 (Instagram and Facebook feed) or a custom size. Captions, music and floating text are never added unless the user asks, by hand or through this command window. The video editor can import a script (lines starting with Scene, Visual, Voice-over or On-screen text become scenes, voice-over lines and text). Voice-overs are available in English, Hindi, Malayalam and Marathi; the voice engine and each language download only the first time they are used, after a size notice. Templates (editable, recolourable, several styles each): Indian festivals, birthday, anniversary, wedding, sale or offer, new arrival, shop opening, real estate, restaurant menu, business card, social posts, YouTube thumbnail, invitations, Instagram and Facebook reels, business logo, sales and marketing flyers. The Library has a starter set of images, clips, music, icons and cards, grows on demand and has no size limit. Backup: one file per backup, saved automatically once a day or with Back up now, the 7 newest kept, restore adds containers marked Restored. Menu: API keys (free Google keys from Google AI Studio; all saved keys work at the same time, and big jobs are split between them), Library, Backup, Help, About. Swipe left or right to move between pictures and versions. The command window (the glowing Command button in the header next to the PixieCraft name, on every screen including the editors, shown only when a Google key is saved) lets the user type a request instead of tapping; on Home, a creative request makes a new container unless an existing container is named. A ring shows the percentage while something is being created. Everything stays on the device and in the backup folder. Backups hold the containers, not the keys.`;
-function brainState(){const c=nav.v==='container'?byId(nav.id):null;const st={screen:nav.v,containers:liveCS().slice(0,40).map(x=>({name:(x.restored?'(Restored) ':'')+x.name,versions:x.versions.length,uploads:x.media.length})),recently_deleted:CS.filter(x=>x.deleted).map(x=>x.name),keys_saved:G.active().length,
+const ABOUT_FACTS=`PixieCraft is an app for creating and editing images and videos for businesses and personal use. Home shows Containers; each container is a project and always shows four buttons: New image, New video, Edit image and Edit video. Edit asks where the content comes from: this container, the library, or the phone's gallery. A plus icon makes a new container; tiles sort by last edit; the pencil renames and the bin deletes (deleted containers can be brought back until the next day). Pictures, video clips, audio and scripts are added inside the editors, and everything added is shared between the container's images and videos and the library. Image sizes: tall, wide, square, 4:5 and a custom size, plus print sizes (A4 flyer, business card, poster). Image downloads are chosen each time as PNG or JPG, and print sizes can also be PDF. Videos have a custom length box in minutes and seconds, may run 10 to 20 minutes, are always saved as MP4 in 720p or 1080p, and come in tall (Reels and Shorts), wide (YouTube), square, 4:5 (Instagram and Facebook feed) or a custom size. Captions, music and floating text are never added unless the user asks, by hand or through this command window. The video editor can import a script (lines starting with Scene, Visual, Voice-over or On-screen text become scenes, voice-over lines and text). Voice-overs are available in English, Hindi, Malayalam and Marathi; the voice engine and each language download only the first time they are used, after a size notice. Templates (editable, recolourable, several styles each): Indian festivals, birthday, anniversary, wedding, sale or offer, new arrival, shop opening, real estate, restaurant menu, business card, social posts, YouTube thumbnail, invitations, Instagram and Facebook reels, business logo, sales and marketing flyers. The Library has a starter set of images, clips, music, icons and cards, grows on demand and has no size limit. Backup: one file per backup, saved automatically once a day or with Back up now, the 7 newest kept, restore adds containers marked Restored. Menu: API keys (free Google keys from Google AI Studio; all saved keys work at the same time, and big jobs are split between them), Library, Backup, Help, About. Swipe left or right to move between pictures and versions. The command window (the glowing Command button in the header next to the PixieCraft name, on every screen including the editors, shown only when a Google key is saved) lets the user type a request instead of tapping; on Home, the app first asks the user which container to use, or a new one, then sends the request there; inside an editor the result opens in that editor. A ring shows the percentage while something is being created. Everything stays on the device and in the backup folder. Backups hold the containers, not the keys.`;
+function brainState(){const c=nav.v==='container'?byId(nav.id):null;const st={screen:nav.v,editor:editorState(),containers:liveCS().slice(0,40).map(x=>({name:(x.restored?'(Restored) ':'')+x.name,versions:x.versions.length,uploads:x.media.length})),recently_deleted:CS.filter(x=>x.deleted).map(x=>x.name),keys_saved:G.active().length,
     generation:Gen.running?{container:(byId(Gen.running.cid)||{}).name,summary:Gen.running.summary,percent:Gen.running.p,stage:Gen.running.stage||'',queued:Gen.queue.length}:null,interrupted_last_time:LS.get('spc.pending')};
   if(c)st.open_container={name:c.name,uploads:c.media.map(m=>({media_id:m.id,type:m.type,name:m.name,width:m.w,height:m.h,seconds:m.duration?Math.round(m.duration):undefined,looks_blurry:m.quality&&m.quality.blurry||undefined,description:m.desc?m.desc.slice(0,600):undefined,document_text:m.text?m.text.slice(0,2500):undefined})),
     versions:c.versions.map((v,i)=>({version:i+1,kind:v.kind,summary:v.summary,width:v.w,height:v.h,seconds:v.duration?Math.round(v.duration):undefined,kept:!!v.kept,audio:v.plan&&v.plan.audio&&v.plan.audio.tracks?v.plan.audio.tracks.map(t=>t.source+(t.style?' '+t.style:'')+(t.voice?' '+t.voice:'')).join(', '):undefined})),showing:c.sel?(c.sel.t==='v'?'version '+(c.versions.findIndex(v=>v.id===c.sel.id)+1):'upload '+c.sel.id):null};
-  else st.note='No container is open. A creation request creates a new container automatically, unless the user names an existing one: then open it first with container_action.';
+  else st.note='No container is open. The user asked for an answer only: reply and explain, do not create anything.';
   return st}
 function systemPrompt(){return `You are the helper inside PixieCraft, an app for creating and editing images and videos for businesses and personal use. The user types requests in a small command window. Talk in plain words, like a friendly professional, and keep every reply short.
 
@@ -2155,9 +2157,10 @@ function editPlan(c,a){const vi=a.version?clamp(Math.round(a.version),1,c.versio
   for(const t of a.add_tracks||[])plan.audio.tracks.push({...t});if(a.mute_original!=null)plan.audio.mute_original=!!a.mute_original;
   if((a.add_layers||[]).length){const idx=a.layers_scene?[clamp(Math.round(a.layers_scene),1,plan.scenes.length)-1]:plan.scenes.map((x,i)=>i);for(const i of idx){plan.scenes[i].layers=[...(plan.scenes[i].layers||[]),...a.add_layers]}}
   delete plan.keep_previous;plan.summary=a.summary;return {plan,from:vi}}
-function genTool(name,c,a){if(!c)return {error:'No container is open. Create or open one first.'};if(!execFor[name])return {error:'Unknown tool '+name};
-  if(name==='edit_video'){const e=editPlan(c,a);if(e.error)return e;a._plan=e.plan;if(c.versions[e.from])c.sel={t:'v',id:c.versions[e.from].id}}const job={cid:c.id,tool:name,args:a,summary:String(a.summary||(name==='make_video'?'Video':'Image')).slice(0,140),exec:execFor[name](c,a)};const r=Gen.submit(job);
-  if(name==='ai_image'&&r.status==='started')return job.done.then(x=>x.status==='done'?{status:'done',version:x.version}:{status:x.status,error:x.error,note:'If the AI image model is not available, build the image with make_image instead.'});return r}
+function genTool(name,c,a,o={}){if(!c)return {error:'No container is open. Create or open one first.'};if(!execFor[name])return {error:'Unknown tool '+name};const edk=o.ai&&typeof Draft!=='undefined'&&Draft.open();const edTarget=edk&&Draft.ed(edk).c&&Draft.ed(edk).c.id===c.id?edk:null;
+  if(name==='edit_video'){const e=editPlan(c,a);if(e.error)return e;a._plan=e.plan;if(c.versions[e.from])c.sel={t:'v',id:c.versions[e.from].id}}const job={cid:c.id,tool:name,args:a,summary:String(a.summary||(name==='make_video'?'Video':'Image')).slice(0,140),exec:execFor[name](c,a)};if(name==='ai_image')job.quiet=true;const r=Gen.submit(job);
+  if(edTarget)job.done.then(x=>{if(x&&x.status==='done')applyToEditor(edTarget,c.id,x.version)});
+  if(name==='ai_image'){const pr=job.done.then(x=>x.status==='done'?{status:'done',version:x.version}:{status:x.status,error:x.error,note:'The AI picture model did not work with this key (Google said: '+String(x.error||'unknown')+'). Tell the user in one plain sentence that their free key does not include Google\'s picture model or it is not available right now, then build the picture straight away with make_image using the app\'s own tools (photo from the library, colours, text).'});return r.status==='started'?pr:r}return r}
 
 /* ---------- tools ---------- */
 async function lookAtMedia(c,ids,question){const keys=G.active();if(!keys.length)return {error:'No API key'};
@@ -2175,7 +2178,7 @@ const NEEDS_C=new Set(['make_image','make_video','ai_image','use_template','edit
 async function autoContainer(a){const t=String(a.summary||a.title||a.template||'New creation').replace(/[_]+/g,' ').trim();const nm=t.charAt(0).toUpperCase()+t.slice(1,40);const c=newContainer(nm);CS.push(c);await saveC(c);go('container',{id:c.id});return c}
 async function runTool(name,a){let c=nav.v==='container'?byId(nav.id):null;a=a||{};
   try{if(!c&&NEEDS_C.has(name)&&name!=='prepare_download')c=await autoContainer(a);switch(name){
-    case 'make_image':case 'make_video':case 'ai_image':return await genTool(name,c,a);
+    case 'make_image':case 'make_video':case 'ai_image':return await genTool(name,c,a,{ai:true});
     case 'look_at_media':return await lookAtMedia(c,a.media_ids,a.question);
     case 'look_at_link':{const {json}=await G.gen('text',{contents:[{parts:[{text:a.question||'Describe this video in detail for an editor who wants to make something in a similar style: scenes, shots, pacing, colours, text, music and mood.'},{file_data:{file_uri:a.url}}]}]});return {description:G.text(json).slice(0,6000)}}
     case 'search_videos':{const r=await Lib.searchVideos(a.query,clamp(num(a.count,2),1,4));return r.length?{results:r}:{error:'No free clip was found. Use photos with motion instead.'}}
@@ -2237,7 +2240,7 @@ function logChat(c,me,t){const L=chatLog(c);L.push({me,t:String(t),ts:Date.now()
 /* a typed request: everything goes to Google; no key, no command window */
 async function handleText(text,channel,opt={}){text=String(text||'').trim();if(!text)return;
   if(!G.active().length){toast('Add a Google API key in Menu, API keys, to use AI commands.');return}
-  if(Brain.busy){Brain.pending.push([text,channel,opt]);return}Brain.busy=true;Brain.stage='Thinking';renderChatOnly();
+  if(Brain.busy){Brain.pending.push([text,channel,opt]);return}Brain.busy=true;Brain.stage='Got it, working on it';renderChatOnly();
   const isApp=text.startsWith('[app]');
   try{
     if(navigator.onLine===false)throw Object.assign(new Error('No internet connection'),{offline:true});
@@ -2245,8 +2248,8 @@ async function handleText(text,channel,opt={}){text=String(text||'').trim();if(!
     catch(e0){const c0=Conn.cause_(e0);if(e0.name==='AbortError'||c0==='quota'||c0==='key'||c0==='offline')throw e0;
       /* one more try with a clean conversation, in case the saved history was what Google refused */
       await sleep(1200);await aiTurn({text,clean:true},'chat')}
-    Conn.ok()}
-  catch(e){if(e.name==='AbortError')return;Conn.fail(e);if(!isApp)reply(Conn.words(Conn.cause_(e),e),'chat')}
+    Conn.ok();AIErr.ok()}
+  catch(e){if(e.name==='AbortError')return;Conn.fail(e);AIErr.set(e);if(!isApp)reply(Conn.words(Conn.cause_(e),e),'chat')}
   finally{Brain.busy=false;Brain.stage='';renderChatOnly();nextPending()}}
 function nextPending(){const n=Brain.pending.shift();if(!n)return;handleText(n[0],n[1],n[2])}
 /* ---------- connection trouble: the real cause is shown, never a vague message ---------- */
@@ -2272,16 +2275,17 @@ async function aiTurn(input,channel){let c=nav.v==='container'?byId(nav.id):null
   {const fixed=repairHist(hist.slice());if(fixed.length!==hist.length){hist.length=0;hist.push(...fixed)}}
   const userTurn=pushUser(hist,[{text:(input.text.startsWith('[app]')?'':'[typed] ')+input.text}]);
   try{
-  for(let step=0;step<6;step++){const contents=trimHist(hist,useModel==='lite'?10:20);const last=contents[contents.length-1];
-    contents[contents.length-1]={role:last.role,parts:[...last.parts,{text:stateNote()}]};
-    const body={systemInstruction:{parts:[{text:systemPrompt()}]},tools:[{functionDeclarations:TOOLS}],toolConfig:{functionCallingConfig:{mode:'ANY'}},contents,generationConfig:{temperature:.5}};
-    const {json}=step===0?await G.genHedged(useModel,body,{fast:true,hedge:2500}):await G.gen(useModel,body,{fast:true});
+  for(let step=0;step<6;step++){const contents=sanitizeContents(trimHist(hist,useModel==='lite'?10:20));if(!contents.length)throw mkErr('The conversation could not be prepared.');
+    const body={systemInstruction:{parts:[{text:systemPrompt()+'\n\n'+stateNote()}]},tools:[{functionDeclarations:G.compact?compactTools():TOOLS}],toolConfig:{functionCallingConfig:{mode:'ANY'}},contents,generationConfig:{temperature:.5}};
+    G.lastShape=reqShape(body,useModel);let json;
+    try{({json}=step===0?await G.genHedged(useModel,body,{fast:true,hedge:2500}):await G.gen(useModel,body,{fast:true}))}
+    catch(e){if(e.status===400&&!G.compact&&!/api key/i.test(e.message||'')){G.compact=true;G.fullErr=e.message;body.tools=[{functionDeclarations:compactTools()}];G.lastShape=reqShape(body,useModel);({json}=await G.gen(useModel,body,{fast:true}))}else throw e}
     const content=json.candidates&&json.candidates[0]&&json.candidates[0].content;if(!content||!content.parts)throw mkErr('Google returned an empty answer.');content.role='model';
     const calls=content.parts.filter(p=>p.functionCall);const resp=calls.find(p=>p.functionCall.name==='respond');const ra=resp?resp.functionCall.args||{}:{};
     hist.push(content);
     const said=(String(ra.say||'')+' '+content.parts.filter(p=>p.text&&!p.thought).map(p=>p.text).join(' ')).trim();if(said)reply(said,channel);
     if(!calls.length){if(!said)throw mkErr('Google returned an empty answer.');break}const res=[];let need=false;
-    for(const p of calls){Brain.stage=p===resp?'Thinking':'Working on it';const r=p===resp?{ok:true}:await runTool(p.functionCall.name,p.functionCall.args);if(p!==resp&&(FOLLOW.has(p.functionCall.name)||(r&&r.error)))need=true;res.push({functionResponse:{name:p.functionCall.name,response:r&&typeof r==='object'?r:{result:r}}})}
+    for(const p of calls){Brain.stage=p===resp?'Thinking':'Working on it';const r=p===resp?{ok:true}:await runTool(p.functionCall.name,unpackArgs(p.functionCall.name,p.functionCall.args||{}));if(p!==resp&&(FOLLOW.has(p.functionCall.name)||(r&&r.error)))need=true;res.push({functionResponse:{name:p.functionCall.name,response:r&&typeof r==='object'?r:{result:r}}})}
     if(calls.some(p=>p!==resp&&!['app_action','highlight','container_action'].includes(p.functionCall.name)))useModel='text';
     const nc=nav.v==='container'?byId(nav.id):null;if(nc!==c){const nh=historyFor(nc);sealHist(nh);hist.push({role:'user',parts:res});nh.push(...trimHist(hist.slice(-6),6));hist=nh;c=nc;if(!need)break;continue}
     hist.push({role:'user',parts:res});if(!need)break}
@@ -2455,7 +2459,7 @@ function accentOf(c){let h=0;for(const ch of c.id)h=(h*31+ch.charCodeAt(0))>>>0;
 function tileRingHTML(c){const j=Gen.running;if(!j||j.cid!==c.id)return '';const C=2*Math.PI*20,p=j.p||0;
   return `<span class="tring" data-cid="${c.id}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="${esc((j.stage||'Working')+', '+p+' percent')}"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke-width="5" class="bgc"/><circle cx="24" cy="24" r="20" fill="none" stroke-width="5" stroke-linecap="round" class="fgc" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p/100)}"/></svg><span class="tp">${p}%</span></span>`}
 function renderHome(){const cs=liveCS();const keys=G.active().length;
-  const hint=keys?`Tip: tap the glowing Command button in the header and type what you want. A new container is made for you unless you name one.`:`Free Google keys unlock AI commands: type a request and the app creates it for you. Add keys in Menu, API keys.`;
+  const hint=keys?`Tip: tap the glowing Command button in the header and type what you want. On Home it asks which container to use, or makes a new one.`:`Free Google keys unlock AI commands: type a request and the app creates it for you. Add keys in Menu, API keys.`;
   main.innerHTML=`<section class="view" aria-label="Containers"><div class="hometop"><h1 class="htitle">Your containers</h1></div><p class="homeai">${esc(hint)}</p>${cs.length?`<div class="grid">${cs.map(c=>{const nm=(c.restored?'<span class="rs">(Restored)</span> ':'')+esc(c.name);const full=(c.restored?'Restored ':'')+c.name;
       return `<div class="cell acc-${accentOf(c)}"><button class="tile ${c.thumb?'':'empty'}" data-open="${c.id}" aria-label="Open ${esc(full)}${c.thumb?'':', empty'}">${c.thumb?`<img class="art" src="${c.thumb}" alt="">`:''}${c.kind?`<span class="badge">${I(c.kind)}</span>`:''}${tileRingHTML(c)}</button>
         <div class="cap"><button class="mini edit" data-ren="${c.id}" aria-label="Rename ${esc(full)}">${I('pen')}</button><span class="t">${nm}</span><button class="mini del" data-del="${c.id}" aria-label="Delete ${esc(full)}">${I('trash')}</button></div></div>`}).join('')}</div>`
@@ -2505,13 +2509,13 @@ async function renderAfterChange(c){if(nav.v==='container'&&nav.id===c.id){await
 const cmdOpen=()=>!!$('#cmdpanel');
 function syncCmdBtn(){const b=$('#cmdBtn');if(!b)return;const on=G.active().length>0;b.hidden=!on;document.body.classList.toggle('hascmd',on);if(!on&&cmdOpen())closeCmd()}
 function cmdContext(){const c=nav.v==='container'?byId(nav.id):null;return c}
-function cmdMsgs(c){const L=chatLog(c);const ms=L.length?L:[{me:false,t:c?'Type what you want to make or change in this container. You can also paste a video or image script.':'Type what you want to make, for example "a Diwali offer poster for my sweet shop". A new container is made for you, unless you name an existing one.'}];
+function cmdMsgs(c){const L=chatLog(c);const ms=L.length?L:[{me:false,t:c?'Type what you want to make or change in this container. You can also paste a video or image script.':'Type what you want to make, for example "a Diwali offer poster for my sweet shop". On Home it asks which container to use, or makes a new one.'}];
   const busy=Brain.busy?`<div class="msg app working"><span class="who">PixieCraft</span><div class="b">${esc(Brain.stage||'Thinking')}…</div></div>`:'';
   return ms.map(m=>`<div class="msg ${m.me?'me':'app'}"><span class="who">${m.me?'You':'PixieCraft'}</span><div class="b">${esc(m.t)}</div></div>`).join('')+busy}
-function cmdHeadLine(c){return c?`Working in: ${c.name}`:'On Home: a new container is made for you'}
+function cmdHeadLine(c){const k=typeof Draft!=='undefined'&&Draft.open();return c?`Working in: ${c.name}${k?(k==='image'?', image editor':', video editor'):''}`:'On Home: you choose where it goes'}
 function openCmd(){if(!G.active().length){toast('Add a free Google key in Menu, API keys, to use AI commands.');return}if(cmdOpen())return;
   const c=cmdContext();const el=document.createElement('div');el.id='cmdpanel';el.className='cmdpanel';el.setAttribute('role','dialog');el.setAttribute('aria-label','AI command window');
-  el.innerHTML=`<div class="grab"></div><div class="cmdhead"><div class="cmdt"><h3>AI command</h3><span id="cmdctx">${esc(cmdHeadLine(c))}</span></div><button class="ibtn" data-act="cmdclear" aria-label="Clear this conversation" title="Clear this conversation">${I('sweep')}</button><button class="ibtn" data-act="cmdclose" aria-label="Close the command window">${I('x')}</button></div>
+  el.innerHTML=`<div class="grab"></div><div class="cmdhead"><div class="cmdt"><h3>AI command</h3><span id="cmdctx">${esc(cmdHeadLine(c))}</span></div><button class="ibtn" data-act="cmderr" id="cmderr" ${AIErr.info?'':'hidden'} aria-label="Copy error details" title="Copy error details">${I('copy')}</button><button class="ibtn" data-act="cmdclear" aria-label="Clear this conversation" title="Clear this conversation">${I('sweep')}</button><button class="ibtn" data-act="cmdclose" aria-label="Close the command window">${I('x')}</button></div>
     <div class="msgs" id="msgs" aria-live="polite">${cmdMsgs(c)}</div>
     <div class="compose"><textarea id="ta" rows="1" placeholder="Type or paste here" aria-label="Command"></textarea><button class="send" data-act="send" aria-label="Send">${I('send')}</button></div>`;
   document.body.appendChild(el);document.body.classList.add('cmdopen');const b=$('#cmdBtn');if(b){b.classList.add('on');b.setAttribute('aria-pressed','true')}
@@ -2558,7 +2562,7 @@ async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()
 const ABOUT=[
  ['spark','What PixieCraft is','<p>A studio for creating and editing images and videos for your business, festivals, family and social media. Work lives in containers. Each container has four buttons: New image, New video, Edit image and Edit video. Everything is built in, so it works without AI. Free Google keys add an AI command window on top.</p>'],
  ['book','Getting started','<ul><li>Tap the plus button to make a container.</li><li>Open it and tap New image or New video. Pick a size, a template or a blank page, and make it yours.</li><li>Tap Edit image or Edit video to change something you already have: from this container, from the library, or from your phone gallery.</li><li>Tap the tick to save. Every save becomes a new version, and you choose whether to keep the earlier one.</li></ul>'],
- ['cmd','The AI command window','<p>When at least one Google key is saved, a glowing Command button appears in the header on every screen, including the editors, just right of the PixieCraft name. Tap it to open a small window where you type, or paste a script, and the app does the work: <q>Make a Diwali offer poster for my sweet shop</q>, <q>Make a 30 second Reel from these clips</q>, <q>Make the sky darker</q>. On Home, a request makes a new container for you unless you name an existing one. The trash icon in the window clears the conversation. With no key, the window stays hidden and you edit everything by hand.</p>'],
+ ['cmd','The AI command window','<p>When at least one Google key is saved, a glowing Command button appears in the header on every screen, including the editors, just right of the PixieCraft name. Tap it to open a small window where you type, or paste a script, and the app does the work: <q>Make a Diwali offer poster for my sweet shop</q>, <q>Make a 30 second Reel from these clips</q>, <q>Make the sky darker</q>. On Home, the app asks which container to put it in, or makes a new one. Inside the image or video editor, the result opens right in that editor. Write in plain everyday words; there is no special format. If something goes wrong, a copy button appears at the top of the window so you can send the error details. The trash icon in the window clears the conversation. With no key, the window stays hidden and you edit everything by hand.</p>'],
  ['key','Free Google keys','<p>In Menu, API keys, tap Create free key, then Open Google AI Studio. Sign in, tap Create API key and copy it. Press Back until you return to the app, then tap Paste key. The key is tested at once. Save several keys from different Google projects: they all work together, so the app answers faster, big jobs are shared between them, and when one reaches its free limit the others carry on. Tap Test Google AI to see exactly what Google answers.</p>'],
  ['clock','Autosave and drafts','<p>While you edit an image or a video, your work is saved automatically every few seconds. If you go to Menu, Help, Home, press Back, or the app closes, the edit is kept as a draft. Open the container again and the editor opens exactly where you left off.</p><p>The X button in an editor asks Save or Discard. Save keeps the edit as a version on the strip below the preview. Discard removes it. The tick button also saves a version.</p><p>The T button in an editor opens Styled text: select any word or line and make it bold, italic, underlined or struck through, or change its font, size or colour.</p>'],
  ['layers','Containers and versions','<p>The most recently edited container comes first. The pencil renames and the bin deletes; a deleted container can be brought back until the first use of the next day. Pictures, clips, audio and scripts you add inside the editors are shared between the container and the Library. Kept versions and uploads appear as small blocks under the preview: tap one to see it, swipe the preview left or right to move through them, and tap its cross to delete it.</p>'],
@@ -2685,7 +2689,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-ope
     case 'share':shareCurrent();break;
     case 'cmd':toggleCmd();break;case 'cmdclose':closeCmd();break;
     case 'cmdclear':ask('Clear this conversation?','The messages and what the AI remembers for '+(nav.v==='container'&&byId(nav.id)?'this container':'Home')+' are removed. Your creations stay.','Clear',true,()=>{clearAIMemory(nav.v==='container'?byId(nav.id):null);toast('Conversation cleared.')});break;
-    case 'send':{const ta=$('#ta'),v=ta&&ta.value.trim();if(!v)break;{const k=Draft.open();if(k){const e=Draft.ed(k);if(e.from&&e.c)e.c.sel=e.from}}logChat(cmdContext(),true,v);ta.value='';ta.style.height='';handleText(v,'chat');break}
+    case 'send':{const ta=$('#ta'),v=ta&&ta.value.trim();if(!v)break;{const k=Draft.open();if(k){const e=Draft.ed(k);if(e.from&&e.c)e.c.sel=e.from}}ta.value='';ta.style.height='';routeCommand(v);break}
     case 'download':if(c)downloadDialog(c);break;
     case 'addlib':if(c)addToLibrary(c).then(r=>toast(r&&r.error?r.error:r&&r.already?'Already in your library.':'Added to your library, under My creations.'));break;
     case 'dodl':doDownload();break;
@@ -3960,6 +3964,64 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act=drsave
 /* the header stays on every screen: editors open just below it */
 function syncHdrH(){const r=$('.rule')||$('.hdr');if(!r)return;document.documentElement.style.setProperty('--hdrh',Math.round(r.getBoundingClientRect().bottom)+'px')}
 try{new ResizeObserver(syncHdrH).observe($('.hdr'))}catch(x){}window.addEventListener('resize',syncHdrH);setTimeout(syncHdrH,0);
+
+/* ================= AI requests made robust, commands that act where you are ================= */
+/* 1. a compact form of the tools: deep structures travel as JSON text, so Google never sees a schema that is too complex */
+function schemaSig(s,d=0){if(!s)return 'any';if(d>6)return '…';if(s.type===T.O){const ks=Object.keys(s.properties||{});return '{'+ks.map(k=>k+':'+schemaSig(s.properties[k],d+1)).join(',')+'}'}
+  if(s.type===T.A)return '['+schemaSig(s.items,d+1)+']';if(s.enum)return s.enum.slice(0,14).join('|')+(s.enum.length>14?'|…':'');return ({STRING:'text',NUMBER:'number',BOOLEAN:'true/false',INTEGER:'number'})[s.type]||'text'}
+const deep=s=>s&&((s.type===T.O&&Object.values(s.properties||{}).some(v=>v.type===T.O||v.type===T.A))||(s.type===T.A&&s.items&&(s.items.type===T.O||s.items.type===T.A)));
+let COMPACT=null;
+function compactTools(){if(COMPACT)return COMPACT;COMPACT=TOOLS.map(f=>{if(!f.parameters||!f.parameters.properties)return f;const props={};
+  for(const [k,v] of Object.entries(f.parameters.properties)){if(deep(v)){let sig=schemaSig(v);if(sig.length>1800)sig=sig.slice(0,1800)+'…';props[k]={type:T.S,description:((v.description?v.description+' ':'')+'Write this as JSON text in this shape: '+sig).slice(0,2200)}}else props[k]=v}
+  return {...f,parameters:{...f.parameters,properties:props}}});return COMPACT}
+/* JSON text sent back in compact form becomes real data again */
+function unpackArgs(name,a){const f=TOOLS.find(x=>x.name===name);if(!f||!f.parameters||!a)return a;const P_=f.parameters.properties||{};
+  for(const k of Object.keys(a)){const s=P_[k];if(s&&(s.type===T.O||s.type===T.A)&&typeof a[k]==='string'){try{a[k]=JSON.parse(a[k])}catch(e){try{a[k]=JSON.parse(a[k].replace(/^```(?:json)?|```$/g,'').trim())}catch(e2){}}}}return a}
+/* 2. every request is cleaned to exactly what Google accepts */
+const PART_KEYS=['text','functionCall','functionResponse','inlineData','inline_data','fileData','file_data','thoughtSignature'];
+function cleanVal(v,d=0){if(v===null||v===undefined)return null;if(typeof v==='number')return isFinite(v)?v:null;if(typeof v==='string')return v.length>6000?v.slice(0,6000):v;if(typeof v==='boolean')return v;if(d>8)return null;
+  if(Array.isArray(v))return v.slice(0,200).map(x=>cleanVal(x,d+1)).filter(x=>x!==null);if(typeof v==='object'){if(v instanceof Blob)return null;const o={};for(const [k,x] of Object.entries(v)){if(k.startsWith('_'))continue;const y=cleanVal(x,d+1);if(y!==null)o[k]=y}return o}return null}
+function sanitizeContents(cs){const out=[];for(const t of cs||[]){if(!t||!t.parts)continue;const role=t.role==='model'?'model':'user';
+    const parts=t.parts.map(p=>{if(!p||p.thought)return null;const q={};for(const k of PART_KEYS)if(p[k]!==undefined)q[k]=p[k];
+      if(q.functionResponse){let r=cleanVal(q.functionResponse.response);if(!r||typeof r!=='object'||Array.isArray(r))r={result:r};q.functionResponse={name:q.functionResponse.name,response:r}}
+      if(q.functionCall)q.functionCall={name:q.functionCall.name,args:cleanVal(q.functionCall.args||{})||{}};
+      if('text' in q&&typeof q.text!=='string')q.text=String(q.text);if('text' in q&&!q.text.trim()&&Object.keys(q).length===1)return null;return Object.keys(q).length?q:null}).filter(Boolean);
+    if(!parts.length)continue;const last=out[out.length-1];
+    if(last&&last.role===role&&!(role==='model'&&(last.parts.some(p=>p.functionCall)||parts.some(p=>p.functionCall))))last.parts.push(...parts);else out.push({role,parts})}
+  while(out.length&&out[0].role!=='user')out.shift();return repairHist(out)}
+/* what a request looked like, for the error report (no keys, no content) */
+function reqShape(body,model){try{return {model,tools:body.tools?(body.tools[0].functionDeclarations===TOOLS?'full':'compact'):'none',turns:body.contents.map(t=>t.role[0]+':'+t.parts.map(p=>Object.keys(p)[0]+(p.functionCall?'('+p.functionCall.name+')':p.functionResponse?'('+p.functionResponse.name+')':'')).join('+')).join(' / '),size:JSON.stringify(body).length}}catch(e){return null}}
+const AIErr={info:null,
+  set(e){this.info={time:new Date().toString(),cause:Conn.cause_(e),status:e&&e.status,message:String(e&&e.message||e||'').slice(0,600),model:e&&e.model,request:G.lastShape||null,app:'PixieCraft'};this.sync()},
+  ok(){this.info=null;this.sync()},
+  sync(){const b=$('#cmderr');if(b)b.hidden=!this.info},
+  text(){return 'PixieCraft AI error report\n'+JSON.stringify(this.info,null,1)}};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(x){}ta.remove();return ok}}
+/* 3. commands act where you are */
+function editorState(){const k=typeof Draft!=='undefined'&&Draft.open();if(!k)return undefined;const e=Draft.ed(k);
+  return {open:k==='image'?'image editor':'video editor',mode:e.mode==='edit'?'editing an existing '+(k==='image'?'picture':'video'):'making a new '+(k==='image'?'picture':'video'),
+    note:k==='image'?'The user is in the image editor. Create or change the picture with make_image (or ai_image only when a realistic invented scene is needed). The result opens in the editor so the user can keep editing.':'The user is in the video editor. Create with make_video (or make pictures with make_image); the result is added to the video being edited.'}}
+async function applyToEditor(kind,cid,vn){const c=byId(cid);if(!c)return;const v=c.versions[vn-1];if(!v)return;
+  if(kind==='image'&&Ed.on&&Ed.c&&Ed.c.id===cid&&v.kind==='image'){Ed.push();let plan;if(v.plan&&v.plan.base&&v.tool==='make_image'){plan=JSON.parse(JSON.stringify(v.plan));delete plan.keep_previous;delete plan.summary}
+      else plan={width:v.w||1080,height:v.h||1080,base:{type:'version',version:vn},fit:'cover',layers:[]};plan.layers=plan.layers||[];plan.adjust=plan.adjust||{};plan.effects=plan.effects||[];Ed.plan=plan;Ed.from={t:'v',id:v.id};Ed.sel=-1;Ed._draftChanged=true;Ed.panel();Ed.draw();toast('Your picture is ready in the editor. It is also saved in this container.');return}
+  if(kind==='video'&&VidEd.on&&VidEd.c&&VidEd.c.id===cid){VidEd.push();
+    if(v.kind==='video'&&v.plan&&v.plan.scenes&&v.plan.scenes.length){const pl=JSON.parse(JSON.stringify(v.plan));delete pl.keep_previous;delete pl.summary;
+      if(!VidEd.plan.scenes.length){pl.audio=pl.audio||{tracks:[]};VidEd.plan=pl}else VidEd.plan.scenes.push(...pl.scenes)}
+    else VidEd.plan.scenes.push({source:{type:'version',version:vn},fit:'cover',...(v.kind==='image'?{duration:3,motion:'ken_burns'}:{}),...(VidEd.plan.scenes.length?{transition:'fade'}:{})});
+    VidEd._draftChanged=true;VidEd.thumbs&&VidEd.thumbs.clear();VidEd.refresh();toast('Added to your video. It is also saved in this container.')}}
+/* 4. on Home, ask where the work should go */
+const Route={text:''};
+function nameFromText(t){const w=String(t).replace(/[^\p{L}\p{N}\s'-]+/gu,' ').trim().split(/\s+/).filter(x=>!/^(please|create|make|an?|the|me|for|of|with|and|image|picture|video|poster)$/i.test(x)).slice(0,4).join(' ');const n=w||'New creation';return (n.charAt(0).toUpperCase()+n.slice(1)).slice(0,40)}
+async function routeCommand(v){if(nav.v!=='home'){logChat(cmdContext(),true,v);handleText(v,'chat');return}
+  const cs=liveCS();if(!cs.length)return routeTo('new',v);Route.text=v;
+  sheet('Where should this go?',`<p class="note">“${esc(v.length>140?v.slice(0,137)+'…':v)}”</p><div class="routel">${cs.slice(0,40).map(c=>`<button class="pbtn" data-route="${c.id}" aria-label="Put it in ${esc(c.name)}">${I('folder')} ${esc(c.name)}</button>`).join('')}</div><div class="btnrow"><button class="pbtn prime" data-route="new">${I('plus')} New container</button><button class="pbtn" data-route="here">${I('cmd')} Just answer here</button></div>`)}
+async function routeTo(where,v){closeLayer();
+  if(where==='here'){Brain.notes.push('The user chose to stay on Home for this message: answer or explain only; do not create a container or anything else.');logChat(null,true,v);handleText(v,'chat');return}
+  let c=where==='new'?null:byId(where);if(!c){c=newContainer(nameFromText(v));CS.push(c);await saveC(c)}
+  go('container',{id:c.id});setTimeout(()=>{logChat(c,true,v);renderChatOnly();handleText(v,'chat')},120)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-route],[data-act=cmderr]');if(!b)return;e.stopPropagation();
+  if(b.dataset.act==='cmderr'){if(!AIErr.info)return;copyText(AIErr.text()).then(ok=>toast(ok?'Error details copied. Paste them to me in a message.':'Could not copy. Please try again.'));return}
+  const t=Route.text;Route.text='';if(t)routeTo(b.dataset.route,t)},true);
 
 
 </script>
