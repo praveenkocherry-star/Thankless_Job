@@ -1047,7 +1047,7 @@ const G={base:'https://generativelanguage.googleapis.com/',rr:0,cands:null,model
   /* the well-tested 2.5 models come first; newer ones are only a fallback when Google no longer offers these */
   PREF:{text:['gemini-2.5-flash'],lite:['gemini-2.5-flash-lite','gemini-2.5-flash'],image:['gemini-2.5-flash-image','gemini-2.5-flash-image-preview'],tts:['gemini-2.5-flash-preview-tts','gemini-2.5-pro-preview-tts']},
   active(){return S.keys.filter(k=>k.st!=='inactive')},
-  pick(skip){const now=Date.now();const ks=this.active().filter(k=>!skip.has(k.key)&&!((this.cool[k.key]||0)>now));if(!ks.length)return null;return ks[(this.rr++)%ks.length]},
+  pick(skip,kind){const now=Date.now();const ks=this.active().filter(k=>!skip.has(k.key)&&!((this.cool[k.key]||0)>now)&&!(kind&&(this.cool[k.key+'|'+kind]||0)>now));if(!ks.length)return null;return ks[(this.rr++)%ks.length]},
   async ensureModels(key){if(this.cands)return;let names=null;
     try{const r=await fetch(this.base+'v1beta/models?pageSize=300',{headers:{'x-goog-api-key':key}});if(r.ok){const j=await r.json();names=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace('models/',''))}}catch(e){}
     const ver=n=>{const m=/gemini-(\d+(?:\.\d+)?)/.exec(n);return m?parseFloat(m[1]):0};const stable=n=>!/preview|exp/.test(n);
@@ -1062,7 +1062,7 @@ const G={base:'https://generativelanguage.googleapis.com/',rr:0,cands:null,model
   note(ok,msg,model,status){this.last={ok,msg:String(msg||'').slice(0,400),model,status,t:Date.now()};if(typeof onAIStatus==='function')onAIStatus()},
   /* body may be an object, or a function (key) => body, so media can be uploaded to whichever key runs the request */
   async gen(kind,body,opt={}){const tried=new Set();let last=null;
-    for(let n=0;n<12;n++){const k=opt.key||this.pick(tried);if(!k)break;let model='';
+    for(let n=0;n<12;n++){const k=opt.key||this.pick(tried,kind);if(!k)break;let model='';
       try{await this.ensureModels(k.key);let b=typeof body==='function'?await body(k):body;model=opt.model||this.models[kind];
         /* quick answers: long thinking switched off where the model allows it */
         if(opt.fast&&!this.noThink[model]){const tc=/gemini-2\.5/.test(model)?{thinkingBudget:0}:/gemini-3/.test(model)?{thinkingLevel:'low'}:null;if(tc)b={...b,generationConfig:{...(b.generationConfig||{}),thinkingConfig:tc}}}
@@ -1070,8 +1070,10 @@ const G={base:'https://generativelanguage.googleapis.com/',rr:0,cands:null,model
         if(r.ok){const json=await r.json();if(k.st!=='active'){k.st='active';k.why='';saveS()}if(!opt.quiet)this.note(true,'',model,200);return {json,key:k,model}}
         let msg='';try{msg=((await r.json()).error||{}).message||''}catch(e){}
         last=mkErr(msg||('HTTP '+r.status),r.status);last.model=model;if(!opt.quiet)this.note(false,msg||('HTTP '+r.status),model,r.status);
-        if(r.status===429){this.cool[k.key]=Date.now()+60000;last.quota=true}
-        else if(r.status===403||(r.status===400&&/api key/i.test(msg))){k.st='inactive';k.why=msg||'Google did not accept this key';saveS()}
+        if(r.status===429){/* a limit on one model (often the picture model on free keys) must not block the key for everything else */
+          const zero=/limit:\s*0\b|free.?tier|not available|quota.*0/i.test(msg);if(kind==='text'||kind==='lite')this.cool[k.key]=Date.now()+60000;this.cool[k.key+'|'+kind]=Date.now()+(zero?3600000:60000);last.quota=true;if(zero)last.unavailable=true}
+        else if((r.status===403&&(/api key|api_key|key.*(invalid|expired|revoked)|has not been used|disabled/i.test(msg)||kind==='text'||kind==='lite'))||(r.status===400&&/api key/i.test(msg))){k.st='inactive';k.why=msg||'Google did not accept this key';saveS()}
+        else if(r.status===403){this.cool[k.key+'|'+kind]=Date.now()+3600000;last.unavailable=true}
         else if(r.status===400&&/thinking/i.test(msg)&&opt.fast&&!this.noThink[model]){this.noThink[model]=1;n--;continue}
         else if((r.status===404||(r.status===400&&/not found|not supported|unsupported model|is not available/i.test(msg)))&&!opt.model&&this.dropModel(kind)){n--;continue}
         else if(r.status===400)throw last;
@@ -2099,6 +2101,9 @@ Every turn:
 1. Call respond exactly once, with a short plain-text reply in say: one to three short sentences, no lists or symbols. Call any other tools in the same turn.
 2. Ask only what you cannot sensibly decide yourself, usually one or two short questions at a time: for example the person's or business name, the exact text, prices or phone numbers. Never invent names, prices, phone numbers, dates or addresses. Decide everything else with good taste: colours, fonts, effects, transitions. Do not add captions, music or floating text to a video unless the user asks.
 3. When the request is clear, just do it. If something similar already exists in the container, ask in the same message whether to keep it (keep_previous). If the user seems unsure, offer three versions in different styles to compare.
+3a. Do not ask for confirmation and do not read the request back when it is clear: go ahead. Ask only when something essential is missing.
+3b. Pictures and videos must show what the user describes. When the request names a scene, place, object, person, animal or view (for example a sunset, a riverfront, a cake, a shop), use a real visual: for an image set base to {type:'web',query:'short English search words'} (or an asset_id from search_images); for a video put clips from search_videos or photos from search_images (or source type web) into the scenes. The app searches the library first, then free online sources, and checks that the photo really matches; if nothing fits it tries the Google picture model. Use a plain colour or gradient only when the user asked for text and colours only, and then set text_only true.
+3c. Words the user asks to be written go on the picture exactly as given. Never put the user's instructions themselves on the picture.
 4. Shapes: tall 9:16 (Reels, Shorts, Stories, WhatsApp Status), wide 16:9 (YouTube), square, 4:5 (Instagram and Facebook feed), a custom size, or print sizes for images (A4 flyer, business card, poster). Videos are in minutes and seconds; keep to the length the user asks for.
 5. Prefer use_template for greeting cards, festival wishes, sale posters, invitations, quote and menu cards, thumbnails, flyers, business cards, announcements, photo cards, slideshows, reels, greeting and promo videos and logos; use make_image or make_video for custom work.
 6. To change an existing video (add a voice-over, add or replace music, add the user's recorded voice, sound effects, text or captions), always call edit_video. Never rebuild an unrelated new video for an edit. For pictures, use make_image with base type version.
@@ -2178,7 +2183,9 @@ const NEEDS_C=new Set(['make_image','make_video','ai_image','use_template','edit
 async function autoContainer(a){const t=String(a.summary||a.title||a.template||'New creation').replace(/[_]+/g,' ').trim();const nm=t.charAt(0).toUpperCase()+t.slice(1,40);const c=newContainer(nm);CS.push(c);await saveC(c);go('container',{id:c.id});return c}
 async function runTool(name,a){let c=nav.v==='container'?byId(nav.id):null;a=a||{};
   try{if(!c&&NEEDS_C.has(name)&&name!=='prepare_download')c=await autoContainer(a);switch(name){
-    case 'make_image':case 'make_video':case 'ai_image':return await genTool(name,c,a,{ai:true});
+    case 'make_image':case 'make_video':{const pre=await Vis.prepare(name,c,a);if(pre)return pre;const r=await genTool(name,c,a,{ai:true});
+      if(name==='make_image'&&r&&r.status==='started'&&Gen.running&&Gen.running.cid===c.id){const x=await Gen.running.done;if(x&&x.status==='done'){const f=await Vis.verify(c,x.version);return f||{status:'done',version:x.version}}return {status:x?x.status:'failed',error:x&&x.error}}return r}
+    case 'ai_image':return await genTool(name,c,a,{ai:true});
     case 'look_at_media':return await lookAtMedia(c,a.media_ids,a.question);
     case 'look_at_link':{const {json}=await G.gen('text',{contents:[{parts:[{text:a.question||'Describe this video in detail for an editor who wants to make something in a similar style: scenes, shots, pacing, colours, text, music and mood.'},{file_data:{file_uri:a.url}}]}]});return {description:G.text(json).slice(0,6000)}}
     case 'search_videos':{const r=await Lib.searchVideos(a.query,clamp(num(a.count,2),1,4));return r.length?{results:r}:{error:'No free clip was found. Use photos with motion instead.'}}
@@ -2273,7 +2280,7 @@ async function aiTurn(input,channel){let c=nav.v==='container'?byId(nav.id):null
   let useModel=pickModel(input.text,hist);
   /* repair the saved history in place before it is used */
   {const fixed=repairHist(hist.slice());if(fixed.length!==hist.length){hist.length=0;hist.push(...fixed)}}
-  const userTurn=pushUser(hist,[{text:(input.text.startsWith('[app]')?'':'[typed] ')+input.text}]);
+  Vis.reset(input.text);const userTurn=pushUser(hist,[{text:(input.text.startsWith('[app]')?'':'[typed] ')+input.text}]);
   try{
   for(let step=0;step<6;step++){const contents=sanitizeContents(trimHist(hist,useModel==='lite'?10:20));if(!contents.length)throw mkErr('The conversation could not be prepared.');
     const body={systemInstruction:{parts:[{text:systemPrompt()+'\n\n'+stateNote()}]},tools:[{functionDeclarations:G.compact?compactTools():TOOLS}],toolConfig:{functionCallingConfig:{mode:'ANY'}},contents,generationConfig:{temperature:.5}};
@@ -2285,7 +2292,7 @@ async function aiTurn(input,channel){let c=nav.v==='container'?byId(nav.id):null
     hist.push(content);
     const said=(String(ra.say||'')+' '+content.parts.filter(p=>p.text&&!p.thought).map(p=>p.text).join(' ')).trim();if(said)reply(said,channel);
     if(!calls.length){if(!said)throw mkErr('Google returned an empty answer.');break}const res=[];let need=false;
-    for(const p of calls){Brain.stage=p===resp?'Thinking':'Working on it';const r=p===resp?{ok:true}:await runTool(p.functionCall.name,unpackArgs(p.functionCall.name,p.functionCall.args||{}));if(p!==resp&&(FOLLOW.has(p.functionCall.name)||(r&&r.error)))need=true;res.push({functionResponse:{name:p.functionCall.name,response:r&&typeof r==='object'?r:{result:r}}})}
+    for(const p of calls){Brain.stage=p===resp?'Thinking':'Working on it';const r=p===resp?{ok:true}:await runTool(p.functionCall.name,unpackArgs(p.functionCall.name,p.functionCall.args||{}));if(p!==resp&&(FOLLOW.has(p.functionCall.name)||(r&&(r.error||r.status==='done_but_incomplete'))))need=true;res.push({functionResponse:{name:p.functionCall.name,response:r&&typeof r==='object'?r:{result:r}}})}
     if(calls.some(p=>p!==resp&&!['app_action','highlight','container_action'].includes(p.functionCall.name)))useModel='text';
     const nc=nav.v==='container'?byId(nav.id):null;if(nc!==c){const nh=historyFor(nc);sealHist(nh);hist.push({role:'user',parts:res});nh.push(...trimHist(hist.slice(-6),6));hist=nh;c=nc;if(!need)break;continue}
     hist.push({role:'user',parts:res});if(!need)break}
@@ -2562,7 +2569,7 @@ async function renderBackup(){const b=Backup;let list=[];try{list=await b.list()
 const ABOUT=[
  ['spark','What PixieCraft is','<p>A studio for creating and editing images and videos for your business, festivals, family and social media. Work lives in containers. Each container has four buttons: New image, New video, Edit image and Edit video. Everything is built in, so it works without AI. Free Google keys add an AI command window on top.</p>'],
  ['book','Getting started','<ul><li>Tap the plus button to make a container.</li><li>Open it and tap New image or New video. Pick a size, a template or a blank page, and make it yours.</li><li>Tap Edit image or Edit video to change something you already have: from this container, from the library, or from your phone gallery.</li><li>Tap the tick to save. Every save becomes a new version, and you choose whether to keep the earlier one.</li></ul>'],
- ['cmd','The AI command window','<p>When at least one Google key is saved, a glowing Command button appears in the header on every screen, including the editors, just right of the PixieCraft name. Tap it to open a small window where you type, or paste a script, and the app does the work: <q>Make a Diwali offer poster for my sweet shop</q>, <q>Make a 30 second Reel from these clips</q>, <q>Make the sky darker</q>. On Home, the app asks which container to put it in, or makes a new one. Inside the image or video editor, the result opens right in that editor. Write in plain everyday words; there is no special format. If something goes wrong, a copy button appears at the top of the window so you can send the error details. The trash icon in the window clears the conversation. With no key, the window stays hidden and you edit everything by hand.</p>'],
+ ['cmd','The AI command window','<p>When at least one Google key is saved, a glowing Command button appears in the header on every screen, including the editors, just right of the PixieCraft name. Tap it to open a small window where you type, or paste a script, and the app does the work: <q>Make a Diwali offer poster for my sweet shop</q>, <q>Make a 30 second Reel from these clips</q>, <q>Make the sky darker</q>. On Home, the app asks which container to put it in, or makes a new one. Inside the image or video editor, the result opens right in that editor. Write in plain everyday words; there is no special format. For pictures and videos the AI finds real photos and clips, first in your library, then from free online sources, and checks that they show what you asked for. If nothing fits it tries the Google picture model, and if that is not available with your key it tells you and offers choices. It asks you something only when an essential detail is missing. If something goes wrong, a copy button appears at the top of the window so you can send the error details. The trash icon in the window clears the conversation. With no key, the window stays hidden and you edit everything by hand.</p>'],
  ['key','Free Google keys','<p>In Menu, API keys, tap Create free key, then Open Google AI Studio. Sign in, tap Create API key and copy it. Press Back until you return to the app, then tap Paste key. The key is tested at once. Save several keys from different Google projects: they all work together, so the app answers faster, big jobs are shared between them, and when one reaches its free limit the others carry on. Tap Test Google AI to see exactly what Google answers.</p>'],
  ['clock','Autosave and drafts','<p>While you edit an image or a video, your work is saved automatically every few seconds. If you go to Menu, Help, Home, press Back, or the app closes, the edit is kept as a draft. Open the container again and the editor opens exactly where you left off.</p><p>The X button in an editor asks Save or Discard. Save keeps the edit as a version on the strip below the preview. Discard removes it. The tick button also saves a version.</p><p>The T button in an editor opens Styled text: select any word or line and make it bold, italic, underlined or struck through, or change its font, size or colour.</p>'],
  ['layers','Containers and versions','<p>The most recently edited container comes first. The pencil renames and the bin deletes; a deleted container can be brought back until the first use of the next day. Pictures, clips, audio and scripts you add inside the editors are shared between the container and the Library. Kept versions and uploads appear as small blocks under the preview: tap one to see it, swipe the preview left or right to move through them, and tap its cross to delete it.</p>'],
@@ -4022,6 +4029,51 @@ async function routeTo(where,v){closeLayer();
 document.addEventListener('click',e=>{const b=e.target.closest('[data-route],[data-act=cmderr]');if(!b)return;e.stopPropagation();
   if(b.dataset.act==='cmderr'){if(!AIErr.info)return;copyText(AIErr.text()).then(ok=>toast(ok?'Error details copied. Paste them to me in a message.':'Could not copy. Please try again.'));return}
   const t=Route.text;Route.text='';if(t)routeTo(b.dataset.route,t)},true);
+
+/* ================= Visuals that match the request: search, check, fall back, verify ================= */
+for(const n of ['make_image','make_video']){const f=TOOLS.find(x=>x.name===n);if(f&&f.parameters&&f.parameters.properties)f.parameters.properties.text_only={type:T.B,description:'true only when the user asked for text and colours only, with no photo, scene or clip'}}
+const Vis={turn:{req:'',rejected:0,fixes:0},
+  reset(text){this.turn={req:String(text||'').replace(/^\[typed\]\s*/,''),rejected:0,fixes:0}},
+  stage(s){Brain.stage=s;try{renderChatOnly()}catch(e){}},
+  /* does the plan show anything real? */
+  hasVisualSrc(s){return !!s&&!['color','gradient'].includes(s.type||'color')},
+  imageHasVisual(a){return this.hasVisualSrc(a.base)||(a.layers||[]).some(l=>l&&(l.kind==='image'||l.kind==='video')&&this.hasVisualSrc(l.source||{type:'web',query:l.query}))},
+  videoHasVisual(a){return (a.scenes||[]).some(s=>s&&(this.hasVisualSrc(s.source)||(s.layers||[]).some(l=>l&&(l.kind==='image'||l.kind==='video')&&this.hasVisualSrc(l.source))))},
+  /* every web picture in a plan, so each can be found and checked before anything is made */
+  webRefs(name,a){const out=[];const add=(o,k)=>{const s=o&&o[k];if(s&&s.type==='web'&&s.query)out.push([o,k]);if(s&&s.type==='collage')(s.sources||[]).forEach((x,i)=>add(s.sources,i))};
+    if(name==='make_image'){add(a,'base');(a.layers||[]).forEach(l=>{if(l&&l.kind==='image'){if(!l.source&&l.query)l.source={type:'web',query:l.query};add(l,'source')}})}
+    else (a.scenes||[]).forEach(sc=>{add(sc,'source');(sc.layers||[]).forEach(l=>{if(l&&l.kind==='image')add(l,'source')})});return out},
+  async thumbPart(blob,max=384){const b=await createImageBitmap(blob);const k=Math.min(1,max/Math.max(b.width,b.height));const cv=canvas(Math.max(1,Math.round(b.width*k)),Math.max(1,Math.round(b.height*k)));cv.getContext('2d').drawImage(b,0,0,cv.width,cv.height);
+    const t=await toBlob(cv,'image/jpeg',.8);return {inline_data:{mime_type:'image/jpeg',data:await b64(t)}}},
+  async ask(parts,q){try{const {json}=await G.gen('lite',{contents:[{role:'user',parts:[...parts,{text:q}]}],generationConfig:{temperature:0,responseMimeType:'application/json'}},{fast:true,quiet:true});
+      const t=G.text(json).replace(/^```(?:json)?|```$/g,'').trim();return JSON.parse(t)}catch(e){return null}},
+  /* library and free online sources, then a look at the candidates, then the Google picture model */
+  async find(query,aspect){let cands=[];try{cands=await Lib.searchImages(query,6)}catch(e){}
+    if(cands.length){const pick=cands.slice(0,4);const parts=[];const ok=[];for(const c of pick){try{const a=await Lib.get(c.asset_id);if(a&&a.blob){parts.push(await this.thumbPart(a.blob));ok.push(c)}}catch(e){}}
+      if(ok.length){const r=await this.ask(parts,`[pick] These are ${ok.length} candidate photos, numbered 1 to ${ok.length} in order. Which one best shows: "${query}"? A photo fits only if the main subject is clearly visible. Reply as JSON {"best": number, or 0 if none fits}.`);
+        if(!r)return {asset_id:ok[0].asset_id,how:'library'};const n=Math.round(num(r.best,0));if(n>=1&&n<=ok.length)return {asset_id:ok[n-1].asset_id,how:'library'}}}
+    try{this.stage('Creating the picture with Google');const blob=await aiImageBlob(query+'. Realistic photograph, no text, no letters, no watermark.',aspect||null);const b=await createImageBitmap(blob);
+      const a={id:'ai'+uid(),kind:'image',source:'Google AI',query,title:query,licence:'Made for you',author:'',blob,w:b.width,h:b.height};await Lib.put(a);return {asset_id:a.id,how:'google'}}catch(e){this.aiErr=e&&e.message}
+    return {none:true,closest:cands[0]&&cands[0].asset_id}},
+  aspectOf(a){const w=num(a.width,0),h=num(a.height,0);if(!w||!h)return null;const r=w/h,opts=[['1:1',1],['3:4',.75],['4:3',4/3],['9:16',9/16],['16:9',16/9]];return opts.sort((x,y)=>Math.abs(x[1]-r)-Math.abs(y[1]-r))[0][0]},
+  /* before making: the plan must show something real, and every picture must be found and checked */
+  async prepare(name,c,a){if(name!=='make_image'&&name!=='make_video')return null;
+    const has=name==='make_image'?this.imageHasVisual(a):this.videoHasVisual(a);
+    if(!has&&!a.text_only){this.turn.rejected++;
+      if(this.turn.rejected<=1)return {status:'not_created',error:'This plan shows no real picture or clip, but the user described something to show. Make it again with a real visual: for an image set base to {type:"web",query:"short search words"}; for a video put clips or photos in the scenes. Only if the user asked for text and colours only, set text_only true.'};
+      /* the model insisted twice: the app adds the visual itself */
+      const q=String(a.summary||this.turn.req).replace(/["“”]/g,'').slice(0,80);
+      if(name==='make_image')a.base={type:'web',query:q};else{a.scenes=a.scenes&&a.scenes.length?a.scenes:[{duration:5,layers:[]}];a.scenes[0].source={type:'web',query:q}}}
+    const refs=this.webRefs(name,a);
+    for(const [o,k] of refs){const q=o[k].query;this.stage('Finding the right picture');const r=await this.find(q,name==='make_image'&&o===a?this.aspectOf(a):null);
+      if(r.none)return {status:'not_created',error:`Nothing that shows "${q}" was found in the library or online${this.aiErr?', and the Google picture model did not work with this key':''}.`,note:'Tell the user plainly in one or two sentences, and offer: use the closest photo found, upload their own photo, or try different words.'+(r.closest?' The closest photo is asset_id '+r.closest+'.':'')};
+      o[k]={...o[k],type:'asset',asset_id:r.asset_id};delete o[k].query;delete o[k].pick}
+    delete a.text_only;return null},
+  /* after making a picture: compare it with the request, and ask for one fix if something is missing */
+  async verify(c,vn){const v=c&&c.versions[vn-1];if(!v||v.kind!=='image'||this.turn.fixes>=1||!this.turn.req)return null;
+    try{this.stage('Checking the result');const m=await DB.get('media',v.id);if(!m)return null;const r=await this.ask([await this.thumbPart(m.blob,512)],`[verify] The user asked: "${this.turn.req.slice(0,600)}". Does this picture meet the request: the scene or subject asked for is clearly shown, and any words asked for are written correctly? Ignore small style choices. Reply as JSON {"ok": true or false, "missing": "what is missing, in a few words"}.`);
+      if(r&&r.ok===false&&r.missing){this.turn.fixes++;return {status:'done_but_incomplete',version:vn,missing:String(r.missing).slice(0,200),note:'The picture does not fully match the request. Fix it once now with make_image (keep_previous false, base type version or a better visual), then tell the user briefly.'}}}catch(e){}
+    return null}};
 
 
 </script>
